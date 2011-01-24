@@ -136,8 +136,11 @@ public class SQLParser {
 				} else if (block.sql.charAt(end) == '(') {
 					pos = replace(block, begin,
 							block.sql.indexOf(")", end + 1) + 1, "(?)");
-				} else {
+				} else if (isWordChar(block.sql.charAt(end))) {
 					pos = replace(block, begin, wordEnd(block.sql, end), "?");
+				} else {
+					throw new SQLFormatException(key
+							+ " must have default element.\n" + line);
 				}
 
 			} else if (this.commentDepth != 0) {

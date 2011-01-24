@@ -193,4 +193,10 @@ public class SQLManager2Test {
 			SQLException {
 		sqlManager(getClass(), "sql2/NoDefault.sql", con);
 	}
+
+	@Test(expected = SQLFormatException.class)
+	public void genSql_have_no_default_value2() throws IOException,
+			SQLException {
+		sqlManager(getClass(), "sql2/NoDefault2.sql", con);
+	}
 }
