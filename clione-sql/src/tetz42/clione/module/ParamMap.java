@@ -1,0 +1,65 @@
+/*
+ * Copyright 2011 tetsuo.ohta[at]gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package tetz42.clione.module;
+
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ParamMap extends HashMap<String, Object> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6103186429868779178L;
+
+	public static final Pattern KEY_PTN = Pattern.compile("([\"-),-~ ])[ -~]*");
+	public static final Pattern SYMBOL_PTN = Pattern.compile("[^A-Za-z0-9]+");
+
+	@Override
+	public Object get(Object key) {
+		return super.get(convKey(key));
+	}
+
+	@Override
+	public Object put(String key, Object value) {
+		return super.put(convKey(key), value);
+	}
+
+	public ParamMap $(String key, Object value) {
+		this.put(key, value);
+		return this;
+	}
+
+	private String convKey(Object key) {
+		if (!String.class.isInstance(key))
+			throw new UnsupportedOperationException(
+					"Parameter key must be String.");
+		return convKey((String) key);
+	}
+
+	private String convKey(String key) {
+		if (key == null)
+			throw new NullPointerException("Parameter key must not be null.");
+		Matcher keyM = KEY_PTN.matcher(key);
+		if (!keyM.matches())
+			throw new UnsupportedOperationException("Uusupported key : " + key);
+		Matcher symM = SYMBOL_PTN.matcher(keyM.group(1));
+		if (symM.matches())
+			key = key.substring(keyM.group(1).length());
+		return key;
+	}
+}

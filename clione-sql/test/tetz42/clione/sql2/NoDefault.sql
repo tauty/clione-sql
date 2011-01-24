@@ -1,0 +1,7 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	ABC IN /* $FISH */
+	AND EFG IN /* FISH */(100, 200, 300)

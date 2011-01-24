@@ -1,0 +1,27 @@
+ArrayList[
+	HashMap{
+		"id": 0
+		"age": 35
+		"name": "Takao Kawada"
+	}
+	HashMap{
+		"id": 1
+		"age": 34
+		"name": "Takako Kawada"
+	}
+	HashMap{
+		"id": 2
+		"age": 2
+		"name": "Tao Kawada"
+	}
+	HashMap{
+		"id": 3
+		"age": 31
+		"name": "Hiromitsu Hara"
+	}
+	HashMap{
+		"id": 4
+		"age": 31
+		"name": "Hiroko Hara"
+	}
+]

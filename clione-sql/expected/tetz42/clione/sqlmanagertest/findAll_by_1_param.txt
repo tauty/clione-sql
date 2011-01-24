@@ -1,0 +1,12 @@
+ArrayList[
+	Tameshi{
+		id = 3
+		name = "Hiromitsu Hara"
+		age = 31
+	}
+	Tameshi{
+		id = 4
+		name = "Hiroko Hara"
+		age = 31
+	}
+]

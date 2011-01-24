@@ -1,0 +1,7 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	ABC = /* $PARAM */100
+	AND	CDE = /* @REQUIRED */100
