@@ -1,0 +1,10 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	-- ROOT  ?
+		AAA = true
+		AND BBB = false
+		AND CCC = 'abcdefg'
+	AND DDD = true

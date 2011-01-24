@@ -1,0 +1,5 @@
+HashMap{
+	"id": 0
+	"age": 35
+	"name": "Takao Kawada"
+}

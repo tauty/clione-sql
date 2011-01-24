@@ -1,0 +1,6 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+DDD = true

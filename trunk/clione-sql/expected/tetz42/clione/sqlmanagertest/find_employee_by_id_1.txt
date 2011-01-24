@@ -1,0 +1,7 @@
+Employee{
+	id = 1
+	SHAIN_NO = 100001
+	shozokuBuKa = "_“¹•”—q‰Û"
+	name = "’–ŒF_"
+	age = 0
+}

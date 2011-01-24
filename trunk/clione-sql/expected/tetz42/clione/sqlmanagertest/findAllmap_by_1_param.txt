@@ -1,0 +1,12 @@
+ArrayList[
+	HashMap{
+		"id": 3
+		"age": 31
+		"name": "Hiromitsu Hara"
+	}
+	HashMap{
+		"id": 4
+		"age": 31
+		"name": "Hiroko Hara"
+	}
+]

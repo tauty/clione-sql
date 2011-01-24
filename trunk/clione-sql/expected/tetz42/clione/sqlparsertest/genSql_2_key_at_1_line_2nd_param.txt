@@ -1,0 +1,7 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	ABC IN (/* TAKO */'tako', ?)
+	AND DEF IN (/* TAKO */30, ?)
