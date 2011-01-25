@@ -15,7 +15,6 @@
  */
 package tetz42.clione;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -44,29 +43,27 @@ public class SQLManager {
 	}
 
 	public static SQLManager sqlManager(Class<?> clazz, String sqlFile,
-			Connection con) throws IOException {
+			Connection con) {
 		// TODO add instance management logic
 		return new SQLManager(clazz, sqlFile, con);
 	}
 
-	public static SQLManager sqlManager(String sqlPath) throws IOException {
+	public static SQLManager sqlManager(String sqlPath) {
 		// TODO add instance management logic
 		return new SQLManager(sqlPath);
 	}
 
-	public static SQLManager sqlManager(String sqlPath, Connection con)
-			throws IOException {
+	public static SQLManager sqlManager(String sqlPath, Connection con) {
 		// TODO add instance management logic
 		return new SQLManager(sqlPath, con);
 	}
 
-	public static SQLManager sqlManager(InputStream in) throws IOException {
+	public static SQLManager sqlManager(InputStream in) {
 		// TODO add instance management logic
 		return new SQLManager(in);
 	}
 
-	public static SQLManager sqlManager(InputStream in, Connection con)
-			throws IOException {
+	public static SQLManager sqlManager(InputStream in, Connection con) {
 		// TODO add instance management logic
 		return new SQLManager(in, con);
 	}
@@ -108,11 +105,11 @@ public class SQLManager {
 		this.sqlGenerator = new SQLGenerator();
 	}
 
-	public SQLManager(String sqlPath) throws IOException {
+	public SQLManager(String sqlPath) {
 		this(sqlPath, null);
 	}
 
-	public SQLManager(String sqlPath, Connection con) throws IOException {
+	public SQLManager(String sqlPath, Connection con) {
 		InputStream in = getClass().getClassLoader().getResourceAsStream(
 				sqlPath);
 		if (in == null)
@@ -123,11 +120,11 @@ public class SQLManager {
 		this.sqlGenerator = new SQLGenerator();
 	}
 
-	public SQLManager(InputStream in) throws IOException {
+	public SQLManager(InputStream in) {
 		this(in, null);
 	}
 
-	public SQLManager(InputStream in, Connection con) throws IOException {
+	public SQLManager(InputStream in, Connection con) {
 		this.lineTreeList = new SQLParser().parse(in);
 		this.con = con;
 		this.sqlGenerator = new SQLGenerator();
