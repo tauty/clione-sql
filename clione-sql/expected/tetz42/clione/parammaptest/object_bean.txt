@@ -1,0 +1,11 @@
+ParamMap{
+	"1000000000": "BigInteger"
+	"foo3": "foo3!"
+	"foo2": "foo2!"
+	"foo1": "foo1!"
+	"String": "StringValue"
+	"bar3": "bar3!"
+	"bar1": "bar1!"
+	"bar2": "bar2!"
+	"100": "int"
+}
