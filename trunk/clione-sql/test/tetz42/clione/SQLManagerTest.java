@@ -64,7 +64,7 @@ public class SQLManagerTest {
 	@Test
 	public void con() throws IOException, SQLException {
 		// Null Instance Connection
-		SQLManager manager = sqlManager(getClass(), "sql/Select.sql");
+		SQLManager manager = sqlManager();
 		try {
 			assertThat(manager.con(), is(this.con));
 			fail();
@@ -77,14 +77,14 @@ public class SQLManagerTest {
 		assertThat(getThreadConnection(), is(this.con));
 
 		// Null Instance Connection
-		manager = sqlManager(getClass(), "sql/Select.sql");
+		manager = sqlManager();
 		assertThat(manager.con(), is(this.con));
 		assertThat(getThreadConnection(), is(this.con));
 
 		// Set Instance Connection
 		Connection anotherCon = DriverManager.getConnection(
 				"jdbc:mysql://localhost:3306/test", "root", "rootroot");
-		manager = sqlManager(getClass(), "sql/Select.sql", anotherCon);
+		manager = sqlManager(anotherCon);
 		assertThat(manager.con(), is(anotherCon));
 		assertThat(getThreadConnection(), is(this.con));
 
@@ -92,11 +92,14 @@ public class SQLManagerTest {
 		setThreadConnection(null);
 		assertThat(manager.con(), is(anotherCon));
 		assertNull(getThreadConnection());
+		
+		// Close Connection
+		manager.closeConnection();
 	}
 
 	@Test
 	public void find_by_1_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		Tameshi tameshi = man.find(Tameshi.class, params("$age", 34));
 		System.out.println(dumper(tameshi).superSafe());
@@ -105,7 +108,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void find_by_no_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		Tameshi tameshi = man.find(Tameshi.class);
 		System.out.println(dumper(tameshi).superSafe());
@@ -114,7 +117,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void findAll_by_1_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		List<Tameshi> list = man.findAll(Tameshi.class, params("$age", 31));
 		System.out.println(dumper(list).superSafe());
@@ -123,7 +126,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void findAll_by_no_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		List<Tameshi> list = man.findAll(Tameshi.class);
 		System.out.println(dumper(list).superSafe());
@@ -132,13 +135,13 @@ public class SQLManagerTest {
 
 	@Test(expected = SQLException.class)
 	public void findAll_using_wrongSQL() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/WrongSelect.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/WrongSelect.sql");
 		man.findAll(Tameshi.class);
 	}
 
 	@Test
 	public void findmap_by_1_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		Map<String, Object> map = man.find(params("$age", 34));
 		System.out.println(dumper(map).superSafe());
@@ -147,7 +150,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void findmap_by_no_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		Map<String, Object> map = man.find();
 		System.out.println(dumper(map).superSafe());
@@ -156,7 +159,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void findAllmap_by_1_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		List<Map<String, Object>> list = man.findAll(params("$age", 31));
 		System.out.println(dumper(list).superSafe());
@@ -165,7 +168,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void findAllmap_by_no_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Select.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
 		List<Map<String, Object>> list = man.findAll();
 		System.out.println(dumper(list).superSafe());
@@ -174,17 +177,17 @@ public class SQLManagerTest {
 
 	@Test(expected = SQLException.class)
 	public void findAllmap_using_wrongSQL() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/WrongSelect.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/WrongSelect.sql");
 		man.findAll();
 	}
 
 	@Test
 	public void update_by_age_10() throws Exception {
 		setThreadConnection(con);
-		int count = sqlManager(getClass(), "sql/Update.sql").update(
+		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update(
 				params("$age", 10));
 		assertThat(count, is(0));
-		List<Tameshi> list = sqlManager(getClass(), "sql/Select.sql").findAll(
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
 				Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "findAll_by_no_param");
@@ -193,10 +196,10 @@ public class SQLManagerTest {
 	@Test
 	public void update_by_age_31() throws Exception {
 		setThreadConnection(con);
-		int count = sqlManager(getClass(), "sql/Update.sql").update(
+		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update(
 				params("$age", 31));
 		assertThat(count, is(2));
-		List<Tameshi> list = sqlManager(getClass(), "sql/Select.sql").findAll(
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
 				Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "update_by_age_31");
@@ -205,9 +208,9 @@ public class SQLManagerTest {
 	@Test
 	public void update_by_no_param() throws Exception {
 		setThreadConnection(con);
-		int count = sqlManager(getClass(), "sql/Update.sql").update();
+		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update();
 		assertThat(count, is(5));
-		List<Tameshi> list = sqlManager(getClass(), "sql/Select.sql").findAll(
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
 				Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "update_by_no_param");
@@ -216,12 +219,12 @@ public class SQLManagerTest {
 	@Test(expected = SQLException.class)
 	public void update_using_wrongSQL() throws IOException, SQLException {
 		setThreadConnection(con);
-		sqlManager(getClass(), "sql/WrongUpdate.sql").update();
+		sqlManager().useFile(getClass(), "sql/WrongUpdate.sql").update();
 	}
 
 	@Test
 	public void find_employee_by_id_1() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/EmployeeSelect.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
 
 		Employee employee = man.find(Employee.class, params("ID", 1));
 		System.out.println(dumper(employee).superSafe());
@@ -231,7 +234,7 @@ public class SQLManagerTest {
 	@Test
 	public void findAll_employee_by_no_0_and_3() throws IOException,
 			SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/EmployeeSelect.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
 
 		List<Employee> list = man.findAll(Employee.class,
 				params("$NO1", 100000).$("$NO2", 100003));
@@ -241,17 +244,17 @@ public class SQLManagerTest {
 
 	@Test
 	public void find_employee_by_no_param() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/EmployeeSelect.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
 
 		Employee employee = man.find(Employee.class);
 		System.out.println(dumper(employee).superSafe());
 		assertEqualsWithFile(employee, getClass(), "find_employee_by_no_param");
-		man.closeConnection();
+//		man.closeConnection();
 	}
 
 	@Test
 	public void sqlManager_by_path() throws IOException, SQLException {
-		SQLManager man = sqlManager("tetz42/clione/sql/Sample.sql");
+		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getExecutedSql());
@@ -261,7 +264,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void sqlManager_by_path_and_con() throws IOException, SQLException {
-		SQLManager man = sqlManager("tetz42/clione/sql/Sample.sql", con);
+		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getExecutedSql());
@@ -271,7 +274,7 @@ public class SQLManagerTest {
 
 	@Test
 	public void sqlManager_by_istream() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass().getResourceAsStream(
+		SQLExecutor man = sqlManager(con).useStream(getClass().getResourceAsStream(
 				"sql/Sample.sql"));
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
@@ -283,8 +286,8 @@ public class SQLManagerTest {
 	@Test
 	public void sqlManager_by_istream_and_con() throws IOException,
 			SQLException {
-		SQLManager man = sqlManager(
-				getClass().getResourceAsStream("sql/Sample.sql"), con);
+		SQLExecutor man = sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/Sample.sql"));
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getExecutedSql());
@@ -294,7 +297,7 @@ public class SQLManagerTest {
 
 	@Test(expected = WrapException.class)
 	public void cannot_create_instance() throws IOException, SQLException {
-		sqlManager(getClass(), "sql/Select.sql", con).find(
+		sqlManager(con).useFile(getClass(), "sql/Select.sql").find(
 				NoDefaultConstructor.class);
 	}
 

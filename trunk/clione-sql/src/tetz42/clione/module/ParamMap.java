@@ -15,9 +15,16 @@
  */
 package tetz42.clione.module;
 
+import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ParamMap extends HashMap<String, Object> {
 
@@ -41,6 +48,93 @@ public class ParamMap extends HashMap<String, Object> {
 
 	public ParamMap $(String key, Object value) {
 		this.put(key, value);
+		return this;
+	}
+
+	public ParamMap object(Object obj) {
+		if (obj == null)
+			return null;
+		else if (obj instanceof HttpServletRequest)
+			http((HttpServletRequest) obj);
+		else if (obj instanceof Map)
+			map((Map<?, ?>) obj);
+		else
+			bean(obj);
+		return this;
+	}
+
+	public ParamMap map(Map<?, ?> map) {
+		for (Map.Entry<?, ?> e : map.entrySet()) {
+			this.put(String.valueOf(e.getKey()), e.getValue());
+		}
+		return this;
+	}
+
+	public ParamMap bean(Object bean) {
+		Class<?> clazz = bean.getClass();
+		while (clazz != null && clazz != Object.class) {
+			for (Field f : clazz.getDeclaredFields()) {
+				try {
+					boolean backup = f.isAccessible();
+					f.setAccessible(true);
+					this.put(f.getName(), f.get(bean));
+					f.setAccessible(backup);
+				} catch (IllegalArgumentException e) {
+					// ignore the exception
+				} catch (IllegalAccessException e) {
+					// ignore the exception
+				}
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return this;
+	}
+
+	public ParamMap http(HttpServletRequest req) {
+		httpParams(req);
+		httpSessions(req);
+		httpAttrs(req);
+		return this;
+	}
+
+	public ParamMap httpParams(ServletRequest req) {
+		@SuppressWarnings("rawtypes")
+		Enumeration names = req.getParameterNames();
+		while (names.hasMoreElements()) {
+			String name = String.valueOf(names.nextElement());
+			String[] values = req.getParameterValues(name);
+			if (values.length == 1)
+				this.put(name, values[0]);
+			else
+				this.put(name, values);
+		}
+		return this;
+	}
+
+	public ParamMap httpAttrs(ServletRequest req) {
+		@SuppressWarnings("rawtypes")
+		Enumeration names = req.getAttributeNames();
+		while (names.hasMoreElements()) {
+			String name = String.valueOf(names.nextElement());
+			this.put(name, req.getAttribute(name));
+		}
+		return this;
+	}
+
+	public ParamMap httpSessions(HttpServletRequest req) {
+		HttpSession session = req.getSession(false);
+		if (session != null)
+			httpSessions(session);
+		return this;
+	}
+
+	public ParamMap httpSessions(HttpSession session) {
+		@SuppressWarnings("rawtypes")
+		Enumeration names = session.getAttributeNames();
+		while (names.hasMoreElements()) {
+			String name = String.valueOf(names.nextElement());
+			this.put(name, session.getAttribute(name));
+		}
 		return this;
 	}
 

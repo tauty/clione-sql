@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.SQLManager;
 import tetz42.clione.module.Caller;
 import tetz42.clione.module.SQLFormatException;
 import tetz42.clione.module.SQLParser;
@@ -77,7 +76,7 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_by_sample() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/Sample.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getExecutedSql());
@@ -88,8 +87,8 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_empty_line() throws IOException, SQLException {
-		SQLManager man = sqlManager(
-				getClass().getResourceAsStream("sql/EmptyLineSelect.sql"), con);
+		SQLExecutor man = sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/EmptyLineSelect.sql"));
 		man.genSql();
 		assertEqualsWithFile(man.getExecutedSql(), getClass(),
 				"genSql_empty_line");
@@ -97,8 +96,8 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_join_line() throws IOException, SQLException {
-		SQLManager man = sqlManager(
-				getClass().getResourceAsStream("sql/JoinLineUpdate.sql"), con);
+		SQLExecutor man = sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/JoinLineUpdate.sql"));
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
 		assertEqualsWithFile(man.getExecutedSql(), getClass(),
@@ -108,10 +107,9 @@ public class SQLParserTest {
 	@Test
 	public void genSql_ireco_comment() throws IOException, SQLException {
 		// /* - /* - */ \n */のケース
-		SQLManager man = sqlManager(
+		SQLExecutor man = sqlManager(con).useStream(
 				getClass()
-						.getResourceAsStream("sql/RecursiveCommentSelect.sql"),
-				con);
+						.getResourceAsStream("sql/RecursiveCommentSelect.sql"));
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
 		// TODO 本当はこのケースはWHERE句ごと消したい。genSqlでコメントを無視する方法は、今後の課題。
@@ -122,9 +120,9 @@ public class SQLParserTest {
 	@Test
 	public void genSql_ireco_comment2() throws IOException, SQLException {
 		// /* - \n /* - */ \n */のケース
-		SQLManager man = sqlManager(
+		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream(
-						"sql/RecursiveCommentSelect2.sql"), con);
+						"sql/RecursiveCommentSelect2.sql"));
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
 		// TODO 本当はこのケースはWHERE句ごと消したい。genSqlでコメントを無視する方法は、今後の課題。
@@ -135,22 +133,22 @@ public class SQLParserTest {
 	@Test(expected = SQLFormatException.class)
 	public void genSql_wrong_comment() throws IOException, SQLException {
 		// /* - */ \n */のケース
-		sqlManager(
-				getClass().getResourceAsStream("sql/WrongCommentSelect.sql"),
-				con);
+		sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/WrongCommentSelect.sql"));
 	}
 
 	@Test(expected = SQLFormatException.class)
 	public void genSql_wrong_comment2() throws IOException, SQLException {
 		// /* - \n /* - */のケース
-		sqlManager(getClass()
-				.getResourceAsStream("sql/WrongCommentSelect2.sql"), con);
+		sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/WrongCommentSelect2.sql"));
 	}
 
 	@Test
 	public void genSql_using_doller_param_and_normal_param()
 			throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/DollAndNormal.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/DollAndNormal.sql");
 
 		man.genSql(params("TAKO", "octpus"));
 		assertEqualsWithFile(man.getExecutedSql(), getClass(),
@@ -162,7 +160,8 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_normal_comment() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/NormalComment.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/NormalComment.sql");
 
 		man.genSql(params("TAKO", "octpus"));
 		assertEqualsWithFile(man.getExecutedSql(), getClass(),
@@ -173,7 +172,8 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_remove_root() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/RemoveRoot.sql", con);
+		SQLExecutor man = sqlManager(con)
+				.useFile(getClass(), "sql/RemoveRoot.sql");
 
 		man.genSql(params("ROOT", "octpus"));
 		assertEqualsWithFile(man.getExecutedSql(), getClass(),
@@ -185,7 +185,8 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_2_key_at_1_line() throws IOException, SQLException {
-		SQLManager man = sqlManager(getClass(), "sql/2KeyAt1Line.sql", con);
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/2KeyAt1Line.sql");
 
 		man.genSql(params("TAKO", "octopus").$("IKA", "squid"));
 		System.out.println(dumper(man.lineTreeList));

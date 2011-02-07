@@ -17,7 +17,9 @@ package tetz42.clione;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static tetz42.test.Util.*;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -104,4 +106,28 @@ public class ParamMapTest {
 	public void get_key_unsupported() {
 		paramMap.get(new Object());
 	}
+	
+	@Test
+	public void object() {
+		assertNull(paramMap.object(null));
+		HashMap<Object,Object> map = new HashMap<Object, Object>();
+		map.put(BigInteger.valueOf(1000000000), "BigInteger");
+		map.put(100, "int");
+		map.put("String", "StringValue");
+		assertEqualsWithFile(paramMap.object(map), getClass(), "object_map");
+		assertEqualsWithFile(paramMap.object(new Bar()), getClass(), "object_bean");
+		
+	}
+}
+
+class Foo{
+	String foo1 = "foo1!";
+	String foo2 = "foo2!";
+	String foo3 = "foo3!";
+}
+
+class Bar extends Foo{
+	String bar1 = "bar1!";
+	String bar2 = "bar2!";
+	String bar3 = "bar3!";
 }
