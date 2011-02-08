@@ -31,8 +31,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.module.ParameterNotFoundException;
-import tetz42.clione.module.SQLFormatException;
+import tetz42.clione.exception.ParameterNotFoundException;
+import tetz42.clione.exception.SQLFormatException;
 
 public class SQLManager2Test {
 

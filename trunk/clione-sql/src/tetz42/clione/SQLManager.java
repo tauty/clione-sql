@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import tetz42.clione.module.ParamMap;
+import tetz42.clione.util.ParamMap;
 
 public class SQLManager {
 

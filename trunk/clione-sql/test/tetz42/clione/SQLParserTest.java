@@ -32,9 +32,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.module.Caller;
-import tetz42.clione.module.SQLFormatException;
-import tetz42.clione.module.SQLParser;
+import tetz42.clione.exception.SQLFormatException;
+import tetz42.clione.parsar.Caller;
+import tetz42.clione.parsar.SQLParser;
 
 public class SQLParserTest {
 
