@@ -1,5 +1,6 @@
 package tetz42.clione;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.SQLManager.*;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -13,15 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tetz42.clione.module.LineTree;
-import tetz42.clione.module.SQLGenerator;
-import tetz42.clione.module.SQLParser;
-import tetz42.clione.module.WrapException;
+import tetz42.clione.exception.WrapException;
+import tetz42.clione.gen.SQLGenerator;
+import tetz42.clione.node.LineNode;
+import tetz42.clione.parsar.SQLParser;
 
 public class SQLExecutor {
 	
 	final Connection con;
-	final List<LineTree> lineTreeList;
+	final List<LineNode> lineTreeList;
 	SQLGenerator sqlGenerator;
 	private PreparedStatement stmt;
 	private ResultSet rs;
@@ -128,7 +129,7 @@ public class SQLExecutor {
 						f = fieldMap.get(conv(md.getColumnLabel(i)));
 					if (f == null)
 						continue;
-					f.set(instance, rs.getObject(i));
+					f.set(instance, getSQLData(f, rs, i));
 				}
 				list.add(instance);
 			}

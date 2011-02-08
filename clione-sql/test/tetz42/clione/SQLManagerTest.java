@@ -34,7 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.SQLManager;
-import tetz42.clione.module.WrapException;
+import tetz42.clione.exception.WrapException;
 
 public class SQLManagerTest {
 

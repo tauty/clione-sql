@@ -1,10 +1,10 @@
 ArrayList[
-	LineTree{
+	LineNode{
 		sql = "SELECT /*+ ORDERD */"
 		keys = ArrayList[ ]
 		vals = ArrayList[ ]
 		childBlocks = ArrayList[
-			LineTree{
+			LineNode{
 				sql = "    *"
 				keys = ArrayList[ ]
 				vals = ArrayList[ ]
@@ -12,12 +12,12 @@ ArrayList[
 			}
 		]
 	}
-	LineTree{
+	LineNode{
 		sql = "FROM /*! MYSQL */"
 		keys = ArrayList[ ]
 		vals = ArrayList[ ]
 		childBlocks = ArrayList[
-			LineTree{
+			LineNode{
 				sql = "    EMPLOYEES"
 				keys = ArrayList[ ]
 				vals = ArrayList[ ]
@@ -25,12 +25,12 @@ ArrayList[
 			}
 		]
 	}
-	LineTree{
+	LineNode{
 		sql = "WHERE"
 		keys = ArrayList[ ]
 		vals = ArrayList[ ]
 		childBlocks = ArrayList[
-			LineTree{
+			LineNode{
 				sql = "	ABC = ?"
 				keys = ArrayList[
 					"$TAKO"
@@ -40,7 +40,7 @@ ArrayList[
 				]
 				childBlocks = ArrayList[ ]
 			}
-			LineTree{
+			LineNode{
 				sql = "	OR EFG = ?"
 				keys = ArrayList[
 					"TAKO"
@@ -50,7 +50,7 @@ ArrayList[
 				]
 				childBlocks = ArrayList[ ]
 			}
-			LineTree{
+			LineNode{
 				sql = "	OR HIJ = /**TAKO*/'tako'"
 				keys = ArrayList[ ]
 				vals = ArrayList[ ]

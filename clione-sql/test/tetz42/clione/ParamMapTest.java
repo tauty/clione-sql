@@ -26,7 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import tetz42.clione.module.ParamMap;
+import tetz42.clione.util.ParamMap;
 
 public class ParamMapTest {
 
