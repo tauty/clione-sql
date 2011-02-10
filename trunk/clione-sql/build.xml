@@ -13,7 +13,7 @@
     </description>
 
 	<property name="basename" value="clione-sql" />
-	<property name="version" value="0.2.0" />
+	<property name="version" value="0.2.1" />
 	<property name="src" location="./src" />
 	<property name="classes" location="./classes" />
 

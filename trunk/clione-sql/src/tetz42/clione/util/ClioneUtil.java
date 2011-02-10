@@ -2,9 +2,9 @@ package tetz42.clione.util;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.security.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import tetz42.clione.exception.UnsupportedTypeException;
@@ -106,5 +106,4 @@ public class ClioneUtil {
 				+ ") is not supported. Field name:" + f.toGenericString()
 				+ ", Class name:" + f.getDeclaringClass().getName());
 	}
-
 }

@@ -130,4 +130,7 @@ class Bar extends Foo{
 	String bar1 = "bar1!";
 	String bar2 = "bar2!";
 	String bar3 = "bar3!";
+	String foo1 = "foobar1!";
+	String foo2 = "foobar2!";
+	String foo3 = "foobar3!";
 }
