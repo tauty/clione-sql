@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.test.Util.*;
+import static tetz42.util.ObjDumper4j.*;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -198,4 +199,21 @@ public class SQLManager2Test {
 			SQLException {
 		sqlManager(con).useFile(getClass(), "sql2/NoDefault2.sql");
 	}
+	
+	@Test
+	public void find_by_1_param() throws IOException, SQLException {
+		SQLExecutor man = sqlManager(con).useFile(SQLManagerTest.class, "sql/Select.sql");
+
+		Sample sample = man.find(Sample.class, params("$age", 34));
+		System.out.println(dumper(sample).superSafe());
+		assertEqualsWithFile(sample, getClass(), "find_by_1_param");
+	}
+
+}
+
+@SuppressWarnings("unused")
+class Sample {
+	private int id;
+	private String name;
+	private int age;
 }

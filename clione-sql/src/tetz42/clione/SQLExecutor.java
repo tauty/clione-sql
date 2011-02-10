@@ -1,7 +1,8 @@
 package tetz42.clione;
 
-import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.SQLManager.*;
+import static tetz42.clione.util.ClioneUtil.*;
+
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -20,14 +21,14 @@ import tetz42.clione.node.LineNode;
 import tetz42.clione.parsar.SQLParser;
 
 public class SQLExecutor {
-	
+
 	final Connection con;
 	final List<LineNode> lineTreeList;
 	SQLGenerator sqlGenerator;
 	private PreparedStatement stmt;
 	private ResultSet rs;
-	
-	SQLExecutor(Connection con, InputStream in){
+
+	SQLExecutor(Connection con, InputStream in) {
 		this.con = con;
 		this.lineTreeList = new SQLParser().parse(in);
 		this.sqlGenerator = new SQLGenerator();
@@ -52,7 +53,8 @@ public class SQLExecutor {
 		return this.findAll((Map<String, Object>) null);
 	}
 
-	public List<Map<String, Object>> findAll(Object paramObj) throws SQLException {
+	public List<Map<String, Object>> findAll(Object paramObj)
+			throws SQLException {
 		return this.findAll(params(paramObj));
 	}
 
@@ -85,10 +87,11 @@ public class SQLExecutor {
 	}
 
 	public <T> T find(Class<T> entityClass) throws SQLException {
-		return this.find(entityClass, (Map<String, Object>)null);
+		return this.find(entityClass, (Map<String, Object>) null);
 	}
 
-	public <T> T find(Class<T> entityClass, Object paramObj) throws SQLException {
+	public <T> T find(Class<T> entityClass, Object paramObj)
+			throws SQLException {
 		return this.find(entityClass, params(paramObj));
 	}
 
@@ -103,7 +106,8 @@ public class SQLExecutor {
 		return this.findAll(entityClass, null);
 	}
 
-	public <T> List<T> findAll(Class<T> entityClass, Object paramObj) throws SQLException {
+	public <T> List<T> findAll(Class<T> entityClass, Object paramObj)
+			throws SQLException {
 		return this.findAll(entityClass, params(paramObj));
 	}
 
@@ -116,20 +120,30 @@ public class SQLExecutor {
 			stmt = this.genStmt(paramMap);
 			rs = stmt.executeQuery();
 			ResultSetMetaData md = rs.getMetaData();
-			Field[] fields = entityClass.getDeclaredFields();
-			HashMap<String, Field> fieldMap = new HashMap<String, Field>();
-			for (Field field : fields)
-				fieldMap.put(field.getName(), field);
+			Class<?> clazz = entityClass;
+			HashMap<String, FSet> fieldMap = new HashMap<String, FSet>();
+			while (clazz != null && clazz != Object.class) {
+				Field[] fields = clazz.getDeclaredFields();
+				for (Field field : fields) {
+					if (fieldMap.containsKey(field.getName()))
+						continue;
+					fieldMap.put(field.getName(),
+							FSet.genFSet(field, field.isAccessible()));
+				}
+				clazz = clazz.getSuperclass();
+			}
 
 			while (rs.next()) {
 				T instance = entityClass.newInstance();
 				for (int i = 1; i <= md.getColumnCount(); i++) {
-					Field f = fieldMap.get(md.getColumnLabel(i));
-					if (f == null)
-						f = fieldMap.get(conv(md.getColumnLabel(i)));
-					if (f == null)
+					FSet fset = fieldMap.get(md.getColumnLabel(i));
+					if (fset == null)
+						fset = fieldMap.get(conv(md.getColumnLabel(i)));
+					if (fset == null)
 						continue;
-					f.set(instance, getSQLData(f, rs, i));
+					fset.f.setAccessible(true);
+					fset.f.set(instance, getSQLData(fset.f, rs, i));
+					fset.f.setAccessible(fset.b);
 				}
 				list.add(instance);
 			}
@@ -151,7 +165,7 @@ public class SQLExecutor {
 	}
 
 	public int update() throws SQLException {
-		return this.update((Map<String, Object>)null);
+		return this.update((Map<String, Object>) null);
 	}
 
 	public int update(Object paramObj) throws SQLException {
@@ -222,4 +236,15 @@ public class SQLExecutor {
 		return sb.toString();
 	}
 
+	private static class FSet {
+		Field f;
+		boolean b;
+
+		static FSet genFSet(Field f, boolean b) {
+			FSet fset = new FSet();
+			fset.f = f;
+			fset.b = b;
+			return fset;
+		}
+	}
 }
