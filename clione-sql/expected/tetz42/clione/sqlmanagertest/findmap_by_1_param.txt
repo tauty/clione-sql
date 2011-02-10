@@ -1,5 +1,5 @@
-HashMap{
+LinkedHashMap{
 	"id": 1
-	"age": 34
 	"name": "Takako Kawada"
+	"age": 34
 }
