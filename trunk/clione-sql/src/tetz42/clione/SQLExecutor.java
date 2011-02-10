@@ -12,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class SQLExecutor {
 			ResultSetMetaData md = rs.getMetaData();
 
 			while (rs.next()) {
-				Map<String, Object> map = new HashMap<String, Object>();
+				Map<String, Object> map = new LinkedHashMap<String, Object>();
 				for (int i = 1; i <= md.getColumnCount(); i++) {
 					map.put(md.getColumnLabel(i), rs.getObject(i));
 				}

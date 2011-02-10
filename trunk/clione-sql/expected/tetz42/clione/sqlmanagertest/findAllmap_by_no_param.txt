@@ -1,27 +1,27 @@
 ArrayList[
-	HashMap{
+	LinkedHashMap{
 		"id": 0
-		"age": 35
 		"name": "Takao Kawada"
+		"age": 35
 	}
-	HashMap{
+	LinkedHashMap{
 		"id": 1
-		"age": 34
 		"name": "Takako Kawada"
+		"age": 34
 	}
-	HashMap{
+	LinkedHashMap{
 		"id": 2
-		"age": 2
 		"name": "Tao Kawada"
+		"age": 2
 	}
-	HashMap{
+	LinkedHashMap{
 		"id": 3
-		"age": 31
 		"name": "Hiromitsu Hara"
-	}
-	HashMap{
-		"id": 4
 		"age": 31
+	}
+	LinkedHashMap{
+		"id": 4
 		"name": "Hiroko Hara"
+		"age": 31
 	}
 ]
