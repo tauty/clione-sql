@@ -15,18 +15,14 @@
  */
 package tetz42.clione.exception;
 
-public class SQLFormatException extends RuntimeException {
+public class ClioneFormatException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3870960595183072663L;
 
-	public SQLFormatException(String msg) {
+	public ClioneFormatException(String msg) {
 		super(msg);
-	}
-	
-	public SQLFormatException(String msg, Throwable t) {
-		super(msg, t);
 	}
 }

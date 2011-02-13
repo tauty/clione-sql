@@ -18,7 +18,12 @@ package tetz42.clione;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
+import tetz42.clione.exception.ConnectionNotFoundException;
+import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.util.ParamMap;
 
 public class SQLManager {
@@ -54,9 +59,14 @@ public class SQLManager {
 	public static ParamMap params(Object obj) {
 		return params().object(obj);
 	}
-	
-	final Connection con;
-	
+
+	private final Connection con;
+	private HashSet<SQLExecutor> processingExecutorSet = new HashSet<SQLExecutor>();
+	private String resourceInfo;
+	private String executedSql;
+	private List<Object> executedParams;
+	private Object[] nullValues = null;
+
 	public SQLManager() {
 		this.con = null;
 	}
@@ -65,38 +75,93 @@ public class SQLManager {
 		this.con = con;
 	}
 
-	public SQLExecutor useFile(Class<?> clazz, String sqlFile){
-		InputStream in = clazz.getResourceAsStream(sqlFile);
-		if (in == null)
-			throw new NullPointerException(
-					"SQL File might not be found. file name:" + sqlFile
-							+ ", class:" + clazz.getName());
-		return new SQLExecutor(this.con(), in);
+	public SQLManager setNullValues(Object... nullValues) {
+		this.nullValues = nullValues;
+		return this;
 	}
-	
-	public SQLExecutor useFile(String sqlPath){
+
+	Object[] getNullValues() {
+		return nullValues;
+	}
+
+	void putExecutor(SQLExecutor executor) {
+		this.processingExecutorSet.add(executor);
+	}
+
+	void removeExecutor(SQLExecutor executor) {
+		this.processingExecutorSet.remove(executor);
+	}
+
+	void setInfo(String resourceInfo, String sql, List<Object> params) {
+		this.resourceInfo = resourceInfo;
+		this.executedSql = sql;
+		this.executedParams = params;
+	}
+
+	public String getInfo() {
+		return "sql:" + this.executedSql + ", params:" + this.executedParams
+				+ ", resource:" + this.resourceInfo;
+	}
+
+	public String getResourceInfo() {
+		return this.resourceInfo;
+	}
+
+	public String getSql() {
+		return this.executedSql;
+	}
+
+	public List<Object> getParams() {
+		return this.executedParams;
+	}
+
+	public void closeStatement() throws SQLException {
+		ArrayList<SQLExecutor> list = new ArrayList<SQLExecutor>(
+				processingExecutorSet);
+		for (SQLExecutor executor : list)
+			executor.closeStatement();
+	}
+
+	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
+		InputStream in = clazz.getResourceAsStream(sqlFile);
+		resourceInfo = "SQL file name:" + sqlFile + ", class:"
+				+ clazz.getName();
+		if (in == null)
+			throw new SQLFileNotFoundException("SQL File might not be found. "
+					+ resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, in);
+		sqlExecutor.setResourceInfo(resourceInfo);
+		return sqlExecutor;
+	}
+
+	public SQLExecutor useFile(String sqlPath) {
 		InputStream in = getClass().getClassLoader().getResourceAsStream(
 				sqlPath);
+		resourceInfo = "SQL file path:" + sqlPath;
 		if (in == null)
-			throw new NullPointerException("SQL File might not be found. path:"
-					+ sqlPath);
-		return new SQLExecutor(this.con(), in);
+			throw new SQLFileNotFoundException("SQL File might not be found. "
+					+ resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, in);
+		sqlExecutor.setResourceInfo(resourceInfo);
+		return sqlExecutor;
 	}
-	
-	public SQLExecutor useStream(InputStream in){
+
+	public SQLExecutor useStream(InputStream in) {
 		if (in == null)
 			throw new NullPointerException("The in parameter is null.");
-		return new SQLExecutor(this.con(), in);
+		resourceInfo = null;
+		return new SQLExecutor(this, in);
 	}
-	
+
 	public Connection con() {
 		Connection con = this.con != null ? this.con : tcon.get();
 		if (con == null)
-			throw new NullPointerException("No connection is available!");
+			throw new ConnectionNotFoundException("No connection is available!");
 		return con;
 	}
 
 	public void closeConnection() throws SQLException {
+		closeStatement();
 		Connection con = con();
 		if (con != null)
 			con.close();

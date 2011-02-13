@@ -34,6 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.SQLManager;
+import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.exception.WrapException;
 
 public class SQLManagerTest {
@@ -68,7 +69,7 @@ public class SQLManagerTest {
 		try {
 			assertThat(manager.con(), is(this.con));
 			fail();
-		} catch (NullPointerException e) {
+		} catch (ConnectionNotFoundException e) {
 		}
 		assertNull(getThreadConnection());
 
