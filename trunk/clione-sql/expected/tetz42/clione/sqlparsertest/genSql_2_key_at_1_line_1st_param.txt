@@ -3,5 +3,5 @@ SELECT
 FROM
     EMPLOYEES
 WHERE
-	ABC IN (?, /* IKA */'ika')
-	AND DEF IN (?, /* IKA */50)
+	ABC IN (?, /* ?IKA */'ika')
+	AND DEF IN (?, /* ?IKA */50)

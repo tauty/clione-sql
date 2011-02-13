@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import tetz42.clione.exception.SQLFormatException;
+import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.GetBackReader;
 import tetz42.clione.node.LineNode;
@@ -36,6 +36,12 @@ public class SQLParser {
 	private static final Pattern ptn = Pattern.compile("\\A(\\s+).*",
 			Pattern.DOTALL);
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/");
+
+	private String resourceInfo = null;
+
+	public SQLParser(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
+	}
 
 	public List<LineNode> parse(InputStream in) {
 		InputStreamReader ir = new InputStreamReader(in);
@@ -53,10 +59,11 @@ public class SQLParser {
 				in.close();
 			}
 		} catch (IOException e) {
-			throw new WrapException(e.getMessage(), e);
+			throw new WrapException(e.getMessage() + CRLF + resourceInfo, e);
 		}
 		if (this.commentDepth != 0)
-			throw new SQLFormatException("SQL Format Error: too match '/*'");
+			throw new ClioneFormatException("SQL Format Error: too match '/*'"
+					+ CRLF + resourceInfo);
 		return resultList;
 	}
 
@@ -132,8 +139,9 @@ public class SQLParser {
 					continue; // '&' means parameter is not replaced.
 
 				if (end >= block.sql.length()) {
-					throw new SQLFormatException(key
-							+ " must have default element.\n" + line);
+					throw new ClioneFormatException(key
+							+ " must have default element." + CRLF + line
+							+ CRLF + resourceInfo);
 				}
 				if (block.sql.charAt(end) == '\'') {
 					pos = replace(block, begin,
@@ -144,15 +152,17 @@ public class SQLParser {
 				} else if (isWordChar(block.sql.charAt(end))) {
 					pos = replace(block, begin, wordEnd(block.sql, end), "?");
 				} else {
-					throw new SQLFormatException(key
-							+ " must have default element.\n" + line);
+					throw new ClioneFormatException(key
+							+ " must have default element." + CRLF + line
+							+ CRLF + resourceInfo);
 				}
 
 			} else if (this.commentDepth != 0) {
 				this.commentDepth--;
 			} else {
-				throw new SQLFormatException("SQL Format Error: too much '*/'"
-						+ CRLF + line + CRLF + pos);
+				throw new ClioneFormatException("SQL Format Error: too much '*/'"
+						+ CRLF + line + CRLF + "position:" + pos + CRLF
+						+ resourceInfo);
 			}
 		}
 		return block;

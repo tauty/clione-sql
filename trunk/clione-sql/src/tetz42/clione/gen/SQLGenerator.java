@@ -38,8 +38,19 @@ public class SQLGenerator {
 
 	public String sql;
 	public ArrayList<Object> params;
+	private String resourceInfo;
+	private final Object[] nullValues;
 
-	public String genSql(Map<String, Object> paramMap, List<LineNode> lineTreeList) {
+	public SQLGenerator(Object[] nullValues) {
+		this.nullValues = nullValues;
+	}
+
+	public void setResourceInfo(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
+	}
+
+	public String genSql(Map<String, Object> paramMap,
+			List<LineNode> lineTreeList) {
 		if (paramMap == null)
 			paramMap = new ParamMap();
 		else if (!ParamMap.class.isInstance(paramMap)) {
@@ -89,13 +100,18 @@ public class SQLGenerator {
 			String key = block.keys.get(i);
 			Object val = paramMap.get(key);
 			Collection<?> vals = convToCol(val);
-			boolean isNoParam = val == null || (vals != null && vals.size() == 0);
+			boolean isNoParam = isNull(val, vals);
 			if (isNoParam) {
 				if (key.startsWith("$") || key.startsWith("&"))
 					return null;
 				if (key.startsWith("@"))
 					throw new ParameterNotFoundException("The parameter, '"
-							+ key + "', is required.");
+							+ key + "', is required." + CRLF + resourceInfo);
+				if (vals != null && vals.size() == 0 && !key.startsWith("&")
+						&& !key.startsWith("?"))
+					throw new ParameterNotFoundException("Default parameter, '"
+							+ key + "', must not be empty list." + CRLF
+							+ resourceInfo);
 			}
 
 			// '&' means without replace parameter.
@@ -103,7 +119,7 @@ public class SQLGenerator {
 				continue;
 
 			int begin = subSql.indexOf("?", pos);
-			if (isNoParam) {
+			if (isNoParam && key.startsWith("?")) {
 				String defVal = block.vals.get(i);
 				if (defVal.endsWith(")")) {
 					subSql.replace(begin - 1, begin + 2, block.vals.get(i));
@@ -114,17 +130,33 @@ public class SQLGenerator {
 				}
 			} else {
 				if (vals != null) {
+					// List parameter
 					String questions = genQuestions(vals);
 					subSql.replace(begin, begin + 1, questions);
 					pos = begin + questions.length();
 					subParams.addAll(vals);
 				} else {
+					// Atom parameter
 					pos = begin + 1;
 					subParams.add(val);
 				}
 			}
 		}
 		return subSql;
+	}
+
+	private boolean isNull(Object val, Collection<?> vals) {
+		if (val == null)
+			return true;
+		if (nullValues != null) {
+			for (Object nullValue : nullValues) {
+				if (val.equals(nullValue))
+					return true;
+			}
+		}
+		if (vals != null && vals.size() == 0)
+			return true;
+		return false;
 	}
 
 	private String removeFirstDelimiter(StringBuilder subSb) {

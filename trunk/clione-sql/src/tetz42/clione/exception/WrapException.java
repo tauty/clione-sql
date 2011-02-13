@@ -23,7 +23,7 @@ public class WrapException extends RuntimeException {
 	private static final long serialVersionUID = -3510290222674824784L;
 
 	public WrapException(Throwable t) {
-		super(t);
+		super(t.getMessage(), t);
 	}
 
 	public WrapException(String msg, Throwable t) {

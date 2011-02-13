@@ -41,7 +41,7 @@ public class IOUtil {
 					in.close();
 			}
 		} catch (IOException e) {
-			throw new WrapException(e.getMessage(), e);
+			throw new WrapException(e);
 		}
 	}
 

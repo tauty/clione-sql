@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.exception.SQLFormatException;
+import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.parsar.Caller;
 import tetz42.clione.parsar.SQLParser;
 
@@ -63,7 +63,7 @@ public class SQLParserTest {
 
 	@Test
 	public void wordEnd_1() {
-		SQLParser parser = new SQLParser();
+		SQLParser parser = new SQLParser("");
 
 		StringBuilder sb = new StringBuilder().append("tako ");
 		assertThat(Caller.wordEnd(parser, sb, 0), is(4));
@@ -130,14 +130,14 @@ public class SQLParserTest {
 				"genSql_ireco_comment2");
 	}
 
-	@Test(expected = SQLFormatException.class)
+	@Test(expected = ClioneFormatException.class)
 	public void genSql_wrong_comment() throws IOException, SQLException {
 		// /* - */ \n */のケース
 		sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/WrongCommentSelect.sql"));
 	}
 
-	@Test(expected = SQLFormatException.class)
+	@Test(expected = ClioneFormatException.class)
 	public void genSql_wrong_comment2() throws IOException, SQLException {
 		// /* - \n /* - */のケース
 		sqlManager(con).useStream(

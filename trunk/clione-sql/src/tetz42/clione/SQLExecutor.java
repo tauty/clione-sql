@@ -5,7 +5,6 @@ import static tetz42.clione.util.ClioneUtil.*;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -23,20 +22,35 @@ import tetz42.clione.parsar.SQLParser;
 
 public class SQLExecutor {
 
-	final Connection con;
-	final List<LineNode> lineTreeList;
-	SQLGenerator sqlGenerator;
-	private PreparedStatement stmt;
-	private ResultSet rs;
+	private final SQLManager manager;
+	private final int hashValue;
+	final SQLGenerator sqlGenerator;
+	private String resourceInfo = null;
 
-	SQLExecutor(Connection con, InputStream in) {
-		this.con = con;
-		this.lineTreeList = new SQLParser().parse(in);
-		this.sqlGenerator = new SQLGenerator();
+	final List<LineNode> lineTreeList;
+
+	PreparedStatement stmt;
+	ResultSet rs;
+
+	SQLExecutor(SQLManager manager, InputStream in) {
+		this.manager = manager;
+		this.lineTreeList = new SQLParser(resourceInfo).parse(in);
+		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
+		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
+	}
+
+	void setResourceInfo(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
+		this.sqlGenerator.setResourceInfo(resourceInfo);
 	}
 
 	public Map<String, Object> find() throws SQLException {
 		return this.find((Map<String, Object>) null);
+	}
+
+	@Override
+	public int hashCode() {
+		return hashValue;
 	}
 
 	public Map<String, Object> find(Object paramObj) throws SQLException {
@@ -63,7 +77,6 @@ public class SQLExecutor {
 			throws SQLException {
 
 		ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		ResultSet rs = null;
 		try {
 			stmt = this.genStmt(paramMap);
 			rs = stmt.executeQuery();
@@ -195,6 +208,7 @@ public class SQLExecutor {
 			stmt.close();
 			stmt = null;
 		}
+		manager.removeExecutor(this);
 	}
 
 	public String getExecutedSql() {
@@ -206,16 +220,19 @@ public class SQLExecutor {
 	}
 
 	public String genSql() {
-		return sqlGenerator.genSql((Map<String, Object>) null, lineTreeList);
+		return genSql(null);
 	}
 
 	public String genSql(Map<String, Object> paramMap) {
-		return sqlGenerator.genSql(paramMap, lineTreeList);
+		String sql = sqlGenerator.genSql(paramMap, lineTreeList);
+		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
+		return sql;
 	}
 
-	private PreparedStatement genStmt(Map<String, Object> paramMap)
+	PreparedStatement genStmt(Map<String, Object> paramMap)
 			throws SQLException {
-		stmt = con.prepareStatement(genSql(paramMap));
+		stmt = manager.con().prepareStatement(genSql(paramMap));
+		manager.putExecutor(this);
 		int i = 1;
 		for (Object param : this.sqlGenerator.params) {
 			stmt.setObject(i++, param);

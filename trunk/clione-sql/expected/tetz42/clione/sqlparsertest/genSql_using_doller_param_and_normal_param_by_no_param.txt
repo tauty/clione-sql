@@ -3,4 +3,4 @@ SELECT
 FROM
     EMPLOYEES
 WHERE
-EFG = /* TAKO */'tako'
+EFG = /* ?TAKO */'tako'
