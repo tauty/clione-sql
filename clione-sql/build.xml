@@ -16,6 +16,7 @@
 	<property name="version" value="0.2.2" />
 	<property name="src" location="./src" />
 	<property name="classes" location="./classes" />
+	<property name="lib" location="./lib" />
 
 	<target name="mkjar">
 		<mkdir dir="${classes}" />
@@ -29,8 +30,11 @@
 
 	<target name="compile">
 		<javac srcdir="${src}" destdir="${classes}">
-			<classpath path="C:/tool/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.7_1.3.7.v201008311427/appengine-java-sdk-1.3.7/lib/shared/geronimo-servlet_2.5_spec-1.2.jar
-" />
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
 		</javac>
 	</target>
 
