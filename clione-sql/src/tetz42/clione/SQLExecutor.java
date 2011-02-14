@@ -110,7 +110,7 @@ public class SQLExecutor {
 	public <T> T find(Class<T> entityClass, Map<String, Object> paramMap)
 			throws SQLException {
 		try {
-			for (T entity : iteration(entityClass, paramMap)) {
+			for (T entity : each(entityClass, paramMap)) {
 				return entity;
 			}
 			return null;
@@ -138,7 +138,7 @@ public class SQLExecutor {
 
 		ArrayList<T> list = new ArrayList<T>();
 		try {
-			for (T entity : iteration(entityClass, paramMap)) {
+			for (T entity : each(entityClass, paramMap)) {
 				list.add(entity);
 			}
 			return list;
@@ -152,7 +152,7 @@ public class SQLExecutor {
 		}
 	}
 
-	public <T> SQLIterator<T> iteration(Class<T> entityClass,
+	public <T> SQLIterator<T> each(Class<T> entityClass,
 			Map<String, Object> paramMap) throws SQLException {
 		return SQLIterator.genIterator(this, entityClass, paramMap);
 	}
