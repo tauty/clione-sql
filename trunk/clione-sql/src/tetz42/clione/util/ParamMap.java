@@ -49,7 +49,7 @@ public class ParamMap extends HashMap<String, Object> {
 	public ParamMap object(Object obj) {
 		if (obj == null)
 			return null;
-		else if (obj instanceof Map)
+		else if (obj instanceof Map<?, ?>)
 			map((Map<?, ?>) obj);
 		else
 			bean(obj);

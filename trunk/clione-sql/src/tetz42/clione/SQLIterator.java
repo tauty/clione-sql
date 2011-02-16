@@ -55,7 +55,10 @@ public class SQLIterator<T> implements Iterable<T> {
 				try {
 					return executor.rs.next();
 				} catch (SQLException e) {
-					throw new SQLRuntimeException(e);
+					throw new SQLRuntimeException(e.getMessage() + "\nsql -> "
+							+ executor.sqlGenerator.sql + "\nparams -> "
+							+ executor.sqlGenerator.params + "\nresource -> "
+							+ executor.resourceInfo, e);
 				}
 			}
 
@@ -78,9 +81,10 @@ public class SQLIterator<T> implements Iterable<T> {
 					}
 					return instance;
 				} catch (SQLException e) {
-					throw new SQLRuntimeException(e.getMessage() + "\n\tsql:"
-							+ executor.sqlGenerator.sql + "\n\t"
-							+ executor.sqlGenerator.params, e);
+					throw new SQLRuntimeException(e.getMessage() + "\nsql -> "
+							+ executor.sqlGenerator.sql + "\nparams -> "
+							+ executor.sqlGenerator.params + "\nresource -> "
+							+ executor.resourceInfo, e);
 				} catch (InstantiationException e) {
 					throw new WrapException(clazz.getSimpleName()
 							+ " must have default constructor.", e);
@@ -107,7 +111,10 @@ public class SQLIterator<T> implements Iterable<T> {
 			}
 			return (T) map;
 		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
+			throw new SQLRuntimeException(e.getMessage() + "\nsql -> "
+					+ executor.sqlGenerator.sql + "\nparams -> "
+					+ executor.sqlGenerator.params + "\nresource -> "
+					+ executor.resourceInfo, e);
 		}
 	}
 

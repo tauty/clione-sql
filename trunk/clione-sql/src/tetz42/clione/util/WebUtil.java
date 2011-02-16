@@ -20,8 +20,7 @@ public class WebUtil {
 	public static ParamMap convReqParams(ServletRequest req) {
 		ParamMap map = new ParamMap();
 
-		@SuppressWarnings("rawtypes")
-		Enumeration names = req.getParameterNames();
+		Enumeration<?> names = req.getParameterNames();
 
 		while (names.hasMoreElements()) {
 			String name = String.valueOf(names.nextElement());
@@ -37,8 +36,7 @@ public class WebUtil {
 	public static ParamMap convReqAttrs(ServletRequest req) {
 		ParamMap map = new ParamMap();
 
-		@SuppressWarnings("rawtypes")
-		Enumeration names = req.getAttributeNames();
+		Enumeration<?> names = req.getAttributeNames();
 
 		while (names.hasMoreElements()) {
 			String name = String.valueOf(names.nextElement());
@@ -58,8 +56,7 @@ public class WebUtil {
 	public static ParamMap convSessions(HttpSession session) {
 		ParamMap map = new ParamMap();
 		
-		@SuppressWarnings("rawtypes")
-		Enumeration names = session.getAttributeNames();
+		Enumeration<?> names = session.getAttributeNames();
 		
 		while (names.hasMoreElements()) {
 			String name = String.valueOf(names.nextElement());
