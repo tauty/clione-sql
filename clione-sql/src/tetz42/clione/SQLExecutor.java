@@ -19,7 +19,7 @@ public class SQLExecutor {
 	private final SQLManager manager;
 	private final int hashValue;
 	final SQLGenerator sqlGenerator;
-	private String resourceInfo = null;
+	String resourceInfo = null;
 
 	final List<LineNode> lineTreeList;
 

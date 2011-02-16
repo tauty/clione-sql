@@ -174,7 +174,7 @@ public class SQLGenerator {
 				list.add(Array.get(val, i));
 			}
 			return list;
-		} else if (val instanceof Collection)
+		} else if (val instanceof Collection<?>)
 			return (Collection<?>) val;
 		return null;
 	}
