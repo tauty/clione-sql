@@ -80,8 +80,7 @@ public class SQLParser {
 			if (indent.length() < curIndent.length()) {
 				br.backLine();
 				if (block == null) {
-					// buildからの呼び出し時のループ初回以外では発生しない。
-					// curIndentを切り替えてやり直し。
+					// performed only 1st loop time.
 					indent = curIndent;
 					continue;
 				}
