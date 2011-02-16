@@ -1,0 +1,10 @@
+Table 'test.person' doesn't exist
+sql -> SELECT
+        *
+    FROM
+        person
+    WHERE
+        age = ?
+        AND name LIKE ?
+params -> [31, %k%]
+resource -> SQL file name:exesql/WrongSelect.sql, class:tetz42.clione.SQLExecutorTest$2

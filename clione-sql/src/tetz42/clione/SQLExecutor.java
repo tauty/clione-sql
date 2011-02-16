@@ -60,10 +60,10 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(
-					e.getMessage() + "\n\tsql:" + this.sqlGenerator.sql
-							+ "\n\t" + this.sqlGenerator.params,
-					e.getSQLState(), e.getErrorCode(), e);
+			throw new SQLException(e.getMessage() + "\nsql -> "
+					+ this.sqlGenerator.sql + "\nparams -> "
+					+ this.sqlGenerator.params + "\nresource -> "
+					+ resourceInfo, e);
 		} finally {
 			closeStatement();
 		}
@@ -89,10 +89,10 @@ public class SQLExecutor {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(
-					e.getMessage() + "\n\tsql:" + this.sqlGenerator.sql
-							+ "\n\t" + this.sqlGenerator.params,
-					e.getSQLState(), e.getErrorCode(), e);
+			throw new SQLException(e.getMessage() + "\nsql -> "
+					+ this.sqlGenerator.sql + "\nparams -> "
+					+ this.sqlGenerator.params + "\nresource -> "
+					+ resourceInfo, e);
 		} finally {
 			this.closeStatement();
 		}
@@ -115,10 +115,10 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(
-					e.getMessage() + "\n\tsql:" + this.sqlGenerator.sql
-							+ "\n\t" + this.sqlGenerator.params,
-					e.getSQLState(), e.getErrorCode(), e);
+			throw new SQLException(e.getMessage() + "\nsql -> "
+					+ this.sqlGenerator.sql + "\nparams -> "
+					+ this.sqlGenerator.params + "\nresource -> "
+					+ resourceInfo, e);
 		} finally {
 			this.closeStatement();
 		}
@@ -136,17 +136,17 @@ public class SQLExecutor {
 	public <T> List<T> findAll(Class<T> entityClass,
 			Map<String, Object> paramMap) throws SQLException {
 
-		ArrayList<T> list = new ArrayList<T>();
 		try {
+			ArrayList<T> list = new ArrayList<T>();
 			for (T entity : each(entityClass, paramMap)) {
 				list.add(entity);
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(
-					e.getMessage() + "\n\tsql:" + this.sqlGenerator.sql
-							+ "\n\t" + this.sqlGenerator.params,
-					e.getSQLState(), e.getErrorCode(), e);
+			throw new SQLException(e.getMessage() + "\nsql -> "
+					+ this.sqlGenerator.sql + "\nparams -> "
+					+ this.sqlGenerator.params + "\nresource -> "
+					+ resourceInfo, e);
 		} finally {
 			this.closeStatement();
 		}
@@ -170,9 +170,10 @@ public class SQLExecutor {
 			stmt = this.genStmt(paramMap);
 			return stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(
-					e.getMessage() + "\n\tsql:" + this.sqlGenerator.sql
-							+ "\n\t" + this.sqlGenerator.params, e);
+			throw new SQLException(e.getMessage() + "\nsql -> "
+					+ this.sqlGenerator.sql + "\nparams -> "
+					+ this.sqlGenerator.params + "\nresource -> "
+					+ resourceInfo, e);
 		} finally {
 			this.closeStatement();
 		}
