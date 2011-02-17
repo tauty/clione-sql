@@ -1,6 +1,7 @@
 package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
+import static tetz42.clione.util.ClioneUtil.*;
 
 import java.io.InputStream;
 import java.sql.PreparedStatement;
@@ -60,10 +61,7 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage() + "\nsql -> "
-					+ this.sqlGenerator.sql + "\nparams -> "
-					+ this.sqlGenerator.params + "\nresource -> "
-					+ resourceInfo, e);
+			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			closeStatement();
 		}
@@ -89,10 +87,7 @@ public class SQLExecutor {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage() + "\nsql -> "
-					+ this.sqlGenerator.sql + "\nparams -> "
-					+ this.sqlGenerator.params + "\nresource -> "
-					+ resourceInfo, e);
+			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -115,10 +110,7 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage() + "\nsql -> "
-					+ this.sqlGenerator.sql + "\nparams -> "
-					+ this.sqlGenerator.params + "\nresource -> "
-					+ resourceInfo, e);
+			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -143,10 +135,7 @@ public class SQLExecutor {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage() + "\nsql -> "
-					+ this.sqlGenerator.sql + "\nparams -> "
-					+ this.sqlGenerator.params + "\nresource -> "
-					+ resourceInfo, e);
+			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -170,10 +159,7 @@ public class SQLExecutor {
 			stmt = this.genStmt(paramMap);
 			return stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage() + "\nsql -> "
-					+ this.sqlGenerator.sql + "\nparams -> "
-					+ this.sqlGenerator.params + "\nresource -> "
-					+ resourceInfo, e);
+			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -191,12 +177,20 @@ public class SQLExecutor {
 		manager.removeExecutor(this);
 	}
 
-	public String getExecutedSql() {
+	public String getSQLInfo() {
+		return genSQLInfo(getSql(), getParams(), getResourceInfo());
+	}
+
+	public String getSql() {
 		return this.sqlGenerator.sql;
 	}
 
-	public List<Object> getExecutedParams() {
+	public List<Object> getParams() {
 		return this.sqlGenerator.params;
+	}
+
+	public String getResourceInfo() {
+		return this.resourceInfo;
 	}
 
 	public String genSql() {

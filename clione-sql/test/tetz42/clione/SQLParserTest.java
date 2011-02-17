@@ -79,9 +79,9 @@ public class SQLParserTest {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_by_sample");
 	}
 
@@ -90,7 +90,7 @@ public class SQLParserTest {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/EmptyLineSelect.sql"));
 		man.genSql();
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_empty_line");
 	}
 
@@ -100,7 +100,7 @@ public class SQLParserTest {
 				getClass().getResourceAsStream("sql/JoinLineUpdate.sql"));
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_join_line");
 	}
 
@@ -113,7 +113,7 @@ public class SQLParserTest {
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
 		// TODO 本当はこのケースはWHERE句ごと消したい。genSqlでコメントを無視する方法は、今後の課題。
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_ireco_comment");
 	}
 
@@ -126,7 +126,7 @@ public class SQLParserTest {
 		System.out.println(dumper(man.lineTreeList));
 		man.genSql(new HashMap<String, Object>());
 		// TODO 本当はこのケースはWHERE句ごと消したい。genSqlでコメントを無視する方法は、今後の課題。
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_ireco_comment2");
 	}
 
@@ -151,10 +151,10 @@ public class SQLParserTest {
 				"sql/DollAndNormal.sql");
 
 		man.genSql(params("TAKO", "octpus"));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_using_doller_param_and_normal_param");
 		man.genSql();
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_using_doller_param_and_normal_param_by_no_param");
 	}
 
@@ -164,7 +164,7 @@ public class SQLParserTest {
 				"sql/NormalComment.sql");
 
 		man.genSql(params("TAKO", "octpus"));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_normal_comment");
 		assertEqualsWithFile(man.lineTreeList, getClass(),
 				"genSql_normal_comment_lineTreeList");
@@ -176,10 +176,10 @@ public class SQLParserTest {
 				.useFile(getClass(), "sql/RemoveRoot.sql");
 
 		man.genSql(params("ROOT", "octpus"));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_remove_root_1_param");
 		man.genSql();
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_remove_root_no_param");
 	}
 
@@ -190,32 +190,32 @@ public class SQLParserTest {
 
 		man.genSql(params("TAKO", "octopus").$("IKA", "squid"));
 		System.out.println(dumper(man.lineTreeList));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_2_key_at_1_line_2param");
-		assertThat(man.getExecutedParams().size(), is(4));
-		assertThat((String) man.getExecutedParams().get(0), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(1), is("squid"));
-		assertThat((String) man.getExecutedParams().get(2), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(3), is("squid"));
+		assertThat(man.getParams().size(), is(4));
+		assertThat((String) man.getParams().get(0), is("octopus"));
+		assertThat((String) man.getParams().get(1), is("squid"));
+		assertThat((String) man.getParams().get(2), is("octopus"));
+		assertThat((String) man.getParams().get(3), is("squid"));
 
 		man.genSql(params("TAKO", "octopus"));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_2_key_at_1_line_1st_param");
-		assertThat(man.getExecutedParams().size(), is(2));
-		assertThat((String) man.getExecutedParams().get(0), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(1), is("octopus"));
+		assertThat(man.getParams().size(), is(2));
+		assertThat((String) man.getParams().get(0), is("octopus"));
+		assertThat((String) man.getParams().get(1), is("octopus"));
 
 		man.genSql(params("IKA", "squid"));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_2_key_at_1_line_2nd_param");
-		assertThat(man.getExecutedParams().size(), is(2));
-		assertThat((String) man.getExecutedParams().get(0), is("squid"));
-		assertThat((String) man.getExecutedParams().get(1), is("squid"));
+		assertThat(man.getParams().size(), is(2));
+		assertThat((String) man.getParams().get(0), is("squid"));
+		assertThat((String) man.getParams().get(1), is("squid"));
 
 		man.genSql();
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_2_key_at_1_line_no_param");
-		assertThat(man.getExecutedParams().size(), is(0));
+		assertThat(man.getParams().size(), is(0));
 	}
 
 }

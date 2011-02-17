@@ -15,6 +15,7 @@
  */
 package tetz42.clione.io;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -22,7 +23,6 @@ import java.util.regex.Pattern;
 
 public class GetBackReader extends BufferedReader {
 
-	public static final String CRLF = System.getProperty("line.separator");
 	private static final Pattern joinPtn = Pattern.compile("--\\s*\\z");
 	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
 
