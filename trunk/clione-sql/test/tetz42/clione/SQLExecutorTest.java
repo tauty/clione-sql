@@ -65,9 +65,9 @@ public class SQLExecutorTest {
 		List<Person> people = exe
 				.findAll(Person.class, new ParamDto(31, "%H%"));
 		assertEqualsWithFile(people, getClass(), "findAll_by_dto_param");
-		assertEqualsWithFile(exe.getExecutedSql(), getClass(),
+		assertEqualsWithFile(exe.getSql(), getClass(),
 				"findAll_by_dto_param-sql");
-		assertEqualsWithFile(exe.getExecutedParams(), getClass(),
+		assertEqualsWithFile(exe.getParams(), getClass(),
 				"findAll_by_dto_param-params");
 	}
 

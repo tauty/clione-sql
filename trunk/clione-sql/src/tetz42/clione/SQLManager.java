@@ -15,6 +15,7 @@
  */
 package tetz42.clione;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -98,11 +99,10 @@ public class SQLManager {
 		this.executedParams = params;
 	}
 
-	public String getInfo() {
-		return "sql:" + this.executedSql + ", params:" + this.executedParams
-				+ ", resource:" + this.resourceInfo;
+	public String getSQLInfo() {
+		return genSQLInfo(getSql(), getParams(), getResourceInfo());
 	}
-
+	
 	public String getResourceInfo() {
 		return this.resourceInfo;
 	}

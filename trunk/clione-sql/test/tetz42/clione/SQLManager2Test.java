@@ -84,9 +84,9 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(),
 				"sql2/Required.sql");
 		man.genSql(params("REQUIRED", "CLIONE"));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_required_by_required_param");
 	}
 
@@ -95,9 +95,9 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(),
 				"sql2/NotReplace.sql");
 		man.genSql(params("NOT_REPLACE", Boolean.TRUE));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_notreplace_by_1_param");
 	}
 
@@ -107,9 +107,9 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(),
 				"sql2/NotReplace.sql");
 		man.genSql();
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_notreplace_by_no_param");
 	}
 
@@ -118,11 +118,11 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
 
 		man.genSql(params("FISH", 10));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_1_param");
-		assertThat(man.getExecutedParams().size(), is(2));
-		assertThat((Integer) man.getExecutedParams().get(0), is(10));
-		assertThat((Integer) man.getExecutedParams().get(1), is(10));
+		assertThat(man.getParams().size(), is(2));
+		assertThat((Integer) man.getParams().get(0), is(10));
+		assertThat((Integer) man.getParams().get(1), is(10));
 	}
 
 	@Test
@@ -132,15 +132,15 @@ public class SQLManager2Test {
 
 		man.genSql(params("FISH",
 				Arrays.asList("octopus", "squid", "sea cucumber")));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_list_param");
-		assertThat(man.getExecutedParams().size(), is(6));
-		assertThat((String) man.getExecutedParams().get(0), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(1), is("squid"));
-		assertThat((String) man.getExecutedParams().get(2), is("sea cucumber"));
-		assertThat((String) man.getExecutedParams().get(3), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(4), is("squid"));
-		assertThat((String) man.getExecutedParams().get(5), is("sea cucumber"));
+		assertThat(man.getParams().size(), is(6));
+		assertThat((String) man.getParams().get(0), is("octopus"));
+		assertThat((String) man.getParams().get(1), is("squid"));
+		assertThat((String) man.getParams().get(2), is("sea cucumber"));
+		assertThat((String) man.getParams().get(3), is("octopus"));
+		assertThat((String) man.getParams().get(4), is("squid"));
+		assertThat((String) man.getParams().get(5), is("sea cucumber"));
 	}
 
 	@Test
@@ -150,15 +150,15 @@ public class SQLManager2Test {
 
 		man.genSql(params("FISH", new String[] { "octopus", "squid",
 				"sea cucumber" }));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_ary_param");
-		assertThat(man.getExecutedParams().size(), is(6));
-		assertThat((String) man.getExecutedParams().get(0), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(1), is("squid"));
-		assertThat((String) man.getExecutedParams().get(2), is("sea cucumber"));
-		assertThat((String) man.getExecutedParams().get(3), is("octopus"));
-		assertThat((String) man.getExecutedParams().get(4), is("squid"));
-		assertThat((String) man.getExecutedParams().get(5), is("sea cucumber"));
+		assertThat(man.getParams().size(), is(6));
+		assertThat((String) man.getParams().get(0), is("octopus"));
+		assertThat((String) man.getParams().get(1), is("squid"));
+		assertThat((String) man.getParams().get(2), is("sea cucumber"));
+		assertThat((String) man.getParams().get(3), is("octopus"));
+		assertThat((String) man.getParams().get(4), is("squid"));
+		assertThat((String) man.getParams().get(5), is("sea cucumber"));
 	}
 
 	@Test
@@ -166,9 +166,9 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
 
 		man.genSql();
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_no_param");
-		assertThat(man.getExecutedParams().size(), is(0));
+		assertThat(man.getParams().size(), is(0));
 	}
 
 	@Test
@@ -177,9 +177,9 @@ public class SQLManager2Test {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
 
 		man.genSql(params("FISH", Arrays.asList()));
-		assertEqualsWithFile(man.getExecutedSql(), getClass(),
+		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_empty_list_param");
-		assertThat(man.getExecutedParams().size(), is(0));
+		assertThat(man.getParams().size(), is(0));
 	}
 
 	@Test
@@ -189,11 +189,11 @@ public class SQLManager2Test {
 		SQLExecutor exec = man.useFile(getClass(), "sql2/In.sql");
 
 		exec.genSql(params("FISH", new String[] {}));
-		assertEqualsWithFile(exec.getExecutedSql(), getClass(),
+		assertEqualsWithFile(exec.getSql(), getClass(),
 				"genSql_replacein_by_empty_ary_param");
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_empty_ary_param");
-		assertThat(exec.getExecutedParams().size(), is(0));
+		assertThat(exec.getParams().size(), is(0));
 	}
 
 	@Test(expected = ClioneFormatException.class)

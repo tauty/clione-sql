@@ -258,9 +258,9 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(), "genSql_by_sample");
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
 	}
 
 	@Test
@@ -268,9 +268,9 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(), "genSql_by_sample");
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
 	}
 
 	@Test
@@ -279,9 +279,9 @@ public class SQLManagerTest {
 				"sql/Sample.sql"));
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(), "genSql_by_sample");
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
 	}
 
 	@Test
@@ -291,9 +291,9 @@ public class SQLManagerTest {
 				getClass().getResourceAsStream("sql/Sample.sql"));
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
-		System.out.println(man.getExecutedSql());
-		System.out.println(man.getExecutedParams());
-		assertEqualsWithFile(man.getExecutedSql(), getClass(), "genSql_by_sample");
+		System.out.println(man.getSql());
+		System.out.println(man.getParams());
+		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
 	}
 
 	@Test(expected = WrapException.class)

@@ -15,8 +15,8 @@
  */
 package tetz42.clione.parsar;
 
-import static tetz42.clione.io.GetBackReader.*;
 import static tetz42.clione.util.ParamMap.*;
+import static tetz42.clione.util.ClioneUtil.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,18 +150,22 @@ public class SQLParser {
 							block.sql.indexOf(")", end + 1) + 1, "(?)");
 				} else if (isWordChar(block.sql.charAt(end))) {
 					pos = replace(block, begin, wordEnd(block.sql, end), "?");
+				} else if (!key.startsWith("?")) {
+					// do not have default value
+					pos = replace(block, begin, end, "?");
 				} else {
-					throw new ClioneFormatException(key
-							+ " must have default element." + CRLF + line
-							+ CRLF + resourceInfo);
+					throw new ClioneFormatException(joinByCrlf(key
+							+ " must have default value as follows:", "\t..."
+							+ key + "'DEFAULT_VALUE'", "wrong part:", line,
+							resourceInfo));
 				}
 
 			} else if (this.commentDepth != 0) {
 				this.commentDepth--;
 			} else {
-				throw new ClioneFormatException("SQL Format Error: too much '*/'"
-						+ CRLF + line + CRLF + "position:" + pos + CRLF
-						+ resourceInfo);
+				throw new ClioneFormatException(
+						"SQL Format Error: too much '*/'" + CRLF + line + CRLF
+								+ "position:" + pos + CRLF + resourceInfo);
 			}
 		}
 		return block;

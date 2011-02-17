@@ -6,11 +6,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import tetz42.clione.exception.UnsupportedTypeException;
 import tetz42.clione.io.IOUtil;
 
 public class ClioneUtil {
+
+	public static final String CRLF = System.getProperty("line.separator");
+
+	public static String joinByCrlf(Object... objs) {
+		if (objs == null || objs.length == 0)
+			return "";
+		StringBuilder sb = new StringBuilder().append(objs[0]);
+		for (int i = 1; i < objs.length; i++)
+			sb.append(CRLF).append(objs[i]);
+		return sb.toString();
+	}
+
+	public static String genSQLInfo(String sql, List<Object> params,
+			String resourceInfo) {
+		return joinByCrlf("--- sql ---", sql, "--- params ---", params,
+				"--- resource ---", resourceInfo);
+	}
 
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
 			throws SQLException {

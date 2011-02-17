@@ -15,7 +15,7 @@
  */
 package tetz42.clione.gen;
 
-import static tetz42.clione.io.GetBackReader.*;
+import static tetz42.clione.util.ClioneUtil.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
