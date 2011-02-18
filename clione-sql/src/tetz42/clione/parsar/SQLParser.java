@@ -138,11 +138,17 @@ public class SQLParser {
 					continue; // '&' means parameter is not replaced.
 
 				if (end >= block.sql.length()) {
-					throw new ClioneFormatException(key
-							+ " must have default element." + CRLF + line
-							+ CRLF + resourceInfo);
-				}
-				if (block.sql.charAt(end) == '\'') {
+					if (!key.startsWith("?")) {
+						// do not have default value
+						pos = replace(block, begin, end, "?");
+					} else {
+						throw new ClioneFormatException(joinByCrlf("[" + key
+								+ "] must have default value as follows:",
+								"\t... /* " + key + " */'DEFAULT_VALUE'",
+								"wrong part:", line,
+								resourceInfo != null ? resourceInfo : ""));
+					}
+				} else if (block.sql.charAt(end) == '\'') {
 					pos = replace(block, begin,
 							block.sql.indexOf("'", end + 1) + 1, "?");
 				} else if (block.sql.charAt(end) == '(') {
@@ -154,10 +160,11 @@ public class SQLParser {
 					// do not have default value
 					pos = replace(block, begin, end, "?");
 				} else {
-					throw new ClioneFormatException(joinByCrlf(key
-							+ " must have default value as follows:", "\t..."
-							+ key + "'DEFAULT_VALUE'", "wrong part:", line,
-							resourceInfo));
+					throw new ClioneFormatException(joinByCrlf("[" + key
+							+ "] must have default value as follows:",
+							"\t... /* " + key + " */'DEFAULT_VALUE'",
+							"wrong part:", line,
+							resourceInfo != null ? resourceInfo : ""));
 				}
 
 			} else if (this.commentDepth != 0) {

@@ -27,17 +27,19 @@ public class SQLExecutor {
 	PreparedStatement stmt;
 	ResultSet rs;
 
-	SQLExecutor(SQLManager manager, InputStream in) {
+	SQLExecutor(SQLManager manager, InputStream in, String resourceInfo) {
 		this.manager = manager;
+		this.resourceInfo = resourceInfo;
 		this.lineTreeList = new SQLParser(resourceInfo).parse(in);
 		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
+		this.sqlGenerator.setResourceInfo(resourceInfo);
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
-	void setResourceInfo(String resourceInfo) {
-		this.resourceInfo = resourceInfo;
-		this.sqlGenerator.setResourceInfo(resourceInfo);
-	}
+//	void setResourceInfo(String resourceInfo) {
+//		this.resourceInfo = resourceInfo;
+//		this.sqlGenerator.setResourceInfo(resourceInfo);
+//	}
 
 	public Map<String, Object> find() throws SQLException {
 		return this.find((Map<String, Object>) null);

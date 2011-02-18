@@ -129,8 +129,7 @@ public class SQLManager {
 		if (in == null)
 			throw new SQLFileNotFoundException("SQL File might not be found. "
 					+ resourceInfo);
-		SQLExecutor sqlExecutor = new SQLExecutor(this, in);
-		sqlExecutor.setResourceInfo(resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, in, resourceInfo);
 		return sqlExecutor;
 	}
 
@@ -141,8 +140,7 @@ public class SQLManager {
 		if (in == null)
 			throw new SQLFileNotFoundException("SQL File might not be found. "
 					+ resourceInfo);
-		SQLExecutor sqlExecutor = new SQLExecutor(this, in);
-		sqlExecutor.setResourceInfo(resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, in, resourceInfo);
 		return sqlExecutor;
 	}
 
@@ -150,7 +148,7 @@ public class SQLManager {
 		if (in == null)
 			throw new NullPointerException("The in parameter is null.");
 		resourceInfo = null;
-		return new SQLExecutor(this, in);
+		return new SQLExecutor(this, in, null);
 	}
 
 	public Connection con() {
