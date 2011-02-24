@@ -29,7 +29,7 @@
 	</target>
 
 	<target name="compile">
-		<javac srcdir="${src}" destdir="${classes}">
+		<javac srcdir="${src}" destdir="${classes}" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="${lib}">
 					<include name="*.jar" />
