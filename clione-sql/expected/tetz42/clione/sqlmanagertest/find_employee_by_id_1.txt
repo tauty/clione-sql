@@ -1,7 +1,7 @@
 Employee{
 	id = 1
 	SHAIN_NO = 100001
-	shozokuBuKa = "_“¹•”—q‰Û"
-	name = "’–ŒF_"
+	shozokuBuKa = "æŸ”é“éƒ¨å¥³å­èª²"
+	name = "çŒªç†ŠæŸ”"
 	age = 0
 }

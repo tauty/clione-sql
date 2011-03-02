@@ -1,0 +1,16 @@
+ArrayList[
+	Person2{
+		age = 31
+		[tetz42.clione.Person]
+		id = 3
+		name = "Hiromitsu Hara"
+		age = 0
+	}
+	Person2{
+		age = 31
+		[tetz42.clione.Person]
+		id = 4
+		name = "Hiroko Hara"
+		age = 0
+	}
+]

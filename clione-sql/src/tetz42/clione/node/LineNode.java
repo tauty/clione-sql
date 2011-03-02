@@ -23,4 +23,8 @@ public class LineNode {
 	public ArrayList<String> keys = new ArrayList<String>();
 	public ArrayList<String> vals = new ArrayList<String>();
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
+
+	public void merge(LineNode node) {
+		// TODO implementation
+	}
 }

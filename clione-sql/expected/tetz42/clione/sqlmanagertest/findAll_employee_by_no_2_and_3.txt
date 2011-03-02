@@ -2,22 +2,22 @@ ArrayList[
 	Employee{
 		id = 0
 		SHAIN_NO = 100000
-		shozokuBuKa = "_“¹•”’jq‰Û"
-		name = "‘×R“VŒŞ"
+		shozokuBuKa = "æŸ”é“éƒ¨ç”·å­èª²"
+		name = "æ³°å±±å¤©ä¼"
 		age = 0
 	}
 	Employee{
 		id = 2
 		SHAIN_NO = 100002
-		shozokuBuKa = "‘Š–o•”ƒ‚ƒ“ƒSƒ‹‰Û"
-		name = "’©Â—´"
+		shozokuBuKa = "ç›¸æ’²éƒ¨ãƒ¢ãƒ³ã‚´ãƒ«èª²"
+		name = "æœé’é¾"
 		age = 0
 	}
 	Employee{
 		id = 3
 		SHAIN_NO = 100003
-		shozokuBuKa = "ƒoƒŒ[•”ƒzƒ‚‰Û"
-		name = "‰Í‡rˆê"
+		shozokuBuKa = "ãƒãƒ¬ãƒ¼éƒ¨ãƒ›ãƒ¢èª²"
+		name = "æ²³åˆä¿Šä¸€"
 		age = 0
 	}
 ]

@@ -61,6 +61,10 @@ public class SQLManager {
 		return params().object(obj);
 	}
 
+	public static ParamMap paramsOn(String... keys) {
+		return params().$on(keys);
+	}
+
 	private final Connection con;
 	private HashSet<SQLExecutor> processingExecutorSet = new HashSet<SQLExecutor>();
 	private String resourceInfo;

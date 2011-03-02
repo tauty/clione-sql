@@ -32,7 +32,8 @@ import tetz42.clione.util.ParamMap;
 public class SQLGenerator {
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"\\A(\\s*(,|and\\s|or\\s))", Pattern.CASE_INSENSITIVE);
+			"\\A(\\s*)(,|and\\s+|or\\s+)(.+)\\z", Pattern.CASE_INSENSITIVE
+					| Pattern.DOTALL);
 	private static final Pattern parenthesisClosePtn = Pattern
 			.compile("^\\s*\\)");
 
@@ -161,8 +162,7 @@ public class SQLGenerator {
 
 	private String removeFirstDelimiter(StringBuilder subSb) {
 		Matcher m = delimPtn.matcher(subSb);
-		return m.find() ? subSb.substring(m.group(1).length()) : subSb
-				.toString();
+		return m.find() ? m.group(1) + m.group(3) : subSb.toString();
 	}
 
 	private Collection<?> convToCol(Object val) {
