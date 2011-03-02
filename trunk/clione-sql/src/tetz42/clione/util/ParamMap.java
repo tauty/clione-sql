@@ -30,6 +30,7 @@ public class ParamMap extends HashMap<String, Object> {
 
 	public static final Pattern KEY_PTN = Pattern.compile("([\"-),-~ ])[ -~]*");
 	public static final Pattern SYMBOL_PTN = Pattern.compile("[^A-Za-z0-9]+");
+	public static final Object ON = new Object();
 
 	@Override
 	public Object get(Object key) {
@@ -43,6 +44,12 @@ public class ParamMap extends HashMap<String, Object> {
 
 	public ParamMap $(String key, Object value) {
 		this.put(key, value);
+		return this;
+	}
+
+	public ParamMap $on(String... keys) {
+		for (String key : keys)
+			this.put(key, ON);
 		return this;
 	}
 

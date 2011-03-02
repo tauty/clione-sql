@@ -162,6 +162,20 @@ public class SQLExecutorTest {
 		assertEqualsWithFile(list, getClass(), "update_set_age_35");
 	}
 
+	@Test
+	public void find_by_age_on() throws Exception {
+		List<Map<String, Object>> people = sqlManager().useFile(getClass(),
+				"exesql/AmpersandSelect.sql").findAll(paramsOn("age"));
+		assertEqualsWithFile(people, getClass(), "find_by_age_on");
+	}
+
+	@Test
+	public void find_by_age_and_namePart_on() throws Exception {
+		List<Map<String, Object>> people = sqlManager().useFile(getClass(),
+				"exesql/AmpersandSelect.sql").findAll(paramsOn("age", "namePart"));
+		assertEqualsWithFile(people, getClass(), "find_by_age_and_namePart_on");
+	}
+
 	private void assertSQLException(String fileName, Proc proc)
 			throws Exception {
 		try {
