@@ -26,8 +26,7 @@ public class Param extends Clione {
 		} else {
 			if (vals.size() == 0)
 				return egg;
-			// TODO implement correctly
-			egg.replacement = null; // genQuestions(vals);
+			egg.questions = genQuestions(vals);
 			egg.params.addAll(vals);
 		}
 		return egg;
