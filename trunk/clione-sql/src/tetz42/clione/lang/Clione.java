@@ -13,6 +13,10 @@ public abstract class Clione {
 	protected Egg deliver(ParamMap paramMap) {
 		return child == null ? new Egg() : child.perform(paramMap);
 	}
+	
+	protected boolean isTerminated() {
+		return false;
+	}
 
 	public abstract Egg perform(ParamMap paramMap);
 }

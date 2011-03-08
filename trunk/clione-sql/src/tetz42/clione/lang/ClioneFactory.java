@@ -21,8 +21,8 @@ public class ClioneFactory {
 		if (!m.find())
 			return null;
 		Clione clione = gen(m.group(1), m.group(2), m.group(3));
-		if (clione == null)
-			return null;
+		if (clione == null || clione.isTerminated())
+			return clione;
 		clione.setChild(parse(m));
 		return clione;
 	}
