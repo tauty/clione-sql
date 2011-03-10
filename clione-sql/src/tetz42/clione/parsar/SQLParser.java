@@ -21,6 +21,7 @@ import static tetz42.clione.util.ClioneUtil.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -30,6 +31,7 @@ import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.GetBackReader;
 import tetz42.clione.node.LineNode;
+import tetz42.clione.setting.Setting;
 
 public class SQLParser {
 
@@ -44,7 +46,15 @@ public class SQLParser {
 	}
 
 	public List<LineNode> parse(InputStream in) {
-		InputStreamReader ir = new InputStreamReader(in);
+		InputStreamReader ir;
+		try {
+			ir = new InputStreamReader(in, Setting.instance().get(
+					"sqlfile-encoding", "utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new WrapException(e.getMessage() + CRLF
+					+ "The setting of 'clione.properties' might be wrong. "
+					+ "The key name = 'sqlfile-encoding'", e);
+		}
 		GetBackReader br = new GetBackReader(ir);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;

@@ -17,7 +17,7 @@ public class ClioneFactoryTest {
 	public void testParseByNormal() {
 		Clione clione = ClioneFactory.get().parse("KEY");
 		System.out.println(dumper(clione));
-		assertNull(clione);
+		assertNotNull(clione);
 	}
 
 }
