@@ -3,6 +3,7 @@ package tetz42.clione.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import tetz42.clione.exception.WrapException;
 
@@ -43,6 +44,26 @@ public class IOUtil {
 		} catch (IOException e) {
 			throw new WrapException(e);
 		}
+	}
+
+	public static Properties getProperties(String path) {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		InputStream in = loader.getResourceAsStream(path);
+		if(in == null)
+			return null;
+		
+		Properties prop = new Properties();
+		try {
+			try {
+				prop.load(in);
+			} finally {
+				in.close();
+			}
+		} catch (IOException e) {
+			throw new WrapException("Fail to load property file. The path is :"
+					+ path, e);
+		}
+		return prop;
 	}
 
 }
