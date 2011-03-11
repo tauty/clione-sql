@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public class ClioneFactory {
 
 	private static final Pattern ptn = Pattern
-			.compile("([$@&?#:%]?)(!?)([a-zA-Z0-9\\.\\-_]*)");
+			.compile("([$@&?#:%]?)(!?)([a-zA-Z0-9\\.\\-_]*)(\\s*)");
 
 	public static ClioneFactory get() {
 		return new ClioneFactory();
@@ -14,20 +14,20 @@ public class ClioneFactory {
 
 	public Clione parse(String src) {
 		src = src.trim();
-		return parse(ptn.matcher(src));
+		return parse(src, ptn.matcher(src));
 	}
 
-	private Clione parse(Matcher m) {
+	private Clione parse(String src, Matcher m) {
 		if (!m.find())
 			return null;
-		Clione clione = gen(m.group(1), m.group(2), m.group(3));
+		Clione clione = gen(src, m, m.group(1), m.group(2), m.group(3));
 		if (clione == null || clione.isTerminated())
 			return clione;
-		clione.setChild(parse(m));
+		clione.setChild(parse(src, m));
 		return clione;
 	}
 
-	private Clione gen(String func, String not, String key) {
+	private Clione gen(String src, Matcher m, String func, String not, String key) {
 		System.out.println("f=" + func);
 		System.out.println("n=" + not);
 		System.out.println("k=" + key);
@@ -35,18 +35,36 @@ public class ClioneFactory {
 			return null;
 		if (isAllEmpty(func, not))
 			return new Param(key);
+		if(isNotEmpty(func)){
+			if(func.equals(":"))
+				return new Literal(src.substring(m.end(1)), true);
+//			if(func.equals("$"))
+//				return new 
+		}
 		return null;
 	}
 
-	private boolean isAllEmpty(String... strs) {
+	private static boolean isAllNotEmpty(String... strs) {
 		for (String s : strs) {
-			if (!isEmpty(s))
+			if (isEmpty(s))
 				return false;
 		}
 		return true;
 	}
 
-	private boolean isEmpty(String s) {
+	private static boolean isAllEmpty(String... strs) {
+		for (String s : strs) {
+			if (isNotEmpty(s))
+				return false;
+		}
+		return true;
+	}
+
+	private static boolean isNotEmpty(String s) {
+		return !isEmpty(s);
+	}
+	
+	private static boolean isEmpty(String s) {
 		return s == null ? true : s.length() == 0 ? true : false;
 	}
 

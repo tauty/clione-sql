@@ -9,13 +9,26 @@ public class ClioneFactoryTest {
 
 	@Test
 	public void testParseByEmpty() {
-		Clione clione = ClioneFactory.get().parse("");
+		final String src = "";
+		System.out.println("src = " + src);
+		Clione clione = ClioneFactory.get().parse(src);
 		assertNull(clione);
 	}
 
 	@Test
-	public void testParseByNormal() {
-		Clione clione = ClioneFactory.get().parse("KEY");
+	public void param() {
+		final String src = "KEY";
+		System.out.println("src = " + src);
+		Clione clione = ClioneFactory.get().parse(src);
+		System.out.println(dumper(clione));
+		assertNotNull(clione);
+	}
+
+	@Test
+	public void param_literal() {
+		final String src = "KEY :LITERAL";
+		System.out.println("src = " + src);
+		Clione clione = ClioneFactory.get().parse(src);
 		System.out.println(dumper(clione));
 		assertNotNull(clione);
 	}
