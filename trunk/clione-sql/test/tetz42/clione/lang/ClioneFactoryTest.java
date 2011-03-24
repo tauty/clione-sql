@@ -33,4 +33,13 @@ public class ClioneFactoryTest {
 		assertNotNull(clione);
 	}
 
+	@Test
+	public void param_doller() {
+		final String src = "$KEY :LITERAL";
+		System.out.println("src = " + src);
+		Clione clione = ClioneFactory.get().parse(src);
+		System.out.println(dumper(clione));
+		assertNotNull(clione);
+	}
+
 }
