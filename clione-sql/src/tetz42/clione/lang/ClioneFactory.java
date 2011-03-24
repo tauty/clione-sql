@@ -38,8 +38,8 @@ public class ClioneFactory {
 		if(isNotEmpty(func)){
 			if(func.equals(":"))
 				return new Literal(src.substring(m.end(1)), true);
-//			if(func.equals("$"))
-//				return new 
+			if(func.equals("$"))
+				return new DynamicParam(key, isEmpty(not));
 		}
 		return null;
 	}
