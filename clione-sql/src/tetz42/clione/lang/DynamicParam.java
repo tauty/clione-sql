@@ -5,18 +5,17 @@ import tetz42.clione.util.ParamMap;
 public class DynamicParam extends Clione {
 
 	private final Param param;
-	private final boolean turnFlag;
+	private final boolean isNegative;
 
-	public DynamicParam(String key, boolean turnFlag) {
-		this.turnFlag = turnFlag;
+	public DynamicParam(String key, boolean isNegative) {
+		this.isNegative = isNegative;
 		this.param = new Param(key);
 	}
 
 	@Override
 	public Egg perform(ParamMap paramMap) {
 		Egg egg = this.param.perform(paramMap);
-		if (isNoneParam(egg))
-			egg.isNodeRequired = turnFlag;
+		egg.isNodeRequired = !(isNoneParam(egg) ^ isNegative);
 		return egg;
 	}
 
