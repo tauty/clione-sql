@@ -1,0 +1,15 @@
+DynamicParam{
+	param = Param{
+		key = "KEY"
+		[tetz42.clione.lang.Clione]
+		child = null
+	}
+	isNegative = false
+	[tetz42.clione.lang.Clione]
+	child = Literal{
+		literal = "LITERAL"
+		isTerminated = true
+		[tetz42.clione.lang.Clione]
+		child = null
+	}
+}

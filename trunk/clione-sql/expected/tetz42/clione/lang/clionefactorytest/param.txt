@@ -1,0 +1,5 @@
+Param{
+	key = "KEY"
+	[tetz42.clione.lang.Clione]
+	child = null
+}
