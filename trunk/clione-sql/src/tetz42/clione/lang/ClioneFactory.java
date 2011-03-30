@@ -40,12 +40,14 @@ public class ClioneFactory {
 				return new Literal(src.substring(m.end(1)), true);
 			if(func.equals("$"))
 				return new DynamicParam(key, isNotEmpty(not));
-//			if(func.equals("@"))
-//				return new RequireParam(key, isNotEmpty(not));
-//			if(func.equals("#"))
-//				return new ToSQLParam(key, isNotEmpty(not));
-//			if(func.equals("&"))
-//				return new DynamicCond(key, isNotEmpty(not));
+			if(func.equals("@"))
+				return new RequireParam(key);
+			if(func.equals("?"))
+				return new DefaultParam(key);
+			if(func.equals("#"))
+				return new ToSQLParam(key, isNotEmpty(not));
+			if(func.equals("&"))
+				return new DynamicCond(key, isNotEmpty(not));
 		}
 		return null;
 	}
