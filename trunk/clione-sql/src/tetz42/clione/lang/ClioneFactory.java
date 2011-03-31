@@ -8,8 +8,14 @@ public class ClioneFactory {
 	private static final Pattern ptn = Pattern
 			.compile("([$@&?#:%]?)(!?)([a-zA-Z0-9\\.\\-_]*)(\\s*)");
 
-	public static ClioneFactory get() {
-		return new ClioneFactory();
+	public static ClioneFactory get(String resourceInfo) {
+		return new ClioneFactory(resourceInfo);
+	}
+
+	private final String resourceInfo;
+	
+	private ClioneFactory(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
 	}
 
 	public Clione parse(String src) {
@@ -21,13 +27,17 @@ public class ClioneFactory {
 		if (!m.find())
 			return null;
 		Clione clione = gen(src, m, m.group(1), m.group(2), m.group(3));
-		if (clione == null || clione.isTerminated())
+		if (clione == null)
+			return null;
+		clione.setResourceInfo(resourceInfo);
+		if(clione.isTerminated())
 			return clione;
-		clione.setChild(parse(src, m));
+		clione.setNext(parse(src, m));
 		return clione;
 	}
 
-	private Clione gen(String src, Matcher m, String func, String not, String key) {
+	private Clione gen(String src, Matcher m, String func, String not,
+			String key) {
 		System.out.println("f=" + func);
 		System.out.println("n=" + not);
 		System.out.println("k=" + key);
@@ -35,19 +45,19 @@ public class ClioneFactory {
 			return null;
 		if (isAllEmpty(func, not))
 			return new Param(key);
-		if(isNotEmpty(func)){
-			if(func.equals(":"))
+		if (isNotEmpty(func)) {
+			if (func.equals(":"))
 				return new Literal(src.substring(m.end(1)), true);
-			if(func.equals("$"))
-				return new DynamicParam(key, isNotEmpty(not));
-			if(func.equals("@"))
+			if (func.equals("$"))
+				return new LineParam(key, isNotEmpty(not));
+			if (func.equals("@"))
 				return new RequireParam(key);
-			if(func.equals("?"))
+			if (func.equals("?"))
 				return new DefaultParam(key);
-			if(func.equals("#"))
-				return new ToSQLParam(key, isNotEmpty(not));
-			if(func.equals("&"))
-				return new DynamicCond(key, isNotEmpty(not));
+			if (func.equals("#"))
+				return new PartCond(key, isNotEmpty(not));
+			if (func.equals("&"))
+				return new LineCond(key, isNotEmpty(not));
 		}
 		return null;
 	}
@@ -71,7 +81,7 @@ public class ClioneFactory {
 	private static boolean isNotEmpty(String s) {
 		return !isEmpty(s);
 	}
-	
+
 	private static boolean isEmpty(String s) {
 		return s == null ? true : s.length() == 0 ? true : false;
 	}

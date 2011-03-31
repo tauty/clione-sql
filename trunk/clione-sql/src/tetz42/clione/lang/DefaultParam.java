@@ -2,18 +2,20 @@ package tetz42.clione.lang;
 
 import tetz42.clione.util.ParamMap;
 
-public class DefaultParam extends Clione {
-
-	private Param param;
+public class DefaultParam extends AbstractParam {
 
 	public DefaultParam(String key) {
-		this.param = new Param(key);
+		super(key, false);
 	}
 
 	@Override
-	public Egg perform(ParamMap paramMap) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Instruction caseParamNotExists(ParamMap paramMap,
+			Instruction paramInst) {
+		Instruction instruction = getInstruction(paramMap);
+		if(instruction.params.size() == 0) {
+			instruction.useValueInBack = true;
+		}
+		return instruction;
 	}
 
 }
