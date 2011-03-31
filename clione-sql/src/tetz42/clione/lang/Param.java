@@ -8,28 +8,27 @@ import tetz42.clione.util.ParamMap;
 
 public class Param extends Clione {
 
-	private final String key;
+	protected final String key;
 
 	public Param(String key) {
 		this.key = key;
 	}
 
 	@Override
-	public Egg perform(ParamMap paramMap) {
-		Egg egg = deliver(paramMap);
+	public Instruction perform(ParamMap paramMap) {
+		Instruction instruction = getInstruction(paramMap);
 		Object val = paramMap.get(key);
 		if (val == null)
-			return egg;
+			return instruction;
 		Collection<?> vals = convToCol(val);
 		if (vals == null) {
-			egg.params.add(val);
+			instruction.params.add(val);
 		} else {
 			if (vals.size() == 0)
-				return egg;
-			egg.questions = genQuestions(vals);
-			egg.params.addAll(vals);
+				return instruction;
+			instruction.params.addAll(vals);
 		}
-		return egg;
+		return instruction;
 	}
 
 	private Collection<?> convToCol(Object val) {
@@ -44,13 +43,4 @@ public class Param extends Clione {
 		return null;
 	}
 
-	private String genQuestions(Collection<?> params) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < params.size(); i++) {
-			if (i != 0)
-				sb.append(", ");
-			sb.append("?");
-		}
-		return sb.toString();
-	}
 }

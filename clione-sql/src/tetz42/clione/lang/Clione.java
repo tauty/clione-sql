@@ -4,19 +4,24 @@ import tetz42.clione.util.ParamMap;
 
 public abstract class Clione {
 
-	private Clione child;
+	private Clione next;
+	protected String resourceInfo;
 
-	public void setChild(Clione child) {
-		this.child = child;
+	public void setNext(Clione next) {
+		this.next = next;
+	}
+	
+	public void setResourceInfo(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
 	}
 
-	protected Egg deliver(ParamMap paramMap) {
-		return child == null ? new Egg() : child.perform(paramMap);
+	protected Instruction getInstruction(ParamMap paramMap) {
+		return next == null ? new Instruction() : next.perform(paramMap);
 	}
 	
 	protected boolean isTerminated() {
 		return false;
 	}
 
-	public abstract Egg perform(ParamMap paramMap);
+	public abstract Instruction perform(ParamMap paramMap);
 }

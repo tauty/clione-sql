@@ -1,5 +1,9 @@
 package tetz42.clione.lang;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import tetz42.clione.node.LineNode;
 import tetz42.clione.util.ParamMap;
 
@@ -14,13 +18,16 @@ public class Literal extends Clione {
 	}
 
 	@Override
-	public Egg perform(ParamMap paramMap) {
+	public Instruction perform(ParamMap paramMap) {
 		LineNode node = new LineNode();
+		
 		// TODO implement literal parsing.
 		node.sql.append(this.literal);
-		Egg egg = deliver(paramMap);
-		egg.replacement.add(node);
-		return egg;
+		List<LineNode> list = Arrays.asList(node);
+		
+		Instruction instruction = getInstruction(paramMap);
+		instruction.replacement = list;
+		return instruction;
 	}
 	
 	@Override
