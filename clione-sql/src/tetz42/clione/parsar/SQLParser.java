@@ -15,12 +15,13 @@
  */
 package tetz42.clione.parsar;
 
-import static tetz42.clione.util.ParamMap.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.util.ParamMap.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,20 @@ public class SQLParser {
 					+ "The setting of 'clione.properties' might be wrong. "
 					+ "The key name = 'sqlfile-encoding'", e);
 		}
-		GetBackReader br = new GetBackReader(ir);
+		try {
+			try {
+				return parse(ir);
+			} finally {
+				ir.close();
+				in.close();
+			}
+		} catch (IOException e) {
+			throw new WrapException(e.getMessage() + CRLF + resourceInfo, e);
+		}
+	}
+
+	public List<LineNode> parse(Reader reader) {
+		GetBackReader br = new GetBackReader(reader);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;
 		try {
@@ -65,8 +79,6 @@ public class SQLParser {
 				} while (list.size() != 0);
 			} finally {
 				br.close();
-				ir.close();
-				in.close();
 			}
 		} catch (IOException e) {
 			throw new WrapException(e.getMessage() + CRLF + resourceInfo, e);
