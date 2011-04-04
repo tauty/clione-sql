@@ -33,4 +33,10 @@ public class ClioneFactoryTest {
 		assertEqualsWithFile(clione, getClass(), "param_doller2");
 	}
 
+	@Test
+	public void param_default() {
+		Clione clione = ClioneFactory.get("FromTest").parse("?KEY");
+		assertEqualsWithFile(clione, getClass(), "param_default");
+	}
+
 }

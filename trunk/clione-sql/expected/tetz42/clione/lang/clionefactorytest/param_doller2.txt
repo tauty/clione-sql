@@ -1,0 +1,18 @@
+LineParam{
+	[tetz42.clione.lang.AbstractParam]
+	param = Param{
+		key = "KEY"
+		[tetz42.clione.lang.Clione]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	isNegative = true
+	[tetz42.clione.lang.Clione]
+	next = Param{
+		key = "PARAM"
+		[tetz42.clione.lang.Clione]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	resourceInfo = "FromTest"
+}

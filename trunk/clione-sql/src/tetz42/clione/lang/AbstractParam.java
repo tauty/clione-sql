@@ -17,6 +17,12 @@ abstract public class AbstractParam extends Clione {
 		return performTask(paramMap, this.param.perform(paramMap));
 	}
 
+	@Override
+	public void setResourceInfo(String resourceInfo) {
+		super.setResourceInfo(resourceInfo);
+		this.param.setResourceInfo(resourceInfo);
+	}
+
 	protected Instruction performTask(ParamMap paramMap, Instruction paramInst) {
 		if (isParamExists(paramInst) ^ isNegative) {
 			return caseParamExists(paramMap, paramInst);

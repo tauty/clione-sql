@@ -1,0 +1,26 @@
+LineParam{
+	[tetz42.clione.lang.AbstractParam]
+	param = Param{
+		key = "KEY"
+		[tetz42.clione.lang.Clione]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	isNegative = false
+	[tetz42.clione.lang.Clione]
+	next = Literal{
+		nodes = ArrayList[
+			LineNode{
+				sql = "LITERAL"
+				keys = ArrayList[ ]
+				vals = ArrayList[ ]
+				childBlocks = ArrayList[ ]
+			}
+		]
+		isTerminated = true
+		[tetz42.clione.lang.Clione]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	resourceInfo = "FromTest"
+}
