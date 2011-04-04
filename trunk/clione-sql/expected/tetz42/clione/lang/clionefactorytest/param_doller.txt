@@ -10,7 +10,14 @@ LineParam{
 	isNegative = false
 	[tetz42.clione.lang.Clione]
 	next = Literal{
-		literal = "LITERAL"
+		nodes = ArrayList[
+			LineNode{
+				sql = "LITERAL"
+				keys = ArrayList[ ]
+				vals = ArrayList[ ]
+				childBlocks = ArrayList[ ]
+			}
+		]
 		isTerminated = true
 		[tetz42.clione.lang.Clione]
 		next = null

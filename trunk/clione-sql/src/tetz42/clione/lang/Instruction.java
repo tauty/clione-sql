@@ -3,11 +3,9 @@ package tetz42.clione.lang;
 import java.util.ArrayList;
 import java.util.List;
 
-import tetz42.clione.node.LineNode;
-
 public class Instruction {
 	public List<Object> params = new ArrayList<Object>();
-	public List<LineNode> replacement;
+	public String replacement;
 	public boolean isNodeRequired = true;
 	public boolean doNothing = false;
 	public boolean useValueInBack = false;
