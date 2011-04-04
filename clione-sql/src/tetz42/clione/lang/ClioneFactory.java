@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,9 +39,6 @@ public class ClioneFactory {
 
 	private Clione gen(String src, Matcher m, String func, String not,
 			String key) {
-		System.out.println("f=" + func);
-		System.out.println("n=" + not);
-		System.out.println("k=" + key);
 		if (isAllEmpty(func, not, key))
 			return null;
 		if (isAllEmpty(func, not))
@@ -58,32 +56,11 @@ public class ClioneFactory {
 				return new PartCond(key, isNotEmpty(not));
 			if (func.equals("&"))
 				return new LineCond(key, isNotEmpty(not));
+			if(func.equals("%"))
+				return null; // TODO implementation
 		}
+		// TODO throw exception if unsupported grammer is found.
 		return null;
-	}
-
-	private static boolean isAllNotEmpty(String... strs) {
-		for (String s : strs) {
-			if (isEmpty(s))
-				return false;
-		}
-		return true;
-	}
-
-	private static boolean isAllEmpty(String... strs) {
-		for (String s : strs) {
-			if (isNotEmpty(s))
-				return false;
-		}
-		return true;
-	}
-
-	private static boolean isNotEmpty(String s) {
-		return !isEmpty(s);
-	}
-
-	private static boolean isEmpty(String s) {
-		return s == null ? true : s.length() == 0 ? true : false;
 	}
 
 }

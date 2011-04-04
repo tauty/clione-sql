@@ -15,6 +15,30 @@ public class ClioneUtil {
 
 	public static final String CRLF = System.getProperty("line.separator");
 
+	public static boolean isAllEmpty(String... strs) {
+		for (String s : strs) {
+			if (isNotEmpty(s))
+				return false;
+		}
+		return true;
+	}
+
+	public static boolean isAllNotEmpty(String... strs) {
+		for (String s : strs) {
+			if (isEmpty(s))
+				return false;
+		}
+		return true;
+	}
+
+	public static boolean isEmpty(String s) {
+		return s == null ? true : s.length() == 0 ? true : false;
+	}
+
+	public static boolean isNotEmpty(String s) {
+		return !isEmpty(s);
+	}
+
 	public static String joinByCrlf(Object... objs) {
 		if (objs == null || objs.length == 0)
 			return "";

@@ -39,4 +39,27 @@ public class ClioneFactoryTest {
 		assertEqualsWithFile(clione, getClass(), "param_default");
 	}
 
+	@Test
+	public void param_default_with_param() {
+		Clione clione = ClioneFactory.get("FromTest").parse("?KEY PARAM");
+		assertEqualsWithFile(clione, getClass(), "param_default_with_param");
+	}
+
+	@Test
+	public void param_require() {
+		Clione clione = ClioneFactory.get("FromTest").parse("@KEY");
+		assertEqualsWithFile(clione, getClass(), "param_require");
+	}
+
+	@Test
+	public void param_part() {
+		Clione clione = ClioneFactory.get("FromTest").parse("#KEY :LITERAL");
+		assertEqualsWithFile(clione, getClass(), "param_part");
+	}
+
+	@Test
+	public void param_amper() {
+		Clione clione = ClioneFactory.get("FromTest").parse("&KEY :LITERAL");
+		assertEqualsWithFile(clione, getClass(), "param_amper");
+	}
 }
