@@ -1,8 +1,6 @@
 package tetz42.clione.lang;
 
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import tetz42.clione.gen.SQLGenerator;
