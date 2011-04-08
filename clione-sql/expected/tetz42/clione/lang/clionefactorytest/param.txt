@@ -1,6 +1,0 @@
-Param{
-	key = "KEY"
-	[tetz42.clione.lang.Clione]
-	next = null
-	resourceInfo = "FromTest"
-}
