@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import tetz42.clione.util.ParamMap;
 
-public class Param extends Clione {
+public class Param extends ClioneFunction {
 
 	protected final String key;
 

@@ -2,7 +2,7 @@ package tetz42.clione.lang;
 
 import tetz42.clione.util.ParamMap;
 
-abstract public class AbstractParam extends Clione {
+abstract public class AbstractParam extends ClioneFunction {
 
 	protected final Param param;
 	protected final boolean isNegative;

@@ -1,0 +1,6 @@
+Param{
+	key = "KEY"
+	[tetz42.clione.lang.ClioneFunction]
+	next = null
+	resourceInfo = "FromTest"
+}
