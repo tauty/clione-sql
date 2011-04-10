@@ -2,12 +2,12 @@ package tetz42.clione.lang;
 
 import tetz42.clione.util.ParamMap;
 
-public abstract class Clione {
+public abstract class ClioneFunction {
 
-	private Clione next;
+	private ClioneFunction next;
 	protected String resourceInfo;
 
-	public void setNext(Clione next) {
+	public void setNext(ClioneFunction next) {
 		this.next = next;
 	}
 	
@@ -20,8 +20,15 @@ public abstract class Clione {
 	}
 	
 	protected boolean isTerminated() {
+		if(next != null)
+			return next.isTerminated();
 		return false;
 	}
 
 	public abstract Instruction perform(ParamMap paramMap);
+
+	@Override
+	public String toString() {
+		return "?";
+	}
 }
