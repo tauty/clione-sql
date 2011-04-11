@@ -9,7 +9,7 @@ import tetz42.clione.exception.ClioneFormatException;
 public class ClioneFuncFactory {
 
 	private static final Pattern ptn = Pattern
-			.compile("(([$@&?#:%]?)(!?)([a-zA-Z0-9\\.\\-_]*)|'(([^']|'')*)')(\\s+|$)");
+			.compile("(([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)|'(([^']|'')*)'|\"(([^\"]|\"\")*)\")(\\s+|$)|(:)");
 
 	public static ClioneFuncFactory get(String resourceInfo) {
 		return new ClioneFuncFactory(resourceInfo);
@@ -29,8 +29,7 @@ public class ClioneFuncFactory {
 	private ClioneFunction parse(String src, Matcher m) {
 		if (!m.find())
 			throw new ClioneFormatException("Unsupported Grammer :" + src);
-		ClioneFunction clione = gen(src, m, m.group(2), m.group(3), m.group(4),
-				m.group(5));
+		ClioneFunction clione = gen(src, m);
 		if (clione == null)
 			return null;
 		clione.setResourceInfo(resourceInfo);
@@ -40,19 +39,32 @@ public class ClioneFuncFactory {
 		return clione;
 	}
 
+	private ClioneFunction gen(String src, Matcher m) {
+		if (isNotEmpty(m.group(5)))
+			// '****'
+			return new StrLiteral(m.group(5).replace("''", "'"));
+		else if (isNotEmpty(m.group(7)))
+			// "****"
+			return new SQLLiteral(m.group(7).replace("\"\"", "\""), false);
+		else if (isNotEmpty(m.group(10)))
+			// :****
+			return new SQLLiteral(src.substring(m.end(10)).replaceAll(
+					"\\\\(.)", "$1"), true);
+		else
+			return gen(src, m, m.group(2), m.group(3), m.group(4));
+	}
+
 	private ClioneFunction gen(String src, Matcher m, String func, String not,
-			String key, String str) {
-		System.out.println("func=" + func + ", not=" + not + ", key=" + key
-				+ ", str=" + str);
-		if (isAllEmpty(func, not, key, str))
+			String key) {
+		System.out.println("func=" + func + ", not=" + not + ", key=" + key);
+		if (isAllEmpty(func, not, key))
 			return null;
-		if(isNotEmpty(str))
-			return new StrLiteral(str);
 		if (isAllEmpty(func, not))
 			return new Param(key);
 		if (isNotEmpty(func)) {
 			if (func.equals(":"))
-				return new SQLLiteral(src.substring(m.end(2)), true);
+				return new SQLLiteral(src.substring(m.end(2)).replaceAll(
+						"\\\\(.)", "$1"), true);
 			if (func.equals("$"))
 				return new LineParam(key, isNotEmpty(not));
 			if (func.equals("@"))

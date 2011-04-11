@@ -1,8 +1,6 @@
 package tetz42.clione.lang;
 
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import tetz42.clione.gen.SQLGenerator;
@@ -16,6 +14,7 @@ public class SQLLiteral extends ClioneFunction {
 	private final boolean isTerminated;
 	
 	public SQLLiteral(String literal, boolean isTerminated){
+		System.out.println("\tliteral=" + literal);
 		StringReader reader = new StringReader(literal);
 		this.nodes = new SQLParser(resourceInfo).parse(reader);
 		this.isTerminated = isTerminated;
