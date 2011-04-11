@@ -8,8 +8,16 @@ import tetz42.clione.exception.ClioneFormatException;
 
 public class ClioneFuncFactory {
 
-	private static final Pattern ptn = Pattern
-			.compile("(([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)|'(([^']|'')*)'|\"(([^\"]|\"\")*)\")(\\s+|$)|(:)");
+	private static final String str_literal = "'(([^']|'')*)'";
+	private static final String sql_literal = "\"(([^\"]|\"\")*)\"";
+	private static final String function = "([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)";
+	private static final String parenthesises = "(\\((([^)'\"]*|'[^']*'|\"[^\"]*\")*)\\))?";
+
+	private static final String all_expression = String.format(
+			"(((%s)|(%s)|(%s%s))(\\s+|$))|(:)", str_literal, sql_literal,
+			function, parenthesises);
+
+	private static final Pattern ptn = Pattern.compile(all_expression);
 
 	public static ClioneFuncFactory get(String resourceInfo) {
 		return new ClioneFuncFactory(resourceInfo);
@@ -40,18 +48,18 @@ public class ClioneFuncFactory {
 	}
 
 	private ClioneFunction gen(String src, Matcher m) {
-		if (isNotEmpty(m.group(5)))
+		if (isNotEmpty(m.group(4)))
 			// '***''***'
-			return new StrLiteral(m.group(5).replace("''", "'"));
+			return new StrLiteral(m.group(4).replace("''", "'"));
 		else if (isNotEmpty(m.group(7)))
 			// "***""***"
 			return new SQLLiteral(m.group(7).replace("\"\"", "\""), false);
-		else if (isNotEmpty(m.group(10)))
+		else if (isNotEmpty(m.group(17)))
 			// :****$
-			return new SQLLiteral(src.substring(m.end(10)).replaceAll(
+			return new SQLLiteral(src.substring(m.end(17)).replaceAll(
 					"\\\\(.)", "$1"), true);
 		else
-			return gen(src, m, m.group(2), m.group(3), m.group(4));
+			return gen(src, m, m.group(10), m.group(11), m.group(12));
 	}
 
 	private ClioneFunction gen(String src, Matcher m, String func, String not,
