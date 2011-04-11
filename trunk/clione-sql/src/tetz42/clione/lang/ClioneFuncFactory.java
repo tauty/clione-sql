@@ -41,13 +41,13 @@ public class ClioneFuncFactory {
 
 	private ClioneFunction gen(String src, Matcher m) {
 		if (isNotEmpty(m.group(5)))
-			// '****'
+			// '***''***'
 			return new StrLiteral(m.group(5).replace("''", "'"));
 		else if (isNotEmpty(m.group(7)))
-			// "****"
+			// "***""***"
 			return new SQLLiteral(m.group(7).replace("\"\"", "\""), false);
 		else if (isNotEmpty(m.group(10)))
-			// :****
+			// :****$
 			return new SQLLiteral(src.substring(m.end(10)).replaceAll(
 					"\\\\(.)", "$1"), true);
 		else
