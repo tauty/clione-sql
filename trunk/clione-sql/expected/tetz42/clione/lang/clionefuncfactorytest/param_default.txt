@@ -1,0 +1,13 @@
+DefaultParam{
+	[tetz42.clione.lang.AbstractParam]
+	param = Param{
+		key = "KEY"
+		[tetz42.clione.lang.ClioneFunction]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	isNegative = false
+	[tetz42.clione.lang.ClioneFunction]
+	next = null
+	resourceInfo = "FromTest"
+}
