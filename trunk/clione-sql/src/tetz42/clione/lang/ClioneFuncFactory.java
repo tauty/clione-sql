@@ -56,15 +56,12 @@ public class ClioneFuncFactory {
 
 	private ClioneFunction gen(String src, Matcher m, String func, String not,
 			String key) {
-		System.out.println("func=" + func + ", not=" + not + ", key=" + key);
+		// System.out.println("func=" + func + ", not=" + not + ", key=" + key);
 		if (isAllEmpty(func, not, key))
 			return null;
 		if (isAllEmpty(func, not))
 			return new Param(key);
 		if (isNotEmpty(func)) {
-			if (func.equals(":"))
-				return new SQLLiteral(src.substring(m.end(2)).replaceAll(
-						"\\\\(.)", "$1"), true);
 			if (func.equals("$"))
 				return new LineParam(key, isNotEmpty(not));
 			if (func.equals("@"))
@@ -77,7 +74,7 @@ public class ClioneFuncFactory {
 				return new LineCond(key, isNotEmpty(not));
 			if (func.equals("%"))
 				return new Extention(key, isNotEmpty(not), src.substring(m
-						.end(1)));
+						.end(2)));
 		}
 		throw new ClioneFormatException("Unsupported Grammer :" + src);
 	}
