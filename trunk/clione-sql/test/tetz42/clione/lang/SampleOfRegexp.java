@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.util.ObjDumper4j.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,10 +38,11 @@ public class SampleOfRegexp {
 		output("func4", "%KEY");
 		output("func5", "%!KEY, $KEY2");
 
-		parenthesises("(takoikanamako)aaa");
-		parenthesises("(takoi')('kanamako)bbbb");
-		parenthesises("(takoi\")aaa(\"kanamako)cccc");
-		parenthesises("(takoi\")aaa(\"k(ana)mako)dddd");
+		System.out.println(dumper(entryPoint("(takoikanamako)aaa")));
+		System.out.println(dumper(entryPoint("(takoi')('kanamako)bbbb")));
+		System.out.println(dumper(entryPoint("(takoi\")aaa(\"kanamako)cccc")));
+		System.out
+				.println(dumper(entryPoint("(takoi\")aaa(\"k(ana)mako)dddd")));
 	}
 
 	private static void output(String header, String contents) {
@@ -58,63 +60,72 @@ public class SampleOfRegexp {
 
 	private static final Pattern delimPtn = Pattern.compile("[()'\":]");
 
-	private static void parenthesises(String src) {
-		Matcher m = delimPtn.matcher(src);
-		m.find();
-		System.out.println(parenthesises(src, m));
+	static class Unit {
+		Unit $cf(ClioneFunction cf) {
+			this.cf = cf;
+			return this;
+		}
+
+		Unit $isEndPar(boolean isEndParenthesis) {
+			this.isEndParenthesis = isEndParenthesis;
+			return this;
+		}
+
+		ClioneFunction cf = null;
+		boolean isEndParenthesis = false;
 	}
 
-	private static ClioneFunction tako(String src, Matcher m, int begin) {
+	// TODO 「:」の実装、insideのUnparsedが同一文字列でかぶってしまうバグ修正、もっとちゃんとテスト
+	private static ClioneFunction entryPoint(String src) {
+		Unit unit = tako(src, delimPtn.matcher(src), 0);
+		if (unit.isEndParenthesis)
+			throw new ClioneFormatException("Parenthesises Unmatched! src = "
+					+ src);
+		return unit.cf;
+	}
+
+	private static Unit tako(String src, Matcher m, int begin) {
+		Unit unit = new Unit();
 		if (!m.find())
-			return new Unparsed(src.substring(begin));
-		ClioneFunction rtnCf = null;
+			return unit.$cf(new Unparsed(src.substring(begin)));
 		if (begin < m.start())
-			rtnCf = new Unparsed(src.substring(begin, m.start()));
-		ClioneFunction cf;
+			unit.cf = new Unparsed(src.substring(begin, m.start()));
+		Unit resultUnit;
 		String delim = m.group(0);
 		if (delim.equals("'"))
-			cf = new StrLiteral(endSingleQuotation(src, m));
+			resultUnit = genStr(src, m);
 		else if (delim.equals("\""))
-			cf = new SQLLiteral(endDoubleQuotation(src, m),false);
+			resultUnit = genSQL(src, m);
 		else if (delim.equals("("))
-			cf = null;// TODO implementation return src.substring(begin, m.start(0));
+			resultUnit = parenthesises(src, m);
 		else
-			cf = null; // it means ')' is found
-		if(rtnCf == null)
-			rtnCf = cf;
-		else{
-			rtnCf.setNext(cf);
-		}
-		return rtnCf;
-			
+			resultUnit = new Unit().$cf(
+					begin < m.start() ? new Unparsed(src.substring(begin, m
+							.start())) : null).$isEndPar(true);
+		return unit.cf == null ? resultUnit : $next(unit, resultUnit);
 	}
 
-	private static String parenthesises(String src, Matcher m) {
-		int begin = m.end();
-		while (m.find()) {
-			String delim = m.group(0);
-			if (delim.equals("'"))
-				endSingleQuotation(src, m);
-			else if (delim.equals("\""))
-				endDoubleQuotation(src, m);
-			else if (delim.equals(")"))
-				return src.substring(begin, m.start(0));
-			else
-				System.out.println(parenthesises(src, m));
-		}
-		throw new ClioneFormatException("Parenthesises Unmatched! src = " + src);
+	private static Unit parenthesises(String src, Matcher m) {
+		Unit inside = tako(src, m, m.end());
+		if (!inside.isEndParenthesis)
+			throw new ClioneFormatException("Parenthesises Unmatched! src = "
+					+ src);
+		Parenthesises par = new Parenthesises(inside.cf);
+		Unit unit = tako(src, m, m.end());
+		return unit.$cf(par.$next(unit.cf));
 	}
 
-	private static String endSingleQuotation(String src, Matcher m) {
-		return endQuotation(src, m, "'", "Single");
+	private static Unit genStr(String src, Matcher m) {
+		return $next(new Unit().$cf(new StrLiteral(endQuotation(src, m, "'"))),
+				tako(src, m, m.end()));
 	}
 
-	private static String endDoubleQuotation(String src, Matcher m) {
-		return endQuotation(src, m, "\"", "Double");
+	private static Unit genSQL(String src, Matcher m) {
+		return $next(new Unit().$cf(new SQLLiteral(endQuotation(src, m, "\""),
+				false)), tako(src, m, m.end()));
 	}
 
-	private static String endQuotation(String src, Matcher m, String quot,
-			String s_d) {
+	private static String endQuotation(String src, Matcher m, String quot) {
 		int begin = m.end();
 		while (m.find()) {
 			if (quot.equals(m.group(0))) {
@@ -125,8 +136,13 @@ public class SampleOfRegexp {
 				}
 			}
 		}
-		throw new ClioneFormatException(s_d + " quotation Unmatched! data = "
-				+ src);
+		throw new ClioneFormatException(quot.equals("'") ? "Single" : "Double"
+				+ " quotation Unmatched! data = " + src);
+	}
+
+	private static Unit $next(Unit unit, Unit nextUnit) {
+		unit.cf.setNext(nextUnit.cf);
+		return unit.$isEndPar(nextUnit.isEndParenthesis);
 	}
 
 	private static String nextChar(String src, int pos) {
