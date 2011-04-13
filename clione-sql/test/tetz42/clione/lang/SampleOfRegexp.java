@@ -75,7 +75,7 @@ public class SampleOfRegexp {
 		boolean isEndParenthesis = false;
 	}
 
-	// TODO 「:」の実装、insideのUnparsedが同一文字列でかぶってしまうバグ修正、もっとちゃんとテスト
+	// TODO implementation of ':' and better test
 	private static ClioneFunction entryPoint(String src) {
 		Unit unit = tako(src, delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
@@ -98,10 +98,11 @@ public class SampleOfRegexp {
 			resultUnit = genSQL(src, m);
 		else if (delim.equals("("))
 			resultUnit = parenthesises(src, m);
+		else if (delim.equals(")"))
+			resultUnit = new Unit().$isEndPar(true);
 		else
-			resultUnit = new Unit().$cf(
-					begin < m.start() ? new Unparsed(src.substring(begin, m
-							.start())) : null).$isEndPar(true);
+			// ':'
+			resultUnit = null; // TODO implementation
 		return unit.cf == null ? resultUnit : $next(unit, resultUnit);
 	}
 
