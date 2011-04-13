@@ -100,9 +100,9 @@ public class SampleOfRegexp {
 			resultUnit = parenthesises(src, m);
 		else if (delim.equals(")"))
 			resultUnit = new Unit().$isEndPar(true);
-		else
-			// ':'
-			resultUnit = null; // TODO implementation
+		else // ':'
+			resultUnit = new Unit().$cf(new SQLLiteral(src.substring(m.end()),
+					true));
 		return unit.cf == null ? resultUnit : $next(unit, resultUnit);
 	}
 
