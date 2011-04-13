@@ -11,8 +11,18 @@ public abstract class ClioneFunction {
 		this.next = next;
 	}
 	
+	public ClioneFunction $next(ClioneFunction next) {
+		this.next = next;
+		return this;
+	}
+	
 	public void setResourceInfo(String resourceInfo) {
 		this.resourceInfo = resourceInfo;
+	}
+
+	public ClioneFunction $resourceInfo(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
+		return this;
 	}
 
 	protected Instruction getInstruction(ParamMap paramMap) {
