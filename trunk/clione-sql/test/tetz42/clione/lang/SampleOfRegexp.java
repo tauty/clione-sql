@@ -38,11 +38,11 @@ public class SampleOfRegexp {
 		output("func4", "%KEY");
 		output("func5", "%!KEY, $KEY2");
 
-		System.out.println(dumper(entryPoint("(takoikanamako)aaa")));
-		System.out.println(dumper(entryPoint("(takoi')('kanamako)bbbb")));
-		System.out.println(dumper(entryPoint("(takoi\")aaa(\"kanamako)cccc")));
+		System.out.println(dumper(parseByDelim("(takoikanamako)aaa")));
+		System.out.println(dumper(parseByDelim("(takoi')('kanamako)bbbb")));
+		System.out.println(dumper(parseByDelim("(takoi\")aaa(\"kanamako)cccc")));
 		System.out
-				.println(dumper(entryPoint("(takoi\")aaa(\"k(ana)mako)dddd")));
+				.println(dumper(parseByDelim("(takoi\")aaa(\"k(ana)mako)dddd")));
 	}
 
 	private static void output(String header, String contents) {
@@ -76,15 +76,15 @@ public class SampleOfRegexp {
 	}
 
 	// TODO implementation of ':' and better test
-	private static ClioneFunction entryPoint(String src) {
-		Unit unit = tako(src, delimPtn.matcher(src), 0);
+	private static ClioneFunction parseByDelim(String src) {
+		Unit unit = parseByDelim(src, delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
 		return unit.cf;
 	}
 
-	private static Unit tako(String src, Matcher m, int begin) {
+	private static Unit parseByDelim(String src, Matcher m, int begin) {
 		Unit unit = new Unit();
 		if (!m.find())
 			return unit.$cf(new Unparsed(src.substring(begin)));
@@ -107,23 +107,23 @@ public class SampleOfRegexp {
 	}
 
 	private static Unit parenthesises(String src, Matcher m) {
-		Unit inside = tako(src, m, m.end());
+		Unit inside = parseByDelim(src, m, m.end());
 		if (!inside.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
 		Parenthesises par = new Parenthesises(inside.cf);
-		Unit unit = tako(src, m, m.end());
+		Unit unit = parseByDelim(src, m, m.end());
 		return unit.$cf(par.$next(unit.cf));
 	}
 
 	private static Unit genStr(String src, Matcher m) {
 		return $next(new Unit().$cf(new StrLiteral(endQuotation(src, m, "'"))),
-				tako(src, m, m.end()));
+				parseByDelim(src, m, m.end()));
 	}
 
 	private static Unit genSQL(String src, Matcher m) {
 		return $next(new Unit().$cf(new SQLLiteral(endQuotation(src, m, "\""),
-				false)), tako(src, m, m.end()));
+				false)), parseByDelim(src, m, m.end()));
 	}
 
 	private static String endQuotation(String src, Matcher m, String quot) {
