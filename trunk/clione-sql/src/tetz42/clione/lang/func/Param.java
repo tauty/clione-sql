@@ -1,9 +1,10 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public class Param extends ClioneFunction {

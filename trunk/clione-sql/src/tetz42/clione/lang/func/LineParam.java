@@ -1,4 +1,4 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
 public class LineParam extends AbstractParam {
 	

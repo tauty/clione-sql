@@ -5,6 +5,8 @@ import static tetz42.test.Util.*;
 
 import org.junit.Test;
 
+import tetz42.clione.lang.func.ClioneFunction;
+
 public class ClioneFuncFactoryTest {
 
 	@Test

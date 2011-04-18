@@ -1,7 +1,8 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
 import static tetz42.clione.util.ClioneUtil.*;
 import tetz42.clione.exception.ParameterNotFoundException;
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public class RequireParam extends AbstractParam {
