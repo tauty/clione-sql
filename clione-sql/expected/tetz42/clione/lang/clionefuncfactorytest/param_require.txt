@@ -1,0 +1,13 @@
+RequireParam{
+	[tetz42.clione.lang.func.AbstractParam]
+	param = Param{
+		key = "KEY"
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	isNegative = false
+	[tetz42.clione.lang.func.ClioneFunction]
+	next = null
+	resourceInfo = "FromTest"
+}

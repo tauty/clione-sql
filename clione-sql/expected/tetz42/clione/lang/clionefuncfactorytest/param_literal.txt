@@ -1,0 +1,19 @@
+Param{
+	key = "KEY"
+	[tetz42.clione.lang.func.ClioneFunction]
+	next = SQLLiteral{
+		nodes = ArrayList[
+			LineNode{
+				sql = "LITERAL"
+				keys = ArrayList[ ]
+				vals = ArrayList[ ]
+				childBlocks = ArrayList[ ]
+			}
+		]
+		isTerminated = true
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	resourceInfo = "FromTest"
+}
