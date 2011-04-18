@@ -5,6 +5,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.lang.func.DefaultParam;
+import tetz42.clione.lang.func.Extention;
+import tetz42.clione.lang.func.LineCond;
+import tetz42.clione.lang.func.LineParam;
+import tetz42.clione.lang.func.Param;
+import tetz42.clione.lang.func.PartCond;
+import tetz42.clione.lang.func.RequireParam;
+import tetz42.clione.lang.func.SQLLiteral;
+import tetz42.clione.lang.func.StrLiteral;
 
 public class ClioneFuncFactory {
 

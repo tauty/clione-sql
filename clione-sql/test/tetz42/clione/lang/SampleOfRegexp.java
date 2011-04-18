@@ -5,6 +5,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.lang.func.Parenthesises;
+import tetz42.clione.lang.func.SQLLiteral;
+import tetz42.clione.lang.func.StrLiteral;
+import tetz42.clione.lang.func.Unparsed;
 
 public class SampleOfRegexp {
 
@@ -61,35 +66,34 @@ public class SampleOfRegexp {
 	private static final Pattern delimPtn = Pattern.compile("[()'\":]");
 
 	static class Unit {
-		Unit $cf(ClioneFunction cf) {
-			this.cf = cf;
+		Unit clioneFunc(ClioneFunction clioneFunc) {
+			this.clioneFunc = clioneFunc;
 			return this;
 		}
 
-		Unit $isEndPar(boolean isEndParenthesis) {
+		Unit endPar(boolean isEndParenthesis) {
 			this.isEndParenthesis = isEndParenthesis;
 			return this;
 		}
 
-		ClioneFunction cf = null;
+		ClioneFunction clioneFunc = null;
 		boolean isEndParenthesis = false;
 	}
 
-	// TODO implementation of ':' and better test
 	private static ClioneFunction parseByDelim(String src) {
 		Unit unit = parseByDelim(src, delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
-		return unit.cf;
+		return unit.clioneFunc;
 	}
 
 	private static Unit parseByDelim(String src, Matcher m, int begin) {
 		Unit unit = new Unit();
 		if (!m.find())
-			return unit.$cf(new Unparsed(src.substring(begin)));
+			return unit.clioneFunc(new Unparsed(src.substring(begin)));
 		if (begin < m.start())
-			unit.cf = new Unparsed(src.substring(begin, m.start()));
+			unit.clioneFunc = new Unparsed(src.substring(begin, m.start()));
 		Unit resultUnit;
 		String delim = m.group(0);
 		if (delim.equals("'"))
@@ -99,11 +103,11 @@ public class SampleOfRegexp {
 		else if (delim.equals("("))
 			resultUnit = parenthesises(src, m);
 		else if (delim.equals(")"))
-			resultUnit = new Unit().$isEndPar(true);
+			resultUnit = new Unit().endPar(true);
 		else // ':'
-			resultUnit = new Unit().$cf(new SQLLiteral(src.substring(m.end()),
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m.end()),
 					true));
-		return unit.cf == null ? resultUnit : $next(unit, resultUnit);
+		return unit.clioneFunc == null ? resultUnit : joinUnit(unit, resultUnit);
 	}
 
 	private static Unit parenthesises(String src, Matcher m) {
@@ -111,18 +115,18 @@ public class SampleOfRegexp {
 		if (!inside.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
-		Parenthesises par = new Parenthesises(inside.cf);
+		Parenthesises par = new Parenthesises(inside.clioneFunc);
 		Unit unit = parseByDelim(src, m, m.end());
-		return unit.$cf(par.$next(unit.cf));
+		return unit.clioneFunc(par.$next(unit.clioneFunc));
 	}
 
 	private static Unit genStr(String src, Matcher m) {
-		return $next(new Unit().$cf(new StrLiteral(endQuotation(src, m, "'"))),
+		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src, m, "'"))),
 				parseByDelim(src, m, m.end()));
 	}
 
 	private static Unit genSQL(String src, Matcher m) {
-		return $next(new Unit().$cf(new SQLLiteral(endQuotation(src, m, "\""),
+		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src, m, "\""),
 				false)), parseByDelim(src, m, m.end()));
 	}
 
@@ -141,9 +145,9 @@ public class SampleOfRegexp {
 				+ " quotation Unmatched! data = " + src);
 	}
 
-	private static Unit $next(Unit unit, Unit nextUnit) {
-		unit.cf.setNext(nextUnit.cf);
-		return unit.$isEndPar(nextUnit.isEndParenthesis);
+	private static Unit joinUnit(Unit unit, Unit nextUnit) {
+		unit.clioneFunc.setNext(nextUnit.clioneFunc);
+		return unit.endPar(nextUnit.isEndParenthesis);
 	}
 
 	private static String nextChar(String src, int pos) {

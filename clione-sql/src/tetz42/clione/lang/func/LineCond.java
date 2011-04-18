@@ -1,10 +1,11 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
-public class PartCond extends AbstractParam {
+public class LineCond extends AbstractParam {
 
-	public PartCond(String key, boolean isNegative)  {
+	public LineCond(String key, boolean isNegative)  {
 		super(key, isNegative);
 	}
 
@@ -16,14 +17,6 @@ public class PartCond extends AbstractParam {
 		if(instruction.replacement == null) {
 			instruction.doNothing = true;
 		}
-		return instruction;
-	}
-
-	@Override
-	protected Instruction caseParamNotExists(ParamMap paramMap,
-			Instruction paramInst) {
-		Instruction instruction = getInstruction(paramMap);
-		instruction.doNothing = true;
 		return instruction;
 	}
 

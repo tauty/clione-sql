@@ -1,5 +1,6 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public class Unparsed extends ClioneFunction {

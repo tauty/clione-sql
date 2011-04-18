@@ -1,5 +1,6 @@
-package tetz42.clione.lang;
+package tetz42.clione.lang.func;
 
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public abstract class ClioneFunction {
@@ -29,7 +30,7 @@ public abstract class ClioneFunction {
 		return next == null ? new Instruction() : next.perform(paramMap);
 	}
 	
-	protected boolean isTerminated() {
+	public boolean isTerminated() {
 		if(next != null)
 			return next.isTerminated();
 		return false;
