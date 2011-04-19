@@ -37,6 +37,10 @@ public abstract class ClioneFunction {
 	}
 
 	public abstract Instruction perform(ParamMap paramMap);
+	
+	public String getString(){
+		return "";
+	}
 
 	@Override
 	public String toString() {
