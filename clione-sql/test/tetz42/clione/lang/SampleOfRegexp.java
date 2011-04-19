@@ -9,7 +9,6 @@ import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.lang.func.StrLiteral;
-import tetz42.clione.lang.func.Unparsed;
 
 public class SampleOfRegexp {
 
