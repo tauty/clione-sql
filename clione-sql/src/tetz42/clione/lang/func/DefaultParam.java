@@ -9,6 +9,10 @@ public class DefaultParam extends AbstractParam {
 		super(key, false);
 	}
 
+	public DefaultParam(ClioneFunction inside) {
+		super(inside, false);
+	}
+
 	@Override
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {

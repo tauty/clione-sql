@@ -17,4 +17,9 @@ public class Parenthesises extends ClioneFunction {
 		return null;
 	}
 
+	@Override
+	public ClioneFunction getInside() {
+		return inside;
+	}
+
 }

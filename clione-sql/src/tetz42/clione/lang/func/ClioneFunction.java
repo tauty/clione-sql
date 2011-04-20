@@ -8,24 +8,32 @@ public abstract class ClioneFunction {
 	private ClioneFunction next;
 	protected String resourceInfo;
 
-	public void setNext(ClioneFunction next) {
-		this.next = next;
-	}
-	
-	public ClioneFunction $next(ClioneFunction next) {
+	public ClioneFunction nextFunc(ClioneFunction next) {
 		this.next = next;
 		return this;
 	}
 	
-	public void setResourceInfo(String resourceInfo) {
-		this.resourceInfo = resourceInfo;
+	public ClioneFunction getNext(){
+		return this.next;
 	}
-
-	public ClioneFunction $resourceInfo(String resourceInfo) {
+	
+	public ClioneFunction inside(ClioneFunction inside) {
+		return null;
+	}
+	
+	public ClioneFunction getInside(){
+		return null;
+	}
+	
+	public ClioneFunction resourceInfo(String resourceInfo) {
 		this.resourceInfo = resourceInfo;
 		return this;
 	}
 
+	public String getResourceInfo(){
+		return this.resourceInfo;
+	}
+	
 	protected Instruction getInstruction(ParamMap paramMap) {
 		return next == null ? new Instruction() : next.perform(paramMap);
 	}

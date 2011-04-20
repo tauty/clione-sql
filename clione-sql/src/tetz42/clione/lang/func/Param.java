@@ -44,4 +44,9 @@ public class Param extends ClioneFunction {
 		return null;
 	}
 
+	@Override
+	public String getString() {
+		return key;
+	}
+
 }

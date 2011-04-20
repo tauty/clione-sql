@@ -1,11 +1,11 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.util.ClioneUtil.*;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.lang.SampleOfRegexp.Unit;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.DefaultParam;
 import tetz42.clione.lang.func.Extention;
@@ -29,69 +29,85 @@ public class ClioneFuncFactory {
 	}
 
 	private final String resourceInfo;
+	private String src;
 
 	private ClioneFuncFactory(String resourceInfo) {
 		this.resourceInfo = resourceInfo;
 	}
 
 	public ClioneFunction parse(String src) {
-		ClioneFunction cf = parseByDelim(src);
-		for(Unparsed unparsed : Unparsed.unparsedList.get()){
-			// TODO implement correctly.
-			parse(unparsed.getString(), funcPtn.matcher(src));
-		}
-		Unparsed.unparsedList.set(null);
-		return parse(src, funcPtn.matcher(src));
+		this.src = src;
+		return parseFunc(parseByDelim());
 	}
-
-	private ClioneFunction parseByDelim(String src) {
-		Unit unit = parseByDelim(src, delimPtn.matcher(src), 0);
+	
+	private ClioneFunction parseFunc(ClioneFunction cf){
+		ClioneFunction ret = cf;
+		if(cf == null)
+			return null;
+		if(cf instanceof Unparsed){
+			ret = parse(funcPtn.matcher(cf.getString()), cf.getNext());
+			cf = cf.getNext();
+		}
+		cf.inside(parseFunc(cf.getInside()));
+		cf.nextFunc(parseFunc(cf.getNext()));
+		return ret;
+	}
+	
+	private ClioneFunction parseByDelim() {
+		Unit unit = parseByDelim(delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
 		return unit.clioneFunc;
 	}
 
-	private Unit parseByDelim(String src, Matcher m, int begin) {
+	private Unit parseByDelim(Matcher m, int begin) {
 		Unit unit = new Unit();
 		if (!m.find())
-			return unit.clioneFunc(new Unparsed(src.substring(begin)));
+			return unit.clioneFunc(new Unparsed(src.substring(begin))
+					.resourceInfo(resourceInfo));
 		if (begin < m.start())
-			unit.clioneFunc = new Unparsed(src.substring(begin, m.start()));
+			unit.clioneFunc = new Unparsed(src.substring(begin, m.start()))
+					.resourceInfo(resourceInfo);
 		Unit resultUnit;
 		String delim = m.group(0);
 		if (delim.equals("'"))
-			resultUnit = genStr(src, m);
+			resultUnit = genStr(m);
 		else if (delim.equals("\""))
-			resultUnit = genSQL(src, m);
+			resultUnit = genSQL(m);
 		else if (delim.equals("("))
-			resultUnit = parenthesises(src, m);
+			resultUnit = parenthesises(m);
 		else if (delim.equals(")"))
 			resultUnit = new Unit().endPar(true);
-		else // ':'
-			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m.end()),
-					true));
-		return unit.clioneFunc == null ? resultUnit : joinUnit(unit, resultUnit);
+		else
+			// ':'
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
+					.end()), true));
+		return unit.clioneFunc == null ? resultUnit
+				: joinUnit(unit, resultUnit);
 	}
 
-	private Unit parenthesises(String src, Matcher m) {
-		Unit inside = parseByDelim(src, m, m.end());
+	private Unit parenthesises(Matcher m) {
+		Unit inside = parseByDelim(m, m.end());
 		if (!inside.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
 					+ src);
-		Parenthesises par = new Parenthesises(inside.clioneFunc);
-		Unit unit = parseByDelim(src, m, m.end());
-		return unit.clioneFunc(par.$next(unit.clioneFunc));
+		ClioneFunction par = new Parenthesises(inside.clioneFunc)
+				.resourceInfo(resourceInfo);
+		Unit unit = parseByDelim(m, m.end());
+		return unit.clioneFunc(par.nextFunc(unit.clioneFunc));
 	}
 
-	private Unit genStr(String src, Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src, m, "'"))),
-				parseByDelim(src, m, m.end()));
+	private Unit genStr(Matcher m) {
+		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src,
+				m, "'")).resourceInfo(resourceInfo)),
+				parseByDelim(m, m.end()));
 	}
 
-	private Unit genSQL(String src, Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src, m, "\""),
-				false)), parseByDelim(src, m, m.end()));
+	private Unit genSQL(Matcher m) {
+		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src,
+				m, "\""), false).resourceInfo(resourceInfo)),
+				parseByDelim(m, m.end()));
 	}
 
 	private String endQuotation(String src, Matcher m, String quot) {
@@ -110,7 +126,7 @@ public class ClioneFuncFactory {
 	}
 
 	private Unit joinUnit(Unit unit, Unit nextUnit) {
-		unit.clioneFunc.setNext(nextUnit.clioneFunc);
+		unit.clioneFunc.nextFunc(nextUnit.clioneFunc);
 		return unit.endPar(nextUnit.isEndParenthesis);
 	}
 
@@ -119,17 +135,18 @@ public class ClioneFuncFactory {
 			return null;
 		return src.substring(pos, pos + 1);
 	}
-	
-	private ClioneFunction parse(String src, Matcher m) {
+
+	private ClioneFunction parse(Matcher m, ClioneFunction last) {
+		// TODO implementation
 		if (!m.find())
 			throw new ClioneFormatException("Unsupported Grammer :" + src);
 		ClioneFunction clione = gen(src, m);
 		if (clione == null)
 			return null;
-		clione.setResourceInfo(resourceInfo);
+		clione.resourceInfo(resourceInfo);
 		if (clione.isTerminated())
 			return clione;
-		clione.setNext(parse(src, m));
+		clione.nextFunc(parse(m, last));
 		return clione;
 	}
 
