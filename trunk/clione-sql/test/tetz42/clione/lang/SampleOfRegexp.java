@@ -116,7 +116,7 @@ public class SampleOfRegexp {
 					+ src);
 		Parenthesises par = new Parenthesises(inside.clioneFunc);
 		Unit unit = parseByDelim(src, m, m.end());
-		return unit.clioneFunc(par.$next(unit.clioneFunc));
+		return unit.clioneFunc(par.nextFunc(unit.clioneFunc));
 	}
 
 	private static Unit genStr(String src, Matcher m) {
@@ -145,7 +145,7 @@ public class SampleOfRegexp {
 	}
 
 	private static Unit joinUnit(Unit unit, Unit nextUnit) {
-		unit.clioneFunc.setNext(nextUnit.clioneFunc);
+		unit.clioneFunc.nextFunc(nextUnit.clioneFunc);
 		return unit.endPar(nextUnit.isEndParenthesis);
 	}
 

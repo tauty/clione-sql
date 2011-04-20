@@ -9,6 +9,10 @@ public class PartCond extends AbstractParam {
 		super(key, isNegative);
 	}
 
+	public PartCond(ClioneFunction inside, boolean isNegative)  {
+		super(inside, isNegative);
+	}
+
 	@Override
 	protected Instruction caseParamExists(ParamMap paramMap,
 			Instruction paramInst) {

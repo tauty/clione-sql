@@ -5,12 +5,17 @@ import tetz42.clione.util.ParamMap;
 
 abstract public class AbstractParam extends ClioneFunction {
 
-	protected final Param param;
+	protected final ClioneFunction param;
 	protected final boolean isNegative;
 
 	public AbstractParam(String key, boolean isNegative) {
 		this.isNegative = isNegative;
 		this.param = new Param(key);
+	}
+
+	public AbstractParam(ClioneFunction inside, boolean isNegative) {
+		this.isNegative = isNegative;
+		this.param = inside;
 	}
 
 	@Override
@@ -19,11 +24,12 @@ abstract public class AbstractParam extends ClioneFunction {
 	}
 
 	@Override
-	public void setResourceInfo(String resourceInfo) {
-		super.setResourceInfo(resourceInfo);
-		this.param.setResourceInfo(resourceInfo);
+	public ClioneFunction resourceInfo(String resourceInfo) {
+		super.resourceInfo(resourceInfo);
+		this.param.resourceInfo(resourceInfo);
+		return this;
 	}
-
+	
 	protected Instruction performTask(ParamMap paramMap, Instruction paramInst) {
 		if (isParamExists(paramInst) ^ isNegative) {
 			return caseParamExists(paramMap, paramInst);
