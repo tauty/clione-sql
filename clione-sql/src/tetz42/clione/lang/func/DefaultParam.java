@@ -5,12 +5,12 @@ import tetz42.clione.util.ParamMap;
 
 public class DefaultParam extends AbstractParam {
 
-	public DefaultParam(String key) {
-		super(key, false);
+	public DefaultParam(String key, boolean isNegative) {
+		super(key, isNegative);
 	}
 
-	public DefaultParam(ClioneFunction inside) {
-		super(inside, false);
+	public DefaultParam(ClioneFunction inside, boolean isNegative) {
+		super(inside, isNegative);
 	}
 
 	@Override
@@ -22,5 +22,9 @@ public class DefaultParam extends AbstractParam {
 		}
 		return instruction;
 	}
-
+	
+	@Override
+	public String getSrc() {
+		return "?" + super.getSrc();
+	}
 }

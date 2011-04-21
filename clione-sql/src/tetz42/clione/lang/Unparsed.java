@@ -28,7 +28,7 @@ public class Unparsed extends ClioneFunction {
 	}
 	
 	@Override
-	public String getString() {
+	public String getSrc() {
 		return unparsedStr;
 	}
 

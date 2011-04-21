@@ -19,6 +19,14 @@ public class Extention extends ClioneFunction {
 		return null;
 	}
 
+	@Override
+	public String getSrc() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+
 	/*
 	LIKE /* %CNV_L '%' @PARAM_1 ' ' $PARAM_2 '%' *\/'%TAKO IKA%'
 	LIKE CONCAT('%', ?, ' ', ?, '%') -- PARAM PARAM_1, PARAM_2

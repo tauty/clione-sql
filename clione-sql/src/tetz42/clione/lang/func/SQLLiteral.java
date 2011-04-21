@@ -11,14 +11,14 @@ import tetz42.clione.util.ParamMap;
 
 public class SQLLiteral extends ClioneFunction {
 
+	private final String literal;
 	private final List<LineNode> nodes;
-	private final boolean isTerminated;
 
-	public SQLLiteral(String literal, boolean isTerminated) {
+	public SQLLiteral(String literal) {
 		// System.out.println("\tliteral=" + literal);
+		this.literal = literal;
 		StringReader reader = new StringReader(literal);
 		this.nodes = new SQLParser(resourceInfo).parse(reader);
-		this.isTerminated = isTerminated;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SQLLiteral extends ClioneFunction {
 	}
 
 	@Override
-	public boolean isTerminated() {
-		return isTerminated;
+	public String getSrc() {
+		return "\"" + literal + "\"";
 	}
 }

@@ -9,4 +9,9 @@ public class LineParam extends AbstractParam {
 	public LineParam(ClioneFunction inside, boolean isNegative) {
 		super(inside, isNegative);
 	}
+	
+	@Override
+	public String getSrc() {
+		return "$" + super.getSrc();
+	}
 }

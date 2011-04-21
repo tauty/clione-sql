@@ -24,6 +24,9 @@ public class SampleOfRegexp {
 
 	private static final Pattern ptn = Pattern.compile(all_expression);
 
+	private static final Pattern funcPtn = Pattern
+			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
+
 	// private static final Pattern ptn = Pattern
 	// .compile("(([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)(\\((([^)'\"]*|'[^']*'|\"[^\"]*\")*)\\))?|'(([^']|'')*)'|\"(([^\"]|\"\")*)\"(\\s+|$))|(:)");
 
@@ -32,28 +35,36 @@ public class SampleOfRegexp {
 
 	public static void main(String[] args) {
 
-		output("string", "'I''m a man. It''s all right!' /* tako */");
-		output("sql",
+		output(ptn, "string", "'I''m a man. It''s all right!' /* tako */");
+		output(ptn, "sql",
 				"\"She said, \"\"You don't understand myself.\"\"\" /* tako */");
-		output("sql2", ":takoika namako /* tako *\\/ sakana");
-		output("func1", "%!KEY /* tako */");
-		output("func2", "%!KEY(tako ika 'tozi-''k)akko') /* tako */");
-		output("func3", "%!KEY(tako ika \"tozi-\"\"k)akko\") /* tako */");
-		output("func4", "%KEY");
-		output("func5", "%!KEY, $KEY2");
+		output(ptn, "sql2", ":takoika namako /* tako *\\/ sakana");
+		output(ptn, "func1", "%!KEY /* tako */");
+		output(ptn, "func2", "%!KEY(tako ika 'tozi-''k)akko') /* tako */");
+		output(ptn, "func3", "%!KEY(tako ika \"tozi-\"\"k)akko\") /* tako */");
+		output(ptn, "func4", "%KEY");
+		output(ptn, "func5", "%!KEY, $KEY2");
 
 		System.out.println(dumper(parseByDelim("(takoikanamako)aaa")));
 		System.out.println(dumper(parseByDelim("(takoi')('kanamako)bbbb")));
-		System.out.println(dumper(parseByDelim("(takoi\")aaa(\"kanamako)cccc")));
+		System.out
+				.println(dumper(parseByDelim("(takoi\")aaa(\"kanamako)cccc")));
 		System.out
 				.println(dumper(parseByDelim("(takoi\")aaa(\"k(ana)mako)dddd")));
+
+		output(funcPtn, "func$", " $!TAKO");
+		output(funcPtn, "func$", " $!TAKO ");
+		output(funcPtn, "func$", " $!TAKO, ");
+		output(funcPtn, "func$", " $!TAKO, PARAM2");
+		output(funcPtn, "func$", " $!TAKO, | PARAM2");
 	}
 
-	private static void output(String header, String contents) {
+	private static void output(Pattern ptn, String header, String contents) {
 		System.out.println("\n[" + header + "]");
 		Matcher m = ptn.matcher(contents);
-		if (m.find()) {
+		while (m.find()) {
 			StringBuilder sb = new StringBuilder();
+			sb.append("start = " + m.start() + ", end = " + m.end() + "\n");
 			for (int i = 0; i <= m.groupCount(); i++) {
 				sb.append("group(").append(i).append(") = ").append(m.group(i))
 						.append("\n");
@@ -103,10 +114,12 @@ public class SampleOfRegexp {
 			resultUnit = parenthesises(src, m);
 		else if (delim.equals(")"))
 			resultUnit = new Unit().endPar(true);
-		else // ':'
-			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m.end()),
-					true));
-		return unit.clioneFunc == null ? resultUnit : joinUnit(unit, resultUnit);
+		else
+			// ':'
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
+					.end())));
+		return unit.clioneFunc == null ? resultUnit
+				: joinUnit(unit, resultUnit);
 	}
 
 	private static Unit parenthesises(String src, Matcher m) {
@@ -120,13 +133,13 @@ public class SampleOfRegexp {
 	}
 
 	private static Unit genStr(String src, Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src, m, "'"))),
-				parseByDelim(src, m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src,
+				m, "'"))), parseByDelim(src, m, m.end()));
 	}
 
 	private static Unit genSQL(String src, Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src, m, "\""),
-				false)), parseByDelim(src, m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src,
+				m, "\""))), parseByDelim(src, m, m.end()));
 	}
 
 	private static String endQuotation(String src, Matcher m, String quot) {
