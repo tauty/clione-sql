@@ -22,7 +22,7 @@ public class ClioneFuncFactory {
 
 	private static final Pattern delimPtn = Pattern.compile("[()'\":]");
 	private static final Pattern funcPtn = Pattern
-			.compile("([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)(\\s+|$))");
+			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
 
 	public static ClioneFuncFactory get(String resourceInfo) {
 		return new ClioneFuncFactory(resourceInfo);
@@ -37,22 +37,11 @@ public class ClioneFuncFactory {
 
 	public ClioneFunction parse(String src) {
 		this.src = src;
-		return parseFunc(parseByDelim());
+		ClioneFunction cf = parseFunc(parseByDelim());
+		cf.check();
+		return cf;
 	}
-	
-	private ClioneFunction parseFunc(ClioneFunction cf){
-		ClioneFunction ret = cf;
-		if(cf == null)
-			return null;
-		if(cf instanceof Unparsed){
-			ret = parse(funcPtn.matcher(cf.getString()), cf.getNext());
-			cf = cf.getNext();
-		}
-		cf.inside(parseFunc(cf.getInside()));
-		cf.nextFunc(parseFunc(cf.getNext()));
-		return ret;
-	}
-	
+
 	private ClioneFunction parseByDelim() {
 		Unit unit = parseByDelim(delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
@@ -82,7 +71,7 @@ public class ClioneFuncFactory {
 		else
 			// ':'
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end()), true));
+					.end())));
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}
@@ -100,14 +89,12 @@ public class ClioneFuncFactory {
 
 	private Unit genStr(Matcher m) {
 		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src,
-				m, "'")).resourceInfo(resourceInfo)),
-				parseByDelim(m, m.end()));
+				m, "'")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
 	}
 
 	private Unit genSQL(Matcher m) {
 		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src,
-				m, "\""), false).resourceInfo(resourceInfo)),
-				parseByDelim(m, m.end()));
+				m, "\"")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
 	}
 
 	private String endQuotation(String src, Matcher m, String quot) {
@@ -136,60 +123,6 @@ public class ClioneFuncFactory {
 		return src.substring(pos, pos + 1);
 	}
 
-	private ClioneFunction parse(Matcher m, ClioneFunction last) {
-		// TODO implementation
-		if (!m.find())
-			throw new ClioneFormatException("Unsupported Grammer :" + src);
-		ClioneFunction clione = gen(src, m);
-		if (clione == null)
-			return null;
-		clione.resourceInfo(resourceInfo);
-		if (clione.isTerminated())
-			return clione;
-		clione.nextFunc(parse(m, last));
-		return clione;
-	}
-
-	private ClioneFunction gen(String src, Matcher m) {
-		if (isNotEmpty(m.group(4)))
-			// '***''***'
-			return new StrLiteral(m.group(4).replace("''", "'"));
-		else if (isNotEmpty(m.group(7)))
-			// "***""***"
-			return new SQLLiteral(m.group(7).replace("\"\"", "\""), false);
-		else if (isNotEmpty(m.group(17)))
-			// :****$
-			return new SQLLiteral(src.substring(m.end(17)).replaceAll(
-					"\\\\(.)", "$1"), true);
-		else
-			return gen(src, m, m.group(10), m.group(11), m.group(12));
-	}
-
-	private ClioneFunction gen(String src, Matcher m, String func, String not,
-			String key) {
-		// System.out.println("func=" + func + ", not=" + not + ", key=" + key);
-		if (isAllEmpty(func, not, key))
-			return null;
-		if (isAllEmpty(func, not))
-			return new Param(key);
-		if (isNotEmpty(func)) {
-			if (func.equals("$"))
-				return new LineParam(key, isNotEmpty(not));
-			if (func.equals("@"))
-				return new RequireParam(key);
-			if (func.equals("?"))
-				return new DefaultParam(key);
-			if (func.equals("#"))
-				return new PartCond(key, isNotEmpty(not));
-			if (func.equals("&"))
-				return new LineCond(key, isNotEmpty(not));
-			if (func.equals("%"))
-				return new Extention(key, isNotEmpty(not), src.substring(m
-						.end(2)));
-		}
-		throw new ClioneFormatException("Unsupported Grammer :" + src);
-	}
-
 	static class Unit {
 		Unit clioneFunc(ClioneFunction clioneFunc) {
 			this.clioneFunc = clioneFunc;
@@ -203,5 +136,58 @@ public class ClioneFuncFactory {
 
 		ClioneFunction clioneFunc = null;
 		boolean isEndParenthesis = false;
+	}
+	
+	private ClioneFunction parseFunc(ClioneFunction cf) {
+		if (cf == null)
+			return null;
+		if (cf instanceof Unparsed) {
+			cf = parseFunc(funcPtn.matcher(cf.getSrc()), 0, cf.getNext());
+		}
+		cf.inside(parseFunc(cf.getInside()));
+		cf.nextFunc(parseFunc(cf.getNext()));
+		return cf;
+	}
+
+	private ClioneFunction parseFunc(Matcher m, int pos, ClioneFunction last) {
+		if (!m.find() || m.start() > pos)
+			throw new ClioneFormatException("Unsupported Grammer :" + src);
+		ClioneFunction clione = gen(m, m.group(1), m.group(2), m.group(3));
+		if (clione == null)
+			return last;
+		clione.resourceInfo(resourceInfo);
+		if ("".equals(m.group(4))) { // it means group(4) matched as '$'.
+			if (last instanceof Parenthesises) {
+				clione.nextFunc(last.getNext());
+				last.nextFunc(null);
+				return clione.inside(last);
+			} else {
+				return clione.nextFunc(last);
+			}
+		}
+		return clione.nextFunc(parseFunc(m, m.end(), last));
+	}
+
+	private ClioneFunction gen(Matcher m, String func, String not, String key) {
+		if (isAllEmpty(func, not, key))
+			return null;
+		if (isAllEmpty(func, not))
+			return new Param(key);
+		if (isNotEmpty(func)) {
+			if (func.equals("$"))
+				return new LineParam(key, isNotEmpty(not));
+			if (func.equals("@"))
+				return new RequireParam(key, isNotEmpty(not));
+			if (func.equals("?"))
+				return new DefaultParam(key, isNotEmpty(not));
+			if (func.equals("#"))
+				return new PartCond(key, isNotEmpty(not));
+			if (func.equals("&"))
+				return new LineCond(key, isNotEmpty(not));
+			if (func.equals("%"))
+				return new Extention(key, isNotEmpty(not), src.substring(m
+						.end(2)));
+		}
+		throw new ClioneFormatException("Unsupported Grammer :" + src);
 	}
 }

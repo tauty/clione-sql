@@ -20,7 +20,7 @@ public class StrLiteral extends ClioneFunction {
 	}
 
 	@Override
-	public String toString() {
+	public String getSrc() {
 		return "'" + str + "'";
 	}
 }

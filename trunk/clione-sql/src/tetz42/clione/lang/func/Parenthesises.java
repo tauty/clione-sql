@@ -18,8 +18,28 @@ public class Parenthesises extends ClioneFunction {
 	}
 
 	@Override
+	public ClioneFunction inside(ClioneFunction inside) {
+		this.inside = inside;
+		return this;
+	}
+
+	@Override
 	public ClioneFunction getInside() {
 		return inside;
 	}
+	
+	@Override
+	public String getSrc() {
+		StringBuilder sb = new StringBuilder("(");
+		ClioneFunction cf = inside;
+		while(cf != null){
+			if(sb.length() != 1)
+				sb.append(" ");
+			sb.append(cf.getSrc());
+			cf = cf.getNext();
+		}
+		return sb.append(")").toString();
+	}
+	
 
 }

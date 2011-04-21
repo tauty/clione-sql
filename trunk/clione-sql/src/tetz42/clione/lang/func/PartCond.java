@@ -32,4 +32,8 @@ public class PartCond extends AbstractParam {
 		return instruction;
 	}
 
+	@Override
+	public String getSrc() {
+		return "#" + super.getSrc();
+	}
 }

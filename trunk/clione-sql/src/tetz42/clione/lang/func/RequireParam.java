@@ -7,18 +7,23 @@ import tetz42.clione.util.ParamMap;
 
 public class RequireParam extends AbstractParam {
 
-	public RequireParam(String key) {
-		super(key, false);
+	public RequireParam(String key, boolean isNegative) {
+		super(key, isNegative);
 	}
 	
-	public RequireParam(ClioneFunction inside) {
-		super(inside, false);
+	public RequireParam(ClioneFunction inside, boolean isNegative) {
+		super(inside, isNegative);
 	}
 
 	@Override
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {
 		throw new ParameterNotFoundException("The parameter, "
-				+ param.getString() + ", is required." + CRLF + resourceInfo);
+				+ param.getSrc() + ", is required." + CRLF + resourceInfo);
+	}
+	
+	@Override
+	public String getSrc() {
+		return "@" + super.getSrc();
 	}
 }
