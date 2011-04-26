@@ -6,6 +6,7 @@ import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.util.ParamMap;
 
 public class Extention extends ClioneFunction {
@@ -46,6 +47,9 @@ public class Extention extends ClioneFunction {
 
 	@Override
 	public ClioneFunction inside(ClioneFunction inside) {
+		if (!Parenthesises.class.isInstance(inside)) {
+			super.inside(inside);
+		}
 		this.inside = inside;
 		return this;
 	}
@@ -71,7 +75,7 @@ public class Extention extends ClioneFunction {
 		ExtFunction extFunction = funcMap.get(this.func);
 		if (extFunction == null) {
 			throw new ClioneFormatException("Unknown function name '"
-					+ this.func + "'\nsrc:" + getSrc() + "\nresourceInfo:"
+					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
 					+ this.resourceInfo);
 		}
 		return extFunction.perform(instruction);

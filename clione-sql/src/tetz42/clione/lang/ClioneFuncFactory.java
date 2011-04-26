@@ -45,7 +45,7 @@ public class ClioneFuncFactory {
 		Unit unit = parseByDelim(delimPtn.matcher(src), 0);
 		if (unit.isEndParenthesis)
 			throw new ClioneFormatException("Parenthesises Unmatched! src = "
-					+ src);
+					+ src + "\nResouce info:" + resourceInfo);
 		return unit.clioneFunc;
 	}
 
@@ -136,7 +136,7 @@ public class ClioneFuncFactory {
 		ClioneFunction clioneFunc = null;
 		boolean isEndParenthesis = false;
 	}
-	
+
 	private ClioneFunction parseFunc(ClioneFunction cf) {
 		if (cf == null)
 			return null;
@@ -150,19 +150,16 @@ public class ClioneFuncFactory {
 
 	private ClioneFunction parseFunc(Matcher m, int pos, ClioneFunction last) {
 		if (!m.find() || m.start() > pos)
-			throw new ClioneFormatException("Unsupported Grammer :" + src);
+			throw new ClioneFormatException("Unsupported Grammer :\n" + src
+					+ "\nResouce info:" + resourceInfo);
 		ClioneFunction clione = gen(m, m.group(1), m.group(2), m.group(3));
 		if (clione == null)
 			return last;
 		clione.resourceInfo(resourceInfo);
 		if ("".equals(m.group(4))) { // it means group(4) matched as '$'.
-			if (last instanceof Parenthesises) {
-				clione.nextFunc(last.getNext());
-				last.nextFunc(null);
-				return clione.inside(last);
-			} else {
-				return clione.nextFunc(last);
-			}
+			clione.nextFunc(last.getNext());
+			last.nextFunc(null);
+			return clione.inside(last);
 		}
 		return clione.nextFunc(parseFunc(m, m.end(), last));
 	}

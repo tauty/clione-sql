@@ -21,7 +21,8 @@ public abstract class ClioneFunction {
 	public ClioneFunction inside(ClioneFunction inside) {
 		throw new ClioneFormatException(getSrc() + " can not have "
 				+ inside.getSrc()
-				+ ". Use other function or insert white space between them."
+				+ ". Probably you can solve this by deleting one of them"
+				+ " or inserting white space between them."
 				+ "\nResource info:" + resourceInfo);
 	}
 
