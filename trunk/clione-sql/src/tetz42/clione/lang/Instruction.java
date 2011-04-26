@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Instruction {
-	
+
 	/**
 	 * In case params.size is one and replacement is null -> '?' and bind params
-	 * In case params.size is three and replacement is null -> '?, ?, ?' and bind params
-	 * In case params is null and replacement is 'aaa' -> 'aaa'
-	 * In case params.size is two and replacement is 'CONCAT(?, ''%'', ?)' 
-	 *                                  -> 'CONCAT(?, ''%'', ?)' and bind params
+	 * In case params.size is three and replacement is null -> '?, ?, ?' and
+	 * bind params In case params is null and replacement is 'aaa' -> 'aaa' In
+	 * case params.size is two and replacement is 'CONCAT(?, ''%'', ?)' ->
+	 * 'CONCAT(?, ''%'', ?)' and bind params
 	 */
 	public List<Object> params = new ArrayList<Object>();
 	public String replacement;
@@ -18,12 +18,18 @@ public class Instruction {
 	public boolean doNothing = false;
 	public boolean useValueInBack = false;
 	public Instruction next = null;
-	
+
+	public Instruction merge() {
+		if (next != null)
+			this.merge(next.merge());
+		return this;
+	}
+
 	public Instruction merge(Instruction another) {
 		params.addAll(another.params);
-		if(isNodeRequired)
+		if (isNodeRequired)
 			isNodeRequired = another.isNodeRequired;
-		if(replacement == null)
+		if (replacement == null)
 			replacement = another.replacement;
 		return this;
 	}
