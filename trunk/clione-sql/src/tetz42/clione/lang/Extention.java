@@ -18,7 +18,15 @@ public class Extention extends ClioneFunction {
 			
 			@Override
 			public Instruction perform(Instruction inst) {
-				return null;
+				for(int i=0; i<inst.params.size(); i++) {
+					String value = String.valueOf(inst.params.get(i));
+					// TODO temporally implementation
+					value = value.replaceAll("([\\%_])", "\\$1");
+					inst.params.set(i, value);
+				}
+				if(inst.next != null)
+					perform(inst.next);
+				return inst;
 			}
 		});
 	}
