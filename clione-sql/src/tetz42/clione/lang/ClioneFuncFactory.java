@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.DefaultParam;
-import tetz42.clione.lang.func.Extention;
 import tetz42.clione.lang.func.LineCond;
 import tetz42.clione.lang.func.LineParam;
 import tetz42.clione.lang.func.Param;
