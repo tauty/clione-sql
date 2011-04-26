@@ -24,6 +24,9 @@ abstract public class AbstractParam extends ClioneFunction {
 	@Override
 	public ClioneFunction inside(ClioneFunction inside) {
 		if (inside != null) {
+			if (!Parenthesises.class.isInstance(inside)) {
+				super.inside(inside);
+			}
 			if (param != null) {
 				throw new ClioneFormatException(
 						getSrc()
@@ -54,7 +57,7 @@ abstract public class AbstractParam extends ClioneFunction {
 	public ClioneFunction resourceInfo(String resourceInfo) {
 		super.resourceInfo(resourceInfo);
 		if (param instanceof Param)
-			this.param.resourceInfo(resourceInfo);
+			param.resourceInfo(resourceInfo);
 		return this;
 	}
 
