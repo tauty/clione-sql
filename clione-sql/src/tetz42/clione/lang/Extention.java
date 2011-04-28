@@ -1,7 +1,9 @@
 package tetz42.clione.lang;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
@@ -15,18 +17,68 @@ public class Extention extends ClioneFunction {
 			.synchronizedMap(new HashMap<String, ExtFunction>());
 	
 	static{
-		funcMap.put("ESCL", new ExtFunction() {
-			
+		funcMap.put("ESC_FOR_LIKE", new ExtFunction() {
+
 			@Override
 			public Instruction perform(Instruction inst) {
-				for(int i=0; i<inst.params.size(); i++) {
+				for (int i = 0; i < inst.params.size(); i++) {
 					String value = String.valueOf(inst.params.get(i));
 					// TODO temporally implementation
 					value = value.replaceAll("([\\%_])", "\\$1");
 					inst.params.set(i, value);
 				}
-				if(inst.next != null)
+				if (inst.next != null)
 					perform(inst.next);
+				return inst;
+			}
+		});
+		funcMap.put("IF", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
+				
+				return inst;
+			}
+		});
+		funcMap.put("REMOVE_UNLESS", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
+				
+				return inst;
+			}
+		});
+		funcMap.put("AVOID_NULL", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
+				List<Object> newParams = new ArrayList<Object>();
+				for (Object e:inst.params) {
+					if(e != null)
+						newParams.add(e);
+				}
+				inst.params = newParams;
+				return inst;
+			}
+		});
+		funcMap.put("CONCAT", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
+				return inst;
+			}
+		});
+		funcMap.put("TO_SQL", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
+				return inst;
+			}
+		});
+		funcMap.put("TO_STR", new ExtFunction() {
+
+			@Override
+			public Instruction perform(Instruction inst) {
 				return inst;
 			}
 		});
