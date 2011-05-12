@@ -14,7 +14,7 @@ Param{
 				childBlocks = ArrayList[ ]
 			}
 		]
-		isTerminated = true
+		literal = "/* INNER_PARAM */'tako' IN('\100', '\200', '\nec')"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
 		resourceInfo = "FromTest"

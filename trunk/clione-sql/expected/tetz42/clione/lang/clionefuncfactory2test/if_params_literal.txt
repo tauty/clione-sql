@@ -1,0 +1,50 @@
+Extention{
+	funcMap = SynchronizedMap{
+		"TO_STR": { }
+		"TO_SQL": { }
+		"CONCAT": { }
+		"REMOVE_UNLESS": { }
+		"ESC_FOR_LIKE": { }
+		"IF": { }
+		"AVOID_NULL": { }
+	}
+	func = "IF"
+	isNegative = false
+	inside = Parenthesises{
+		inside = Param{
+			key = "TAKO"
+			[tetz42.clione.lang.func.ClioneFunction]
+			next = Param{
+				key = "IKA"
+				[tetz42.clione.lang.func.ClioneFunction]
+				next = Param{
+					key = "NAMAKO"
+					[tetz42.clione.lang.func.ClioneFunction]
+					next = null
+					resourceInfo = "FromTest"
+				}
+				resourceInfo = "FromTest"
+			}
+			resourceInfo = "FromTest"
+		}
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	[tetz42.clione.lang.func.ClioneFunction]
+	next = SQLLiteral{
+		nodes = ArrayList[
+			LineNode{
+				sql = "SAKANA"
+				keys = ArrayList[ ]
+				vals = ArrayList[ ]
+				childBlocks = ArrayList[ ]
+			}
+		]
+		literal = "SAKANA"
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+		resourceInfo = "FromTest"
+	}
+	resourceInfo = "FromTest"
+}

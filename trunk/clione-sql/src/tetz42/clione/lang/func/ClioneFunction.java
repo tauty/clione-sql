@@ -19,11 +19,13 @@ public abstract class ClioneFunction {
 	}
 
 	public ClioneFunction inside(ClioneFunction inside) {
-		throw new ClioneFormatException(getSrc() + " can not have "
-				+ inside.getSrc()
-				+ ". Probably you can solve this by deleting one of them"
-				+ " or inserting white space between them."
-				+ "\nResource info:" + resourceInfo);
+		if (inside != null)
+			throw new ClioneFormatException(getSrc() + " can not have "
+					+ inside.getSrc()
+					+ ". Probably you can solve this by deleting one of them"
+					+ " or inserting white space between them."
+					+ "\nResource info:" + resourceInfo);
+		return this;
 	}
 
 	public ClioneFunction getInside() {
