@@ -8,7 +8,7 @@ public class StrLiteral extends ClioneFunction {
 	private String str;
 
 	public StrLiteral(String str) {
-		this.str = str;
+		this.str = str.replaceAll("\\\\(.)", "$1");
 	}
 
 	@Override

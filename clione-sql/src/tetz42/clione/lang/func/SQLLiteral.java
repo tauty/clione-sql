@@ -11,13 +11,13 @@ import tetz42.clione.util.ParamMap;
 
 public class SQLLiteral extends ClioneFunction {
 
-	private final String literal;
 	private final List<LineNode> nodes;
+	private final String literal;
 
 	public SQLLiteral(String literal) {
-		// System.out.println("\tliteral=" + literal);
-		this.literal = literal;
-		StringReader reader = new StringReader(literal);
+		this.literal = literal.replaceAll("\\\\(.)", "$1");
+		StringReader reader = new StringReader(this.literal);
+		// TODO resourceInfo is null. fix this bug.
 		this.nodes = new SQLParser(resourceInfo).parse(reader);
 	}
 

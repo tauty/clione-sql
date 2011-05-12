@@ -23,14 +23,14 @@ abstract public class AbstractParam extends ClioneFunction {
 
 	@Override
 	public ClioneFunction inside(ClioneFunction inside) {
-		if (inside != null) {
+		if (inside != null && inside != this.param) {
 			if (!Parenthesises.class.isInstance(inside)) {
 				super.inside(inside);
 			}
 			if (param != null) {
 				throw new ClioneFormatException(
 						getSrc()
-								+ " can not have both of"
+								+ " can not have both of "
 								+ param.getSrc()
 								+ " and "
 								+ inside.getSrc()

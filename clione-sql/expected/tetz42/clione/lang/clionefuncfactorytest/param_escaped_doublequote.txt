@@ -17,7 +17,7 @@ LineCond{
 				childBlocks = ArrayList[ ]
 			}
 		]
-		isTerminated = false
+		literal = "She said, "You don't understand myself.""
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
 		resourceInfo = "FromTest"

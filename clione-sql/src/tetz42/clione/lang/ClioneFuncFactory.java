@@ -37,7 +37,8 @@ public class ClioneFuncFactory {
 	public ClioneFunction parse(String src) {
 		this.src = src;
 		ClioneFunction cf = parseFunc(parseByDelim());
-		cf.check();
+		if (cf != null)
+			cf.check();
 		return cf;
 	}
 
@@ -70,7 +71,7 @@ public class ClioneFuncFactory {
 		else
 			// ':'
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end())));
+					.end())).resourceInfo(resourceInfo));
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}
@@ -87,23 +88,24 @@ public class ClioneFuncFactory {
 	}
 
 	private Unit genStr(Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(src,
-				m, "'")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(m,
+				"'")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
 	}
 
 	private Unit genSQL(Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(src,
-				m, "\"")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(m,
+				"\"")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
 	}
 
-	private String endQuotation(String src, Matcher m, String quot) {
+	private String endQuotation(Matcher m, String quot) {
 		int begin = m.end();
 		while (m.find()) {
 			if (quot.equals(m.group(0))) {
 				if (quot.equals(nextChar(src, m.end()))) {
 					m.find();
 				} else {
-					return src.substring(begin, m.start());
+					return src.substring(begin, m.start()).replace(quot + quot,
+							quot);
 				}
 			}
 		}
@@ -138,11 +140,10 @@ public class ClioneFuncFactory {
 	}
 
 	private ClioneFunction parseFunc(ClioneFunction cf) {
+		if (cf instanceof Unparsed)
+			cf = parseFunc(funcPtn.matcher(cf.getSrc()), 0, cf.getNext());
 		if (cf == null)
 			return null;
-		if (cf instanceof Unparsed) {
-			cf = parseFunc(funcPtn.matcher(cf.getSrc()), 0, cf.getNext());
-		}
 		cf.inside(parseFunc(cf.getInside()));
 		cf.nextFunc(parseFunc(cf.getNext()));
 		return cf;
@@ -157,8 +158,10 @@ public class ClioneFuncFactory {
 			return last;
 		clione.resourceInfo(resourceInfo);
 		if ("".equals(m.group(4))) { // it means group(4) matched as '$'.
-			clione.nextFunc(last.getNext());
-			last.nextFunc(null);
+			if (last != null) {
+				clione.nextFunc(last.getNext());
+				last.nextFunc(null);
+			}
 			return clione.inside(last);
 		}
 		return clione.nextFunc(parseFunc(m, m.end(), last));

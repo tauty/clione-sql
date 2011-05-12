@@ -17,7 +17,7 @@ PartCond{
 				childBlocks = ArrayList[ ]
 			}
 		]
-		isTerminated = true
+		literal = "LITERAL"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
 		resourceInfo = "FromTest"
