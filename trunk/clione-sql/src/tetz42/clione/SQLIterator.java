@@ -39,8 +39,8 @@ public class SQLIterator<T> implements Iterable<T> {
 			for (Field field : fields) {
 				if (fieldMap.containsKey(field.getName()))
 					continue;
-				fieldMap.put(field.getName(),
-						new FSet(field, field.isAccessible()));
+				fieldMap.put(field.getName(), new FSet(field, field
+						.isAccessible()));
 			}
 			entityClass = entityClass.getSuperclass();
 		}
@@ -68,9 +68,11 @@ public class SQLIterator<T> implements Iterable<T> {
 					return nextMap();
 				try {
 					// TODO implement correctly
-					if(clazz == String.class)
+					if (clazz == String.class)
 						return (T) executor.rs.getString(1);
-					
+					if (clazz == Integer.class)
+						return (T) new Integer(executor.rs.getInt(1));
+
 					T instance = clazz.newInstance();
 					for (int i = 1; i <= md.getColumnCount(); i++) {
 						FSet fset = fieldMap.get(md.getColumnLabel(i));
@@ -79,7 +81,9 @@ public class SQLIterator<T> implements Iterable<T> {
 						if (fset == null)
 							continue;
 						fset.f.setAccessible(true);
-						fset.f.set(instance, getSQLData(fset.f, executor.rs, i));
+						fset.f
+								.set(instance, getSQLData(fset.f, executor.rs,
+										i));
 						fset.f.setAccessible(fset.b);
 					}
 					return instance;
@@ -112,8 +116,8 @@ public class SQLIterator<T> implements Iterable<T> {
 			}
 			return (T) map;
 		} catch (SQLException e) {
-			throw new SQLRuntimeException(joinByCrlf(e.getMessage(),
-					executor.getSQLInfo()), e);
+			throw new SQLRuntimeException(joinByCrlf(e.getMessage(), executor
+					.getSQLInfo()), e);
 		}
 	}
 
