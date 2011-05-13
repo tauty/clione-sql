@@ -36,10 +36,10 @@ public class SQLExecutor {
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
-//	void setResourceInfo(String resourceInfo) {
-//		this.resourceInfo = resourceInfo;
-//		this.sqlGenerator.setResourceInfo(resourceInfo);
-//	}
+	// void setResourceInfo(String resourceInfo) {
+	// this.resourceInfo = resourceInfo;
+	// this.sqlGenerator.setResourceInfo(resourceInfo);
+	// }
 
 	public Map<String, Object> find() throws SQLException {
 		return this.find((Map<String, Object>) null);
@@ -83,8 +83,7 @@ public class SQLExecutor {
 
 		try {
 			ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for (Map<String, Object> map : SQLIterator.genIterator(this,
-					Map.class, paramMap)) {
+			for (Map<String, Object> map : each(Map.class, paramMap)) {
 				list.add(map);
 			}
 			return list;
@@ -141,6 +140,16 @@ public class SQLExecutor {
 		} finally {
 			this.closeStatement();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public SQLIterator<Map> each() throws SQLException {
+		// TODO think again.
+		return each(Map.class);
+	}
+
+	public <T> SQLIterator<T> each(Class<T> entityClass) throws SQLException {
+		return each(entityClass, null);
 	}
 
 	public <T> SQLIterator<T> each(Class<T> entityClass,

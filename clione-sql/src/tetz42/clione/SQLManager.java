@@ -16,6 +16,8 @@
 package tetz42.clione;
 
 import static tetz42.clione.util.ClioneUtil.*;
+
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -106,7 +108,7 @@ public class SQLManager {
 	public String getSQLInfo() {
 		return genSQLInfo(getSql(), getParams(), getResourceInfo());
 	}
-	
+
 	public String getResourceInfo() {
 		return this.resourceInfo;
 	}
@@ -124,6 +126,12 @@ public class SQLManager {
 				processingExecutorSet);
 		for (SQLExecutor executor : list)
 			executor.closeStatement();
+	}
+
+	public SQLExecutor useSQL(String sql) {
+		SQLExecutor sqlExecutor = new SQLExecutor(this,
+				new ByteArrayInputStream(sql.getBytes()), resourceInfo);
+		return sqlExecutor;
 	}
 
 	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {

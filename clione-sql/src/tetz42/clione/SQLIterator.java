@@ -60,12 +60,17 @@ public class SQLIterator<T> implements Iterable<T> {
 				}
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public T next() {
 				if (clazz == Map.class || clazz == HashMap.class
 						|| clazz == LinkedHashMap.class)
 					return nextMap();
 				try {
+					// TODO implement correctly
+					if(clazz == String.class)
+						return (T) executor.rs.getString(1);
+					
 					T instance = clazz.newInstance();
 					for (int i = 1; i <= md.getColumnCount(); i++) {
 						FSet fset = fieldMap.get(md.getColumnLabel(i));
