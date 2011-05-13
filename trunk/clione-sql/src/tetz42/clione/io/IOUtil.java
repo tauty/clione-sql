@@ -33,8 +33,8 @@ public class IOUtil {
 				byte[] b_all = new byte[SIZE * (list.size() - 1)
 						+ list.get(list.size() - 1).length];
 				for (int i = 0; i < list.size(); i++) {
-					System.arraycopy(list.get(i), 0, b_all, i * SIZE,
-							list.get(i).length);
+					System.arraycopy(list.get(i), 0, b_all, i * SIZE, list
+							.get(i).length);
 				}
 				return b_all;
 			} finally {
@@ -46,12 +46,11 @@ public class IOUtil {
 		}
 	}
 
-	public static Properties getProperties(String path) {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	public static Properties getProperties(String path, ClassLoader loader) {
 		InputStream in = loader.getResourceAsStream(path);
-		if(in == null)
+		if (in == null)
 			return null;
-		
+
 		Properties prop = new Properties();
 		try {
 			try {
@@ -64,6 +63,11 @@ public class IOUtil {
 					+ path, e);
 		}
 		return prop;
+	}
+
+	public static Properties getProperties(String path) {
+		return getProperties(path, Thread.currentThread()
+				.getContextClassLoader());
 	}
 
 }

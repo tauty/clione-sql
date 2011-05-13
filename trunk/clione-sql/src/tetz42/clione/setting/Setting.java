@@ -7,6 +7,7 @@ import tetz42.clione.io.IOUtil;
 
 public class Setting {
 
+	private static final ClassLoader loader = new ClioneClassLoader();
 	private static Setting setting;
 
 	public static Setting instance() {
@@ -17,7 +18,7 @@ public class Setting {
 				}
 			}
 		}
-		if(!setting.isLoaded)
+		if (!setting.isLoaded)
 			setting.load();
 		return setting;
 	}
@@ -35,17 +36,19 @@ public class Setting {
 
 	public String get(String key, String defaultValue) {
 		String value = get(key);
-		return value == null ? defaultValue : value;
+		return value != null ? value : defaultValue;
 	}
 
 	void load() {
-		prop = IOUtil.getProperties("clione.properties");
+		prop = IOUtil.getProperties("clione.properties", loader);
 		isLoaded = true;
 	}
 
-	void clear() {
+	// TODO clear method is not thread safe because a thread performing get method and 
+	// another thread call clear method, get method might throw NullPointerException. 
+	synchronized void clear() {
 		prop = null;
 		isLoaded = false;
-		ResourceBundle.clearCache();
+		ResourceBundle.clearCache(loader);
 	}
 }
