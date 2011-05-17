@@ -15,46 +15,57 @@ public class Extention extends ClioneFunction {
 
 	private static final Map<String, ExtFunction> funcMap = Collections
 			.synchronizedMap(new HashMap<String, ExtFunction>());
-	
-	static{
-		funcMap.put("ESC_FOR_LIKE", new ExtFunction() {
+
+	static {
+		funcMap.put("ESC_LIKE", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				for (int i = 0; i < inst.params.size(); i++) {
-					String value = String.valueOf(inst.params.get(i));
-					// TODO temporally implementation
-					value = value.replaceAll("([\\%_])", "\\$1");
-					inst.params.set(i, value);
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				if (insideInst != null) {
+					for (int i = 0; i < insideInst.params.size(); i++) {
+						String value = String.valueOf(insideInst.params.get(i));
+						// TODO temporally implementation
+						value = value.replaceAll("([\\%_])", "\\$1");
+						insideInst.params.set(i, value);
+					}
+					if (insideInst.next != null)
+						perform(insideInst.next, null);
+				}else if(nextInst != null){
+					
 				}
-				if (inst.next != null)
-					perform(inst.next);
-				return inst;
+				return insideInst;
 			}
+			
 		});
 		funcMap.put("IF", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				
-				return inst;
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				return null;
 			}
 		});
 		funcMap.put("REMOVE_UNLESS", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				
-				return inst;
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+
+				return null;
 			}
 		});
 		funcMap.put("AVOID_NULL", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				Instruction inst = insideInst != null ? insideInst : nextInst;
+				if (inst == null)
+					return new Instruction();
 				List<Object> newParams = new ArrayList<Object>();
-				for (Object e:inst.params) {
-					if(e != null)
+				for (Object e : inst.params) {
+					if (e != null)
 						newParams.add(e);
 				}
 				inst.params = newParams;
@@ -64,22 +75,25 @@ public class Extention extends ClioneFunction {
 		funcMap.put("CONCAT", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				return inst;
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				return null;
 			}
 		});
 		funcMap.put("TO_SQL", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				return inst;
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				return null;
 			}
 		});
 		funcMap.put("TO_STR", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction inst) {
-				return inst;
+			public Instruction perform(Instruction insideInst,
+					Instruction nextInst) {
+				return null;
 			}
 		});
 	}
@@ -119,18 +133,15 @@ public class Extention extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction;
-		if (inside == null)
-			instruction = getInstruction(paramMap);
-		else
-			instruction = inside.getInstruction(paramMap);
 		ExtFunction extFunction = funcMap.get(this.func);
 		if (extFunction == null) {
 			throw new ClioneFormatException("Unknown function name '"
 					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
 					+ this.resourceInfo);
 		}
-		return extFunction.perform(instruction);
+		Instruction insideInst = inside == null ? null : inside
+				.getInstruction(paramMap);
+		return extFunction.perform(insideInst, getInstruction(paramMap));
 	}
-	
+
 }
