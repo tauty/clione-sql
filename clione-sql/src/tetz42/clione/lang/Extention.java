@@ -22,21 +22,22 @@ public class Extention extends ClioneFunction {
 			@Override
 			public Instruction perform(Instruction insideInst,
 					Instruction nextInst) {
-				if (insideInst != null) {
-					for (int i = 0; i < insideInst.params.size(); i++) {
-						String value = String.valueOf(insideInst.params.get(i));
-						// TODO temporally implementation
-						value = value.replaceAll("([\\%_])", "\\$1");
-						insideInst.params.set(i, value);
-					}
-					if (insideInst.next != null)
-						perform(insideInst.next, null);
-				}else if(nextInst != null){
-					
-				}
-				return insideInst;
+				return insideInst != null ? escape(insideInst)
+						: escape(nextInst);
 			}
-			
+
+			private Instruction escape(Instruction inst) {
+				for (int i = 0; i < inst.params.size(); i++) {
+					String value = String.valueOf(inst.params.get(i));
+					// TODO temporally implementation
+					value = value.replaceAll("([\\%_])", "\\$1");
+					inst.params.set(i, value);
+				}
+				if (inst.next != null)
+					escape(inst.next);
+				return inst;
+			}
+
 		});
 		funcMap.put("IF", new ExtFunction() {
 
