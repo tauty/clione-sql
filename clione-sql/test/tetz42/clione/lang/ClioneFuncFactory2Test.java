@@ -28,6 +28,26 @@ public class ClioneFuncFactory2Test {
 	}
 	
 	@Test
+	public void doller_no_param() {
+		try {
+			ClioneFuncFactory.get("FromTest").parse("$ TAKO IKA NAMAKO");
+			fail();
+		} catch (ClioneFormatException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void doller_wrong_param() {
+		try {
+			ClioneFuncFactory.get("FromTest").parse("$:TAKO");
+			fail();
+		} catch (ClioneFormatException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
 	public void if_params_literal() {
 		ClioneFunction clione = ClioneFuncFactory.get("FromTest").parse(
 				"%IF(TAKO IKA NAMAKO) :SAKANA");

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import tetz42.clione.exception.UnsupportedTypeException;
 import tetz42.clione.io.IOUtil;
@@ -147,5 +148,15 @@ public class ClioneUtil {
 		throw new UnsupportedTypeException("The type(" + clazz.getName()
 				+ ") is not supported. Field name:" + f.toGenericString()
 				+ ", Class name:" + f.getDeclaringClass().getName());
+	}
+
+	private static final Pattern ptn = Pattern.compile("([%_#\\[％＿])");
+
+	public static String escapeBySharp(String src) {
+		return src == null ? null : ptn.matcher(src).replaceAll("#$1");
+	}
+
+	public static String escapeBySharp(Object obj) {
+		return obj == null ? null : escapeBySharp(String.valueOf(obj));
 	}
 }

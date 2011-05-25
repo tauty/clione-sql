@@ -1,13 +1,4 @@
 Extention{
-	funcMap = SynchronizedMap{
-		"TO_STR": { }
-		"TO_SQL": { }
-		"CONCAT": { }
-		"REMOVE_UNLESS": { }
-		"ESC_FOR_LIKE": { }
-		"IF": { }
-		"AVOID_NULL": { }
-	}
 	func = "IF"
 	isNegative = false
 	inside = Parenthesises{
