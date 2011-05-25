@@ -38,7 +38,7 @@ abstract public class AbstractParam extends ClioneFunction {
 								+ " or inserting white space between them."
 								+ "\nResource info:" + resourceInfo);
 			}
-			this.param = inside;
+			this.param = inside.resourceInfo(resourceInfo);
 		}
 		return this;
 	}

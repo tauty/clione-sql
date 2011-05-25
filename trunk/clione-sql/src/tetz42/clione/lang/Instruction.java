@@ -6,11 +6,12 @@ import java.util.List;
 public class Instruction {
 
 	/**
-	 * In case params.size is one and replacement is null -> '?' and bind params
+	 * In case params.size is one and replacement is null -> '?' and bind params<br>
 	 * In case params.size is three and replacement is null -> '?, ?, ?' and
-	 * bind params In case params is null and replacement is 'aaa' -> 'aaa' In
-	 * case params.size is two and replacement is 'CONCAT(?, ''%'', ?)' ->
-	 * 'CONCAT(?, ''%'', ?)' and bind params
+	 * bind params<br>
+	 * In case params is null and replacement is 'aaa' -> 'aaa' <br>
+	 * In case params.size is two and replacement is 'CONCAT(?, ''%'', ?)' ->
+	 * 'CONCAT(?, ''%'', ?)' and bind params<br>
 	 */
 	public List<Object> params = new ArrayList<Object>();
 	public String replacement;
@@ -20,8 +21,10 @@ public class Instruction {
 	public Instruction next = null;
 
 	public Instruction merge() {
-		if (next != null)
+		if (next != null){
 			this.merge(next.merge());
+			next = null;
+		}
 		return this;
 	}
 

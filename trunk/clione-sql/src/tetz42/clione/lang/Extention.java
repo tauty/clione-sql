@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,50 +18,50 @@ public class Extention extends ClioneFunction {
 			.synchronizedMap(new HashMap<String, ExtFunction>());
 
 	static {
-		funcMap.put("ESC_LIKE", new ExtFunction() {
+		putFunction("L", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
-				return insideInst != null ? escape(insideInst)
-						: escape(nextInst);
+					Instruction nextInst, boolean isNegative) {
+				if (insideInst != null) {
+					escapeParams(insideInst);
+				} else if (nextInst != null) {
+					escapeParams(nextInst);
+				}
+				return insideInst;
 			}
 
-			private Instruction escape(Instruction inst) {
+			private void escapeParams(Instruction inst) {
 				for (int i = 0; i < inst.params.size(); i++) {
-					String value = String.valueOf(inst.params.get(i));
-					// TODO temporally implementation
-					value = value.replaceAll("([\\%_])", "\\$1");
-					inst.params.set(i, value);
+					inst.params.set(i, escapeBySharp(inst.params.get(i)));
 				}
 				if (inst.next != null)
-					escape(inst.next);
-				return inst;
+					escapeParams(inst.next);
 			}
 
 		});
-		funcMap.put("IF", new ExtFunction() {
+		putFunction("IF", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 				return null;
 			}
 		});
-		funcMap.put("REMOVE_UNLESS", new ExtFunction() {
+		putFunction("IFLN", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 
 				return null;
 			}
 		});
-		funcMap.put("AVOID_NULL", new ExtFunction() {
+		putFunction("DELNULL", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 				Instruction inst = insideInst != null ? insideInst : nextInst;
 				if (inst == null)
 					return new Instruction();
@@ -73,34 +74,38 @@ public class Extention extends ClioneFunction {
 				return inst;
 			}
 		});
-		funcMap.put("CONCAT", new ExtFunction() {
+		putFunction("CONCAT", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 				return null;
 			}
 		});
-		funcMap.put("TO_SQL", new ExtFunction() {
+		putFunction("TO_SQL", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 				return null;
 			}
 		});
-		funcMap.put("TO_STR", new ExtFunction() {
+		putFunction("TO_STR", new ExtFunction() {
 
 			@Override
 			public Instruction perform(Instruction insideInst,
-					Instruction nextInst) {
+					Instruction nextInst, boolean isNegative) {
 				return null;
 			}
 		});
 	}
 
-	public static void setFunction(String keyword, ExtFunction f) {
-		funcMap.put(keyword, f);
+	public static ExtFunction putFunction(String keyword, ExtFunction f) {
+		return funcMap.put(keyword, f);
+	}
+
+	public static ExtFunction getFunction(String keyword) {
+		return funcMap.get(keyword);
 	}
 
 	protected final String func;
@@ -142,7 +147,8 @@ public class Extention extends ClioneFunction {
 		}
 		Instruction insideInst = inside == null ? null : inside
 				.getInstruction(paramMap);
-		return extFunction.perform(insideInst, getInstruction(paramMap));
+		return extFunction.perform(insideInst, getInstruction(paramMap),
+				isNegative);
 	}
 
 }
