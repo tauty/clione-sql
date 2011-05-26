@@ -33,9 +33,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.SQLManager;
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.exception.WrapException;
+import tetz42.clione.util.ResultMap;
 
 public class SQLManagerTest {
 
@@ -162,7 +162,7 @@ public class SQLManagerTest {
 	public void findAllmap_by_1_param() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
-		List<Map<String, Object>> list = man.findAll(params("$age", 31));
+		List<ResultMap> list = man.findAll(params("$age", 31));
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "findAllmap_by_1_param");
 	}
@@ -171,7 +171,7 @@ public class SQLManagerTest {
 	public void findAllmap_by_no_param() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/Select.sql");
 
-		List<Map<String, Object>> list = man.findAll();
+		List<ResultMap> list = man.findAll();
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "findAllmap_by_no_param");
 	}

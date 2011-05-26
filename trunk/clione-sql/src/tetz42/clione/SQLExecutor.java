@@ -14,6 +14,7 @@ import java.util.Map;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.parsar.SQLParser;
+import tetz42.clione.util.ResultMap;
 
 public class SQLExecutor {
 
@@ -36,11 +37,6 @@ public class SQLExecutor {
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
-	// void setResourceInfo(String resourceInfo) {
-	// this.resourceInfo = resourceInfo;
-	// this.sqlGenerator.setResourceInfo(resourceInfo);
-	// }
-
 	public Map<String, Object> find() throws SQLException {
 		return this.find((Map<String, Object>) null);
 	}
@@ -50,15 +46,15 @@ public class SQLExecutor {
 		return hashValue;
 	}
 
-	public Map<String, Object> find(Object paramObj) throws SQLException {
+	public ResultMap find(Object paramObj) throws SQLException {
 		return this.find(params(paramObj));
 	}
 
-	public Map<String, Object> find(Map<String, Object> paramMap)
+	public ResultMap find(Map<String, Object> paramMap)
 			throws SQLException {
 		try {
-			for (Map<String, Object> map : SQLIterator.genIterator(this,
-					Map.class, paramMap)) {
+			for (ResultMap map : SQLIterator.genIterator(this,
+					ResultMap.class, paramMap)) {
 				return map;
 			}
 			return null;
@@ -69,21 +65,21 @@ public class SQLExecutor {
 		}
 	}
 
-	public List<Map<String, Object>> findAll() throws SQLException {
+	public List<ResultMap> findAll() throws SQLException {
 		return this.findAll((Map<String, Object>) null);
 	}
 
-	public List<Map<String, Object>> findAll(Object paramObj)
+	public List<ResultMap> findAll(Object paramObj)
 			throws SQLException {
 		return this.findAll(params(paramObj));
 	}
 
-	public List<Map<String, Object>> findAll(Map<String, Object> paramMap)
+	public List<ResultMap> findAll(Map<String, Object> paramMap)
 			throws SQLException {
 
 		try {
-			ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for (Map<String, Object> map : each(Map.class, paramMap)) {
+			ArrayList<ResultMap> list = new ArrayList<ResultMap>();
+			for (ResultMap map : each(ResultMap.class, paramMap)) {
 				list.add(map);
 			}
 			return list;
@@ -142,10 +138,8 @@ public class SQLExecutor {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public SQLIterator<Map> each() throws SQLException {
-		// TODO think again.
-		return each(Map.class);
+	public SQLIterator<ResultMap> each() throws SQLException {
+		return each(ResultMap.class);
 	}
 
 	public <T> SQLIterator<T> each(Class<T> entityClass) throws SQLException {
