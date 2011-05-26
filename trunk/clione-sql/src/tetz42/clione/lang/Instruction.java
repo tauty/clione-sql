@@ -37,7 +37,6 @@ public class Instruction {
 		return this;
 	}
 
-	// TODO move this function to SQLExecuter
 	public String genQuestions() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < params.size(); i++) {
