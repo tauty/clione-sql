@@ -124,7 +124,7 @@ public class ClioneFuncFactory {
 		return src.substring(pos, pos + 1);
 	}
 
-	static class Unit {
+	private static class Unit {
 		Unit clioneFunc(ClioneFunction clioneFunc) {
 			this.clioneFunc = clioneFunc;
 			return this;
