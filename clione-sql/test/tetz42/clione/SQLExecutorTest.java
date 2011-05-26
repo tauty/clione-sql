@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.SQLManagerTest.Tameshi;
+import tetz42.clione.util.ResultMap;
 
 public class SQLExecutorTest {
 
@@ -88,7 +89,7 @@ public class SQLExecutorTest {
 	@Test
 	public void findmapAll_by_dto_param() throws IOException, SQLException {
 		SQLExecutor exe = sqlManager().useFile(getClass(), "exesql/Select.sql");
-		List<Map<String, Object>> people = exe.findAll(new ParamDto(31, "%H%"));
+		List<ResultMap> people = exe.findAll(new ParamDto(31, "%H%"));
 		assertEqualsWithFile(people, getClass(), "findmapAll_by_dto_param");
 	}
 
@@ -164,14 +165,14 @@ public class SQLExecutorTest {
 
 	@Test
 	public void find_by_age_on() throws Exception {
-		List<Map<String, Object>> people = sqlManager().useFile(getClass(),
+		List<ResultMap> people = sqlManager().useFile(getClass(),
 				"exesql/AmpersandSelect.sql").findAll(paramsOn("age"));
 		assertEqualsWithFile(people, getClass(), "find_by_age_on");
 	}
 
 	@Test
 	public void find_by_age_and_namePart_on() throws Exception {
-		List<Map<String, Object>> people = sqlManager().useFile(getClass(),
+		List<ResultMap> people = sqlManager().useFile(getClass(),
 				"exesql/AmpersandSelect.sql").findAll(paramsOn("age", "namePart"));
 		assertEqualsWithFile(people, getClass(), "find_by_age_and_namePart_on");
 	}
