@@ -24,7 +24,7 @@ public class Extention extends ClioneFunction {
 			public Instruction perform() {
 				Instruction inst = getFunction("ESCLIKE").perform();
 				inst = getFunction("CONCAT").perform(inst);
-				inst.replacement = inst.replacement + " ESCAPE '#' ";
+				inst.replacement = "? ESCAPE '#'";
 				return inst;
 			}
 		});
@@ -44,8 +44,34 @@ public class Extention extends ClioneFunction {
 		putFunction("CONCAT", new ExtFunction() {
 
 			@Override
-			public Instruction perform() {
-				return null;
+			protected Instruction perform(Instruction inst) {
+				StringBuilder sb = new StringBuilder();
+				while(inst != null) {
+					if(inst.replacement != null) {
+						sb.append(inst.replacement);
+						continue;
+					}
+					for (Object param : inst.params) {
+						sb.append(param);
+					}
+					inst = inst.next;
+				}
+				Instruction resultInst = new Instruction();
+				resultInst.params.add(sb.toString());
+				return resultInst;
+			}
+		});
+		putFunction("DELNULL", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				List<Object> newParams = new ArrayList<Object>();
+				for (Object e : inst.params) {
+					if (e != null)
+						newParams.add(e);
+				}
+				inst.params = newParams;
+				return inst;
 			}
 		});
 		putFunction("IF", new ExtFunction() {
@@ -61,22 +87,6 @@ public class Extention extends ClioneFunction {
 			public Instruction perform() {
 
 				return null;
-			}
-		});
-		putFunction("DELNULL", new ExtFunction() {
-
-			@Override
-			public Instruction perform() {
-				Instruction inst = getValidInstruction();
-				if (inst == null)
-					return new Instruction();
-				List<Object> newParams = new ArrayList<Object>();
-				for (Object e : inst.params) {
-					if (e != null)
-						newParams.add(e);
-				}
-				inst.params = newParams;
-				return inst;
 			}
 		});
 		putFunction("TO_SQL", new ExtFunction() {
