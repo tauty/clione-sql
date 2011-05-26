@@ -21,38 +21,44 @@ public class Extention extends ClioneFunction {
 		putFunction("L", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
-				if (insideInst != null) {
-					escapeParams(insideInst);
-				} else if (nextInst != null) {
-					escapeParams(nextInst);
-				}
-				return insideInst;
+			public Instruction perform() {
+				Instruction inst = getFunction("ESCLIKE").perform();
+				inst = getFunction("CONCAT").perform(inst);
+				inst.replacement = inst.replacement + " ESCAPE '#' ";
+				return inst;
 			}
+		});
+		putFunction("ESCLIKE", new ExtFunction() {
 
-			private void escapeParams(Instruction inst) {
+			@Override
+			protected Instruction perform(Instruction inst) {
 				for (int i = 0; i < inst.params.size(); i++) {
 					inst.params.set(i, escapeBySharp(inst.params.get(i)));
 				}
 				if (inst.next != null)
-					escapeParams(inst.next);
+					perform(inst.next);
+				return inst;
 			}
 
+		});
+		putFunction("CONCAT", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				return null;
+			}
 		});
 		putFunction("IF", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
+			public Instruction perform() {
 				return null;
 			}
 		});
 		putFunction("IFLN", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
+			public Instruction perform() {
 
 				return null;
 			}
@@ -60,9 +66,8 @@ public class Extention extends ClioneFunction {
 		putFunction("DELNULL", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
-				Instruction inst = insideInst != null ? insideInst : nextInst;
+			public Instruction perform() {
+				Instruction inst = getValidInstruction();
 				if (inst == null)
 					return new Instruction();
 				List<Object> newParams = new ArrayList<Object>();
@@ -74,27 +79,17 @@ public class Extention extends ClioneFunction {
 				return inst;
 			}
 		});
-		putFunction("CONCAT", new ExtFunction() {
-
-			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
-				return null;
-			}
-		});
 		putFunction("TO_SQL", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
+			public Instruction perform() {
 				return null;
 			}
 		});
 		putFunction("TO_STR", new ExtFunction() {
 
 			@Override
-			public Instruction perform(Instruction insideInst,
-					Instruction nextInst, boolean isNegative) {
+			public Instruction perform() {
 				return null;
 			}
 		});
@@ -145,10 +140,13 @@ public class Extention extends ClioneFunction {
 					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
 					+ this.resourceInfo);
 		}
-		Instruction insideInst = inside == null ? null : inside
-				.getInstruction(paramMap);
-		return extFunction.perform(insideInst, getInstruction(paramMap),
-				isNegative);
-	}
+		// initial process
+		ExtFunction.set(this, paramMap);
 
+		Instruction instruction = extFunction.perform();
+		// finally process
+		ExtFunction.clear();
+
+		return instruction;
+	}
 }
