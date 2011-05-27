@@ -19,6 +19,12 @@ public class Instruction {
 	public boolean doNothing = false;
 	public boolean useValueInBack = false;
 	public Instruction next = null;
+	
+	public Instruction clearNext() {
+		Instruction next = this.next;
+		this.next = null;
+		return next;
+	}
 
 	public Instruction merge() {
 		if (next != null){

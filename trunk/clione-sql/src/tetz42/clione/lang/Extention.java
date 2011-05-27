@@ -1,6 +1,7 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.util.ClioneUtil.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,6 +84,18 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			public Instruction perform() {
+				Instruction condition = getInsideInstruction();
+				Instruction sage = null;
+				if (condition != null) {
+					condition.merge();
+				} else {
+					condition = getNextInstruction();
+					if (condition == null)
+						// TODO message
+						throw new ClioneFormatException("");
+					sage = condition.clearNext();
+				}
+
 				return null;
 			}
 		});
@@ -91,6 +104,14 @@ public class Extention extends ClioneFunction {
 			@Override
 			public Instruction perform() {
 
+				return null;
+			}
+		});
+		putFunction("INCLUDE", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				// TODO implementation
 				return null;
 			}
 		});
