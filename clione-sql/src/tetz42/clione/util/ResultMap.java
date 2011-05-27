@@ -1,8 +1,8 @@
 package tetz42.clione.util;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public class ResultMap extends HashMap<String, Object> {
+public class ResultMap extends LinkedHashMap<String, Object> {
 
 	/**
 	 * 

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import tetz42.clione.exception.SQLRuntimeException;
 import tetz42.clione.exception.WrapException;
+import tetz42.clione.util.ResultMap;
 
 public class SQLIterator<T> implements Iterable<T> {
 
@@ -63,8 +64,7 @@ public class SQLIterator<T> implements Iterable<T> {
 			@SuppressWarnings("unchecked")
 			@Override
 			public T next() {
-				if (clazz == Map.class || clazz == HashMap.class
-						|| clazz == LinkedHashMap.class)
+				if (clazz == ResultMap.class)
 					return nextMap();
 				try {
 					// TODO implement correctly
@@ -109,7 +109,7 @@ public class SQLIterator<T> implements Iterable<T> {
 
 	@SuppressWarnings("unchecked")
 	private T nextMap() {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		ResultMap map = new ResultMap();
 		try {
 			for (int i = 1; i <= md.getColumnCount(); i++) {
 				map.put(md.getColumnLabel(i), executor.rs.getObject(i));
