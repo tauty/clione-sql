@@ -1,7 +1,0 @@
-ArrayList[
-	LinkedHashMap{
-		"id": 4
-		"name": "Hiroko Hara"
-		"age": 31
-	}
-]

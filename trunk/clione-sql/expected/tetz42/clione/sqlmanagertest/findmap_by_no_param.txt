@@ -1,5 +1,0 @@
-LinkedHashMap{
-	"id": 0
-	"name": "Takao Kawada"
-	"age": 35
-}
