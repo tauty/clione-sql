@@ -14,13 +14,18 @@ public class DefaultParam extends AbstractParam {
 	}
 
 	@Override
+	protected Instruction caseParamExists(ParamMap paramMap,
+			Instruction paramInst) {
+		return paramInst;
+	}
+			
+	@Override
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {
-		Instruction instruction = getNextInstruction(paramMap);
-		if(instruction.params.size() == 0) {
-			instruction.useValueInBack = true;
-		}
-		return instruction;
+		Instruction nextInst = getNextInstruction(paramMap);
+		if(nextInst == null)
+			return new Instruction().useValueInBack();
+		return nextInst;
 	}
 	
 	@Override

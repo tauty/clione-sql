@@ -67,4 +67,12 @@ public class ClioneFuncTest {
 		assertEqualsWithFile(instruction.merge(), getClass(), "dollers_bind_null_merged");
 	}
 
+	@Test
+	public void hatenas_bind_first() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"?PARAM1 ?PARAM2");
+		Instruction instruction = cf.perform(params("PARAM1", "tako"));
+		assertEqualsWithFile(instruction, getClass(), "hatenas_bind_first");
+	}
+
 }
