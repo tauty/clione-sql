@@ -42,6 +42,10 @@ public class SQLGenerator {
 	private String resourceInfo;
 	private final Object[] nullValues;
 
+	public SQLGenerator() {
+		this(null);
+	}
+
 	public SQLGenerator(Object[] nullValues) {
 		this.nullValues = nullValues;
 	}
