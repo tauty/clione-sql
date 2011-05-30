@@ -35,6 +35,11 @@ public class Instruction {
 		return this;
 	}
 
+	public Instruction useValueInBack() {
+		this.useValueInBack = true;
+		return this;
+	}
+	
 	public String getReplacement() {
 		return replacement != null ? replacement : genQuestions();
 	}
