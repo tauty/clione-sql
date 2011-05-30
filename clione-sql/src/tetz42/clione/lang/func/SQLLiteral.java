@@ -23,7 +23,7 @@ public class SQLLiteral extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction = getInstruction(paramMap);
+		Instruction instruction = getNextInstruction(paramMap);
 		SQLGenerator sqlGenerator = new SQLGenerator(null);
 		instruction.replacement = sqlGenerator.genSql(paramMap, this.nodes);
 		if (sqlGenerator.params != null && sqlGenerator.params.size() != 0) {

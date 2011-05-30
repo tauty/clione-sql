@@ -14,12 +14,31 @@ public class Instruction {
 	 * 'CONCAT(?, ''%'', ?)' and bind params<br>
 	 */
 	public List<Object> params = new ArrayList<Object>();
-	public String replacement;
-	public boolean isNodeRequired = true;
+	public boolean isNodeDisposed = false;
 	public boolean doNothing = false;
 	public boolean useValueInBack = false;
+	public String replacement;
 	public Instruction next = null;
-	
+
+	public Instruction nodeDispose() {
+		this.isNodeDisposed = true;
+		return this;
+	}
+
+	public Instruction doNothing() {
+		this.doNothing = true;
+		return this;
+	}
+
+	public Instruction next(Instruction next) {
+		this.next = next;
+		return this;
+	}
+
+	public String getReplacement() {
+		return replacement != null ? replacement : genQuestions();
+	}
+
 	public Instruction clearNext() {
 		Instruction next = this.next;
 		this.next = null;
@@ -27,7 +46,7 @@ public class Instruction {
 	}
 
 	public Instruction merge() {
-		if (next != null){
+		if (next != null) {
 			this.merge(next.merge());
 			next = null;
 		}
@@ -36,10 +55,20 @@ public class Instruction {
 
 	public Instruction merge(Instruction another) {
 		params.addAll(another.params);
-		if (isNodeRequired)
-			isNodeRequired = another.isNodeRequired;
-		if (replacement == null)
-			replacement = another.replacement;
+		if (!isNodeDisposed)
+			isNodeDisposed = another.isNodeDisposed;
+		if (!doNothing)
+			doNothing = another.doNothing;
+		if (!useValueInBack)
+			useValueInBack = another.useValueInBack;
+		if (replacement != null || another.replacement != null) {
+			String repOne = this.getReplacement();
+			String repAno = another.getReplacement();
+			if (repOne.endsWith("?") && repAno.startsWith("?"))
+				replacement = repOne + ", " + repOne;
+			else
+				replacement = repOne + repAno;
+		}
 		return this;
 	}
 

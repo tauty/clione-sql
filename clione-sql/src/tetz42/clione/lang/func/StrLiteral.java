@@ -13,7 +13,7 @@ public class StrLiteral extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction = getInstruction(paramMap);
+		Instruction instruction = getNextInstruction(paramMap);
 		instruction.replacement = instruction.replacement == null ? this.str
 				: this.str + instruction.replacement;
 		return instruction;

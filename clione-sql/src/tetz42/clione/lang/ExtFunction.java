@@ -20,12 +20,12 @@ public abstract class ExtFunction {
 
 	protected Instruction getInsideInstruction() {
 		ClioneFunction cf = curExtention.get().getInside();
-		return cf == null ? null : cf.getInstruction(curParamMap.get());
+		return cf == null ? null : cf.getNextInstruction(curParamMap.get());
 	}
 
 	protected Instruction getNextInstruction() {
 		ClioneFunction cf = curExtention.get().getNext();
-		return cf == null ? null : cf.getInstruction(curParamMap.get());
+		return cf == null ? null : cf.getNextInstruction(curParamMap.get());
 	}
 
 	protected boolean isNegative() {
