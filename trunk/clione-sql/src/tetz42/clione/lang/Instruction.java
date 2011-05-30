@@ -39,7 +39,7 @@ public class Instruction {
 		this.useValueInBack = true;
 		return this;
 	}
-	
+
 	public String getReplacement() {
 		return replacement != null ? replacement : genQuestions();
 	}
@@ -60,11 +60,11 @@ public class Instruction {
 
 	public Instruction merge(Instruction another) {
 		params.addAll(another.params);
-		if (!isNodeDisposed)
+		if (!isNodeDisposed) // true win
 			isNodeDisposed = another.isNodeDisposed;
-		if (!doNothing)
+		if (doNothing) // false win
 			doNothing = another.doNothing;
-		if (!useValueInBack)
+		if (useValueInBack) // false win
 			useValueInBack = another.useValueInBack;
 		if (replacement != null || another.replacement != null) {
 			String repOne = this.getReplacement();
@@ -72,7 +72,7 @@ public class Instruction {
 			if (repOne.endsWith("?") && repAno.startsWith("?"))
 				replacement = repOne + ", " + repOne;
 			else
-				replacement = repOne + repAno;
+				replacement = repOne + " " + repAno;
 		}
 		return this;
 	}

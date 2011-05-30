@@ -11,25 +11,30 @@ import tetz42.clione.util.ParamMap;
 
 public class SQLLiteral extends ClioneFunction {
 
-	private final List<LineNode> nodes;
+	private List<LineNode> nodes;
 	private final String literal;
 
 	public SQLLiteral(String literal) {
-		this.literal = literal.replaceAll("\\\\(.)", "$1");
+		this.literal = literal;
+	}
+	
+	@Override
+	public ClioneFunction resourceInfo(String resourceInfo) {
 		StringReader reader = new StringReader(this.literal);
-		// TODO resourceInfo is null. fix this bug.
 		this.nodes = new SQLParser(resourceInfo).parse(reader);
+		return super.resourceInfo(resourceInfo);
 	}
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction = getNextInstruction(paramMap);
-		SQLGenerator sqlGenerator = new SQLGenerator(null);
-		instruction.replacement = sqlGenerator.genSql(paramMap, this.nodes);
+		Instruction inst = new Instruction();
+		// TODO nullValues
+		SQLGenerator sqlGenerator = new SQLGenerator();
+		inst.replacement = sqlGenerator.genSql(paramMap, this.nodes);
 		if (sqlGenerator.params != null && sqlGenerator.params.size() != 0) {
-			instruction.params.addAll(sqlGenerator.params);
+			inst.params.addAll(sqlGenerator.params);
 		}
-		return instruction;
+		return inst.next(getNextInstruction(paramMap));
 	}
 
 	@Override

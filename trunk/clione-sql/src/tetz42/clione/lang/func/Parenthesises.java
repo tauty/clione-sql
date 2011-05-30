@@ -13,8 +13,7 @@ public class Parenthesises extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.inside.perform(paramMap);
 	}
 
 	@Override

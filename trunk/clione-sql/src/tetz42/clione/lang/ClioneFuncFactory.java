@@ -19,9 +19,10 @@ import tetz42.clione.lang.func.StrLiteral;
 
 public class ClioneFuncFactory {
 
-	private static final Pattern delimPtn = Pattern.compile("[()'\":]");
+	private static final Pattern delimPtn = Pattern.compile("[()'\":;]");
 	private static final Pattern funcPtn = Pattern
 			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
+	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
 
 	public static ClioneFuncFactory get(String resourceInfo) {
 		return new ClioneFuncFactory(resourceInfo);
@@ -68,10 +69,12 @@ public class ClioneFuncFactory {
 			resultUnit = parenthesises(m);
 		else if (delim.equals(")"))
 			resultUnit = new Unit().endPar(true);
+		else if (delim.equals(":"))
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(unesc(src
+					.substring(m.end()))).resourceInfo(resourceInfo));
 		else
-			// ':'
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end())).resourceInfo(resourceInfo));
+					.end())).resourceInfo(resourceInfo)); // ';'
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}
@@ -88,18 +91,21 @@ public class ClioneFuncFactory {
 	}
 
 	private Unit genStr(Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new StrLiteral(endQuotation(m,
-				"'")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new StrLiteral(
+				unesc(endQuotation(m, "'"))).resourceInfo(resourceInfo)),
+				parseByDelim(m, m.end()));
 	}
 
 	private Unit genSQL(Matcher m) {
-		return joinUnit(new Unit().clioneFunc(new SQLLiteral(endQuotation(m,
-				"\"")).resourceInfo(resourceInfo)), parseByDelim(m, m.end()));
+		return joinUnit(new Unit().clioneFunc(new SQLLiteral(
+				unesc(endQuotation(m, "\""))).resourceInfo(resourceInfo)),
+				parseByDelim(m, m.end()));
 	}
 
 	private String endQuotation(Matcher m, String quot) {
 		int begin = m.end();
 		while (m.find()) {
+			// TODO consider about backslash escape
 			if (quot.equals(m.group(0))) {
 				if (quot.equals(nextChar(src, m.end()))) {
 					m.find();
@@ -188,5 +194,9 @@ public class ClioneFuncFactory {
 						.end(2)));
 		}
 		throw new ClioneFormatException("Unsupported Grammer :" + src);
+	}
+
+	private static String unesc(String s) {
+		return backslashPtn.matcher(s).replaceAll("$1");
 	}
 }
