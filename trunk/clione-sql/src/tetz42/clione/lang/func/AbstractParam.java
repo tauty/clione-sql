@@ -1,6 +1,7 @@
 package tetz42.clione.lang.func;
 
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.lang.LangUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
@@ -87,21 +88,13 @@ abstract public class AbstractParam extends ClioneFunction {
 
 	protected Instruction caseParamExists(ParamMap paramMap,
 			Instruction paramInst) {
-		return getInstruction(paramMap).merge(paramInst);
+		return paramInst.next(getNextInstruction(paramMap));
 	}
 
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {
-		paramInst.isNodeRequired = false;
-		return paramInst;
+		return paramInst.nodeDispose();
 	}
 
-	protected final boolean isParamExists(Instruction instruction) {
-		for (Object e : instruction.params) {
-			if (e != null)
-				return true;
-		}
-		return false;
-	}
 
 }

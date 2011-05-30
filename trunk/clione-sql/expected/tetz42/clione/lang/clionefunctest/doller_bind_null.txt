@@ -1,8 +1,8 @@
 Instruction{
 	params = ArrayList[
-		100
+		null
 	]
-	isNodeDisposed = false
+	isNodeDisposed = true
 	doNothing = false
 	useValueInBack = false
 	replacement = null

@@ -1,5 +1,8 @@
 Instruction{
 	params = ArrayList[
+		1
+		10
+		null
 		100
 	]
 	isNodeDisposed = false

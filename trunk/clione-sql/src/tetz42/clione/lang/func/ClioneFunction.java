@@ -44,8 +44,8 @@ public abstract class ClioneFunction {
 	public void check() {
 	}
 
-	public Instruction getInstruction(ParamMap paramMap) {
-		return next == null ? new Instruction() : next.perform(paramMap);
+	public Instruction getNextInstruction(ParamMap paramMap) {
+		return next == null ? null : next.perform(paramMap);
 	}
 
 	public abstract Instruction perform(ParamMap paramMap);

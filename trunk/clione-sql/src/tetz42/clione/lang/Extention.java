@@ -1,6 +1,7 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.lang.LangUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,26 +86,29 @@ public class Extention extends ClioneFunction {
 			@Override
 			public Instruction perform() {
 				Instruction condition = getInsideInstruction();
-				Instruction sage = null;
 				if (condition != null) {
-					condition.merge();
+					if(!isParamExists(condition.merge()))
+						return new Instruction().doNothing();
+					return getNextInstruction();
 				} else {
 					condition = getNextInstruction();
 					if (condition == null)
 						// TODO message
 						throw new ClioneFormatException("");
-					sage = condition.clearNext();
+					if(!isParamExists(condition))
+						return new Instruction().doNothing();
+					return condition.clearNext();
 				}
-
-				return null;
 			}
 		});
 		putFunction("IFLN", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
-
-				return null;
+				Instruction inst = getFunction("IF").perform();
+				if(inst.doNothing)
+					inst.nodeDispose();
+				return inst;
 			}
 		});
 		putFunction("INCLUDE", new ExtFunction() {

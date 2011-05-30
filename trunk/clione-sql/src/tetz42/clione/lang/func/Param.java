@@ -2,6 +2,7 @@ package tetz42.clione.lang.func;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import tetz42.clione.lang.Instruction;
@@ -17,23 +18,15 @@ public class Param extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction = getInstruction(paramMap);
-		Object val = paramMap.get(key);
-		if (val == null)
-			return instruction;
-		Collection<?> vals = convToCol(val);
-		if (vals == null) {
-			instruction.params.add(val);
-		} else {
-			if (vals.size() == 0)
-				return instruction;
-			instruction.params.addAll(vals);
-		}
-		return instruction;
+		Instruction inst = new Instruction();
+		inst.params.addAll(convToCol(paramMap.get(key)));
+		return inst.next(getNextInstruction(paramMap));
 	}
 
 	private Collection<?> convToCol(Object val) {
-		if (val.getClass().isArray()) {
+		if (val == null) {
+			return Arrays.asList(val);
+		} else if (val.getClass().isArray()) {
 			ArrayList<Object> list = new ArrayList<Object>();
 			for (int i = 0; i < Array.getLength(val); i++) {
 				list.add(Array.get(val, i));
@@ -41,7 +34,8 @@ public class Param extends ClioneFunction {
 			return list;
 		} else if (val instanceof Collection<?>)
 			return (Collection<?>) val;
-		return null;
+		else
+			return Arrays.asList(val);
 	}
 
 	@Override

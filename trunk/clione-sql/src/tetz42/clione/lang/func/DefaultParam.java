@@ -16,7 +16,7 @@ public class DefaultParam extends AbstractParam {
 	@Override
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {
-		Instruction instruction = getInstruction(paramMap);
+		Instruction instruction = getNextInstruction(paramMap);
 		if(instruction.params.size() == 0) {
 			instruction.useValueInBack = true;
 		}

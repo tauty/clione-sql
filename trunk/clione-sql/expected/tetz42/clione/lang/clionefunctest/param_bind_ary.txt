@@ -1,6 +1,10 @@
 Instruction{
 	params = ArrayList[
 		100
+		200
+		300
+		400
+		500
 	]
 	isNodeDisposed = false
 	doNothing = false
