@@ -70,11 +70,11 @@ public class ClioneFuncFactory {
 		else if (delim.equals(")"))
 			resultUnit = new Unit().endPar(true);
 		else if (delim.equals(":"))
-			resultUnit = new Unit().clioneFunc(new SQLLiteral(unesc(src
-					.substring(m.end()))).resourceInfo(resourceInfo));
-		else
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end())).resourceInfo(resourceInfo)); // ';'
+					.end())).resourceInfo(resourceInfo));
+		else
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(unesc(src
+					.substring(m.end()))).resourceInfo(resourceInfo)); // ';'
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}

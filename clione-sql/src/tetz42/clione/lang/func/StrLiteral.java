@@ -8,15 +8,14 @@ public class StrLiteral extends ClioneFunction {
 	private String str;
 
 	public StrLiteral(String str) {
-		this.str = str.replaceAll("\\\\(.)", "$1");
+		this.str = str;
 	}
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction instruction = getNextInstruction(paramMap);
-		instruction.replacement = instruction.replacement == null ? this.str
-				: this.str + instruction.replacement;
-		return instruction;
+		Instruction inst = new Instruction();
+		inst.replacement = str;
+		return inst.next(getNextInstruction(paramMap));
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class ClioneFuncFactoryTest {
 		ClioneFunction clione = ClioneFuncFactory
 				.get("FromTest")
 				.parse(
-						"KEY :/\\* INNER_PARAM *\\/'tako' IN('\\\\100', '\\\\200', '\\\\nec')");
+						"KEY ;/\\* INNER_PARAM *\\/'tako' IN('\\\\100', '\\\\200', '\\\\nec')");
 		assertEqualsWithFile(clione, getClass(), "param_escaped_literal");
 	}
 

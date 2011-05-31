@@ -1,0 +1,8 @@
+Instruction{
+	params = ArrayList[ ]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ "
+	next = null
+}
