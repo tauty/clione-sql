@@ -87,7 +87,7 @@ public class Extention extends ClioneFunction {
 			public Instruction perform() {
 				Instruction condition = getInsideInstruction();
 				if (condition != null) {
-					if(!isParamExists(condition.merge()))
+					if (!isParamExists(condition.merge()))
 						return new Instruction().doNothing();
 					return getNextInstruction();
 				} else {
@@ -95,7 +95,7 @@ public class Extention extends ClioneFunction {
 					if (condition == null)
 						// TODO message
 						throw new ClioneFormatException("");
-					if(!isParamExists(condition))
+					if (!isParamExists(condition))
 						return new Instruction().doNothing();
 					return condition.clearNext();
 				}
@@ -106,7 +106,7 @@ public class Extention extends ClioneFunction {
 			@Override
 			public Instruction perform() {
 				Instruction inst = getFunction("IF").perform();
-				if(inst.doNothing)
+				if (inst.doNothing)
 					inst.nodeDispose();
 				return inst;
 			}
@@ -180,13 +180,14 @@ public class Extention extends ClioneFunction {
 					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
 					+ this.resourceInfo);
 		}
-		// initial process
-		ExtFunction.set(this, paramMap);
+		try {
+			// initial process
+			ExtFunction.set(this, paramMap);
 
-		Instruction instruction = extFunction.perform();
-		// finally process
-		ExtFunction.clear();
-
-		return instruction;
+			return extFunction.perform();
+		} finally {
+			// finally process
+			ExtFunction.clear();
+		}
 	}
 }
