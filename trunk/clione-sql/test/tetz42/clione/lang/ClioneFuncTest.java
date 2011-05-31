@@ -164,18 +164,34 @@ public class ClioneFuncTest {
 	public void colon() {
 		ClioneFunction cf = ClioneFuncFactory
 				.get("ClioneFuncTest")
-				.parse(":SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
+				.parse(":SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
-		assertEqualsWithFile(inst, getClass(), "colon");
+		assertEqualsWithFile(inst, getClass(), "semicolon");
 	}
 
 	@Test
 	public void semicolon() {
 		ClioneFunction cf = ClioneFuncFactory
 				.get("ClioneFuncTest")
-				.parse(";SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
+				.parse(";SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
-		assertEqualsWithFile(inst, getClass(), "semicolon");
+		assertEqualsWithFile(inst, getClass(), "colon");
 	}
 
+	@Test
+	public void singlequote() {
+		ClioneFunction cf = ClioneFuncFactory
+				.get("ClioneFuncTest")
+				.parse("'SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ '");
+		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
+		assertEqualsWithFile(inst, getClass(), "singlequote");
+	}
+	@Test
+	public void singlequote_escape() {
+		ClioneFunction cf = ClioneFuncFactory
+				.get("ClioneFuncTest")
+				.parse("'SELECT tel, ''\\\\'' FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /* NAME */ '");
+		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
+		assertEqualsWithFile(inst, getClass(), "singlequote_escape");
+	}
 }
