@@ -89,7 +89,8 @@ public class Extention extends ClioneFunction {
 				if (condition != null) {
 					if (!isParamExists(condition.merge()))
 						return new Instruction().doNothing();
-					return getNextInstruction();
+					Instruction nextInst = getNextInstruction();
+					return nextInst != null ? nextInst : new Instruction();
 				} else {
 					condition = getNextInstruction();
 					if (condition == null)
@@ -97,7 +98,8 @@ public class Extention extends ClioneFunction {
 						throw new ClioneFormatException("");
 					if (!isParamExists(condition))
 						return new Instruction().doNothing();
-					return condition.clearNext();
+					Instruction nextInst = condition.clearNext();
+					return nextInst != null ? nextInst : new Instruction();
 				}
 			}
 		});

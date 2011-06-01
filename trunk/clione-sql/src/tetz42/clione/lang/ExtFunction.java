@@ -2,6 +2,7 @@ package tetz42.clione.lang;
 
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
+import tetz42.util.ObjDumper4j;
 
 public abstract class ExtFunction {
 
@@ -19,13 +20,14 @@ public abstract class ExtFunction {
 	}
 
 	protected Instruction getInsideInstruction() {
-		ClioneFunction cf = curExtention.get().getInside();
-		return cf == null ? null : cf.getNextInstruction(curParamMap.get());
+		ClioneFunction inside = curExtention.get().getInside();
+		return inside == null ? null : inside.perform(curParamMap.get());
 	}
 
 	protected Instruction getNextInstruction() {
-		ClioneFunction cf = curExtention.get().getNext();
-		return cf == null ? null : cf.getNextInstruction(curParamMap.get());
+		ClioneFunction next = curExtention.get().getNext();
+		System.out.println(ObjDumper4j.dumper(next));
+		return next == null ? null : next.perform(curParamMap.get());
 	}
 
 	protected boolean isNegative() {
