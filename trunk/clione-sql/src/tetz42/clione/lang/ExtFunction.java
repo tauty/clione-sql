@@ -2,21 +2,23 @@ package tetz42.clione.lang;
 
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.ObjDumper4j;
 
 public abstract class ExtFunction {
 
 	private static ThreadLocal<Extention> curExtention = new ThreadLocal<Extention>();
 	private static ThreadLocal<ParamMap> curParamMap = new ThreadLocal<ParamMap>();
+	private static ThreadLocal<String> curFuncName = new ThreadLocal<String>();
 
-	static void set(Extention extention, ParamMap paramMap) {
+	static void set(Extention extention, ParamMap paramMap, String funcName) {
 		curExtention.set(extention);
 		curParamMap.set(paramMap);
+		curFuncName.set(funcName);
 	}
 
 	static void clear() {
 		curExtention.set(null);
 		curParamMap.set(null);
+		curFuncName.set(null);
 	}
 
 	protected Instruction getInsideInstruction() {
@@ -26,8 +28,11 @@ public abstract class ExtFunction {
 
 	protected Instruction getNextInstruction() {
 		ClioneFunction next = curExtention.get().getNext();
-		System.out.println(ObjDumper4j.dumper(next));
 		return next == null ? null : next.perform(curParamMap.get());
+	}
+
+	protected String getFuncName() {
+		return curFuncName.get();
 	}
 
 	protected boolean isNegative() {

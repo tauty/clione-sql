@@ -52,10 +52,10 @@ public class Extention extends ClioneFunction {
 				while (inst != null) {
 					if (inst.replacement != null) {
 						sb.append(inst.replacement);
-						continue;
-					}
-					for (Object param : inst.params) {
-						sb.append(param);
+					} else {
+						for (Object param : inst.params) {
+							sb.append(param);
+						}
 					}
 					inst = inst.next;
 				}
@@ -94,8 +94,11 @@ public class Extention extends ClioneFunction {
 				} else {
 					condition = getNextInstruction();
 					if (condition == null)
-						// TODO message
-						throw new ClioneFormatException("");
+						throw new ClioneFormatException(joinByCrlf("%"
+								+ getFuncName()
+								+ " must have next parameter like below:", "%"
+								+ getFuncName() + " PARAM1 or %"
+								+ getFuncName() + " PARAM1 :text"));
 					if (!isParamExists(condition))
 						return new Instruction().doNothing();
 					Instruction nextInst = condition.clearNext();
@@ -184,7 +187,7 @@ public class Extention extends ClioneFunction {
 		}
 		try {
 			// initial process
-			ExtFunction.set(this, paramMap);
+			ExtFunction.set(this, paramMap, this.func);
 
 			return extFunction.perform();
 		} finally {
