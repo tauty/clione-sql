@@ -65,6 +65,22 @@ public class ExtentionTest {
 	}
 
 	@Test
+	public void if_params_onetrue() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%IF(PARAM1 $PARAM2) ");
+		Instruction instruction = cf.perform(paramsOn("PARAM2"));
+		assertEqualsWithFile(instruction, getClass(), "if_params_onetrue");
+	}
+
+	@Test
+	public void if_params_allfalse() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%IF(PARAM1 $PARAM2) ");
+		Instruction instruction = cf.perform(paramsOn());
+		assertEqualsWithFile(instruction, getClass(), "if_params_allfalse");
+	}
+
+	@Test
 	public void if_false() {
 		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
 				"%IF PARAM");
@@ -187,8 +203,7 @@ public class ExtentionTest {
 				"%L('%' PARAM1 '_' PARAM2 '%')");
 		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
 				"PARAM2", "#200%_"));
-		assertEqualsWithFile(instruction, getClass(),
-				"l_in_params_exsists");
+		assertEqualsWithFile(instruction, getClass(), "l_in_params_exsists");
 	}
 
 	@Test
@@ -237,4 +252,19 @@ public class ExtentionTest {
 		assertEqualsWithFile(instruction, getClass(), "tosql_null");
 	}
 
+	@Test
+	public void tostr() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%TO_STR(',' $PARAM)");
+		Instruction instruction = cf.perform(params("PARAM", "ASC"));
+		assertEqualsWithFile(instruction, getClass(), "tostr");
+	}
+
+	@Test
+	public void tostr_null() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%TO_STR(',' $PARAM)");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "tostr_null");
+	}
 }

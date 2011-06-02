@@ -50,17 +50,19 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				StringBuilder sb = new StringBuilder();
+				Instruction resultInst = inst;
 				while (inst != null) {
 					if (inst.replacement != null) {
 						sb.append(inst.replacement);
 					} else {
 						for (Object param : inst.params) {
-							sb.append(param);
+							if (!isEmpty(param))
+								sb.append(param);
 						}
 					}
 					inst = inst.next;
 				}
-				Instruction resultInst = new Instruction();
+				resultInst.merge().replacement(null).clearParams();
 				resultInst.params.add(sb.toString());
 				return resultInst;
 			}
@@ -90,9 +92,11 @@ public class Extention extends ClioneFunction {
 				if (condition != null) {
 					if (isParamExists(condition.merge()) ^ isNegative()) {
 						Instruction nextInst = getNextInstruction();
-						return nextInst != null ? nextInst : new Instruction();
+						return nextInst != null ? nextInst : new Instruction()
+								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						return new Instruction().doNothing();
+						condition.doNothing().clearParams().clearNext();
+						return condition;
 					}
 				} else {
 					condition = getNextInstruction();
@@ -104,9 +108,12 @@ public class Extention extends ClioneFunction {
 								+ getFuncName() + " PARAM1 :text"));
 					if (isParamExists(condition) ^ isNegative()) {
 						Instruction nextInst = condition.clearNext();
-						return nextInst != null ? nextInst : new Instruction();
+						return nextInst != null ? nextInst : new Instruction()
+								.clearParams().nodeDispose(
+										condition.isNodeDisposed);
 					} else {
-						return new Instruction().doNothing();
+						condition.doNothing().clearParams().clearNext();
+						return condition;
 					}
 				}
 			}
@@ -134,8 +141,10 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = getFunction("CONCAT").perform(inst);
-				return new SQLLiteral(inst.params.get(0).toString())
-						.resourceInfo(getResourceInfo()).perform(getParamMap());
+				Instruction sqlInst = new SQLLiteral(inst.params.get(0)
+						.toString()).resourceInfo(getResourceInfo()).perform(
+						getParamMap());
+				return inst.clearParams().merge(sqlInst);
 			}
 		});
 		putFunction("TO_STR", new ExtFunction() {
@@ -143,7 +152,9 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = getFunction("CONCAT").perform(inst);
-				return new Instruction().replacement(inst.params.get(0).toString());
+				return new Instruction().replacement(
+						inst.params.get(0).toString()).nodeDispose(
+						inst.isNodeDisposed);
 			}
 		});
 	}
