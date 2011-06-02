@@ -36,6 +36,10 @@ public class ClioneUtil {
 		return s == null ? true : s.length() == 0 ? true : false;
 	}
 
+	public static boolean isEmpty(Object o) {
+		return o == null ? true : isEmpty(String.valueOf(o));
+	}
+
 	public static boolean isNotEmpty(String s) {
 		return !isEmpty(s);
 	}

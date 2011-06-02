@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,11 @@ public class Instruction {
 	public Instruction next = null;
 
 	public Instruction nodeDispose() {
-		this.isNodeDisposed = true;
+		return this.nodeDispose(true);
+	}
+
+	public Instruction nodeDispose(boolean isNodeDisposed) {
+		this.isNodeDisposed = isNodeDisposed;
 		return this;
 	}
 
@@ -47,6 +52,11 @@ public class Instruction {
 
 	public String getReplacement() {
 		return replacement != null ? replacement : genQuestions();
+	}
+
+	public Instruction clearParams() {
+		this.params.clear();
+		return this;
 	}
 
 	public Instruction clearNext() {
@@ -77,7 +87,7 @@ public class Instruction {
 			if (repOne.endsWith("?") && repAno.startsWith("?"))
 				replacement = repOne + ", " + repOne;
 			else
-				replacement = repOne + " " + repAno;
+				replacement = repOne + (isEmpty(repOne) ? "" : " ") + repAno;
 		}
 		return this;
 	}
