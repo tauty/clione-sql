@@ -35,6 +35,11 @@ public class Instruction {
 		return this;
 	}
 
+	public Instruction replacement(String replacement) {
+		this.replacement = replacement;
+		return this;
+	}
+
 	public Instruction useValueInBack() {
 		this.useValueInBack = true;
 		return this;

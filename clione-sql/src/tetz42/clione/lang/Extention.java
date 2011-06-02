@@ -12,6 +12,7 @@ import java.util.Map;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
+import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.util.ParamMap;
 
 public class Extention extends ClioneFunction {
@@ -64,7 +65,7 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("DELNULL", new ExtFunction() {
+		putFunction("COMPACT", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -87,10 +88,12 @@ public class Extention extends ClioneFunction {
 			public Instruction perform() {
 				Instruction condition = getInsideInstruction();
 				if (condition != null) {
-					if (!isParamExists(condition.merge()))
+					if (isParamExists(condition.merge()) ^ isNegative()) {
+						Instruction nextInst = getNextInstruction();
+						return nextInst != null ? nextInst : new Instruction();
+					} else {
 						return new Instruction().doNothing();
-					Instruction nextInst = getNextInstruction();
-					return nextInst != null ? nextInst : new Instruction();
+					}
 				} else {
 					condition = getNextInstruction();
 					if (condition == null)
@@ -99,10 +102,12 @@ public class Extention extends ClioneFunction {
 								+ " must have next parameter like below:", "%"
 								+ getFuncName() + " PARAM1 or %"
 								+ getFuncName() + " PARAM1 :text"));
-					if (!isParamExists(condition))
+					if (isParamExists(condition) ^ isNegative()) {
+						Instruction nextInst = condition.clearNext();
+						return nextInst != null ? nextInst : new Instruction();
+					} else {
 						return new Instruction().doNothing();
-					Instruction nextInst = condition.clearNext();
-					return nextInst != null ? nextInst : new Instruction();
+					}
 				}
 			}
 		});
@@ -127,15 +132,18 @@ public class Extention extends ClioneFunction {
 		putFunction("TO_SQL", new ExtFunction() {
 
 			@Override
-			public Instruction perform() {
-				return null;
+			protected Instruction perform(Instruction inst) {
+				inst = getFunction("CONCAT").perform(inst);
+				return new SQLLiteral(inst.params.get(0).toString())
+						.resourceInfo(getResourceInfo()).perform(getParamMap());
 			}
 		});
 		putFunction("TO_STR", new ExtFunction() {
 
 			@Override
-			public Instruction perform() {
-				return null;
+			protected Instruction perform(Instruction inst) {
+				inst = getFunction("CONCAT").perform(inst);
+				return new Instruction().replacement(inst.params.get(0).toString());
 			}
 		});
 	}
@@ -187,7 +195,7 @@ public class Extention extends ClioneFunction {
 		}
 		try {
 			// initial process
-			ExtFunction.set(this, paramMap, this.func);
+			ExtFunction.set(this, paramMap);
 
 			return extFunction.perform();
 		} finally {

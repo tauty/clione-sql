@@ -9,7 +9,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.exception.ParameterNotFoundException;
 import tetz42.clione.lang.func.ClioneFunction;
 
 public class ExtentionTest {
@@ -28,6 +27,14 @@ public class ExtentionTest {
 				"%IF PARAM :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "if_true_with_sql");
+	}
+
+	@Test
+	public void ifnot_true_with_sql() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%!IF PARAM :ASC");
+		Instruction instruction = cf.perform(paramsOn("PARAM"));
+		assertEqualsWithFile(instruction, getClass(), "ifnot_true_with_sql");
 	}
 
 	@Test
@@ -71,6 +78,14 @@ public class ExtentionTest {
 				"%IF PARAM :ASC");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "if_false_with_sql");
+	}
+
+	@Test
+	public void ifnot_false_with_sql() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%!IF PARAM :ASC");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "ifnot_false_with_sql");
 	}
 
 	@Test
@@ -164,6 +179,62 @@ public class ExtentionTest {
 				"PARAM2", "#200%_"));
 		assertEqualsWithFile(instruction, getClass(),
 				"l_params_exsists_partmatch");
+	}
+
+	@Test
+	public void l_in_params_exsists() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%L('%' PARAM1 '_' PARAM2 '%')");
+		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
+				"PARAM2", "#200%_"));
+		assertEqualsWithFile(instruction, getClass(),
+				"l_in_params_exsists");
+	}
+
+	@Test
+	public void l_in_params_exsists_next() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%L('%' PARAM1 '_' PARAM2 '%') PARAM3");
+		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
+				"PARAM2", "#200%_").$("PARAM3", 1000));
+		assertEqualsWithFile(instruction, getClass(),
+				"l_in_params_exsists_next");
+	}
+
+	@Test
+	public void delnull_list() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%COMPACT PARAM");
+		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
+				"tako", null, "ika", null, "namako")));
+		assertEqualsWithFile(instruction, getClass(), "delnull_list");
+	}
+
+	@Test
+	public void delnull_params() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%COMPACT PARAM1 PARAM2 PARAM3");
+		Instruction inst = cf.perform(params("PARAM1",
+				Arrays.asList("tako", null, "ika", null, "namako")).$("PARAM3",
+				"umiushi"));
+		assertEqualsWithFile(inst, getClass(), "delnull_params");
+		assertEqualsWithFile(inst.merge(), getClass(), "delnull_params_merged");
+	}
+
+	@Test
+	public void tosql() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%TO_SQL(',' $PARAM)");
+		Instruction instruction = cf.perform(params("PARAM", "ASC"));
+		assertEqualsWithFile(instruction, getClass(), "tosql");
+	}
+
+	@Test
+	public void tosql_null() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"%TO_SQL(',' $PARAM)");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "tosql_null");
 	}
 
 }

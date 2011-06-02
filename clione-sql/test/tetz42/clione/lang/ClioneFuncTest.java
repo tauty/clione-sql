@@ -69,6 +69,22 @@ public class ClioneFuncTest {
 	}
 
 	@Test
+	public void doller_not_bind_null() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"$!PARAM");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "doller_not_bind_null");
+	}
+
+	@Test
+	public void doller_not_bind_value() {
+		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+				"$!PARAM");
+		Instruction instruction = cf.perform(params("PARAM", "value"));
+		assertEqualsWithFile(instruction, getClass(), "doller_not_bind_value");
+	}
+
+	@Test
 	public void hatenas_bind_first() {
 		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
 				"?PARAM1 ?PARAM2 ?PARAM3");

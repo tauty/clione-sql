@@ -9,10 +9,6 @@ public class LineCond extends AbstractParam {
 		super(key, isNegative);
 	}
 
-	public LineCond(ClioneFunction inside, boolean isNegative)  {
-		super(inside, isNegative);
-	}
-
 	@Override
 	protected Instruction caseParamExists(ParamMap paramMap,
 			Instruction paramInst) {

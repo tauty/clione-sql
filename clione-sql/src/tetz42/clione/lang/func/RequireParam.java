@@ -11,10 +11,6 @@ public class RequireParam extends AbstractParam {
 		super(key, isNegative);
 	}
 	
-	public RequireParam(ClioneFunction inside, boolean isNegative) {
-		super(inside, isNegative);
-	}
-
 	@Override
 	protected Instruction caseParamNotExists(ParamMap paramMap,
 			Instruction paramInst) {
