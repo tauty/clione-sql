@@ -17,11 +17,6 @@ abstract public class AbstractParam extends ClioneFunction {
 			this.param = new Param(key);
 	}
 
-	public AbstractParam(ClioneFunction inside, boolean isNegative) {
-		this.isNegative = isNegative;
-		this.param = inside;
-	}
-
 	@Override
 	public ClioneFunction inside(ClioneFunction inside) {
 		if (inside != null && inside != this.param) {

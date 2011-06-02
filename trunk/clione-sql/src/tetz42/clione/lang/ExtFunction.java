@@ -7,18 +7,15 @@ public abstract class ExtFunction {
 
 	private static ThreadLocal<Extention> curExtention = new ThreadLocal<Extention>();
 	private static ThreadLocal<ParamMap> curParamMap = new ThreadLocal<ParamMap>();
-	private static ThreadLocal<String> curFuncName = new ThreadLocal<String>();
 
-	static void set(Extention extention, ParamMap paramMap, String funcName) {
+	static void set(Extention extention, ParamMap paramMap) {
 		curExtention.set(extention);
 		curParamMap.set(paramMap);
-		curFuncName.set(funcName);
 	}
 
 	static void clear() {
 		curExtention.set(null);
 		curParamMap.set(null);
-		curFuncName.set(null);
 	}
 
 	protected Instruction getInsideInstruction() {
@@ -32,7 +29,15 @@ public abstract class ExtFunction {
 	}
 
 	protected String getFuncName() {
-		return curFuncName.get();
+		return curExtention.get().func;
+	}
+
+	protected ParamMap getParamMap() {
+		return curParamMap.get();
+	}
+
+	protected String getResourceInfo() {
+		return curExtention.get().getResourceInfo();
 	}
 
 	protected boolean isNegative() {
@@ -44,16 +49,16 @@ public abstract class ExtFunction {
 		Instruction nextInst = getNextInstruction();
 		if (insideInst != null) {
 			insideInst = perform(insideInst);
-			if(nextInst == null)
+			if (nextInst == null)
 				return insideInst;
 			Instruction inst = insideInst;
-			while(inst.next != null) {
+			while (inst.next != null) {
 				inst = inst.next;
 			}
 			inst.next = nextInst;
 			return insideInst;
 		}
-		if(nextInst != null)
+		if (nextInst != null)
 			return perform(nextInst);
 		return new Instruction();
 	}
