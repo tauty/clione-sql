@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,6 +16,21 @@ import tetz42.clione.io.IOUtil;
 public class ClioneUtil {
 
 	public static final String CRLF = System.getProperty("line.separator");
+	private static ThreadLocal<List<String>> resourceInfoes = new ThreadLocal<List<String>>() {
+
+		@Override
+		protected List<String> initialValue() {
+			return new ArrayList<String>();
+		}
+	};
+
+	public static void addResouceInfo(String resourceInfo) {
+		resourceInfoes.get().add(resourceInfo);
+	}
+
+	public static String getResouceInfo() {
+		return joinByCrlf(resourceInfoes.get().toArray());
+	}
 
 	public static boolean isAllEmpty(String... strs) {
 		for (String s : strs) {

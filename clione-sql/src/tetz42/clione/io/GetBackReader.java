@@ -26,6 +26,7 @@ public class GetBackReader extends BufferedReader {
 	private static final Pattern joinPtn = Pattern.compile("--\\s*\\z");
 	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
 
+	int lineNo = 0;
 	String preLine;
 	String nextLine;
 
@@ -35,6 +36,7 @@ public class GetBackReader extends BufferedReader {
 
 	@Override
 	public String readLine() throws IOException {
+		lineNo++;
 		if (nextLine != null) {
 			String s = nextLine;
 			nextLine = null;
@@ -44,14 +46,18 @@ public class GetBackReader extends BufferedReader {
 		StringBuilder sb = new StringBuilder();
 		String line;
 		while (null != (line = super.readLine())) {
-			if (blankPtn.matcher(line).matches())
+			if (blankPtn.matcher(line).matches()) {
+				lineNo++;
 				continue;
+			}
 
 			sb.append(line);
-			if (joinPtn.matcher(line).find())
+			if (joinPtn.matcher(line).find()) {
+				lineNo++;
 				sb.append(CRLF);
-			else
+			} else {
 				break;
+			}
 		}
 
 		return preLine = sb.length() == 0 ? null : sb.toString();
@@ -59,5 +65,10 @@ public class GetBackReader extends BufferedReader {
 
 	public void backLine() {
 		nextLine = preLine;
+		lineNo--;
+	}
+	
+	public int getLineNo(){
+		return lineNo;
 	}
 }
