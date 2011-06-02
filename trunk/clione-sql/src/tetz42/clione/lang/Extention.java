@@ -95,8 +95,8 @@ public class Extention extends ClioneFunction {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						condition.doNothing().clearParams().clearNext();
-						return condition;
+						return new Instruction().doNothing().nodeDispose(
+								condition.isNodeDisposed);
 					}
 				} else {
 					condition = getNextInstruction();
@@ -109,11 +109,10 @@ public class Extention extends ClioneFunction {
 					if (isParamExists(condition) ^ isNegative()) {
 						Instruction nextInst = condition.clearNext();
 						return nextInst != null ? nextInst : new Instruction()
-								.clearParams().nodeDispose(
-										condition.isNodeDisposed);
+								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						condition.doNothing().clearParams().clearNext();
-						return condition;
+						return new Instruction().doNothing().nodeDispose(
+								condition.isNodeDisposed);
 					}
 				}
 			}
