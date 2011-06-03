@@ -25,7 +25,9 @@ public class LineNode {
 	public ArrayList<String> vals = new ArrayList<String>();
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 
-	public void merge(LineNode node) { 
+//	public boolean isDisposable = false;
+	
+	public void merge(LineNode node) {
 		// TODO implementation
 	}
 }
