@@ -20,6 +20,7 @@ import java.util.List;
 
 public class LineNode {
 	public StringBuilder sql = new StringBuilder();
+//	public List<PlaceHolder> holders = new ArrayList<PlaceHolder>();
 	public ArrayList<String> keys = new ArrayList<String>();
 	public ArrayList<String> vals = new ArrayList<String>();
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
