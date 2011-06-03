@@ -67,6 +67,7 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
+		putFunction("C", getFunction("CONCAT"));
 		putFunction("COMPACT", new ExtFunction() {
 
 			@Override
@@ -136,6 +137,7 @@ public class Extention extends ClioneFunction {
 			}
 		});
 		putFunction("TO_SQL", new ExtFunction() {
+			// TODO delete this after implementing 'INCLUDE'
 
 			@Override
 			protected Instruction perform(Instruction inst) {
