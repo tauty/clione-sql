@@ -15,8 +15,6 @@
  */
 package tetz42.clione;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.test.Util.*;
 
@@ -25,14 +23,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import tetz42.clione.SQLManagerTest.Tameshi;
 
 public class SQLIteratorTest {
 
