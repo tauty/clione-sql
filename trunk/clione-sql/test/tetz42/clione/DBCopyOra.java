@@ -19,7 +19,7 @@ public class DBCopyOra {
 		try {
 			new DBCopyOra().dropTables();
 			new DBCopyOra().copyTables();
-			// new DBCopyOra().copyDatas();
+			new DBCopyOra().copyDatas();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -31,6 +31,8 @@ public class DBCopyOra {
 			for (String tableName : dstManager.useSQL("select TNAME From tab")
 					.each(String.class)) {
 				// create
+				if (tableName.startsWith("BIN"))
+					continue;
 				StringBuilder dropSQL = new StringBuilder();
 				dropSQL.append("DROP TABLE ").append(tableName).append(CRLF);
 				System.out.println(dropSQL);
@@ -40,7 +42,6 @@ public class DBCopyOra {
 		} finally {
 			dstManager.closeStatement();
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,25 +55,35 @@ public class DBCopyOra {
 				StringBuilder createSQL = new StringBuilder();
 				createSQL.append("CREATE TABLE ").append(tableName).append("(")
 						.append(CRLF);
-				ArrayList<String> primaries = new ArrayList<String>();
 				for (Map map : srcManager.useSQL(
-						"show fields from " + tableName).each()) {
-					createSQL.append("\t").append(map.get("Field"))
-							.append("\t").append(map.get("Type"));
-					if (!isEmpty(map.get("Default")))
+						"select * from USER_TAB_COLUMNS where TABLE_NAME = '"
+								+ tableName + "' order by COLUMN_ID").each()) {
+					Object type = map.get("DATA_TYPE");
+					createSQL.append("\t").append(map.get("COLUMN_NAME"))
+							.append("\t").append(type);
+					if (!"DATE".equals(type) && !"BLOB".equals(type)
+							&& !"CLOB".equals(type))
+						createSQL.append("(").append(map.get("DATA_LENGTH"))
+								.append(")");
+					if (!isEmpty(map.get("DATA_DEFAULT")))
 						createSQL.append("\t").append("DEFAULT ").append(
-								map.get("Default"));
-					if ("NO".equals(map.get("Null")))
+								map.get("DATA_DEFAULT"));
+					if ("Y".equals(map.get("NULLABLE")))
 						createSQL.append("\t").append("NOT NULL");
-					if ("PRI".equals(map.get("Key")))
-						primaries.add(String.valueOf(map.get("Field")));
-					if (map.get("Extra") != null
-							&& !"".equals(map.get("Extra")))
-						createSQL.append("\t").append(map.get("Extra"));
+					// if (map.get("Extra") != null
+					// && !"".equals(map.get("Extra")))
+					// createSQL.append("\t").append(map.get("Extra"));
 					createSQL.append(",").append(CRLF);
 				}
 				createSQL.append("\t").append("PRIMARY\tKEY(");
-				for (String key : primaries) {
+				for (String key : srcManager
+						.useSQL(
+								"select COLUMN_NAME from USER_CONSTRAINTS c, USER_CONS_COLUMNS uc"
+										+ " where c.TABLE_NAME = '"
+										+ tableName
+										+ "' and c.CONSTRAINT_TYPE = 'P'"
+										+ " and c.CONSTRAINT_NAME = uc.CONSTRAINT_NAME")
+						.each(String.class)) {
 					createSQL.append(key).append(",");
 				}
 				createSQL.deleteCharAt(createSQL.length() - 1).append(")")
@@ -93,8 +104,8 @@ public class DBCopyOra {
 		SQLManager srcManager = sqlManager(getSrcConnection());
 		SQLManager dstManager = sqlManager(getDstConnection());
 		try {
-			for (String tableName : srcManager.useSQL("show tables").each(
-					String.class)) {
+			for (String tableName : srcManager.useSQL("select TNAME From tab")
+					.each(String.class)) {
 				System.out.println("[[[" + tableName + "]]]");
 				// create
 				for (Map map : srcManager.useSQL("select * from " + tableName)
@@ -134,14 +145,16 @@ public class DBCopyOra {
 
 	private Connection getSrcConnection() throws SQLException {
 		Connection con = DriverManager.getConnection(
-				"jdbc:oracle:thin:@localhost:1523:DBNAME", "USER1", "PASS1");
+				"jdbc:oracle:thin:@10.23.1.208:1523:LISNARDB", "CSX_UT_OOTA",
+				"CSX_UT_OOTA");
 		con.setAutoCommit(false);
 		return con;
 	}
 
 	private Connection getDstConnection() throws SQLException {
 		Connection con = DriverManager.getConnection(
-				"jdbc:oracle:thin:@localhost:1523:DBNAME", "USER2", "PASS2");
+				"jdbc:oracle:thin:@10.23.1.208:1523:LISNARDB",
+				"TSY_LEVEL_UP_OODA", "TSY_LEVEL_UP_OODA");
 		con.setAutoCommit(false);
 		return con;
 	}
