@@ -23,7 +23,7 @@ public class SQLExecutor {
 	final SQLGenerator sqlGenerator;
 	String resourceInfo = null;
 
-	final List<LineNode> lineTreeList;
+	final List<LineNode> lineNodes;
 
 	PreparedStatement stmt;
 	ResultSet rs;
@@ -31,7 +31,7 @@ public class SQLExecutor {
 	SQLExecutor(SQLManager manager, InputStream in, String resourceInfo) {
 		this.manager = manager;
 		this.resourceInfo = resourceInfo;
-		this.lineTreeList = new SQLParser(resourceInfo).parse(in);
+		this.lineNodes = new SQLParser(resourceInfo).parse(in);
 		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
 		this.sqlGenerator.setResourceInfo(resourceInfo);
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
@@ -203,7 +203,7 @@ public class SQLExecutor {
 	}
 
 	public String genSql(Map<String, Object> paramMap) {
-		String sql = sqlGenerator.genSql(paramMap, lineTreeList);
+		String sql = sqlGenerator.genSql(paramMap, lineNodes);
 		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
 		return sql;
 	}

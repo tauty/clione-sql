@@ -3,6 +3,7 @@ package tetz42.clione.util;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.test.Util.*;
 
 import org.junit.Test;
 
@@ -15,5 +16,43 @@ public class ClioneUtilTest {
 		assertThat(escapeBySharp("%_#[％＿"), is("#%#_###[#％#＿"));
 		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
 				is("#%#_###[#％#＿"));
+	}
+
+	@Test
+	public void resourceInfo0() {
+		try {
+			pushResouceInfo("zero.sql");
+			setLineNo(0);
+			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo0");
+		} finally {
+			assertEqualsWithFile(popResourceInfo(), getClass(), "resourceInfo0");
+		}
+	}
+
+	@Test
+	public void resourceInfo1() {
+		try {
+			pushResouceInfo("tako.sql");
+			setLineNo(100);
+			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo1");
+		} finally {
+			assertEqualsWithFile(popResourceInfo(), getClass(), "resourceInfo1");
+		}
+	}
+
+	@Test
+	public void resourceInfo2() {
+		try {
+			pushResouceInfo("tako.sql");
+			setLineNo(888);
+			pushResouceInfo("ika.sql");
+			setLineNo(1010);
+			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo2");
+		} finally {
+			assertEqualsWithFile(popResourceInfo(), getClass(),
+					"resourceInfo2_popped1");
+			assertEqualsWithFile(popResourceInfo(), getClass(),
+					"resourceInfo2_popped2");
+		}
 	}
 }

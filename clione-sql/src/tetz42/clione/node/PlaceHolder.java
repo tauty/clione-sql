@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.lang.ClioneFuncFactory;
 import tetz42.clione.lang.Instruction;
-import tetz42.clione.lang.LangUtil;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
 
 public class PlaceHolder {
-	private static Pattern ptn = Pattern.compile("\\A(=|in|is)\\s+.+",Pattern.CASE_INSENSITIVE);
+	private static Pattern ptn = Pattern.compile("\\A(=|in|is)\\s+.+",
+			Pattern.CASE_INSENSITIVE);
 
 	int begin;
 	int length = 0;
@@ -23,20 +23,22 @@ public class PlaceHolder {
 
 	public PlaceHolder(String src, String valueInBack) {
 		this.valueInBack = valueInBack;
-		this.clione = ClioneFuncFactory.get(getResouceInfo()).parse(src);
+		this.clione = ClioneFuncFactory.get(getResourceInfo()).parse(src);
 	}
 
 	public Instruction perform(ParamMap paramMap) {
 		Instruction inst = clione.perform(paramMap);
-		if(inst.useValueInBack){
+		if (inst.useValueInBack) {
 			return inst.replacement(valueInBack);
 		}
 		Matcher m = ptn.matcher(valueInBack);
-		if(m.matches()){
-			if(!isParamExists(inst)){
+		if (m.matches()) {
+			if (!isParamExists(inst)) {
 				inst.replacement(" IS NULL ").clearParams();
-			}else if(inst.params.size() == 1){
-				
+			} else if (inst.params.size() == 1) {
+				inst.replacement(" = " + inst.getReplacement() + " ");
+			} else {
+				inst.replacement(" IN (" + inst.getReplacement() + ") ");
 			}
 		}
 		return inst;

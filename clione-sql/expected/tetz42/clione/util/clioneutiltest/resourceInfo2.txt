@@ -1,0 +1,2 @@
+tako.sql, line number:888
+ika.sql, line number:1010

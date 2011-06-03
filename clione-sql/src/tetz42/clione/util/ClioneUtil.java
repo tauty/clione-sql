@@ -15,21 +15,50 @@ import tetz42.clione.io.IOUtil;
 
 public class ClioneUtil {
 
-	public static final String CRLF = System.getProperty("line.separator");
-	private static ThreadLocal<List<String>> resourceInfoes = new ThreadLocal<List<String>>() {
+	private static class ResInfoHolder {
+		String resourceInfo;
+		int lineNo;
+
+		private ResInfoHolder(String resourceInfo) {
+			this.resourceInfo = resourceInfo;
+		}
 
 		@Override
-		protected List<String> initialValue() {
-			return new ArrayList<String>();
+		public String toString() {
+			if(lineNo == 0) {
+				return resourceInfo + ", line number: Unknown";
+			}
+			return resourceInfo + ", line number:" + lineNo;
+		}
+
+	}
+
+	public static final String CRLF = System.getProperty("line.separator");
+	private static ThreadLocal<List<ResInfoHolder>> resourceInfoes = new ThreadLocal<List<ResInfoHolder>>() {
+
+		@Override
+		protected List<ResInfoHolder> initialValue() {
+			return new ArrayList<ResInfoHolder>();
 		}
 	};
 
-	public static void addResouceInfo(String resourceInfo) {
-		resourceInfoes.get().add(resourceInfo);
+	public static void pushResouceInfo(String resourceInfo) {
+		resourceInfoes.get().add(new ResInfoHolder(resourceInfo));
 	}
 
-	public static String getResouceInfo() {
+	public static void setLineNo(int lineNo) {
+		List<ResInfoHolder> list = resourceInfoes.get();
+		ResInfoHolder rh = list.get(list.size() - 1);
+		rh.lineNo = lineNo;
+	}
+
+	public static String getResourceInfo() {
 		return joinByCrlf(resourceInfoes.get().toArray());
+	}
+	
+	public static String popResourceInfo() {
+		List<ResInfoHolder> list = resourceInfoes.get();
+		return list.remove(list.size() - 1).toString();
 	}
 
 	public static boolean isAllEmpty(String... strs) {
