@@ -39,7 +39,6 @@ public class SQLGenerator {
 
 	public String sql;
 	public ArrayList<Object> params;
-	private String resourceInfo;
 	private final Object[] nullValues;
 
 	public SQLGenerator() {
@@ -48,10 +47,6 @@ public class SQLGenerator {
 
 	public SQLGenerator(Object[] nullValues) {
 		this.nullValues = nullValues;
-	}
-
-	public void setResourceInfo(String resourceInfo) {
-		this.resourceInfo = resourceInfo;
 	}
 
 	public String genSql(Map<String, Object> paramMap,
@@ -111,12 +106,13 @@ public class SQLGenerator {
 					return null;
 				if (key.startsWith("@"))
 					throw new ParameterNotFoundException("The parameter, '"
-							+ key + "', is required." + CRLF + resourceInfo);
+							+ key + "', is required." + CRLF
+							+ getResourceInfo());
 				if (vals != null && vals.size() == 0 && !key.startsWith("&")
 						&& !key.startsWith("?"))
 					throw new ParameterNotFoundException("Default parameter, '"
 							+ key + "', must not be empty list." + CRLF
-							+ resourceInfo);
+							+ getResourceInfo());
 			}
 
 			// '&' means without replace parameter.

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import tetz42.clione.SQLManager;
 import tetz42.clione.util.ParamMap;
+import tetz42.clione.util.ResultMap;
 
 public class DBCopy {
 
@@ -42,7 +43,6 @@ public class DBCopy {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyTables() throws SQLException {
 		SQLManager srcManager = sqlManager(getSrcConnection());
 		SQLManager dstManager = sqlManager(getDstConnection());
@@ -54,13 +54,13 @@ public class DBCopy {
 				createSQL.append("CREATE TABLE ").append(tableName).append("(")
 						.append(CRLF);
 				ArrayList<String> primaries = new ArrayList<String>();
-				for (Map map : srcManager.useSQL(
+				for (ResultMap map : srcManager.useSQL(
 						"show fields from " + tableName).each()) {
 					createSQL.append("\t").append(map.get("Field"))
 							.append("\t").append(map.get("Type"));
 					if (!isEmpty(map.get("Default")))
-						createSQL.append("\t").append("DEFAULT ").append(
-								map.get("Default"));
+						createSQL.append("\t").append("DEFAULT ")
+								.append(map.get("Default"));
 					if ("NO".equals(map.get("Null")))
 						createSQL.append("\t").append("NOT NULL");
 					if ("PRI".equals(map.get("Key")))
@@ -86,7 +86,6 @@ public class DBCopy {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyDatas() throws SQLException {
 		SQLManager srcManager = sqlManager(getSrcConnection());
 		SQLManager dstManager = sqlManager(getDstConnection());
@@ -95,15 +94,14 @@ public class DBCopy {
 					String.class)) {
 				System.out.println("[[[" + tableName + "]]]");
 				// create
-				for (Map map : srcManager.useSQL("select * from " + tableName)
-						.each()) {
+				for (ResultMap map : srcManager.useSQL(
+						"select * from " + tableName).each()) {
 					StringBuilder insertSQL = new StringBuilder();
 					StringBuilder valuesSQL = new StringBuilder();
 					ParamMap paramMap = new ParamMap();
-					insertSQL.append("INSERT INTO ").append(tableName).append(
-							"(").append(CRLF);
-					for (Object o : map.entrySet()) {
-						Map.Entry<String, Object> e = (Map.Entry<String, Object>) o;
+					insertSQL.append("INSERT INTO ").append(tableName)
+							.append("(").append(CRLF);
+					for (Map.Entry<String, Object> e : map.entrySet()) {
 						insertSQL.append("\t").append(e.getKey()).append(",")
 								.append(CRLF);
 						valuesSQL.append("\t").append("/* ").append(e.getKey())
@@ -111,9 +109,9 @@ public class DBCopy {
 						paramMap.$(e.getKey(), e.getValue());
 					}
 					valuesSQL.deleteCharAt(valuesSQL.length() - 3);
-					insertSQL.deleteCharAt(insertSQL.length() - 3).append(
-							") VALUES( ").append(CRLF).append(valuesSQL)
-							.append(")");
+					insertSQL.deleteCharAt(insertSQL.length() - 3)
+							.append(") VALUES( ").append(CRLF)
+							.append(valuesSQL).append(")");
 					System.out.println(insertSQL);
 					dstManager.useSQL(insertSQL.toString()).update(paramMap);
 				}

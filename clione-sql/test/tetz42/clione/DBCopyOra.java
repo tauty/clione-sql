@@ -5,11 +5,10 @@ import static tetz42.clione.SQLManager.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Map;
 
-import tetz42.clione.SQLManager;
 import tetz42.clione.util.ParamMap;
+import tetz42.clione.util.ResultMap;
 
 public class DBCopyOra {
 
@@ -44,7 +43,6 @@ public class DBCopyOra {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyTables() throws SQLException {
 		SQLManager srcManager = sqlManager(getSrcConnection());
 		SQLManager dstManager = sqlManager(getDstConnection());
@@ -55,7 +53,7 @@ public class DBCopyOra {
 				StringBuilder createSQL = new StringBuilder();
 				createSQL.append("CREATE TABLE ").append(tableName).append("(")
 						.append(CRLF);
-				for (Map map : srcManager.useSQL(
+				for (ResultMap map : srcManager.useSQL(
 						"select * from USER_TAB_COLUMNS where TABLE_NAME = '"
 								+ tableName + "' order by COLUMN_ID").each()) {
 					Object type = map.get("DATA_TYPE");
@@ -66,8 +64,8 @@ public class DBCopyOra {
 						createSQL.append("(").append(map.get("DATA_LENGTH"))
 								.append(")");
 					if (!isEmpty(map.get("DATA_DEFAULT")))
-						createSQL.append("\t").append("DEFAULT ").append(
-								map.get("DATA_DEFAULT"));
+						createSQL.append("\t").append("DEFAULT ")
+								.append(map.get("DATA_DEFAULT"));
 					if ("Y".equals(map.get("NULLABLE")))
 						createSQL.append("\t").append("NOT NULL");
 					// if (map.get("Extra") != null
@@ -77,12 +75,11 @@ public class DBCopyOra {
 				}
 				createSQL.append("\t").append("PRIMARY\tKEY(");
 				for (String key : srcManager
-						.useSQL(
-								"select COLUMN_NAME from USER_CONSTRAINTS c, USER_CONS_COLUMNS uc"
-										+ " where c.TABLE_NAME = '"
-										+ tableName
-										+ "' and c.CONSTRAINT_TYPE = 'P'"
-										+ " and c.CONSTRAINT_NAME = uc.CONSTRAINT_NAME")
+						.useSQL("select COLUMN_NAME from USER_CONSTRAINTS c, USER_CONS_COLUMNS uc"
+								+ " where c.TABLE_NAME = '"
+								+ tableName
+								+ "' and c.CONSTRAINT_TYPE = 'P'"
+								+ " and c.CONSTRAINT_NAME = uc.CONSTRAINT_NAME")
 						.each(String.class)) {
 					createSQL.append(key).append(",");
 				}
@@ -99,7 +96,6 @@ public class DBCopyOra {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyDatas() throws SQLException {
 		SQLManager srcManager = sqlManager(getSrcConnection());
 		SQLManager dstManager = sqlManager(getDstConnection());
@@ -108,15 +104,14 @@ public class DBCopyOra {
 					.each(String.class)) {
 				System.out.println("[[[" + tableName + "]]]");
 				// create
-				for (Map map : srcManager.useSQL("select * from " + tableName)
-						.each()) {
+				for (ResultMap map : srcManager.useSQL(
+						"select * from " + tableName).each()) {
 					StringBuilder insertSQL = new StringBuilder();
 					StringBuilder valuesSQL = new StringBuilder();
 					ParamMap paramMap = new ParamMap();
-					insertSQL.append("INSERT INTO ").append(tableName).append(
-							"(").append(CRLF);
-					for (Object o : map.entrySet()) {
-						Map.Entry<String, Object> e = (Map.Entry<String, Object>) o;
+					insertSQL.append("INSERT INTO ").append(tableName)
+							.append("(").append(CRLF);
+					for (Map.Entry<String, Object> e : map.entrySet()) {
 						insertSQL.append("\t").append(e.getKey()).append(",")
 								.append(CRLF);
 						valuesSQL.append("\t").append("/* ").append(e.getKey())
@@ -124,9 +119,9 @@ public class DBCopyOra {
 						paramMap.$(e.getKey(), e.getValue());
 					}
 					valuesSQL.deleteCharAt(valuesSQL.length() - 3);
-					insertSQL.deleteCharAt(insertSQL.length() - 3).append(
-							") VALUES( ").append(CRLF).append(valuesSQL)
-							.append(")");
+					insertSQL.deleteCharAt(insertSQL.length() - 3)
+							.append(") VALUES( ").append(CRLF)
+							.append(valuesSQL).append(")");
 					System.out.println(insertSQL);
 					dstManager.useSQL(insertSQL.toString()).update(paramMap);
 				}

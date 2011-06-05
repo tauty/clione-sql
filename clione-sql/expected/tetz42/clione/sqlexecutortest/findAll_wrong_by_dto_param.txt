@@ -10,4 +10,4 @@ SELECT
 --- params ---
 [31, %H%]
 --- resource ---
-SQL file name:exesql/WrongSelect.sql, class:tetz42.clione.SQLExecutorTest
+class:SQLExecutorTest, SQL file name:exesql/WrongSelect.sql

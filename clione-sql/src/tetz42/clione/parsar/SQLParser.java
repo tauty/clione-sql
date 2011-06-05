@@ -57,6 +57,7 @@ public class SQLParser {
 					+ "The key name = 'sqlfile-encoding'", e);
 		}
 		try {
+			pushResouceInfo(resourceInfo);
 			try {
 				return parse(ir);
 			} finally {
@@ -65,6 +66,8 @@ public class SQLParser {
 			}
 		} catch (IOException e) {
 			throw new WrapException(e.getMessage() + CRLF + resourceInfo, e);
+		} finally {
+			popResourceInfo();
 		}
 	}
 

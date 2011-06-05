@@ -33,7 +33,6 @@ public class SQLExecutor {
 		this.resourceInfo = resourceInfo;
 		this.lineNodes = new SQLParser(resourceInfo).parse(in);
 		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
-		this.sqlGenerator.setResourceInfo(resourceInfo);
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
@@ -50,11 +49,9 @@ public class SQLExecutor {
 		return this.find(params(paramObj));
 	}
 
-	public ResultMap find(Map<String, Object> paramMap)
-			throws SQLException {
+	public ResultMap find(Map<String, Object> paramMap) throws SQLException {
 		try {
-			for (ResultMap map : SQLIterator.genIterator(this,
-					ResultMap.class, paramMap)) {
+			for (ResultMap map : each(ResultMap.class, paramMap)) {
 				return map;
 			}
 			return null;
@@ -69,8 +66,7 @@ public class SQLExecutor {
 		return this.findAll((Map<String, Object>) null);
 	}
 
-	public List<ResultMap> findAll(Object paramObj)
-			throws SQLException {
+	public List<ResultMap> findAll(Object paramObj) throws SQLException {
 		return this.findAll(params(paramObj));
 	}
 
@@ -138,12 +134,13 @@ public class SQLExecutor {
 		}
 	}
 
-	public SQLIterator<ResultMap> each() throws SQLException {
-		return each(ResultMap.class);
+	public <T> SQLIterator<T> each(Class<T> entityClass
+			) throws SQLException {
+		return SQLIterator.genIterator(this, entityClass, null);
 	}
 
-	public <T> SQLIterator<T> each(Class<T> entityClass) throws SQLException {
-		return each(entityClass, null);
+	public SQLIterator<ResultMap> each() throws SQLException {
+		return SQLIterator.genIterator(this, ResultMap.class, null);
 	}
 
 	public <T> SQLIterator<T> each(Class<T> entityClass,
