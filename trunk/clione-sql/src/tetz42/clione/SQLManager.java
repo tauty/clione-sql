@@ -129,6 +129,7 @@ public class SQLManager {
 	}
 
 	public SQLExecutor useSQL(String sql) {
+		resourceInfo = "Parameter SQL";
 		SQLExecutor sqlExecutor = new SQLExecutor(this,
 				new ByteArrayInputStream(sql.getBytes()), resourceInfo);
 		return sqlExecutor;
@@ -136,8 +137,8 @@ public class SQLManager {
 
 	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
 		InputStream in = clazz.getResourceAsStream(sqlFile);
-		resourceInfo = "SQL file name:" + sqlFile + ", class:"
-				+ clazz.getName();
+		resourceInfo = "class:" + clazz.getSimpleName() + ", SQL file name:"
+				+ sqlFile;
 		if (in == null)
 			throw new SQLFileNotFoundException("SQL File might not be found. "
 					+ resourceInfo);
