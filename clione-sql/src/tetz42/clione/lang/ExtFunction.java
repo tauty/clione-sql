@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
 
@@ -28,8 +29,20 @@ public abstract class ExtFunction {
 		return next == null ? null : next.perform(curParamMap.get());
 	}
 
+	protected ClioneFunction getInside() {
+		return curExtention.get().getInside();
+	}
+
+	protected ClioneFunction getNext() {
+		return curExtention.get().getNext();
+	}
+
 	protected String getFuncName() {
 		return curExtention.get().func;
+	}
+
+	protected String getSrc() {
+		return curExtention.get().getSrc();
 	}
 
 	protected ParamMap getParamMap() {
@@ -65,5 +78,12 @@ public abstract class ExtFunction {
 
 	protected Instruction perform(Instruction inst) {
 		return inst;
+	}
+
+	public void check() {
+		if (getInside() == null && getNext() == null)
+			throw new ClioneFormatException("Unknown function name '"
+					+ getFuncName() + "'\nsrc:" + getSrc() + "\nResource info:"
+					+ getResourceInfo());
 	}
 }

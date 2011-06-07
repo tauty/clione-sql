@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
-import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
+import static tetz42.clione.util.ClioneUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,6 @@ import java.util.Map;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
-import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.util.ParamMap;
 
 public class Extention extends ClioneFunction {
@@ -136,25 +135,24 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
-		putFunction("TO_SQL", new ExtFunction() {
-			// TODO delete this after implementing 'INCLUDE'
-
-			@Override
-			protected Instruction perform(Instruction inst) {
-				inst = getFunction("CONCAT").perform(inst);
-				Instruction sqlInst = new SQLLiteral(inst.params.get(0)
-						.toString()).resourceInfo(getResourceInfo()).perform(
-						getParamMap());
-				return inst.clearParams().merge(sqlInst);
-			}
-		});
-		putFunction("TO_STR", new ExtFunction() {
+		// putFunction("TO_SQL", new ExtFunction() {
+		//
+		// @Override
+		// protected Instruction perform(Instruction inst) {
+		// inst = getFunction("CONCAT").perform(inst);
+		// Instruction sqlInst = new SQLLiteral(inst.params.get(0)
+		// .toString()).resourceInfo(getResourceInfo()).perform(
+		// getParamMap());
+		// return inst.clearParams().merge(sqlInst);
+		// }
+		// });
+		putFunction("SQL", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = getFunction("CONCAT").perform(inst);
 				return new Instruction().replacement(
-						inst.params.get(0).toString()).nodeDispose(
+						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
 			}
 		});
@@ -171,10 +169,17 @@ public class Extention extends ClioneFunction {
 	protected final String func;
 	protected final boolean isNegative;
 	protected ClioneFunction inside;
+	protected final ExtFunction extFunction;
 
 	public Extention(String key, boolean isNegative, String literal) {
 		this.isNegative = isNegative;
 		this.func = key;
+		extFunction = funcMap.get(this.func);
+		if (extFunction == null) {
+			throw new ClioneFormatException("Unknown function name '"
+					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
+					+ this.resourceInfo);
+		}
 	}
 
 	@Override
@@ -199,12 +204,6 @@ public class Extention extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		ExtFunction extFunction = funcMap.get(this.func);
-		if (extFunction == null) {
-			throw new ClioneFormatException("Unknown function name '"
-					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
-					+ this.resourceInfo);
-		}
 		try {
 			// initial process
 			ExtFunction.set(this, paramMap);
@@ -215,4 +214,18 @@ public class Extention extends ClioneFunction {
 			ExtFunction.clear();
 		}
 	}
+
+	@Override
+	public void check() {
+		try {
+			// initial process
+			ExtFunction.set(this, null);
+
+			extFunction.check();
+		} finally {
+			// finally process
+			ExtFunction.clear();
+		}
+	}
+
 }

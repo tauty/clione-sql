@@ -106,10 +106,8 @@ public class ExtentionTest {
 
 	@Test
 	public void if_no_param() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IF ");
 		try {
-			cf.perform(params());
+			ClioneFuncFactory.get("ClioneFuncTest").parse("%IF ");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
@@ -150,10 +148,8 @@ public class ExtentionTest {
 
 	@Test
 	public void ifln_no_param() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IFLN ");
 		try {
-			cf.perform(params());
+			ClioneFuncFactory.get("ClioneFuncTest").parse("%IFLN ");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
@@ -236,26 +232,26 @@ public class ExtentionTest {
 		assertEqualsWithFile(inst.merge(), getClass(), "delnull_params_merged");
 	}
 
-	@Test
-	public void tosql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%TO_SQL(',' $PARAM)");
-		Instruction instruction = cf.perform(params("PARAM", "ASC"));
-		assertEqualsWithFile(instruction, getClass(), "tosql");
-	}
-
-	@Test
-	public void tosql_null() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%TO_SQL(',' $PARAM)");
-		Instruction instruction = cf.perform(params());
-		assertEqualsWithFile(instruction, getClass(), "tosql_null");
-	}
+	// @Test
+	// public void tosql() {
+	// ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+	// "%TO_SQL(',' $PARAM)");
+	// Instruction instruction = cf.perform(params("PARAM", "ASC"));
+	// assertEqualsWithFile(instruction, getClass(), "tosql");
+	// }
+	//
+	// @Test
+	// public void tosql_null() {
+	// ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+	// "%TO_SQL(',' $PARAM)");
+	// Instruction instruction = cf.perform(params());
+	// assertEqualsWithFile(instruction, getClass(), "tosql_null");
+	// }
 
 	@Test
 	public void tostr() {
 		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%TO_STR(',' $PARAM)");
+				"%SQL(',' $PARAM)");
 		Instruction instruction = cf.perform(params("PARAM", "ASC"));
 		assertEqualsWithFile(instruction, getClass(), "tostr");
 	}
@@ -263,7 +259,7 @@ public class ExtentionTest {
 	@Test
 	public void tostr_null() {
 		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%TO_STR(',' $PARAM)");
+				"%SQL(',' $PARAM)");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "tostr_null");
 	}
