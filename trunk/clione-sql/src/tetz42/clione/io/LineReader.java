@@ -15,13 +15,21 @@
  */
 package tetz42.clione.io;
 
+import static tetz42.clione.util.ClioneUtil.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LineReader extends BufferedReader {
 
-	int lineNo = 0;
+	private static final Pattern joinPtn = Pattern.compile("--\\z");
+	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
+
+	int startNo = 0;
+	int curNo = 0;
 
 	public LineReader(Reader in) {
 		super(in);
@@ -29,11 +37,38 @@ public class LineReader extends BufferedReader {
 
 	@Override
 	public String readLine() throws IOException {
-		lineNo++;
-		return super.readLine();
+		curNo++;
+		startNo = curNo;
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while (null != (line = super.readLine())) {
+			if (blankPtn.matcher(line).matches()) {
+				curNo++;
+				continue;
+			}
+
+			sb.append(line);
+			Matcher m = joinPtn.matcher(line);
+			if (m.find() && m.start() == line.indexOf("--")) {
+				curNo++;
+				sb.append(CRLF);
+			} else {
+				break;
+			}
+		}
+
+		return sb.length() == 0 ? null : sb.toString();
 	}
 
-	public int getLineNo(){
-		return lineNo;
+	public int getStartLineNo() {
+		return startNo;
+	}
+
+	public int getEndLineNo() {
+		return startNo == curNo ? 0 : curNo;
+	}
+
+	public int getCurLineNo() {
+		return curNo;
 	}
 }
