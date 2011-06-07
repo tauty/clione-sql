@@ -21,6 +21,7 @@ import tetz42.clione.node.LineNode;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.setting.Setting;
+import tetz42.clione.util.SBHolder;
 import tetz42.util.ObjDumper4j;
 
 public class SQLParserSample {
@@ -31,14 +32,15 @@ public class SQLParserSample {
 
 	public static void main(String args[]) {
 		new SQLParserSample("1111").parse("aaaa/* bbb */ccc");
-		new SQLParserSample("2222").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee").toString());
-		new SQLParserSample("3333").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/* tako */ aaa")
+		new SQLParserSample("2222").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF).append("dddd*/eeee")
 				.toString());
-		new SQLParserSample("4444").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/*! tako */ aaa")
-				.toString());
+		new SQLParserSample("3333").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/eeee/* tako */ aaa").toString());
+		new SQLParserSample("4444").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/eeee/*! tako */ aaa").toString());
 	}
 
 	public SQLParserSample(String resourceInfo) {
@@ -46,6 +48,7 @@ public class SQLParserSample {
 	}
 
 	public SQLNode parse(String s) {
+		System.out.println("---------------------------");
 		return parse(new ByteArrayInputStream(s.getBytes()));
 	}
 
@@ -81,69 +84,65 @@ public class SQLParserSample {
 	}
 
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
-	private static final Pattern joinPtn = Pattern.compile("\\s*\\z");
+	private static final Pattern joinPtn = Pattern.compile("$",
+			Pattern.MULTILINE);
 	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
 
 	private List<LineNode> parseFunction(Reader reader) throws IOException {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		LineReader br = new LineReader(reader);
-		StringBuilder sb = new StringBuilder();
+		SBHolder sb = new SBHolder();
 		LineNode lineNode = null;
 		String line;
-		OUTER: while (null != (line = br.readLine())) {
+		while (null != (line = br.readLine())) {
 			System.out.println(line);
 			if (blankPtn.matcher(line).matches())
 				continue;
 			if (lineNode == null)
-				lineNode = new LineNode(br.getLineNo());
+				lineNode = new LineNode(br.getStartLineNo(), br.getEndLineNo());
 			else
-				lineNode.curLineNo(br.getLineNo());
+				lineNode.curLineNo(br.getCurLineNo());
 			sb.append(line);
 			Matcher m = commentPtn.matcher(line);
-			int endLineLength = 0;
 			while (m.find()) {
 				if (m.group().equals("*/"))
 					throw new ClioneFormatException(
 							"SQL Format Error: too much '*/'" + CRLF + line
 									+ CRLF + getResourceInfo());
 				if (m.group().equals("--")) {
-					if (joinPtn.matcher(line).find(m.end())) { // join pattern
-						sb.append(CRLF);
-						continue OUTER;
-					}
+					if (joinPtn.matcher(line).find(m.end()))
+						continue; // '--' join is responsibility of LineReader.
 					if ("- *+!".contains(nextChar(line, m.end())))
-						break; // '---' means normal comment
+						break; // '---', and so on, means normal comment
 					// clione function
-					lineNode.holders.add(new PlaceHolder(line.substring(m.end()), null, m.start()));
-					sb.delete(m.start(), sb.length());
+					lineNode.holders.add(new PlaceHolder(
+							line.substring(m.end()), null, m.start()));
+					sb.delete(m.start(), sb.sb.length());
 					break;
 				}
-				int start = endLineLength + m.start();
-				int firstLength = sb.length();
+				int start = sb.getPreLength() + m.start();
 				m = findCommentEnd(br, sb, m, lineNode);
-				int end = endLineLength + m.end();
-				if (firstLength < sb.length()) {
-					endLineLength = sb.lastIndexOf(CRLF) + CRLF.length();
-					end = endLineLength + m.end();
-				}
-				if (!"*+!".contains(sb.substring(start + 2, start + 3))) {
+				int end = sb.getPreLength() + m.end();
+				if (!"*+!".contains(sb.sb.substring(start + 2, start + 3))) {
 					// clione function!
-					getValueInBack();
-//					lineNode.holders.add(new PlaceHolder(line.substring(start + 2, end -2), getValueInBack(), start));
+//					getValueInBack();
+//					lineNode.holders.add(new PlaceHolder(line.substring(
+//							start + 2, end - 2), getValueInBack(), start));
+					System.out.println(sb.sb.substring(start, end));
 					sb.delete(start, end);
 				}
-				System.out.println(sb.substring(start, end));
+				System.out.println(sb.sb);
 			}
-			lineNode.sql = sb.toString();
+			lineNode.sql = sb.sb.toString();
 			flatList.add(lineNode);
 			lineNode = null;
-			sb.setLength(0);
+			sb.clear();
 		}
 
 		return flatList;
 	}
 
-	private Matcher findCommentEnd(LineReader br, StringBuilder sb, Matcher m,
+	private Matcher findCommentEnd(LineReader br, SBHolder sb, Matcher m,
 			LineNode lineNode) throws IOException {
 		while (m.find()) {
 			if (m.group().equals("*/"))
@@ -151,14 +150,14 @@ public class SQLParserSample {
 			if (m.group().equals("--"))
 				continue;
 			// in case nested '/*' has detected
-			findCommentEnd(br, sb, m, lineNode);
+			m = findCommentEnd(br, sb, m, lineNode);
 		}
 		String line = br.readLine();
 		System.out.println(line);
 		if (line == null)
 			throw new ClioneFormatException("SQL Format Error: too match '/*'"
 					+ CRLF + getResourceInfo());
-		lineNode.curLineNo(br.getLineNo());
+		lineNode.curLineNo(br.getCurLineNo());
 		sb.append(CRLF).append(line);
 		return findCommentEnd(br, sb, commentPtn.matcher(line), lineNode);
 	}

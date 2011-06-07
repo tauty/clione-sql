@@ -31,6 +31,13 @@ public class LineNode {
 		setBeginLineNo(lineNo);
 	}
 
+	public LineNode(int startNo, int endNo) {
+		beginLineNo = startNo;
+		setBeginLineNo(startNo);
+		endLineNo = endNo;
+		setEndLineNo(endNo);
+	}
+
 	public LineNode curLineNo(int lineNo) {
 		endLineNo = lineNo;
 		setEndLineNo(lineNo);
