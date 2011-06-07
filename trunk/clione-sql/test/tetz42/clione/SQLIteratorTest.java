@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,8 +39,9 @@ public class SQLIteratorTest {
 
 	@Before
 	public void setUp() throws SQLException {
-		Connection con = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/test", "root", "rootroot");
+		ResourceBundle bundle = ResourceBundle.getBundle("db");
+		Connection con = DriverManager.getConnection(bundle.getString("url"),
+				bundle.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 		setThreadConnection(con);
 	}
@@ -57,13 +59,13 @@ public class SQLIteratorTest {
 	@Test
 	public void findAll_by_dto_param() throws IOException, SQLException {
 		SQLExecutor exe = sqlManager().useFile(getClass(), "exesql/Select.sql");
-		List<Person2> people = exe
-				.findAll(Person2.class, new ParamDto(31, "%H%"));
+		List<Person2> people = exe.findAll(Person2.class, new ParamDto(31,
+				"%H%"));
 		assertEqualsWithFile(people, getClass(), "findAll_by_dto_param");
 	}
 
 }
 
-class Person2 extends Person{
+class Person2 extends Person {
 	int age;
 }

@@ -1,7 +1,7 @@
 SELECT
     *
 FROM
-    EMPLOYEES
+    employees
 WHERE
 	/*?ID*/2 = ID
 	OR SHAIN_NO IN(

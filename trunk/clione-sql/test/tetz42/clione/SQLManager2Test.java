@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,8 +48,9 @@ public class SQLManager2Test {
 
 	@Before
 	public void setUp() throws SQLException {
-		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test",
-				"root", "rootroot");
+		ResourceBundle bundle = ResourceBundle.getBundle("db");
+		con = DriverManager.getConnection(bundle.getString("url"),
+				bundle.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 	}
 
