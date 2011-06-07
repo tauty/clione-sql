@@ -15,31 +15,28 @@ public class ExtentionTest {
 
 	@Test
 	public void if_true() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IF PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "if_true");
 	}
 
 	@Test
 	public void if_true_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IF PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "if_true_with_sql");
 	}
 
 	@Test
 	public void ifnot_true_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%!IF PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%!IF PARAM :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "ifnot_true_with_sql");
 	}
 
 	@Test
 	public void if_params_alltrue_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%IF(PARAM1 PARAM2) :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM1", "PARAM2"));
 		assertEqualsWithFile(instruction, getClass(),
@@ -48,7 +45,7 @@ public class ExtentionTest {
 
 	@Test
 	public void if_params_onetrue_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%IF(PARAM1 PARAM2) :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM2"));
 		assertEqualsWithFile(instruction, getClass(),
@@ -57,7 +54,7 @@ public class ExtentionTest {
 
 	@Test
 	public void if_params_allfalse_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%IF(PARAM1 PARAM2) :ASC");
 		Instruction instruction = cf.perform(paramsOn());
 		assertEqualsWithFile(instruction, getClass(),
@@ -66,7 +63,7 @@ public class ExtentionTest {
 
 	@Test
 	public void if_params_onetrue() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%IF(PARAM1 $PARAM2) ");
 		Instruction instruction = cf.perform(paramsOn("PARAM2"));
 		assertEqualsWithFile(instruction, getClass(), "if_params_onetrue");
@@ -74,7 +71,7 @@ public class ExtentionTest {
 
 	@Test
 	public void if_params_allfalse() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%IF(PARAM1 $PARAM2) ");
 		Instruction instruction = cf.perform(paramsOn());
 		assertEqualsWithFile(instruction, getClass(), "if_params_allfalse");
@@ -82,24 +79,21 @@ public class ExtentionTest {
 
 	@Test
 	public void if_false() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IF PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "if_false");
 	}
 
 	@Test
 	public void if_false_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IF PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM :ASC");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "if_false_with_sql");
 	}
 
 	@Test
 	public void ifnot_false_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%!IF PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%!IF PARAM :ASC");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "ifnot_false_with_sql");
 	}
@@ -107,7 +101,7 @@ public class ExtentionTest {
 	@Test
 	public void if_no_param() {
 		try {
-			ClioneFuncFactory.get("ClioneFuncTest").parse("%IF ");
+			ClioneFuncFactory.get().parse("%IF ");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
@@ -116,32 +110,28 @@ public class ExtentionTest {
 
 	@Test
 	public void ifln_true() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IFLN PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IFLN PARAM");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "ifln_true");
 	}
 
 	@Test
 	public void ifln_true_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IFLN PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IFLN PARAM :ASC");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "ifln_true_with_sql");
 	}
 
 	@Test
 	public void ifln_false() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IFLN PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IFLN PARAM");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "ifln_false");
 	}
 
 	@Test
 	public void ifln_false_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%IFLN PARAM :ASC");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%IFLN PARAM :ASC");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "ifln_false_with_sql");
 	}
@@ -149,7 +139,7 @@ public class ExtentionTest {
 	@Test
 	public void ifln_no_param() {
 		try {
-			ClioneFuncFactory.get("ClioneFuncTest").parse("%IFLN ");
+			ClioneFuncFactory.get().parse("%IFLN ");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
@@ -158,8 +148,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_param_exsists_forwardmatch() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%L PARAM '%'");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%L PARAM '%'");
 		Instruction instruction = cf.perform(params("PARAM", "tako"));
 		assertEqualsWithFile(instruction, getClass(),
 				"l_param_exsists_forwardmatch");
@@ -167,8 +156,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_param_exsists_partmatch() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%L '%' PARAM '%'");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%L '%' PARAM '%'");
 		Instruction instruction = cf.perform(params("PARAM", "tako"));
 		assertEqualsWithFile(instruction, getClass(),
 				"l_param_exsists_partmatch");
@@ -176,8 +164,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_param_exsists_partmatch2() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%L '%' PARAM '%'");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%L '%' PARAM '%'");
 		Instruction instruction = cf.perform(params("PARAM", "tako_100%!"));
 		assertEqualsWithFile(instruction, getClass(),
 				"l_param_exsists_partmatch2");
@@ -185,7 +172,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_params_exsists_partmatch() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%L '%' PARAM1 '_' PARAM2 '%'");
 		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
 				"PARAM2", "#200%_"));
@@ -195,7 +182,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_in_params_exsists() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%L('%' PARAM1 '_' PARAM2 '%')");
 		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
 				"PARAM2", "#200%_"));
@@ -204,7 +191,7 @@ public class ExtentionTest {
 
 	@Test
 	public void l_in_params_exsists_next() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%L('%' PARAM1 '_' PARAM2 '%') PARAM3");
 		Instruction instruction = cf.perform(params("PARAM1", "#100%_").$(
 				"PARAM2", "#200%_").$("PARAM3", 1000));
@@ -214,8 +201,7 @@ public class ExtentionTest {
 
 	@Test
 	public void delnull_list() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%COMPACT PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%COMPACT PARAM");
 		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
 				"tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
@@ -223,7 +209,7 @@ public class ExtentionTest {
 
 	@Test
 	public void delnull_params() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%COMPACT PARAM1 PARAM2 PARAM3");
 		Instruction inst = cf.perform(params("PARAM1",
 				Arrays.asList("tako", null, "ika", null, "namako")).$("PARAM3",
@@ -234,7 +220,7 @@ public class ExtentionTest {
 
 	// @Test
 	// public void tosql() {
-	// ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+	// ClioneFunction cf = ClioneFuncFactory.get().parse(
 	// "%TO_SQL(',' $PARAM)");
 	// Instruction instruction = cf.perform(params("PARAM", "ASC"));
 	// assertEqualsWithFile(instruction, getClass(), "tosql");
@@ -242,7 +228,7 @@ public class ExtentionTest {
 	//
 	// @Test
 	// public void tosql_null() {
-	// ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+	// ClioneFunction cf = ClioneFuncFactory.get().parse(
 	// "%TO_SQL(',' $PARAM)");
 	// Instruction instruction = cf.perform(params());
 	// assertEqualsWithFile(instruction, getClass(), "tosql_null");
@@ -250,16 +236,14 @@ public class ExtentionTest {
 
 	@Test
 	public void tostr() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%SQL(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL(',' $PARAM)");
 		Instruction instruction = cf.perform(params("PARAM", "ASC"));
 		assertEqualsWithFile(instruction, getClass(), "tostr");
 	}
 
 	@Test
 	public void tostr_null() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"%SQL(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL(',' $PARAM)");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "tostr_null");
 	}

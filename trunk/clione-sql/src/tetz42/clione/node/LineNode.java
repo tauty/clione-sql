@@ -15,18 +15,35 @@
  */
 package tetz42.clione.node;
 
+import static tetz42.clione.util.ContextUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LineNode {
-	public StringBuilder sql = new StringBuilder();
-//	public List<PlaceHolder> holders = new ArrayList<PlaceHolder>();
-	public ArrayList<String> keys = new ArrayList<String>();
-	public ArrayList<String> vals = new ArrayList<String>();
+	public String sql;
+	public List<PlaceHolder> holders = new ArrayList<PlaceHolder>();
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
+	private int beginLineNo = 0;
+	private int endLineNo = 0;
 
-//	public boolean isDisposable = false;
-	
+	public LineNode(int lineNo) {
+		beginLineNo = lineNo;
+		setBeginLineNo(lineNo);
+	}
+
+	public LineNode curLineNo(int lineNo) {
+		endLineNo = lineNo;
+		setEndLineNo(lineNo);
+		return this;
+	}
+
+	public void setLineNo() {
+		setBeginLineNo(beginLineNo);
+		setEndLineNo(endLineNo);
+	}
+
+	public boolean isDisposable = false;
+
 	public void merge(LineNode node) {
 		// TODO implementation
 	}

@@ -1,7 +1,7 @@
 package tetz42.clione.lang.func;
 
-import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
+import static tetz42.clione.util.ClioneUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
@@ -34,7 +34,7 @@ abstract public class AbstractParam extends ClioneFunction {
 								+ " or inserting white space between them."
 								+ "\nResource info:" + resourceInfo);
 			}
-			this.param = inside.resourceInfo(resourceInfo);
+			this.param = inside;
 		}
 		return this;
 	}
@@ -47,14 +47,6 @@ abstract public class AbstractParam extends ClioneFunction {
 	@Override
 	public String getSrc() {
 		return (isNegative ? "!" : "") + (param == null ? "" : param.getSrc());
-	}
-
-	@Override
-	public ClioneFunction resourceInfo(String resourceInfo) {
-		super.resourceInfo(resourceInfo);
-		if (param instanceof Param)
-			param.resourceInfo(resourceInfo);
-		return this;
 	}
 
 	@Override

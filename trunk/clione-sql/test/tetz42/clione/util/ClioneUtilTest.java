@@ -1,8 +1,9 @@
 package tetz42.clione.util;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.test.Util.*;
 
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ClioneUtilTest {
 	public void resourceInfo0() {
 		try {
 			pushResouceInfo("zero.sql");
-			setLineNo(0);
+			setBeginLineNo(0);
 			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo0");
 		} finally {
 			assertEqualsWithFile(popResourceInfo(), getClass(), "resourceInfo0");
@@ -33,7 +34,7 @@ public class ClioneUtilTest {
 	public void resourceInfo1() {
 		try {
 			pushResouceInfo("tako.sql");
-			setLineNo(100);
+			setBeginLineNo(100);
 			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo1");
 		} finally {
 			assertEqualsWithFile(popResourceInfo(), getClass(), "resourceInfo1");
@@ -44,9 +45,9 @@ public class ClioneUtilTest {
 	public void resourceInfo2() {
 		try {
 			pushResouceInfo("tako.sql");
-			setLineNo(888);
+			setBeginLineNo(888);
 			pushResouceInfo("ika.sql");
-			setLineNo(1010);
+			setBeginLineNo(1010);
 			assertEqualsWithFile(getResourceInfo(), getClass(), "resourceInfo2");
 		} finally {
 			assertEqualsWithFile(popResourceInfo(), getClass(),

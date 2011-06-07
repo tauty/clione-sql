@@ -1,6 +1,7 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.util.ClioneUtil.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

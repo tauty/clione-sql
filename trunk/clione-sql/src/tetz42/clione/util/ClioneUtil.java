@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,51 +14,7 @@ import tetz42.clione.io.IOUtil;
 
 public class ClioneUtil {
 
-	private static class ResInfoHolder {
-		String resourceInfo;
-		int lineNo;
-
-		private ResInfoHolder(String resourceInfo) {
-			this.resourceInfo = resourceInfo;
-		}
-
-		@Override
-		public String toString() {
-			if(lineNo == 0) {
-				return resourceInfo + ", line number: Unknown";
-			}
-			return resourceInfo + ", line number:" + lineNo;
-		}
-
-	}
-
 	public static final String CRLF = System.getProperty("line.separator");
-	private static ThreadLocal<List<ResInfoHolder>> resourceInfoes = new ThreadLocal<List<ResInfoHolder>>() {
-
-		@Override
-		protected List<ResInfoHolder> initialValue() {
-			return new ArrayList<ResInfoHolder>();
-		}
-	};
-
-	public static void pushResouceInfo(String resourceInfo) {
-		resourceInfoes.get().add(new ResInfoHolder(resourceInfo));
-	}
-
-	public static void setLineNo(int lineNo) {
-		List<ResInfoHolder> list = resourceInfoes.get();
-		ResInfoHolder rh = list.get(list.size() - 1);
-		rh.lineNo = lineNo;
-	}
-
-	public static String getResourceInfo() {
-		return joinByCrlf(resourceInfoes.get().toArray());
-	}
-	
-	public static String popResourceInfo() {
-		List<ResInfoHolder> list = resourceInfoes.get();
-		return list.remove(list.size() - 1).toString();
-	}
 
 	public static boolean isAllEmpty(String... strs) {
 		for (String s : strs) {

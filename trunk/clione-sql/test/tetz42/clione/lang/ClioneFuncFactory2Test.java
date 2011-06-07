@@ -12,7 +12,7 @@ public class ClioneFuncFactory2Test {
 
 	@Test
 	public void doller_params() {
-		ClioneFunction clione = ClioneFuncFactory.get("FromTest").parse(
+		ClioneFunction clione = ClioneFuncFactory.get().parse(
 				"$(TAKO, IKA, NAMAKO)");
 		assertEqualsWithFile(clione, getClass(), "doller_params");
 	}
@@ -20,36 +20,36 @@ public class ClioneFuncFactory2Test {
 	@Test
 	public void doller_param_and_params() {
 		try {
-			ClioneFuncFactory.get("FromTest").parse("$TAKO(TAKO, IKA, NAMAKO)");
+			ClioneFuncFactory.get().parse("$TAKO(TAKO, IKA, NAMAKO)");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void doller_no_param() {
 		try {
-			ClioneFuncFactory.get("FromTest").parse("$ TAKO IKA NAMAKO");
+			ClioneFuncFactory.get().parse("$ TAKO IKA NAMAKO");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void doller_wrong_param() {
 		try {
-			ClioneFuncFactory.get("FromTest").parse("$:TAKO");
+			ClioneFuncFactory.get().parse("$:TAKO");
 			fail();
 		} catch (ClioneFormatException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void if_params_literal() {
-		ClioneFunction clione = ClioneFuncFactory.get("FromTest").parse(
+		ClioneFunction clione = ClioneFuncFactory.get().parse(
 				"%IF(TAKO IKA NAMAKO) :SAKANA");
 		assertEqualsWithFile(clione, getClass(), "if_params_literal");
 	}

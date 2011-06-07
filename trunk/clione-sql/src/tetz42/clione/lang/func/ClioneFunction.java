@@ -4,7 +4,7 @@ import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
-public abstract class ClioneFunction {
+abstract public class ClioneFunction {
 
 	private ClioneFunction next;
 	protected String resourceInfo;
@@ -30,11 +30,6 @@ public abstract class ClioneFunction {
 
 	public ClioneFunction getInside() {
 		return null;
-	}
-
-	public ClioneFunction resourceInfo(String resourceInfo) {
-		this.resourceInfo = resourceInfo;
-		return this;
 	}
 
 	public String getResourceInfo() {

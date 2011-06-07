@@ -1,11 +1,9 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ContextUtil.*;
+
 public class LangUtil {
 	public static boolean isParamExists(Instruction instruction) {
-		for (Object e : instruction.params) {
-			if (e != null)
-				return true;
-		}
-		return false;
+		return !isAllNil(instruction.params);
 	}
 }

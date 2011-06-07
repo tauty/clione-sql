@@ -15,25 +15,22 @@ public class ClioneFuncTest {
 
 	@Test
 	public void param() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("PARAM");
 		Instruction instruction = cf.perform(params("PARAM", 100));
 		assertEqualsWithFile(instruction, getClass(), "param");
 	}
 
 	@Test
 	public void param_bind_list() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"PARAM");
-		Instruction instruction = cf.perform(params("PARAM",
-				Arrays.asList(1, 10, 100)));
+		ClioneFunction cf = ClioneFuncFactory.get().parse("PARAM");
+		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(1,
+				10, 100)));
 		assertEqualsWithFile(instruction, getClass(), "param_bind_list");
 	}
 
 	@Test
 	public void param_bind_ary() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("PARAM");
 		Instruction instruction = cf.perform(params("PARAM", new Object[] {
 				100, 200, 300, 400, 500 }));
 		assertEqualsWithFile(instruction, getClass(), "param_bind_ary");
@@ -41,7 +38,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void param_bind_many() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"PARAM1 PARAM2 PARAM3 PARAM4");
 		Instruction instruction = cf.perform(params("PARAM1", 1)
 				.$("PARAM2", 10).$("PARAM4", 100));
@@ -52,16 +49,14 @@ public class ClioneFuncTest {
 
 	@Test
 	public void doller_bind_null() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"$PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("$PARAM");
 		Instruction instruction = cf.perform(params("AAA", null));
 		assertEqualsWithFile(instruction, getClass(), "doller_bind_null");
 	}
 
 	@Test
 	public void dollers_bind_null() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"$PARAM1 $PARAM2");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("$PARAM1 $PARAM2");
 		Instruction instruction = cf.perform(params("PARAM1", "tako"));
 		assertEqualsWithFile(instruction, getClass(), "dollers_bind_null");
 		assertEqualsWithFile(instruction.merge(), getClass(),
@@ -70,23 +65,21 @@ public class ClioneFuncTest {
 
 	@Test
 	public void doller_not_bind_null() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"$!PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("$!PARAM");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "doller_not_bind_null");
 	}
 
 	@Test
 	public void doller_not_bind_value() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"$!PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("$!PARAM");
 		Instruction instruction = cf.perform(params("PARAM", "value"));
 		assertEqualsWithFile(instruction, getClass(), "doller_not_bind_value");
 	}
 
 	@Test
 	public void hatenas_bind_first() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"?PARAM1 ?PARAM2 ?PARAM3");
 		Instruction instruction = cf.perform(params("PARAM1", "tako"));
 		assertEqualsWithFile(instruction, getClass(), "hatenas_bind_first");
@@ -97,7 +90,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void hatenas_bind_last() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"?PARAM1 ?PARAM2 ?PARAM3");
 		Instruction instruction = cf.perform(params("PARAM3", "namako"));
 		assertEqualsWithFile(instruction, getClass(), "hatenas_bind_last");
@@ -105,7 +98,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void hatenas_bind_none() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"?PARAM1 ?PARAM2 ?PARAM3");
 		Instruction instruction = cf.perform(params("TEKITOU", "namako"));
 		assertEqualsWithFile(instruction, getClass(), "hatenas_bind_none");
@@ -113,23 +106,21 @@ public class ClioneFuncTest {
 
 	@Test
 	public void amper_bind_one() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"&PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("&PARAM");
 		Instruction instruction = cf.perform(paramsOn("PARAM"));
 		assertEqualsWithFile(instruction, getClass(), "amper_bind_one");
 	}
 
 	@Test
 	public void amper_bind_none() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
-				"&PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("&PARAM");
 		Instruction instruction = cf.perform(paramsOn());
 		assertEqualsWithFile(instruction, getClass(), "amper_bind_none");
 	}
 
 	@Test
 	public void parenthesises_have_three_param() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"(PARAM1 PARAM2, PARAM3)");
 		Instruction instruction = cf.perform(paramsOn());
 		assertEqualsWithFile(instruction, getClass(),
@@ -138,7 +129,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void parenthesises_have_three_param_bind_all() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"(PARAM1 PARAM2, PARAM3)");
 		Instruction instruction = cf.perform(params("PARAM1", "tako").$(
 				"PARAM2", "ika").$("PARAM3", "namako"));
@@ -148,7 +139,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void atmark_bind_one() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"(PARAM1 PARAM2, @PARAM3)");
 		Instruction instruction = cf.perform(params("PARAM1", "tako").$(
 				"PARAM3", "namako"));
@@ -157,7 +148,7 @@ public class ClioneFuncTest {
 
 	@Test
 	public void atmark_bind_none() {
-		ClioneFunction cf = ClioneFuncFactory.get("ClioneFuncTest").parse(
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"(PARAM1 PARAM2, @PARAM3)");
 		try {
 			cf.perform(params("PARAM1", "tako").$("PARAM2", "namako"));
@@ -170,8 +161,9 @@ public class ClioneFuncTest {
 	@Test
 	public void doublequote() {
 		ClioneFunction cf = ClioneFuncFactory
-				.get("ClioneFuncTest")
-				.parse("\"SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ \"");
+				.get()
+				.parse(
+						"\"SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ \"");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "doublequote");
 	}
@@ -179,8 +171,9 @@ public class ClioneFuncTest {
 	@Test
 	public void colon() {
 		ClioneFunction cf = ClioneFuncFactory
-				.get("ClioneFuncTest")
-				.parse(":SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
+				.get()
+				.parse(
+						":SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "semicolon");
 	}
@@ -188,8 +181,9 @@ public class ClioneFuncTest {
 	@Test
 	public void semicolon() {
 		ClioneFunction cf = ClioneFuncFactory
-				.get("ClioneFuncTest")
-				.parse(";SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
+				.get()
+				.parse(
+						";SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "colon");
 	}
@@ -197,16 +191,19 @@ public class ClioneFuncTest {
 	@Test
 	public void singlequote() {
 		ClioneFunction cf = ClioneFuncFactory
-				.get("ClioneFuncTest")
-				.parse("'SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ '");
+				.get()
+				.parse(
+						"'SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ '");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "singlequote");
 	}
+
 	@Test
 	public void singlequote_escape() {
 		ClioneFunction cf = ClioneFuncFactory
-				.get("ClioneFuncTest")
-				.parse("'SELECT tel, ''\\\\'' FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /* NAME */ '");
+				.get()
+				.parse(
+						"'SELECT tel, ''\\\\'' FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /* NAME */ '");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "singlequote_escape");
 	}
