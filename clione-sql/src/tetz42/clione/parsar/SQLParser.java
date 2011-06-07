@@ -15,6 +15,7 @@
  */
 package tetz42.clione.parsar;
 
+import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.util.ParamMap.*;
 
@@ -30,8 +31,9 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
-import tetz42.clione.io.GetBackReader;
+import tetz42.clione.io.LineReader;
 import tetz42.clione.node.LineNode;
+import tetz42.clione.node.SQLNode;
 import tetz42.clione.setting.Setting;
 
 public class SQLParser {
@@ -46,7 +48,7 @@ public class SQLParser {
 		this.resourceInfo = resourceInfo;
 	}
 
-	public List<LineNode> parse(InputStream in) {
+	public SQLNode parse(InputStream in) {
 		InputStreamReader ir;
 		try {
 			ir = new InputStreamReader(in, Setting.instance().get(
@@ -71,8 +73,8 @@ public class SQLParser {
 		}
 	}
 
-	public List<LineNode> parse(Reader reader) {
-		GetBackReader br = new GetBackReader(reader);
+	private SQLNode parse(Reader reader) {
+		LineReader br = new LineReader(reader);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;
 		try {
@@ -89,10 +91,12 @@ public class SQLParser {
 		if (this.commentDepth != 0)
 			throw new ClioneFormatException("SQL Format Error: too match '/*'"
 					+ CRLF + resourceInfo);
-		return resultList;
+		SQLNode sqlNode = new SQLNode();
+		sqlNode.nodes = resultList;
+		return sqlNode;
 	}
 
-	private List<LineNode> buildBlock(GetBackReader br, String indent)
+	private List<LineNode> buildBlock(LineReader br, String indent)
 			throws IOException {
 		ArrayList<LineNode> list = new ArrayList<LineNode>();
 

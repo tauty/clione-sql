@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.gen.SQLGenerator;
-import tetz42.clione.node.LineNode;
+import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
 import tetz42.clione.util.ResultMap;
 
@@ -23,7 +23,7 @@ public class SQLExecutor {
 	final SQLGenerator sqlGenerator;
 	String resourceInfo = null;
 
-	final List<LineNode> lineNodes;
+	final SQLNode sqlNode;
 
 	PreparedStatement stmt;
 	ResultSet rs;
@@ -31,7 +31,7 @@ public class SQLExecutor {
 	SQLExecutor(SQLManager manager, InputStream in, String resourceInfo) {
 		this.manager = manager;
 		this.resourceInfo = resourceInfo;
-		this.lineNodes = new SQLParser(resourceInfo).parse(in);
+		this.sqlNode = new SQLParser(resourceInfo).parse(in);
 		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
@@ -134,8 +134,7 @@ public class SQLExecutor {
 		}
 	}
 
-	public <T> SQLIterator<T> each(Class<T> entityClass
-			) throws SQLException {
+	public <T> SQLIterator<T> each(Class<T> entityClass) throws SQLException {
 		return SQLIterator.genIterator(this, entityClass, null);
 	}
 
@@ -200,7 +199,7 @@ public class SQLExecutor {
 	}
 
 	public String genSql(Map<String, Object> paramMap) {
-		String sql = sqlGenerator.genSql(paramMap, lineNodes);
+		String sql = sqlGenerator.genSql(paramMap, sqlNode);
 		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
 		return sql;
 	}

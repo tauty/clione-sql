@@ -16,17 +16,18 @@
 package tetz42.clione.gen;
 
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.util.ContextUtil.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import tetz42.clione.exception.ParameterNotFoundException;
+import tetz42.clione.lang.Instruction;
 import tetz42.clione.node.LineNode;
+import tetz42.clione.node.PlaceHolder;
+import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
 
 public class SQLGenerator {
@@ -39,45 +40,54 @@ public class SQLGenerator {
 
 	public String sql;
 	public ArrayList<Object> params;
-	private final Object[] nullValues;
+	private final Object[] nilValues;
 
 	public SQLGenerator() {
 		this(null);
 	}
 
-	public SQLGenerator(Object[] nullValues) {
-		this.nullValues = nullValues;
+	public SQLGenerator(Object[] nilValues) {
+		this.nilValues = nilValues;
 	}
 
-	public String genSql(Map<String, Object> paramMap,
-			List<LineNode> lineTreeList) {
-		if (paramMap == null)
-			paramMap = new ParamMap();
-		else if (!ParamMap.class.isInstance(paramMap)) {
-			ParamMap map = new ParamMap();
-			map.putAll(paramMap);
-			paramMap = map;
+	public String genSql(Map<String, Object> map, SQLNode sqlNode) {
+		pushResouceInfo(sqlNode.resourceInfo);
+		addNil(nilValues);
+		try {
+			ParamMap paramMap;
+			if (map == null)
+				paramMap = new ParamMap();
+			else if (map instanceof ParamMap) {
+				paramMap = (ParamMap) map;
+			} else {
+				paramMap = new ParamMap();
+				paramMap.putAll(map);
+			}
+
+			StringBuilder sb = new StringBuilder();
+			ArrayList<Object> params = new ArrayList<Object>();
+
+			this.genSql(sqlNode.nodes, paramMap, sb, params);
+			this.params = params;
+			return this.sql = sb.toString();
+		} finally {
+			popResourceInfo();
+			clearNil();
 		}
-
-		StringBuilder sb = new StringBuilder();
-		ArrayList<Object> params = new ArrayList<Object>();
-
-		this.genSql(lineTreeList, paramMap, sb, params);
-		this.params = params;
-		return this.sql = sb.toString();
 	}
 
-	private void genSql(List<LineNode> blockList, Map<String, Object> paramMap,
+	private void genSql(List<LineNode> lineNodes, ParamMap paramMap,
 			StringBuilder sb, ArrayList<Object> params) {
 		int startTimeLength = sb.length();
-		for (LineNode block : blockList) {
+		for (LineNode lineNode : lineNodes) {
+			lineNode.setLineNo(); // for line No. information of resourceInfo
 			ArrayList<Object> subParams = new ArrayList<Object>();
-			StringBuilder subSql = genSubSql(block, subParams, paramMap);
+			StringBuilder subSql = genSubSql(lineNode, subParams, paramMap);
 			if (subSql == null)
 				continue;
-			if (!block.childBlocks.isEmpty()) {
+			if (!lineNode.childBlocks.isEmpty()) {
 				StringBuilder subSb = new StringBuilder();
-				this.genSql(block.childBlocks, paramMap, subSb, subParams);
+				this.genSql(lineNode.childBlocks, paramMap, subSb, subParams);
 				if (subSb.length() == 0)
 					continue;
 				subSql.append(CRLF).append(removeFirstDelimiter(subSb));
@@ -93,99 +103,26 @@ public class SQLGenerator {
 	}
 
 	private StringBuilder genSubSql(LineNode block,
-			ArrayList<Object> subParams, Map<String, Object> paramMap) {
+			ArrayList<Object> subParams, ParamMap paramMap) {
 		StringBuilder subSql = new StringBuilder(block.sql);
-		int pos = 0;
-		for (int i = 0; i < block.keys.size(); i++) {
-			String key = block.keys.get(i);
-			Object val = paramMap.get(key);
-			Collection<?> vals = convToCol(val);
-			boolean isNoParam = isNull(val, vals);
-			if (isNoParam) {
-				if (key.startsWith("$") || key.startsWith("&"))
-					return null;
-				if (key.startsWith("@"))
-					throw new ParameterNotFoundException("The parameter, '"
-							+ key + "', is required." + CRLF
-							+ getResourceInfo());
-				if (vals != null && vals.size() == 0 && !key.startsWith("&")
-						&& !key.startsWith("?"))
-					throw new ParameterNotFoundException("Default parameter, '"
-							+ key + "', must not be empty list." + CRLF
-							+ getResourceInfo());
-			}
-
-			// '&' means without replace parameter.
-			if (key.startsWith("&"))
+		int sabun = 0;
+		for (PlaceHolder holder : block.holders) {
+			Instruction inst = holder.perform(paramMap);
+			if (inst.isNodeDisposed)
+				return null;
+			if (inst.doNothing)
 				continue;
-
-			int begin = subSql.indexOf("?", pos);
-			if (isNoParam && key.startsWith("?")) {
-				String defVal = block.vals.get(i);
-				if (defVal.endsWith(")")) {
-					subSql.replace(begin - 1, begin + 2, block.vals.get(i));
-					pos = begin + block.vals.get(i).length() - 1;
-				} else {
-					subSql.replace(begin, begin + 1, block.vals.get(i));
-					pos = begin + block.vals.get(i).length();
-				}
-			} else {
-				if (vals != null) {
-					// List parameter
-					String questions = genQuestions(vals);
-					subSql.replace(begin, begin + 1, questions);
-					pos = begin + questions.length();
-					subParams.addAll(vals);
-				} else {
-					// Atom parameter
-					pos = begin + 1;
-					subParams.add(val);
-				}
-			}
+			String replacement = inst.getReplacement();
+			subSql.replace(holder.begin + sabun, holder.begin + holder.length
+					+ sabun, replacement);
+			subParams.addAll(inst.params);
+			sabun += replacement.length();
 		}
 		return subSql;
-	}
-
-	private boolean isNull(Object val, Collection<?> vals) {
-		if (val == null)
-			return true;
-		if (nullValues != null) {
-			for (Object nullValue : nullValues) {
-				if (val.equals(nullValue))
-					return true;
-			}
-		}
-		if (vals != null && vals.size() == 0)
-			return true;
-		return false;
 	}
 
 	private String removeFirstDelimiter(StringBuilder subSb) {
 		Matcher m = delimPtn.matcher(subSb);
 		return m.find() ? m.group(1) + m.group(3) : subSb.toString();
-	}
-
-	private Collection<?> convToCol(Object val) {
-		if (val == null)
-			return null;
-		if (val.getClass().isArray()) {
-			ArrayList<Object> list = new ArrayList<Object>();
-			for (int i = 0; i < Array.getLength(val); i++) {
-				list.add(Array.get(val, i));
-			}
-			return list;
-		} else if (val instanceof Collection<?>)
-			return (Collection<?>) val;
-		return null;
-	}
-
-	private String genQuestions(Collection<?> params) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < params.size(); i++) {
-			if (i != 0)
-				sb.append(", ");
-			sb.append("?");
-		}
-		return sb.toString();
 	}
 }

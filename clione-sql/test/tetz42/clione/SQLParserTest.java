@@ -100,7 +100,7 @@ public class SQLParserTest {
 	public void genSql_join_line() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/JoinLineUpdate.sql"));
-		System.out.println(dumper(man.lineNodes));
+		System.out.println(dumper(man.sqlNode));
 		man.genSql(new HashMap<String, Object>());
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_join_line");
@@ -112,7 +112,7 @@ public class SQLParserTest {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass()
 						.getResourceAsStream("sql/RecursiveCommentSelect.sql"));
-		System.out.println(dumper(man.lineNodes));
+		System.out.println(dumper(man.sqlNode));
 		man.genSql(new HashMap<String, Object>());
 		// TODO �{���͂��̃P�[�X��WHERE�傲�Ə��������BgenSql�ŃR�����g�𖳎������@�́A����̉ۑ�B
 		assertEqualsWithFile(man.getSql(), getClass(),
@@ -125,7 +125,7 @@ public class SQLParserTest {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream(
 						"sql/RecursiveCommentSelect2.sql"));
-		System.out.println(dumper(man.lineNodes));
+		System.out.println(dumper(man.sqlNode));
 		man.genSql(new HashMap<String, Object>());
 		// TODO �{���͂��̃P�[�X��WHERE�傲�Ə��������BgenSql�ŃR�����g�𖳎������@�́A����̉ۑ�B
 		assertEqualsWithFile(man.getSql(), getClass(),
@@ -168,7 +168,7 @@ public class SQLParserTest {
 		man.genSql(params("TAKO", "octpus"));
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_normal_comment");
-		assertEqualsWithFile(man.lineNodes, getClass(),
+		assertEqualsWithFile(man.sqlNode, getClass(),
 				"genSql_normal_comment_lineTreeList");
 	}
 
@@ -191,7 +191,7 @@ public class SQLParserTest {
 				"sql/2KeyAt1Line.sql");
 
 		man.genSql(params("TAKO", "octopus").$("IKA", "squid"));
-		System.out.println(dumper(man.lineNodes));
+		System.out.println(dumper(man.sqlNode));
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_2_key_at_1_line_2param");
 		assertThat(man.getParams().size(), is(4));

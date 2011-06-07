@@ -1,7 +1,6 @@
 package tetz42.clione.node;
 
 import static tetz42.clione.lang.LangUtil.*;
-import static tetz42.clione.util.ClioneUtil.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,21 +14,21 @@ public class PlaceHolder {
 	private static Pattern ptn = Pattern.compile("\\A(=|in|is)\\s+.+",
 			Pattern.CASE_INSENSITIVE);
 
-	int begin;
-	int length = 0;
-	String valueInBack;
+	public int begin;
+	public int length = 0;
+	private String valueInBack;
 
 	private final ClioneFunction clione;
 
-	public PlaceHolder(String src, String valueInBack) {
+	public PlaceHolder(String src, String valueInBack, int begin) {
 		this.valueInBack = valueInBack;
-		this.clione = ClioneFuncFactory.get(getResourceInfo()).parse(src);
+		this.clione = ClioneFuncFactory.get().parse(src);
 	}
 
 	public Instruction perform(ParamMap paramMap) {
-		Instruction inst = clione.perform(paramMap);
+		Instruction inst = clione.perform(paramMap).merge();
 		if (inst.useValueInBack) {
-			return inst.replacement(valueInBack);
+			return inst.clearParams().replacement(valueInBack);
 		}
 		Matcher m = ptn.matcher(valueInBack);
 		if (m.matches()) {

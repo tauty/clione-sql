@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
@@ -75,7 +76,7 @@ public class Extention extends ClioneFunction {
 				while (inst != null) {
 					List<Object> newParams = new ArrayList<Object>();
 					for (Object e : inst.params) {
-						if (e != null)
+						if (!isNil(e))
 							newParams.add(e);
 					}
 					inst.params = newParams;
