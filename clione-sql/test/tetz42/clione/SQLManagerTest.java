@@ -235,8 +235,8 @@ public class SQLManagerTest {
 				"sql/EmployeeSelect.sql");
 
 		Employee employee = man.find(Employee.class, params("ID", 1));
-		System.out.println(man.getSQLInfo());
 		System.out.println(dumper(employee).superSafe());
+		System.out.println(man.getSQLInfo());
 		assertEqualsWithFile(employee, getClass(), "find_employee_by_id_1");
 	}
 
@@ -249,6 +249,7 @@ public class SQLManagerTest {
 		List<Employee> list = man.findAll(Employee.class,
 				params("$NO1", 100000).$("$NO2", 100003));
 		System.out.println(dumper(list).superSafe());
+		System.out.println(man.getSQLInfo());
 		assertEqualsWithFile(list, getClass(), "findAll_employee_by_no_2_and_3");
 	}
 
@@ -259,6 +260,7 @@ public class SQLManagerTest {
 
 		Employee employee = man.find(Employee.class);
 		System.out.println(dumper(employee).superSafe());
+		System.out.println(man.getSQLInfo());
 		assertEqualsWithFile(employee, getClass(), "find_employee_by_no_param");
 		// man.closeConnection();
 	}
