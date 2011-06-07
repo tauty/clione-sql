@@ -26,6 +26,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,8 +45,9 @@ public class SQLExecutorTest {
 
 	@Before
 	public void setUp() throws SQLException {
-		Connection con = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/test", "root", "rootroot");
+		ResourceBundle bundle = ResourceBundle.getBundle("db");
+		Connection con = DriverManager.getConnection(bundle.getString("url"),
+				bundle.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 		setThreadConnection(con);
 	}
@@ -173,7 +175,8 @@ public class SQLExecutorTest {
 	@Test
 	public void find_by_age_and_namePart_on() throws Exception {
 		List<ResultMap> people = sqlManager().useFile(getClass(),
-				"exesql/AmpersandSelect.sql").findAll(paramsOn("age", "namePart"));
+				"exesql/AmpersandSelect.sql").findAll(
+				paramsOn("age", "namePart"));
 		assertEqualsWithFile(people, getClass(), "find_by_age_and_namePart_on");
 	}
 
@@ -183,7 +186,7 @@ public class SQLExecutorTest {
 			proc.proc();
 			fail();
 		} catch (Exception e) {
-			assertEqualsWithFile(e.getMessage(), getClass(), fileName);
+			assertEqualsWithFile(e.getMessage(), getClass(), fileName, 1);
 			throw e;
 		}
 	}

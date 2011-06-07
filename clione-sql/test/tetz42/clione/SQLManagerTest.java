@@ -27,6 +27,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,8 +49,9 @@ public class SQLManagerTest {
 
 	@Before
 	public void setUp() throws SQLException {
-		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test",
-				"root", "rootroot");
+		ResourceBundle bundle = ResourceBundle.getBundle("db");
+		con = DriverManager.getConnection(bundle.getString("url"), bundle
+				.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 	}
 
@@ -83,8 +85,10 @@ public class SQLManagerTest {
 		assertThat(getThreadConnection(), is(this.con));
 
 		// Set Instance Connection
-		Connection anotherCon = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/test", "root", "rootroot");
+		ResourceBundle bundle = ResourceBundle.getBundle("db");
+		Connection anotherCon = DriverManager.getConnection(bundle
+				.getString("url"), bundle.getString("user"), bundle
+				.getString("pass"));
 		manager = sqlManager(anotherCon);
 		assertThat(manager.con(), is(anotherCon));
 		assertThat(getThreadConnection(), is(this.con));
@@ -93,7 +97,7 @@ public class SQLManagerTest {
 		setThreadConnection(null);
 		assertThat(manager.con(), is(anotherCon));
 		assertNull(getThreadConnection());
-		
+
 		// Close Connection
 		manager.closeConnection();
 	}
@@ -136,7 +140,8 @@ public class SQLManagerTest {
 
 	@Test(expected = SQLException.class)
 	public void findAll_using_wrongSQL() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/WrongSelect.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/WrongSelect.sql");
 		man.findAll(Tameshi.class);
 	}
 
@@ -178,7 +183,8 @@ public class SQLManagerTest {
 
 	@Test(expected = SQLException.class)
 	public void findAllmap_using_wrongSQL() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/WrongSelect.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/WrongSelect.sql");
 		man.findAll();
 	}
 
@@ -188,8 +194,8 @@ public class SQLManagerTest {
 		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update(
 				params("$age", 10));
 		assertThat(count, is(0));
-		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
-				Tameshi.class);
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql")
+				.findAll(Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "findAll_by_no_param");
 	}
@@ -200,8 +206,8 @@ public class SQLManagerTest {
 		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update(
 				params("$age", 31));
 		assertThat(count, is(2));
-		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
-				Tameshi.class);
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql")
+				.findAll(Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "update_by_age_31");
 	}
@@ -211,8 +217,8 @@ public class SQLManagerTest {
 		setThreadConnection(con);
 		int count = sqlManager().useFile(getClass(), "sql/Update.sql").update();
 		assertThat(count, is(5));
-		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql").findAll(
-				Tameshi.class);
+		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql")
+				.findAll(Tameshi.class);
 		System.out.println(dumper(list).superSafe());
 		assertEqualsWithFile(list, getClass(), "update_by_no_param");
 	}
@@ -225,9 +231,11 @@ public class SQLManagerTest {
 
 	@Test
 	public void find_employee_by_id_1() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/EmployeeSelect.sql");
 
 		Employee employee = man.find(Employee.class, params("ID", 1));
+		System.out.println(man.getSQLInfo());
 		System.out.println(dumper(employee).superSafe());
 		assertEqualsWithFile(employee, getClass(), "find_employee_by_id_1");
 	}
@@ -235,7 +243,8 @@ public class SQLManagerTest {
 	@Test
 	public void findAll_employee_by_no_0_and_3() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/EmployeeSelect.sql");
 
 		List<Employee> list = man.findAll(Employee.class,
 				params("$NO1", 100000).$("$NO2", 100003));
@@ -245,17 +254,19 @@ public class SQLManagerTest {
 
 	@Test
 	public void find_employee_by_no_param() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql/EmployeeSelect.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(),
+				"sql/EmployeeSelect.sql");
 
 		Employee employee = man.find(Employee.class);
 		System.out.println(dumper(employee).superSafe());
 		assertEqualsWithFile(employee, getClass(), "find_employee_by_no_param");
-//		man.closeConnection();
+		// man.closeConnection();
 	}
 
 	@Test
 	public void sqlManager_by_path() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
+		SQLExecutor man = sqlManager(con).useFile(
+				"tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
@@ -265,7 +276,8 @@ public class SQLManagerTest {
 
 	@Test
 	public void sqlManager_by_path_and_con() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile("tetz42/clione/sql/Sample.sql");
+		SQLExecutor man = sqlManager(con).useFile(
+				"tetz42/clione/sql/Sample.sql");
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
@@ -275,8 +287,8 @@ public class SQLManagerTest {
 
 	@Test
 	public void sqlManager_by_istream() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useStream(getClass().getResourceAsStream(
-				"sql/Sample.sql"));
+		SQLExecutor man = sqlManager(con).useStream(
+				getClass().getResourceAsStream("sql/Sample.sql"));
 
 		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
