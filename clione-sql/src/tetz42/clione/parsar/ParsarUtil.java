@@ -2,21 +2,60 @@ package tetz42.clione.parsar;
 
 import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.util.ContextUtil.*;
-
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.node.LineNode;
 
-public class ValueInBack {
+public class ParsarUtil {
 
 	private static final Pattern delimPtn = Pattern.compile("[()']");
+	private static final Pattern opePtn = Pattern.compile(
+			"\\A((!?=|<>|(not\\s+)?in|is(\\s+not)?)\\s+)",
+			Pattern.CASE_INSENSITIVE);
+
+	public static class NodeHolder {
+		private List<LineNode> nodes;
+		private int pos;
+
+		public NodeHolder(List<LineNode> nodes) {
+			this.nodes = nodes;
+			this.pos = 0;
+		}
+
+		public LineNode next() {
+			LineNode node = get();
+			pos++;
+			return node;
+		}
+
+		public LineNode get() {
+			if (pos >= nodes.size())
+				return null;
+			return nodes.get(pos);
+		}
+
+		public LineNode pre() {
+			pos--;
+			return get();
+		}
+	}
 
 	public static String getValueInBack(String src) {
+		if (isEmpty(src))
+			return null;
+		String operator = "";
+		Matcher m = opePtn.matcher(src);
+		if (m.find()) {
+			operator = m.group();
+			src = src.substring(m.end());
+		}
 		if (src.charAt(0) == '(' || src.charAt(0) == '\'')
-			return getLiteralValue(src);
+			return operator + getLiteralValue(src);
 		else if (isWordChar(src.charAt(0)))
-			return getNormalValue(src);
+			return operator + getNormalValue(src);
 		return null;
 	}
 
@@ -69,7 +108,7 @@ public class ValueInBack {
 		return src.substring(pos, pos + 1);
 	}
 
-	private static int wordEnd(String src) {
+	static int wordEnd(String src) {
 		int pos = 0;
 		while (pos < src.length() && isWordChar(src.charAt(pos)))
 			pos++;

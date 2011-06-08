@@ -18,9 +18,10 @@ package tetz42.clione.parsar;
 import tetz42.clione.parsar.SQLParser;
 
 public class Caller {
-	
-	public static int wordEnd(SQLParser parser, StringBuilder sb, int fromIndex){
-		return parser.wordEnd(sb, fromIndex);
+
+	// TODO temporally implementation. investigate who is called this method.
+	public static int wordEnd(SQLParser parser, StringBuilder sb, int fromIndex) {
+		return ParsarUtil.wordEnd(sb.toString());
 	}
 
 }

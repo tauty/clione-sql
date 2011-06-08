@@ -1,5 +1,6 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.util.ContextUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
@@ -47,10 +48,6 @@ public abstract class ExtFunction {
 
 	protected ParamMap getParamMap() {
 		return curParamMap.get();
-	}
-
-	protected String getResourceInfo() {
-		return curExtention.get().getResourceInfo();
 	}
 
 	protected boolean isNegative() {

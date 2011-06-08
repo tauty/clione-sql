@@ -1,5 +1,6 @@
 package tetz42.clione.lang.func;
 
+import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
@@ -32,7 +33,7 @@ abstract public class AbstractParam extends ClioneFunction {
 								+ inside.getSrc()
 								+ ". Probably you can solve this by deleting one of them"
 								+ " or inserting white space between them."
-								+ "\nResource info:" + resourceInfo);
+								+ "\nResource info:" + getResourceInfo());
 			}
 			this.param = inside;
 		}
@@ -56,7 +57,7 @@ abstract public class AbstractParam extends ClioneFunction {
 					+ " do not have parameter(s). "
 					+ "It must be like bolow:\n" + getSrc() + "PARAM or "
 					+ getSrc() + "(PARAM1, PARAM2, PARAM3)"
-					+ "\nResource info:" + resourceInfo);
+					+ "\nResource info:" + getResourceInfo());
 		}
 	}
 

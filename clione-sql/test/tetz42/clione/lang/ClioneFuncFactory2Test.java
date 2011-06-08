@@ -3,12 +3,25 @@ package tetz42.clione.lang;
 import static org.junit.Assert.*;
 import static tetz42.test.Util.*;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.util.ContextUtil;
 
 public class ClioneFuncFactory2Test {
+	
+	@Before
+	public void setUp() {
+		ContextUtil.pushResouceInfo("FromTest");
+	}
+	
+	@After
+	public void tearDown() {
+		ContextUtil.popResourceInfo();
+	}
 
 	@Test
 	public void doller_params() {

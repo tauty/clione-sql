@@ -2,7 +2,7 @@ package tetz42.clione.parsar;
 
 import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.util.ContextUtil.*;
-import static tetz42.clione.parsar.ValueInBack.*;
+import static tetz42.clione.parsar.ParsarUtil.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,13 +21,18 @@ import tetz42.clione.io.LineReader;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
+import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Setting;
 import tetz42.clione.util.SBHolder;
 import tetz42.util.ObjDumper4j;
 
 public class SQLParserSample {
-	private static final Pattern ptn = Pattern.compile("\\A(\\s+).*",
-			Pattern.DOTALL);
+
+	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
+	private static final Pattern joinPtn = Pattern.compile("$",
+			Pattern.MULTILINE);
+	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
+	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private String resourceInfo = null;
 
@@ -44,6 +49,19 @@ public class SQLParserSample {
 		new SQLParserSample("5555").parse(new StringBuilder().append(
 				"aaa/*bbbccc").append(CRLF).append(
 				"dddd*/'tako*/ika' eeee/* tako */ aaa").toString());
+		new SQLParserSample("6666").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append(
+				"dddd*/'tako*/ika' eeee/* tako */is null").toString());
+		new SQLParserSample("7777").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append(
+				"dddd*/'tako*/ika' eeee/* tako */not in ('aaa', 'b)b', 'ccc')")
+				.toString());
+		new SQLParserSample("8888").parse(new StringBuilder().append("WHERE")
+				.append(CRLF).append("  ID = /* $ID */'912387'").append(CRLF)
+				.append("  AND (").append(CRLF).append(
+						"    PREF /* $PREF */= 'TOKYO'").append(CRLF).append(
+						"    OR COUNTORY = /* $CONTORY */'JAPAN'").append(CRLF)
+				.append("  )").toString());
 	}
 
 	public SQLParserSample(String resourceInfo) {
@@ -52,7 +70,9 @@ public class SQLParserSample {
 
 	public SQLNode parse(String s) {
 		System.out.println("---------------------------");
-		return parse(new ByteArrayInputStream(s.getBytes()));
+		SQLNode sqlNode = parse(new ByteArrayInputStream(s.getBytes()));
+		System.out.println(ObjDumper4j.dumper(sqlNode));
+		return sqlNode;
 	}
 
 	public SQLNode parse(InputStream in) {
@@ -81,15 +101,9 @@ public class SQLParserSample {
 	}
 
 	private SQLNode parseRoot(Reader reader) throws IOException {
-		List<LineNode> flatList = parseFunction(reader);
-		System.out.println(ObjDumper4j.dumper(flatList));
-		return convToSqlNode(flatList);
+		List<LineNode> wholeNodeList = parseFunction(reader);
+		return parseIndent(wholeNodeList);
 	}
-
-	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
-	private static final Pattern joinPtn = Pattern.compile("$",
-			Pattern.MULTILINE);
-	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
 
 	private List<LineNode> parseFunction(Reader reader) throws IOException {
 		List<LineNode> flatList = new ArrayList<LineNode>();
@@ -98,9 +112,6 @@ public class SQLParserSample {
 		LineNode lineNode = null;
 		String line;
 		while (null != (line = br.readLine())) {
-			System.out.println(line);
-			if (blankPtn.matcher(line).matches())
-				continue;
 			if (lineNode == null)
 				lineNode = new LineNode(br.getStartLineNo(), br.getEndLineNo());
 			else
@@ -117,7 +128,7 @@ public class SQLParserSample {
 						continue; // '--' join is responsibility of LineReader.
 					if ("- *+!".contains(nextChar(line, m.end())))
 						break; // '---', and so on, means normal comment
-					// clione function
+					// create place holder
 					lineNode.holders.add(new PlaceHolder(line
 							.substring(m.end()), null, m.start()));
 					sb.delete(m.start(), sb.sb.length());
@@ -127,9 +138,8 @@ public class SQLParserSample {
 				m = findCommentEnd(br, sb, m, lineNode);
 				int end = sb.getPreLength() + m.end();
 				if (!"*+!".contains(sb.sb.substring(start + 2, start + 3))) {
-					// clione function!
+					// create place holder
 					String valueInBack = getValueInBack(sb.sb.substring(end));
-					System.out.println(sb.sb.substring(start, end));
 					lineNode.holders.add(new PlaceHolder(sb.sb.substring(
 							start + 2, end - 2), valueInBack, start));
 					if (valueInBack == null) {
@@ -142,7 +152,6 @@ public class SQLParserSample {
 						m.region(m.end() + length, lastLineLength);
 					}
 				}
-				System.out.println(sb.sb);
 			}
 			lineNode.sql = sb.sb.toString();
 			flatList.add(lineNode);
@@ -164,7 +173,6 @@ public class SQLParserSample {
 			m = findCommentEnd(br, sb, m, lineNode);
 		}
 		String line = br.readLine();
-		System.out.println(line);
 		if (line == null)
 			throw new ClioneFormatException("SQL Format Error: too match '/*'"
 					+ CRLF + getResourceInfo());
@@ -173,89 +181,46 @@ public class SQLParserSample {
 		return findCommentEnd(br, sb, commentPtn.matcher(line), lineNode);
 	}
 
-	private SQLNode convToSqlNode(List<LineNode> flatList) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private SQLNode parse(Reader reader) {
-		LineReader br = new LineReader(reader);
+	private SQLNode parseIndent(List<LineNode> wholeNodeList) {
+		NodeHolder holder = new NodeHolder(wholeNodeList);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;
-		try {
-			try {
-				do {
-					resultList.addAll(list = buildNodes(br, ""));
-				} while (list.size() != 0);
-			} finally {
-				br.close();
-			}
-		} catch (IOException e) {
-			throw new WrapException(e.getMessage() + CRLF + resourceInfo, e);
-		}
-		// if (this.commentDepth != 0)
-		// throw new ClioneFormatException("SQL Format Error: too match '/*'"
-		// + CRLF + resourceInfo);
+		do {
+			resultList.addAll(list = buildNodes(holder, ""));
+		} while (list.size() != 0);
 		SQLNode sqlNode = new SQLNode();
 		sqlNode.nodes = resultList;
+		sqlNode.resourceInfo = resourceInfo;
 		return sqlNode;
 	}
 
-	private List<LineNode> buildNodes(LineReader br, String indent)
-			throws IOException {
+	private List<LineNode> buildNodes(NodeHolder br, String indent) {
 		ArrayList<LineNode> list = new ArrayList<LineNode>();
 
-		String line;
-		LineNode block = null;
-		while (null != (line = br.readLine())) {
-			Matcher m = ptn.matcher(line);
-			String curIndent = m.matches() ? m.group(1) : "";
+		LineNode parentNode = null;
+		LineNode node;
+		while (null != (node = br.next())) {
+			Matcher m = indentPtn.matcher(node.sql);
+			String curIndent = m.find() ? m.group(1) : "";
 
 			if (indent.length() < curIndent.length()) {
-				// br.backLine();
-				if (block == null) {
+				br.pre();
+				if (parentNode == null) {
 					// performed only 1st loop time.
 					indent = curIndent;
 					continue;
 				}
-				block.childBlocks.addAll(buildNodes(br, curIndent));
+				parentNode.childBlocks.addAll(buildNodes(br, curIndent));
 				continue;
 			} else if (indent.length() > curIndent.length()
-					&& !line.matches("\\s*\\).*")) {
-				// br.backLine();
+					&& !closePtn.matcher(node.sql).find()) {
+				br.pre();
 				return list;
 			}
 
-			list.add(block = genNode(line));
+			list.add(parentNode = node);
 		}
 		return list;
-	}
-
-	private LineNode genNode(String line) {
-		return null;
-	}
-
-	int wordEnd(StringBuilder sb, int fromIndex) {
-		int pos = fromIndex;
-		while (pos < sb.length() && isWordChar(sb.charAt(pos)))
-			pos++;
-		return pos;
-	}
-
-	private boolean isWordChar(char c) {
-		if ('0' <= c && c <= '9')
-			return true;
-		if ('a' <= c && c <= 'z')
-			return true;
-		if ('A' <= c && c <= 'Z')
-			return true;
-		switch (c) {
-		case '_':
-		case '-':
-			return true;
-		default:
-			return false;
-		}
 	}
 
 	private String nextChar(String src, int pos) {
