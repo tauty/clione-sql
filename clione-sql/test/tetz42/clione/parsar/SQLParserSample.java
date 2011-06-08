@@ -2,6 +2,7 @@ package tetz42.clione.parsar;
 
 import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.parsar.ValueInBack.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,15 +33,17 @@ public class SQLParserSample {
 
 	public static void main(String args[]) {
 		new SQLParserSample("1111").parse("aaaa/* bbb */ccc");
-		new SQLParserSample("2222").parse(new StringBuilder()
-				.append("aaa/*bbbccc").append(CRLF).append("dddd*/eeee")
+		new SQLParserSample("2222").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee").toString());
+		new SQLParserSample("3333").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/* tako */ aaa")
 				.toString());
-		new SQLParserSample("3333").parse(new StringBuilder()
-				.append("aaa/*bbbccc").append(CRLF)
-				.append("dddd*/eeee/* tako */ aaa").toString());
-		new SQLParserSample("4444").parse(new StringBuilder()
-				.append("aaa/*bbbccc").append(CRLF)
-				.append("dddd*/eeee/*! tako */ aaa").toString());
+		new SQLParserSample("4444").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/*! tako */ aaa")
+				.toString());
+		new SQLParserSample("5555").parse(new StringBuilder().append(
+				"aaa/*bbbccc").append(CRLF).append(
+				"dddd*/'tako*/ika' eeee/* tako */ aaa").toString());
 	}
 
 	public SQLParserSample(String resourceInfo) {
@@ -115,8 +118,8 @@ public class SQLParserSample {
 					if ("- *+!".contains(nextChar(line, m.end())))
 						break; // '---', and so on, means normal comment
 					// clione function
-					lineNode.holders.add(new PlaceHolder(
-							line.substring(m.end()), null, m.start()));
+					lineNode.holders.add(new PlaceHolder(line
+							.substring(m.end()), null, m.start()));
 					sb.delete(m.start(), sb.sb.length());
 					break;
 				}
@@ -125,11 +128,19 @@ public class SQLParserSample {
 				int end = sb.getPreLength() + m.end();
 				if (!"*+!".contains(sb.sb.substring(start + 2, start + 3))) {
 					// clione function!
-//					getValueInBack();
-//					lineNode.holders.add(new PlaceHolder(line.substring(
-//							start + 2, end - 2), getValueInBack(), start));
+					String valueInBack = getValueInBack(sb.sb.substring(end));
 					System.out.println(sb.sb.substring(start, end));
-					sb.delete(start, end);
+					lineNode.holders.add(new PlaceHolder(sb.sb.substring(
+							start + 2, end - 2), valueInBack, start));
+					if (valueInBack == null) {
+						sb.delete(start, end);
+					} else {
+						int length = valueInBack.length();
+						sb.delete(start, end + length);
+						// skip searching on valueInBack;
+						int lastLineLength = sb.sb.length() - sb.getPreLength();
+						m.region(m.end() + length, lastLineLength);
+					}
 				}
 				System.out.println(sb.sb);
 			}
