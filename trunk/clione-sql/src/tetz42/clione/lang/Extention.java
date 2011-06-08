@@ -179,7 +179,7 @@ public class Extention extends ClioneFunction {
 		if (extFunction == null) {
 			throw new ClioneFormatException("Unknown function name '"
 					+ this.func + "'\nsrc:" + getSrc() + "\nResource info:"
-					+ this.resourceInfo);
+					+ getResourceInfo());
 		}
 	}
 

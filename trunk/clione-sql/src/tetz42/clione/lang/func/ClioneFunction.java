@@ -1,5 +1,6 @@
 package tetz42.clione.lang.func;
 
+import static tetz42.clione.util.ContextUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
@@ -7,7 +8,10 @@ import tetz42.clione.util.ParamMap;
 abstract public class ClioneFunction {
 
 	private ClioneFunction next;
-	protected String resourceInfo;
+	
+	// TODO delete below after unit test checking.
+	@SuppressWarnings("unused")
+	private String resourceInfo = null;
 
 	public ClioneFunction nextFunc(ClioneFunction next) {
 		this.next = next;
@@ -24,16 +28,12 @@ abstract public class ClioneFunction {
 					+ inside.getSrc()
 					+ ". Probably you can solve this by deleting one of them"
 					+ " or inserting white space between them."
-					+ "\nResource info:" + resourceInfo);
+					+ "\nResource info:" + getResourceInfo());
 		return this;
 	}
 
 	public ClioneFunction getInside() {
 		return null;
-	}
-
-	public String getResourceInfo() {
-		return this.resourceInfo;
 	}
 
 	public void check() {

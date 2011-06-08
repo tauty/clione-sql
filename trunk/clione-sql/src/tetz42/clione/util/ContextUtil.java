@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class ContextUtil {
+
 	private static class ResInfoHolder {
 		String resourceInfo;
 		int beginLineNo = 0;
@@ -70,6 +71,8 @@ public class ContextUtil {
 	}
 
 	public static void addNil(Object... nils) {
+		if (nils == null)
+			return;
 		for (Object nil : nils)
 			if (nil != null)
 				nilValues.get().add(nil);
