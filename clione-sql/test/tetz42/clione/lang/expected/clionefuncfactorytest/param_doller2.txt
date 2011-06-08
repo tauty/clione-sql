@@ -4,7 +4,7 @@ LineParam{
 		key = "KEY"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
 	isNegative = true
 	[tetz42.clione.lang.func.ClioneFunction]
@@ -12,7 +12,7 @@ LineParam{
 		key = "PARAM"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }

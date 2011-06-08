@@ -168,6 +168,7 @@ public class SQLParserTest {
 		man.genSql(params("TAKO", "octpus"));
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_normal_comment");
+		System.out.println(dumper(man.sqlNode));
 		assertEqualsWithFile(man.sqlNode, getClass(),
 				"genSql_normal_comment_lineTreeList");
 	}

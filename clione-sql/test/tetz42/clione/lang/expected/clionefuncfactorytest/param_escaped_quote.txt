@@ -4,7 +4,7 @@ LineCond{
 		key = "KEY"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
 	isNegative = false
 	[tetz42.clione.lang.func.ClioneFunction]
@@ -12,7 +12,7 @@ LineCond{
 		str = "It's alright!"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }
