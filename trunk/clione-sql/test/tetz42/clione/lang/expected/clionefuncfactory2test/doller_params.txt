@@ -11,18 +11,18 @@ LineParam{
 					key = "NAMAKO"
 					[tetz42.clione.lang.func.ClioneFunction]
 					next = null
-					resourceInfo = "FromTest"
+					resourceInfo = null
 				}
-				resourceInfo = "FromTest"
+				resourceInfo = null
 			}
-			resourceInfo = "FromTest"
+			resourceInfo = null
 		}
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
 	isNegative = false
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = null
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }

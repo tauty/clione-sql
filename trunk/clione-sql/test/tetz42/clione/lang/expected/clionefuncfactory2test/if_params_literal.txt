@@ -12,31 +12,36 @@ Extention{
 					key = "NAMAKO"
 					[tetz42.clione.lang.func.ClioneFunction]
 					next = null
-					resourceInfo = "FromTest"
+					resourceInfo = null
 				}
-				resourceInfo = "FromTest"
+				resourceInfo = null
 			}
-			resourceInfo = "FromTest"
+			resourceInfo = null
 		}
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
 	extFunction = { }
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = SQLLiteral{
-		nodes = ArrayList[
-			LineNode{
-				sql = "SAKANA"
-				keys = ArrayList[ ]
-				vals = ArrayList[ ]
-				childBlocks = ArrayList[ ]
-			}
-		]
+		sqlNode = SQLNode{
+			nodes = ArrayList[
+				LineNode{
+					sql = "SAKANA"
+					holders = ArrayList[ ]
+					childBlocks = ArrayList[ ]
+					beginLineNo = 1
+					endLineNo = 0
+					isDisposable = false
+				}
+			]
+			resourceInfo = "Inside of SQL comment "
+		}
 		literal = "SAKANA"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }

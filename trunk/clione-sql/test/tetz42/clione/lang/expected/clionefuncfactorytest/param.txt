@@ -2,5 +2,5 @@ Param{
 	key = "KEY"
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = null
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }

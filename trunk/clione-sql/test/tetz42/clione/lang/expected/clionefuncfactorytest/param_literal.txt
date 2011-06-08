@@ -2,18 +2,23 @@ Param{
 	key = "KEY"
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = SQLLiteral{
-		nodes = ArrayList[
-			LineNode{
-				sql = "LITERAL"
-				keys = ArrayList[ ]
-				vals = ArrayList[ ]
-				childBlocks = ArrayList[ ]
-			}
-		]
+		sqlNode = SQLNode{
+			nodes = ArrayList[
+				LineNode{
+					sql = "LITERAL"
+					holders = ArrayList[ ]
+					childBlocks = ArrayList[ ]
+					beginLineNo = 1
+					endLineNo = 0
+					isDisposable = false
+				}
+			]
+			resourceInfo = "Inside of SQL comment "
+		}
 		literal = "LITERAL"
 		[tetz42.clione.lang.func.ClioneFunction]
 		next = null
-		resourceInfo = "FromTest"
+		resourceInfo = null
 	}
-	resourceInfo = "FromTest"
+	resourceInfo = null
 }

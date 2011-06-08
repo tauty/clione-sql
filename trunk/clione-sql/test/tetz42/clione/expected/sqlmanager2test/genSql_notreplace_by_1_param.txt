@@ -3,5 +3,5 @@ SELECT
 FROM
     EMPLOYEES
 WHERE
-	ABC = 'tako' /* &NOT_REPLACE */
+	ABC = 'tako' 
 	AND	CDE = 100
