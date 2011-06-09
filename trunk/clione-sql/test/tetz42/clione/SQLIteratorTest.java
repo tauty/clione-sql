@@ -58,7 +58,7 @@ public class SQLIteratorTest {
 
 	@Test
 	public void findAll_by_dto_param() throws IOException, SQLException {
-		SQLExecutor exe = sqlManager().useFile(getClass(), "exesql/Select.sql");
+		SQLExecutor exe = sqlManager().useFile(SQLExecutorTest.class, "Select.sql");
 		List<Person2> people = exe.findAll(Person2.class, new ParamDto(31,
 				"%H%"));
 		assertEqualsWithFile(people, getClass(), "findAll_by_dto_param");

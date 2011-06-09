@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.junit.After;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.ParameterNotFoundException;
 import tetz42.clione.exception.SQLFileNotFoundException;
+import tetz42.clione.util.ResultMap;
 
 public class SQLManager2Test {
 
@@ -49,8 +51,8 @@ public class SQLManager2Test {
 	@Before
 	public void setUp() throws SQLException {
 		ResourceBundle bundle = ResourceBundle.getBundle("db");
-		con = DriverManager.getConnection(bundle.getString("url"),
-				bundle.getString("user"), bundle.getString("pass"));
+		con = DriverManager.getConnection(bundle.getString("url"), bundle
+				.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 	}
 
@@ -75,16 +77,14 @@ public class SQLManager2Test {
 
 	@Test(expected = ParameterNotFoundException.class)
 	public void genSql_required_by_no_param() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(),
-				"sql2/Required.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "Required.sql");
 		man.genSql();
 	}
 
 	@Test
 	public void genSql_required_by_required_param() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(),
-				"sql2/Required.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "Required.sql");
 		man.genSql(params("REQUIRED", "CLIONE"));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
@@ -94,8 +94,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void genSql_notreplace_by_1_param() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(),
-				"sql2/NotReplace.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "NotReplace.sql");
 		man.genSql(params("NOT_REPLACE", Boolean.TRUE));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
@@ -106,8 +105,7 @@ public class SQLManager2Test {
 	@Test
 	public void genSql_notreplace_by_no_param() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(),
-				"sql2/NotReplace.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "NotReplace.sql");
 		man.genSql();
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
@@ -117,7 +115,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void genSql_replacein_by_1_param() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "In.sql");
 
 		man.genSql(params("FISH", 10));
 		assertEqualsWithFile(man.getSql(), getClass(),
@@ -130,10 +128,10 @@ public class SQLManager2Test {
 	@Test
 	public void genSql_replacein_by_list_param() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "In.sql");
 
-		man.genSql(params("FISH",
-				Arrays.asList("octopus", "squid", "sea cucumber")));
+		man.genSql(params("FISH", Arrays.asList("octopus", "squid",
+				"sea cucumber")));
 		assertEqualsWithFile(man.getSql(), getClass(),
 				"genSql_replacein_by_list_param");
 		assertThat(man.getParams().size(), is(6));
@@ -148,7 +146,7 @@ public class SQLManager2Test {
 	@Test
 	public void genSql_replacein_by_ary_param() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "In.sql");
 
 		man.genSql(params("FISH", new String[] { "octopus", "squid",
 				"sea cucumber" }));
@@ -165,7 +163,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void genSql_replacein_by_no_param() throws IOException, SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "In.sql");
 
 		man.genSql();
 		assertEqualsWithFile(man.getSql(), getClass(),
@@ -176,7 +174,7 @@ public class SQLManager2Test {
 	@Test
 	public void genSql_replacein_by_empty_list_param() throws IOException,
 			SQLException {
-		SQLExecutor man = sqlManager(con).useFile(getClass(), "sql2/In.sql");
+		SQLExecutor man = sqlManager(con).useFile(getClass(), "In.sql");
 
 		man.genSql(params("FISH", Arrays.asList()));
 		assertEqualsWithFile(man.getSql(), getClass(),
@@ -188,7 +186,7 @@ public class SQLManager2Test {
 	public void genSql_replacein_by_empty_ary_param() throws IOException,
 			SQLException {
 		SQLManager man = sqlManager(con);
-		SQLExecutor exec = man.useFile(getClass(), "sql2/In.sql");
+		SQLExecutor exec = man.useFile(getClass(), "In.sql");
 
 		exec.genSql(params("FISH", new String[] {}));
 		assertEqualsWithFile(exec.getSql(), getClass(),
@@ -198,21 +196,22 @@ public class SQLManager2Test {
 		assertThat(exec.getParams().size(), is(0));
 	}
 
-	@Test(expected = ClioneFormatException.class)
+	@Test(expected = SQLException.class)
 	public void genSql_have_no_default_value() throws IOException, SQLException {
-		sqlManager(con).useFile(getClass(), "sql2/NoDefault.sql");
+		sqlManager(con).useFile(getClass(), "NoDefault.sql").find();
 	}
 
-	@Test(expected = ClioneFormatException.class)
 	public void genSql_have_no_default_value2() throws IOException,
 			SQLException {
-		sqlManager(con).useFile(getClass(), "sql2/NoDefault2.sql");
+		List<ResultMap> list = sqlManager(con).useFile(getClass(), "NoDefault2.sql").findAll();
+		System.out.println(dumper(list).superSafe());
+		assertEqualsWithFile(list, getClass(), "genSql_have_no_default_value2");
 	}
 
 	@Test
 	public void find_by_1_param() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useFile(SQLManagerTest.class,
-				"sql/Select.sql");
+				"Select.sql");
 
 		Sample sample = man.find(Sample.class, params("$age", 34));
 		System.out.println(dumper(sample).superSafe());
@@ -222,11 +221,12 @@ public class SQLManager2Test {
 	@Test
 	public void find_by_emptyStr_asNull() throws IOException, SQLException {
 		SQLManager man = sqlManager(con).setNullValues("");
-		Sample sample = man.useFile(getClass(), "sql/Select.sql").find(
+		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
 				Sample.class, params("age", 34).$("name_part", ""));
 
 		assertEqualsWithFile(sample, getClass(), "find_by_emptyStr_asNull");
-		assertEqualsWithFile(man.getSql(), getClass(), "find_by_emptyStr_asNull_sql");
+		assertEqualsWithFile(man.getSql(), getClass(),
+				"find_by_emptyStr_asNull_sql");
 	}
 
 }

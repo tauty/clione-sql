@@ -204,7 +204,7 @@ public class SQLParserSample {
 			String curIndent = m.find() ? m.group(1) : "";
 
 			if (indent.length() < curIndent.length()) {
-				br.pre();
+				br.back();
 				if (parentNode == null) {
 					// performed only 1st loop time.
 					indent = curIndent;
@@ -214,7 +214,7 @@ public class SQLParserSample {
 				continue;
 			} else if (indent.length() > curIndent.length()
 					&& !closePtn.matcher(node.sql).find()) {
-				br.pre();
+				br.back();
 				return list;
 			}
 

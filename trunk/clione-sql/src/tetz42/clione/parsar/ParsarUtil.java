@@ -37,7 +37,7 @@ public class ParsarUtil {
 			return nodes.get(pos);
 		}
 
-		public LineNode pre() {
+		public LineNode back() {
 			pos--;
 			return get();
 		}
