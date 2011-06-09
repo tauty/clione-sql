@@ -56,6 +56,10 @@ public class SQLManager {
 		return params().$(key, value);
 	}
 
+	public static <T> ParamMap params(String key, T... values) {
+		return params().$(key, values);
+	}
+
 	public static ParamMap params(Object obj) {
 		return params().object(obj);
 	}

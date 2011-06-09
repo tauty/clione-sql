@@ -50,7 +50,7 @@ public class ClioneFuncTest {
 	@Test
 	public void doller_bind_null() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse("$PARAM");
-		Instruction instruction = cf.perform(params("AAA", null));
+		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "doller_bind_null");
 	}
 
@@ -169,21 +169,21 @@ public class ClioneFuncTest {
 	}
 
 	@Test
-	public void colon() {
+	public void coloncolon() {
 		ClioneFunction cf = ClioneFuncFactory
 				.get()
 				.parse(
-						":SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
+						"::SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "semicolon");
 	}
 
 	@Test
-	public void semicolon() {
+	public void colon() {
 		ClioneFunction cf = ClioneFuncFactory
 				.get()
 				.parse(
-						";SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
+						":SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "colon");
 	}

@@ -44,6 +44,10 @@ public class ClioneUtil {
 		return !isEmpty(s);
 	}
 
+	public static boolean isNotEmpty(Object o) {
+		return !isEmpty(o);
+	}
+
 	public static String joinByCrlf(Object... objs) {
 		if (objs == null || objs.length == 0)
 			return "";
@@ -53,6 +57,13 @@ public class ClioneUtil {
 		return sb.toString();
 	}
 
+	public static <T> String concat(T... vals) {
+		StringBuilder sb = new StringBuilder();
+		for (T val : vals)
+			sb.append(val);
+		return sb.toString();
+	}
+	
 	public static String genSQLInfo(String sql, List<Object> params,
 			String resourceInfo) {
 		return joinByCrlf("--- sql ---", sql, "--- params ---", params,

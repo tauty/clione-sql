@@ -47,6 +47,25 @@ public class ParamMap extends HashMap<String, Object> {
 		return this;
 	}
 
+	public <T> ParamMap $(String key, T... values) {
+		this.put(key, values);
+		return this;
+	}
+
+	public ParamMap $e(String key, Object value) {
+		if (ClioneUtil.isNotEmpty(value))
+			this.put(key, value);
+		return this;
+	}
+
+	public <T> ParamMap $e(String key, T... values) {
+		for (T value : values) {
+			if (ClioneUtil.isNotEmpty(value))
+				this.put(key, value);
+		}
+		return this;
+	}
+
 	public ParamMap $on(String... keys) {
 		for (String key : keys)
 			this.put(key, ON);

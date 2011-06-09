@@ -33,7 +33,7 @@ public class ClioneFuncFactoryTest {
 		ClioneFunction clione = ClioneFuncFactory
 				.get()
 				.parse(
-						"KEY ;/\\* INNER_PARAM *\\/'tako' IN('\\\\100', '\\\\200', '\\\\nec')");
+						"KEY :/\\* INNER_PARAM *\\/'tako' IN('\\\\100', '\\\\200', '\\\\nec')");
 		assertEqualsWithFile(clione, getClass(), "param_escaped_literal");
 	}
 
@@ -63,13 +63,6 @@ public class ClioneFuncFactoryTest {
 	public void param_require() {
 		ClioneFunction clione = ClioneFuncFactory.get().parse("@KEY");
 		assertEqualsWithFile(clione, getClass(), "param_require");
-	}
-
-	@Test
-	public void param_part() {
-		ClioneFunction clione = ClioneFuncFactory.get().parse(
-				"#KEY :LITERAL");
-		assertEqualsWithFile(clione, getClass(), "param_part");
 	}
 
 	@Test

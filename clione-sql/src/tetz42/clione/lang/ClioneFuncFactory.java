@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
-import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.util.ContextUtil.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,14 +13,13 @@ import tetz42.clione.lang.func.LineCond;
 import tetz42.clione.lang.func.LineParam;
 import tetz42.clione.lang.func.Param;
 import tetz42.clione.lang.func.Parenthesises;
-import tetz42.clione.lang.func.PartCond;
 import tetz42.clione.lang.func.RequireParam;
 import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.lang.func.StrLiteral;
 
 public class ClioneFuncFactory {
 
-	private static final Pattern delimPtn = Pattern.compile("[()'\":;]");
+	private static final Pattern delimPtn = Pattern.compile("[()'\"]|::?");
 	private static final Pattern funcPtn = Pattern
 			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
 	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
@@ -64,11 +63,11 @@ public class ClioneFuncFactory {
 		else if (delim.equals(")"))
 			resultUnit = new Unit().endPar(true);
 		else if (delim.equals(":"))
-			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end())));
-		else
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(unesc(src
-					.substring(m.end())))); // ';'
+					.substring(m.end()))));
+		else
+			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
+					.end()))); // '::' means 'no escaping'
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}
@@ -175,8 +174,6 @@ public class ClioneFuncFactory {
 				return new RequireParam(key, isNotEmpty(not));
 			if (func.equals("?"))
 				return new DefaultParam(key, isNotEmpty(not));
-			if (func.equals("#"))
-				return new PartCond(key, isNotEmpty(not));
 			if (func.equals("&"))
 				return new LineCond(key, isNotEmpty(not));
 			if (func.equals("%"))
@@ -187,6 +184,7 @@ public class ClioneFuncFactory {
 	}
 
 	private static String unesc(String s) {
+		s = s.replace("/+", "/*").replace("+/", "*/");
 		return backslashPtn.matcher(s).replaceAll("$1");
 	}
 }
