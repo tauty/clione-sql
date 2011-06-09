@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.ParameterNotFoundException;
 import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.util.ResultMap;

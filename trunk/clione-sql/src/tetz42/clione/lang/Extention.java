@@ -157,6 +157,7 @@ public class Extention extends ClioneFunction {
 						inst.isNodeDisposed);
 			}
 		});
+		putFunction("STR", getFunction("SQL"));
 	}
 
 	public static ExtFunction putFunction(String keyword, ExtFunction f) {
