@@ -38,6 +38,8 @@ import tetz42.clione.util.ResultMap;
 
 public class SQLExecutorTest {
 
+	private static final Class<?> clazz = SQLExecutorTest.class;
+
 	@BeforeClass
 	public static void start() throws Exception {
 		Class.forName("com.mysql.jdbc.Driver");
@@ -64,7 +66,7 @@ public class SQLExecutorTest {
 
 	@Test
 	public void findAll_by_dto_param() throws IOException, SQLException {
-		SQLExecutor exe = sqlManager().useFile(getClass(), "exesql/Select.sql");
+		SQLExecutor exe = sqlManager().useFile(getClass(), "Select.sql");
 		List<Person> people = exe
 				.findAll(Person.class, new ParamDto(31, "%H%"));
 		assertEqualsWithFile(people, getClass(), "findAll_by_dto_param");
@@ -76,21 +78,21 @@ public class SQLExecutorTest {
 
 	@Test
 	public void find_by_dto_param() throws IOException, SQLException {
-		Person person = sqlManager().useFile(getClass(), "exesql/Select.sql")
-				.find(Person.class, new ParamDto(31, "%k%"));
+		Person person = sqlManager().useFile(getClass(), "Select.sql").find(
+				Person.class, new ParamDto(31, "%k%"));
 		assertEqualsWithFile(person, getClass(), "find_by_dto_param");
 	}
 
 	@Test
 	public void find_by_dto_no_result() throws IOException, SQLException {
-		Person person = sqlManager().useFile(getClass(), "exesql/Select.sql")
-				.find(Person.class, new ParamDto(31, "%X%"));
+		Person person = sqlManager().useFile(getClass(), "Select.sql").find(
+				Person.class, new ParamDto(31, "%X%"));
 		assertNull(person);
 	}
 
 	@Test
 	public void findmapAll_by_dto_param() throws IOException, SQLException {
-		SQLExecutor exe = sqlManager().useFile(getClass(), "exesql/Select.sql");
+		SQLExecutor exe = sqlManager().useFile(getClass(), "Select.sql");
 		List<ResultMap> people = exe.findAll(new ParamDto(31, "%H%"));
 		assertEqualsWithFile(people, getClass(), "findmapAll_by_dto_param");
 	}
@@ -98,21 +100,21 @@ public class SQLExecutorTest {
 	@Test
 	public void findmap_by_dto_param() throws IOException, SQLException {
 		Map<String, Object> person = sqlManager().useFile(getClass(),
-				"exesql/Select.sql").find(new ParamDto(31, "%k%"));
+				"Select.sql").find(new ParamDto(31, "%k%"));
 		assertEqualsWithFile(person, getClass(), "findmap_by_dto_param");
 	}
 
 	@Test
 	public void findmap_by_dto_no_result() throws IOException, SQLException {
 		Map<String, Object> person = sqlManager().useFile(getClass(),
-				"exesql/Select.sql").find(new ParamDto(31, "%X%"));
+				"Select.sql").find(new ParamDto(31, "%X%"));
 		assertNull(person);
 	}
 
 	@Test(expected = SQLException.class)
 	public void findAll_wrong_by_dto_param() throws Exception {
 		final SQLExecutor exe = sqlManager().useFile(getClass(),
-				"exesql/WrongSelect.sql");
+				"WrongSelect.sql");
 		assertSQLException("findAll_wrong_by_dto_param", new Proc() {
 			@Override
 			public void proc() throws SQLException {
@@ -126,8 +128,8 @@ public class SQLExecutorTest {
 		assertSQLException("find_wrong_by_dto_param", new Proc() {
 			@Override
 			public void proc() throws SQLException {
-				sqlManager().useFile(getClass(), "exesql/WrongSelect.sql")
-						.find(Person.class, new ParamDto(31, "%k%"));
+				sqlManager().useFile(clazz, "WrongSelect.sql").find(
+						Person.class, new ParamDto(31, "%k%"));
 			}
 		});
 	}
@@ -135,7 +137,7 @@ public class SQLExecutorTest {
 	@Test(expected = SQLException.class)
 	public void findmapAll_wrong_by_dto_param() throws Exception {
 		final SQLExecutor exe = sqlManager().useFile(getClass(),
-				"exesql/WrongSelect.sql");
+				"WrongSelect.sql");
 		assertSQLException("findmapAll_wrong_by_dto_param", new Proc() {
 			@Override
 			public void proc() throws SQLException {
@@ -149,34 +151,33 @@ public class SQLExecutorTest {
 		assertSQLException("findmap_wrong_by_dto_param", new Proc() {
 			@Override
 			public void proc() throws SQLException {
-				sqlManager().useFile(getClass(), "exesql/WrongSelect.sql")
-						.find(new ParamDto(31, "%k%"));
+				sqlManager().useFile(clazz, "WrongSelect.sql").find(
+						new ParamDto(31, "%k%"));
 			}
 		});
 	}
 
 	@Test
 	public void update_set_age_35() throws Exception {
-		int count = sqlManager().useFile(getClass(), "exesql/Update.sql")
-				.update(new ParamDto(35, ""));
+		int count = sqlManager().useFile(getClass(), "Update.sql").update(
+				new ParamDto(35, ""));
 		assertThat(count, is(1));
-		List<Tameshi> list = sqlManager().useFile(getClass(), "sql/Select.sql")
-				.findAll(Tameshi.class);
+		List<Tameshi> list = sqlManager().useFile(SQLManagerTest.class,
+				"Select.sql").findAll(Tameshi.class);
 		assertEqualsWithFile(list, getClass(), "update_set_age_35");
 	}
 
 	@Test
 	public void find_by_age_on() throws Exception {
 		List<ResultMap> people = sqlManager().useFile(getClass(),
-				"exesql/AmpersandSelect.sql").findAll(paramsOn("age"));
+				"AmpersandSelect.sql").findAll(paramsOn("age"));
 		assertEqualsWithFile(people, getClass(), "find_by_age_on");
 	}
 
 	@Test
 	public void find_by_age_and_namePart_on() throws Exception {
 		List<ResultMap> people = sqlManager().useFile(getClass(),
-				"exesql/AmpersandSelect.sql").findAll(
-				paramsOn("age", "namePart"));
+				"AmpersandSelect.sql").findAll(paramsOn("age", "namePart"));
 		assertEqualsWithFile(people, getClass(), "find_by_age_and_namePart_on");
 	}
 

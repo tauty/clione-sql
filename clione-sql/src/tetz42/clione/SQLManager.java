@@ -15,9 +15,9 @@
  */
 package tetz42.clione;
 
+import static tetz42.clione.loader.LoaderUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
-import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.util.ParamMap;
 
 public class SQLManager {
@@ -34,12 +33,10 @@ public class SQLManager {
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
 	public static SQLManager sqlManager() {
-		// TODO add instance management logic
 		return new SQLManager();
 	}
 
 	public static SQLManager sqlManager(Connection con) {
-		// TODO add instance management logic
 		return new SQLManager(con);
 	}
 
@@ -129,39 +126,32 @@ public class SQLManager {
 	}
 
 	public SQLExecutor useSQL(String sql) {
-		resourceInfo = "Parameter SQL";
-		SQLExecutor sqlExecutor = new SQLExecutor(this,
-				new ByteArrayInputStream(sql.getBytes()), resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeBySQL(sql));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
 		return sqlExecutor;
 	}
 
 	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
-		InputStream in = clazz.getResourceAsStream(sqlFile);
-		resourceInfo = "class:" + clazz.getSimpleName() + ", SQL file name:"
-				+ sqlFile;
-		if (in == null)
-			throw new SQLFileNotFoundException("SQL File might not be found. "
-					+ resourceInfo);
-		SQLExecutor sqlExecutor = new SQLExecutor(this, in, resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByClass(clazz,
+				sqlFile));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
 		return sqlExecutor;
 	}
 
 	public SQLExecutor useFile(String sqlPath) {
-		InputStream in = getClass().getClassLoader().getResourceAsStream(
-				sqlPath);
-		resourceInfo = "SQL file path:" + sqlPath;
-		if (in == null)
-			throw new SQLFileNotFoundException("SQL File might not be found. "
-					+ resourceInfo);
-		SQLExecutor sqlExecutor = new SQLExecutor(this, in, resourceInfo);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
 		return sqlExecutor;
 	}
 
 	public SQLExecutor useStream(InputStream in) {
-		if (in == null)
-			throw new NullPointerException("The in parameter is null.");
-		resourceInfo = null;
-		return new SQLExecutor(this, in, null);
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByStream(in));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
+		return sqlExecutor;
 	}
 
 	public Connection con() {

@@ -3,7 +3,6 @@ package tetz42.clione;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +12,6 @@ import java.util.Map;
 
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
-import tetz42.clione.parsar.SQLParser;
 import tetz42.clione.util.ResultMap;
 
 public class SQLExecutor {
@@ -28,10 +26,10 @@ public class SQLExecutor {
 	PreparedStatement stmt;
 	ResultSet rs;
 
-	SQLExecutor(SQLManager manager, InputStream in, String resourceInfo) {
+	SQLExecutor(SQLManager manager, SQLNode sqlNode) {
 		this.manager = manager;
-		this.resourceInfo = resourceInfo;
-		this.sqlNode = new SQLParser(resourceInfo).parse(in);
+		this.sqlNode = sqlNode;
+		this.resourceInfo = sqlNode.resourceInfo;
 		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}

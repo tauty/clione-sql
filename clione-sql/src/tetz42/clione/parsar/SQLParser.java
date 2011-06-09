@@ -181,27 +181,27 @@ public class SQLParser {
 		return sqlNode;
 	}
 
-	private List<LineNode> buildNodes(NodeHolder br, String indent) {
+	private List<LineNode> buildNodes(NodeHolder holder, String indent) {
 		ArrayList<LineNode> list = new ArrayList<LineNode>();
 
 		LineNode parentNode = null;
 		LineNode node;
-		while (null != (node = br.next())) {
+		while (null != (node = holder.next())) {
 			Matcher m = indentPtn.matcher(node.sql);
 			String curIndent = m.find() ? m.group(1) : "";
 
 			if (indent.length() < curIndent.length()) {
-				br.pre();
+				holder.back();
 				if (parentNode == null) {
 					// performed only 1st loop time.
 					indent = curIndent;
 					continue;
 				}
-				parentNode.childBlocks.addAll(buildNodes(br, curIndent));
+				parentNode.childBlocks.addAll(buildNodes(holder, curIndent));
 				continue;
 			} else if (indent.length() > curIndent.length()
 					&& !closePtn.matcher(node.sql).find()) {
-				br.pre();
+				holder.back();
 				return list;
 			}
 

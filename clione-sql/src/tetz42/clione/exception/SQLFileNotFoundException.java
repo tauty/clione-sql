@@ -9,4 +9,8 @@ public class SQLFileNotFoundException extends RuntimeException {
 	public SQLFileNotFoundException(String msg) {
 		super(msg);
 	}
+
+	public SQLFileNotFoundException(String msg, Throwable t) {
+		super(msg, t);
+	}
 }

@@ -99,5 +99,5 @@ SQLNode{
 			isDisposable = false
 		}
 	]
-	resourceInfo = "class:SQLParserTest, SQL file name:sql/NormalComment.sql"
+	resourceInfo = "SQL file path:tetz42/clione/sql/SQLManagerTest/NormalComment.sql"
 }
