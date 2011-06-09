@@ -1,0 +1,13 @@
+Table 'TCD_OOTA.person' doesn't exist
+--- sql ---
+SELECT
+        *
+    FROM
+        person
+    WHERE
+        age = ?
+        AND name LIKE ?
+--- params ---
+[31, %H%]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLExecutorTest/WrongSelect.sql
