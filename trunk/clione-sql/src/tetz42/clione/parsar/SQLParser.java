@@ -44,6 +44,7 @@ public class SQLParser {
 
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
+	private static final Pattern clionePtn = Pattern.compile(" ");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private String resourceInfo = null;
