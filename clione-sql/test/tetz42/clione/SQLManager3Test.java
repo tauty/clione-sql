@@ -78,4 +78,46 @@ public class SQLManager3Test {
 		assertEqualsWithFile(list, getClass(), "if_block_null");
 	}
 
+	@Test
+	public void if_line_block_true() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Employee> list = sqlManager.useFile(getClass(), "IfLineBlock.sql")
+				.findAll(Employee.class, params("cond", "o.com"));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"if_line_block_true_sql");
+		assertEqualsWithFile(list, getClass(), "if_line_block_true");
+	}
+
+	@Test
+	public void if_line_block_true_contains_persent() throws IOException,
+			SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Employee> list = sqlManager.useFile(getClass(), "IfLineBlock.sql")
+				.findAll(Employee.class, params("cond", "%o_com"));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"if_line_block_true_contains_persent_sql");
+		assertEqualsWithFile(list, getClass(),
+				"if_line_block_true_contains_persent");
+	}
+
+	@Test
+	public void if_line_block_false() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Employee> list = sqlManager.useFile(getClass(), "IfLineBlock.sql")
+				.findAll(Employee.class, params("ids", 1, 2));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"if_line_block_false_sql");
+		assertEqualsWithFile(list, getClass(), "if_line_block_false");
+	}
+
+	@Test
+	public void if_line_block_null() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Employee> list = sqlManager.useFile(getClass(), "IfLineBlock.sql")
+				.findAll(Employee.class);
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"if_line_block_null_sql");
+		assertEqualsWithFile(list, getClass(), "if_line_block_null");
+	}
+
 }

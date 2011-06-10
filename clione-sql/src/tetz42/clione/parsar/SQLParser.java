@@ -44,7 +44,6 @@ public class SQLParser {
 
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
-	private static final Pattern clionePtn = Pattern.compile(" ");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private String resourceInfo = null;
@@ -108,12 +107,14 @@ public class SQLParser {
 				if (m.group().equals("--")) {
 					if (CRLF.equals(nextStr(line, m.end(), CRLF.length())))
 						continue; // '--' join is responsibility of LineReader.
-					if ("- *+!".contains(nextChar(line, m.end())))
-						break; // '---', and so on, means normal comment
-					// create place holder
-					lineNode.holders.add(new PlaceHolder(
-							line.substring(m.end()), null, m.start()));
-					sbh.delete(m.start(), sbh.sb.length());
+					String s = nextStr(line, m.end(), 2);
+					if (s != null && s.startsWith(" ")
+							&& "$@&?#%'\":|".contains(s.substring(1))) {
+						// create place holder
+						lineNode.holders.add(new PlaceHolder(line.substring(m
+								.end()), null, m.start()));
+						sbh.delete(m.start(), sbh.sb.length());
+					}
 					break;
 				}
 				int start = sbh.getPreLength() + m.start();
