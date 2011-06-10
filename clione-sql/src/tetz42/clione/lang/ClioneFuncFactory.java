@@ -19,7 +19,7 @@ import tetz42.clione.lang.func.StrLiteral;
 
 public class ClioneFuncFactory {
 
-	private static final Pattern delimPtn = Pattern.compile("[()'\"]|::?");
+	private static final Pattern delimPtn = Pattern.compile("[()'\":|]");
 	private static final Pattern funcPtn = Pattern
 			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
 	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
@@ -67,7 +67,7 @@ public class ClioneFuncFactory {
 					.substring(m.end()))));
 		else
 			resultUnit = new Unit().clioneFunc(new SQLLiteral(src.substring(m
-					.end()))); // '::' means 'no escaping'
+					.end()))); // '|' means 'no escaping'
 		return unit.clioneFunc == null ? resultUnit
 				: joinUnit(unit, resultUnit);
 	}

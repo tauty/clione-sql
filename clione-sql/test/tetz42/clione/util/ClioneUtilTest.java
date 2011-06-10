@@ -20,6 +20,16 @@ public class ClioneUtilTest {
 	}
 
 	@Test
+	public void testNextStr() {
+		assertThat(nextChar("1234567890", 1), is("2"));
+		assertThat(nextChar("1234567890", 9), is("0"));
+		assertNull(nextChar("1234567890", 10));
+		assertThat(nextStr("1234567890", 1, 2), is("23"));
+		assertThat(nextStr("1234567890", 7, 3), is("890"));
+		assertNull(nextStr("1234567890", 7, 4));
+	}
+
+	@Test
 	public void resourceInfo0() {
 		try {
 			pushResouceInfo("zero.sql");

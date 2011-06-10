@@ -169,11 +169,11 @@ public class ClioneFuncTest {
 	}
 
 	@Test
-	public void coloncolon() {
+	public void pipe() {
 		ClioneFunction cf = ClioneFuncFactory
 				.get()
 				.parse(
-						"::SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
+						"|SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "semicolon");
 	}

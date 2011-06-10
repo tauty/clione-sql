@@ -3,7 +3,7 @@ SELECT
 FROM
     EMPLOYEES
 WHERE
-	-- ROOT  ?
+	-- ROOT  /* $ROOT */dummy
 		AAA = true
 		AND BBB = false
 		AND CCC = 'abcdefg'
