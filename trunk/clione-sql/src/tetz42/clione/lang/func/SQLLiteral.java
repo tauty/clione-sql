@@ -11,7 +11,7 @@ import tetz42.clione.util.ParamMap;
 public class SQLLiteral extends ClioneFunction {
 
 	private final SQLNode sqlNode;
-	private final String literal;
+	protected final String literal;
 
 	public SQLLiteral(String literal) {
 		this.literal = literal;

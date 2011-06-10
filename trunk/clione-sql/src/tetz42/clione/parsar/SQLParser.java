@@ -39,13 +39,10 @@ import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Setting;
 import tetz42.clione.util.SBHolder;
-import tetz42.util.ObjDumper4j;
 
 public class SQLParser {
 
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
-	private static final Pattern joinPtn = Pattern.compile("$",
-			Pattern.MULTILINE);
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
@@ -56,10 +53,7 @@ public class SQLParser {
 	}
 
 	public SQLNode parse(String s) {
-		System.out.println("---------------------------");
-		SQLNode sqlNode = parse(new ByteArrayInputStream(s.getBytes()));
-		System.out.println(ObjDumper4j.dumper(sqlNode));
-		return sqlNode;
+		return parse(new ByteArrayInputStream(s.getBytes()));
 	}
 
 	public SQLNode parse(InputStream in) {
@@ -111,13 +105,13 @@ public class SQLParser {
 							"SQL Format Error: too much '*/'" + CRLF + line
 									+ CRLF + getResourceInfo());
 				if (m.group().equals("--")) {
-					if (joinPtn.matcher(line).find(m.end()))
+					if (CRLF.equals(nextStr(line, m.end(), CRLF.length())))
 						continue; // '--' join is responsibility of LineReader.
 					if ("- *+!".contains(nextChar(line, m.end())))
 						break; // '---', and so on, means normal comment
 					// create place holder
-					lineNode.holders.add(new PlaceHolder(line
-							.substring(m.end()), null, m.start()));
+					lineNode.holders.add(new PlaceHolder(
+							line.substring(m.end()), null, m.start()));
 					sbh.delete(m.start(), sbh.sb.length());
 					break;
 				}
@@ -135,7 +129,8 @@ public class SQLParser {
 						int length = valueInBack.length();
 						sbh.delete(start, end + length);
 						// skip searching on valueInBack;
-						int lastLineLength = sbh.sb.length() - sbh.getPreLength();
+						int lastLineLength = sbh.sb.length()
+								- sbh.getPreLength();
 						m.region(m.end() + length, lastLineLength);
 					}
 				}
@@ -210,9 +205,4 @@ public class SQLParser {
 		return list;
 	}
 
-	private String nextChar(String src, int pos) {
-		if (pos >= src.length())
-			return null;
-		return src.substring(pos, pos + 1);
-	}
 }

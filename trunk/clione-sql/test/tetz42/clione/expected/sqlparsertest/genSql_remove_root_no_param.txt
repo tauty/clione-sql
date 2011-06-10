@@ -3,4 +3,8 @@ SELECT
 FROM
     EMPLOYEES
 WHERE
-	DDD = true
+	-- ROOT  /* $ROOT */dummy
+		AAA = true
+		AND BBB = false
+		AND CCC = 'abcdefg'
+	AND DDD = true

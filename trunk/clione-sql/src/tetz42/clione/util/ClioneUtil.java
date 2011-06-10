@@ -63,7 +63,17 @@ public class ClioneUtil {
 			sb.append(val);
 		return sb.toString();
 	}
-	
+
+	public static String nextStr(String src, int pos, int length) {
+		if (src.length() < pos + length)
+			return null;
+		return src.substring(pos, pos + length);
+	}
+
+	public static String nextChar(String src, int pos) {
+		return nextStr(src, pos, 1);
+	}
+
 	public static String genSQLInfo(String sql, List<Object> params,
 			String resourceInfo) {
 		return joinByCrlf("--- sql ---", sql, "--- params ---", params,
