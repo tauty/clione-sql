@@ -38,29 +38,32 @@ public class SQLParserSample {
 
 	public static void main(String args[]) {
 		new SQLParserSample("1111").parse("aaaa/* bbb */ccc");
-		new SQLParserSample("2222").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee").toString());
-		new SQLParserSample("3333").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/* tako */ aaa")
+		new SQLParserSample("2222").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF).append("dddd*/eeee")
 				.toString());
-		new SQLParserSample("4444").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append("dddd*/eeee/*! tako */ aaa")
-				.toString());
-		new SQLParserSample("5555").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append(
-				"dddd*/'tako*/ika' eeee/* tako */ aaa").toString());
-		new SQLParserSample("6666").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append(
-				"dddd*/'tako*/ika' eeee/* tako */is null").toString());
-		new SQLParserSample("7777").parse(new StringBuilder().append(
-				"aaa/*bbbccc").append(CRLF).append(
-				"dddd*/'tako*/ika' eeee/* tako */not in ('aaa', 'b)b', 'ccc')")
-				.toString());
+		new SQLParserSample("3333").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/eeee/* tako */ aaa").toString());
+		new SQLParserSample("4444").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/eeee/*! tako */ aaa").toString());
+		new SQLParserSample("5555").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/'tako*/ika' eeee/* tako */ aaa").toString());
+		new SQLParserSample("6666").parse(new StringBuilder()
+				.append("aaa/*bbbccc").append(CRLF)
+				.append("dddd*/'tako*/ika' eeee/* tako */is null").toString());
+		new SQLParserSample("7777")
+				.parse(new StringBuilder()
+						.append("aaa/*bbbccc")
+						.append(CRLF)
+						.append("dddd*/'tako*/ika' eeee/* tako */not in ('aaa', 'b)b', 'ccc')")
+						.toString());
 		new SQLParserSample("8888").parse(new StringBuilder().append("WHERE")
 				.append(CRLF).append("  ID = /* $ID */'912387'").append(CRLF)
-				.append("  AND (").append(CRLF).append(
-						"    PREF /* $PREF */= 'TOKYO'").append(CRLF).append(
-						"    OR COUNTORY = /* $CONTORY */'JAPAN'").append(CRLF)
+				.append("  AND (").append(CRLF)
+				.append("    PREF /* $PREF */= 'TOKYO'").append(CRLF)
+				.append("    OR COUNTORY = /* $CONTORY */'JAPAN'").append(CRLF)
 				.append("  )").toString());
 	}
 
@@ -78,8 +81,8 @@ public class SQLParserSample {
 	public SQLNode parse(InputStream in) {
 		InputStreamReader ir;
 		try {
-			ir = new InputStreamReader(in, Setting.instance().get(
-					"sqlfile-encoding", "utf-8"));
+			ir = new InputStreamReader(in, nvl(Setting.get().SQLFILE_ENCODING,
+					"utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(e.getMessage() + CRLF
 					+ "The setting of 'clione.properties' might be wrong. "
@@ -129,8 +132,8 @@ public class SQLParserSample {
 					if ("- *+!".contains(nextChar(line, m.end())))
 						break; // '---', and so on, means normal comment
 					// create place holder
-					lineNode.holders.add(new PlaceHolder(line
-							.substring(m.end()), null, m.start()));
+					lineNode.holders.add(new PlaceHolder(
+							line.substring(m.end()), null, m.start()));
 					sb.delete(m.start(), sb.sb.length());
 					break;
 				}

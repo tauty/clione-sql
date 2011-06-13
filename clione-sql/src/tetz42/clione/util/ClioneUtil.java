@@ -15,6 +15,14 @@ import tetz42.clione.io.IOUtil;
 public class ClioneUtil {
 
 	public static final String CRLF = System.getProperty("line.separator");
+	
+	public static <T> T nvl(T... objs){
+		for(T obj : objs){
+			if(obj != null)
+				return obj;
+		}
+		return null;
+	}
 
 	public static boolean isAllEmpty(String... strs) {
 		for (String s : strs) {
