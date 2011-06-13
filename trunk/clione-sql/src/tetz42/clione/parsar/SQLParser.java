@@ -59,12 +59,12 @@ public class SQLParser {
 	public SQLNode parse(InputStream in) {
 		InputStreamReader ir;
 		try {
-			ir = new InputStreamReader(in, Setting.instance().get(
-					"sqlfile-encoding", "utf-8"));
+			ir = new InputStreamReader(in, nvl(Setting.get().SQLFILE_ENCODING,
+					"utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(e.getMessage() + CRLF
 					+ "The setting of 'clione.properties' might be wrong. "
-					+ "The key name = 'sqlfile-encoding'", e);
+					+ "The key name = 'SQLFILE_ENCODING'", e);
 		}
 		try {
 			pushResouceInfo(resourceInfo);

@@ -1,8 +1,9 @@
 package tetz42.clione.setting;
 
+import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
+import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 
 public class Setting {
@@ -10,45 +11,44 @@ public class Setting {
 	private static final ClassLoader loader = new ClioneClassLoader();
 	private static Setting setting;
 
-	public static Setting instance() {
+	public static Setting get() {
 		if (setting == null) {
 			synchronized (Setting.class) {
 				if (setting == null) {
 					setting = new Setting();
+					// This method must not return null even if clear method is
+					// called special timing.
+					return setting;
 				}
 			}
 		}
-		if (!setting.isLoaded)
-			setting.load();
 		return setting;
 	}
 
-	private Properties prop;
-	private boolean isLoaded;
+	public String SQLFILE_ENCODING;
+	public int RELOADING_TIME;
 
 	private Setting() {
-		load();
+		Properties prop = IOUtil.getProperties("clione.properties", loader);
+		prop = prop != null ? prop : new Properties();
+		for (Field f : getClass().getFields()) {
+			if (prop.getProperty(f.getName()) != null) {
+				try {
+					if (f.getType() == String.class)
+						f.set(this, prop.getProperty(f.getName()));
+					else if (f.getType() == Integer.class)
+						f.set(this,
+								Integer.parseInt(prop.getProperty(f.getName())));
+				} catch (IllegalArgumentException e) {
+					throw new WrapException(e);
+				} catch (IllegalAccessException e) {
+					throw new WrapException(e);
+				}
+			}
+		}
 	}
 
-	public String get(String key) {
-		return prop == null ? null : prop.getProperty(key);
-	}
-
-	public String get(String key, String defaultValue) {
-		String value = get(key);
-		return value != null ? value : defaultValue;
-	}
-
-	void load() {
-		prop = IOUtil.getProperties("clione.properties", loader);
-		isLoaded = true;
-	}
-
-	// TODO clear method is not thread safe because a thread performing get method and 
-	// another thread call clear method, get method might throw NullPointerException. 
-	synchronized void clear() {
-		prop = null;
-		isLoaded = false;
-		ResourceBundle.clearCache(loader);
+	synchronized static void clear() {
+		setting = null;
 	}
 }

@@ -1,5 +1,6 @@
 package tetz42.clione.setting;
 
+import static tetz42.clione.util.ClioneUtil.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static tetz42.test.Util.*;
@@ -11,19 +12,19 @@ public class SettingTest {
 
 	@After
 	public void after() {
-		Setting.instance().clear();
+		Setting.clear();
 	}
 
 	@Test
-	public void getShift_JIS() {
-		assertThat(Setting.instance().get("sqlfile-encoding"), is("utf-8"));
+	public void getUTF8() {
+		assertThat(Setting.get().SQLFILE_ENCODING, is("utf-8"));
 	}
 
 	@Test
 	public void no_file() {
 		hideFile("bin/clione.properties");
 		try {
-			assertNull(Setting.instance().get("sqlfile-encoding"));
+			assertNull(Setting.get().SQLFILE_ENCODING);
 		} finally {
 			restoreFile("bin/clione.properties");
 		}
@@ -33,7 +34,7 @@ public class SettingTest {
 	public void defaultValue() {
 		hideFile("bin/clione.properties");
 		try {
-			assertThat(Setting.instance().get("sqlfile-encoding", "shift_jis"),
+			assertThat(nvl(Setting.get().SQLFILE_ENCODING, "shift_jis"),
 					is("shift_jis"));
 		} finally {
 			restoreFile("bin/clione.properties");
