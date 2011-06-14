@@ -9,8 +9,10 @@ public class ExtendedParamMap extends ParamMap {
 	 */
 	private static final long serialVersionUID = -5052097340822472319L;
 	private String caller;
+	private final ParamMap map;
 	
 	ExtendedParamMap(ParamMap map){
+		this.map = map;
 		this.putAll(map);
 	}
 
@@ -21,6 +23,10 @@ public class ExtendedParamMap extends ParamMap {
 
 	String getCaller() {
 		return caller;
+	}
+
+	ParamMap getSrc() {
+		return map;
 	}
 
 }

@@ -106,6 +106,7 @@ public class Extention extends ClioneFunction {
 								+ " must have next parameter like below:", "%"
 								+ getFuncName() + " PARAM1 or %"
 								+ getFuncName() + " PARAM1 :text"));
+					System.out.println(getSrc());
 					if (isParamExists(condition) ^ isNegative()) {
 						Instruction nextInst = condition.clearNext();
 						return nextInst != null ? nextInst : new Instruction()
@@ -148,13 +149,11 @@ public class Extention extends ClioneFunction {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
 					if (isContain(extMap.getCaller(), "if", "elseif", "IF",
 							"ELSEIF")) {
-						Instruction inst = getFunction("if").perform();
-						if (inst.doNothing)
-							inst.nodeDispose();
-						return inst;
+						extMap.caller(null);
+						return getFunction("if").perform();
 					}
 				}
-				return new Instruction();
+				return null;
 			}
 		});
 		putFunction("else", new ExtFunction() {
@@ -169,7 +168,7 @@ public class Extention extends ClioneFunction {
 						return getNextInstruction();
 					}
 				}
-				return new Instruction();
+				return null;
 			}
 		});
 		putFunction("IF", new ExtFunction() {
@@ -273,12 +272,12 @@ public class Extention extends ClioneFunction {
 	public Instruction perform(ParamMap paramMap) {
 		try {
 			// initial process
-			ExtFunction.set(this, paramMap);
+			ExtFunction.push(this, paramMap);
 
 			return extFunction.perform();
 		} finally {
 			// finally process
-			ExtFunction.clear();
+			ExtFunction.pop();
 		}
 	}
 
@@ -286,12 +285,12 @@ public class Extention extends ClioneFunction {
 	public void check() {
 		try {
 			// initial process
-			ExtFunction.set(this, null);
+			ExtFunction.push(this, null);
 
 			extFunction.check();
 		} finally {
 			// finally process
-			ExtFunction.clear();
+			ExtFunction.pop();
 		}
 	}
 

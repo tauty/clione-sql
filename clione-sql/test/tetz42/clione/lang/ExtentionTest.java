@@ -247,4 +247,72 @@ public class ExtentionTest {
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "tostr_null");
 	}
+
+	@Test
+	public void if_elseif_else_kakko_if() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if(param1) 'tako' %elseif(param2) 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(paramsOn("param1", "param2"));
+		assertEqualsWithFile(instruction, getClass(), "if_elseif_else_kakko_if");
+	}
+
+	@Test
+	public void if_elseif_else_kakko_elseif() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if(param1) 'tako' %elseif(param2) 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(paramsOn("param2"));
+		assertEqualsWithFile(instruction, getClass(),
+				"if_elseif_else_kakko_elseif");
+	}
+
+	@Test
+	public void if_elseif_else_kakko_else() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if(param1) 'tako' %elseif(param2) 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(),
+				"if_elseif_else_kakko_else");
+	}
+
+	@Test
+	public void if_elseif_kakko_valueInBack() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if(param1) 'tako' %elseif(param2) 'ika'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(),
+				"if_elseif_kakko_valueInBack");
+	}
+
+	@Test
+	public void if_elseif_else_if() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if param1 'tako' %elseif param2 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(paramsOn("param1", "param2"));
+		assertEqualsWithFile(instruction, getClass(), "if_elseif_else_if");
+	}
+
+	@Test
+	public void if_elseif_else_elseif() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if param1 'tako' %elseif param2 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(paramsOn("param2"));
+		assertEqualsWithFile(instruction, getClass(), "if_elseif_else_elseif");
+	}
+
+	@Test
+	public void if_elseif_else_else() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if param1 'tako' %elseif param2 'ika' %else 'namako'");
+		Instruction instruction = cf.perform(paramsOn());
+		assertEqualsWithFile(instruction, getClass(), "if_elseif_else_else");
+	}
+
+	@Test
+	public void if_elseif_valueInBack() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%if param1 'tako' %elseif param2 'ika'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "if_elseif_valueInBack");
+	}
+
 }
