@@ -94,7 +94,7 @@ public abstract class ExtFunction {
 		return null;
 	}
 
-	public static interface Filter {
+	interface Filter {
 		boolean isMatch(ClioneFunction cf);
 	}
 }
