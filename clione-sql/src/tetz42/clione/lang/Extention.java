@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.lang.ExtFunction.Filter;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.util.ParamMap;
@@ -20,21 +19,6 @@ public class Extention extends ClioneFunction {
 
 	private static final Map<String, ExtFunction> funcMap = Collections
 			.synchronizedMap(new HashMap<String, ExtFunction>());
-
-	private static final Filter elseFilter = new Filter() {
-
-		@Override
-		public boolean isMatch(ClioneFunction cf) {
-			if (!Extention.class.isInstance(cf))
-				return false;
-			Extention ext = (Extention) cf;
-			if (isContain(ext.func, "elseif", "else", "ELSEIF", "ELSE")) {
-				return true;
-
-			}
-			return false;
-		}
-	};
 
 	static {
 		putFunction("L", new ExtFunction() {
@@ -112,14 +96,7 @@ public class Extention extends ClioneFunction {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						ClioneFunction cf = searchFunc(elseFilter);
-						if (cf != null)
-							return cf.perform(new ExtendedParamMap(
-									getParamMap()).caller(getFuncName()));
-						else
-							return new Instruction().useValueInBack()
-									.doNothing().nodeDispose(
-											condition.isNodeDisposed);
+						return doElse(condition);
 					}
 				} else {
 					condition = getNextInstruction();
@@ -134,16 +111,32 @@ public class Extention extends ClioneFunction {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						ClioneFunction cf = searchFunc(elseFilter);
-						if (cf != null)
-							return cf.perform(new ExtendedParamMap(
-									getParamMap()).caller(getFuncName()));
-						else
-							return new Instruction().useValueInBack()
-									.doNothing().nodeDispose(
-											condition.isNodeDisposed);
+						return doElse(condition);
 					}
 				}
+			}
+
+			private Instruction doElse(Instruction condition) {
+				ClioneFunction cf = searchFunc(new Filter() {
+
+					@Override
+					public boolean isMatch(ClioneFunction cf) {
+						if (!Extention.class.isInstance(cf))
+							return false;
+						Extention ext = (Extention) cf;
+						if (isContain(ext.func, "elseif", "else", "ELSEIF",
+								"ELSE")) {
+							return true;
+						}
+						return false;
+					}
+				});
+				if (cf != null)
+					return cf.perform(new ExtendedParamMap(getParamMap())
+							.caller(getFuncName()));
+				else
+					return new Instruction().useValueInBack().doNothing()
+							.nodeDispose(condition.isNodeDisposed);
 			}
 		});
 		putFunction("elseif", new ExtFunction() {

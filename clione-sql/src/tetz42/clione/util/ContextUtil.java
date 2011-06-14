@@ -83,6 +83,8 @@ public class ContextUtil {
 			return true;
 		if (nilValues.get().contains(obj))
 			return true;
+		if(Boolean.FALSE.equals(obj))
+			return true;
 		return false;
 	}
 
