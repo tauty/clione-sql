@@ -1,57 +1,88 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.util.ContextUtil.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
 
 public abstract class ExtFunction {
 
-	private static ThreadLocal<Extention> curExtention = new ThreadLocal<Extention>();
-	private static ThreadLocal<ParamMap> curParamMap = new ThreadLocal<ParamMap>();
+	private static ThreadLocal<List<Extention>> curExtention = new ThreadLocal<List<Extention>>() {
 
-	static void set(Extention extention, ParamMap paramMap) {
-		curExtention.set(extention);
-		curParamMap.set(paramMap);
+		@Override
+		protected List<Extention> initialValue() {
+			return new ArrayList<Extention>();
+		}
+
+	};
+	private static ThreadLocal<List<ParamMap>> curParamMap = new ThreadLocal<List<ParamMap>>() {
+
+		@Override
+		protected List<ParamMap> initialValue() {
+			return new ArrayList<ParamMap>();
+		}
+	};
+
+	static void push(Extention extention, ParamMap paramMap) {
+		curExtention.get().add(extention);
+		curParamMap.get().add(paramMap);
 	}
 
-	static void clear() {
-		curExtention.set(null);
-		curParamMap.set(null);
+	static void pop() {
+		pop(curExtention.get());
+		pop(curParamMap.get());
+	}
+
+	private static void pop(List<?> list) {
+		list.get(list.size() - 1);
+	}
+
+	private static Extention getLatestCf() {
+		List<Extention> list = curExtention.get();
+		return list.get(list.size() - 1);
+	}
+
+	private static ParamMap getLatestMap() {
+		List<ParamMap> list = curParamMap.get();
+		return list.get(list.size() - 1);
 	}
 
 	protected Instruction getInsideInstruction() {
-		ClioneFunction inside = curExtention.get().getInside();
-		return inside == null ? null : inside.perform(curParamMap.get());
+		ClioneFunction inside = getLatestCf().getInside();
+		return inside == null ? null : inside.perform(getLatestMap());
 	}
 
 	protected Instruction getNextInstruction() {
-		ClioneFunction next = curExtention.get().getNext();
-		return next == null ? null : next.perform(curParamMap.get());
+		ClioneFunction next = getLatestCf().getNext();
+		return next == null ? null : next.perform(getLatestMap());
 	}
 
 	protected ClioneFunction getInside() {
-		return curExtention.get().getInside();
+		return getLatestCf().getInside();
 	}
 
 	protected ClioneFunction getNext() {
-		return curExtention.get().getNext();
+		return getLatestCf().getNext();
 	}
 
 	protected String getFuncName() {
-		return curExtention.get().func;
+		return getLatestCf().func;
 	}
 
 	protected String getSrc() {
-		return curExtention.get().getSrc();
+		return getLatestCf().getSrc();
 	}
 
 	protected ParamMap getParamMap() {
-		return curParamMap.get();
+		return getLatestMap();
 	}
 
 	protected boolean isNegative() {
-		return curExtention.get().isNegative;
+		return getLatestCf().isNegative;
 	}
 
 	public Instruction perform() {
@@ -85,7 +116,7 @@ public abstract class ExtFunction {
 	}
 
 	protected ClioneFunction searchFunc(Filter filter) {
-		ClioneFunction cf = curExtention.get().getNext();
+		ClioneFunction cf = getLatestCf().getNext();
 		while (cf != null) {
 			if (filter.isMatch(cf))
 				return cf;
