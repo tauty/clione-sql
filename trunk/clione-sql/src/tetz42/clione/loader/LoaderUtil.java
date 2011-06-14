@@ -8,9 +8,10 @@ import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
 import tetz42.clione.exception.SQLFileNotFoundException;
+import tetz42.clione.io.IOWrapper;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
-import tetz42.util.ObjDumper4j;
+import tetz42.clione.setting.Setting;
 
 public class LoaderUtil {
 
@@ -22,18 +23,7 @@ public class LoaderUtil {
 
 		private SQLNode sqlNode;
 		private long cachedTime;
-
-		@Override
-		public String toString() {
-			return new StringBuilder().append(ObjDumper4j.dumper(sqlNode))
-					.append(CRLF).append(CRLF)
-					.append(System.currentTimeMillis()).append(" - ")
-					.append(cachedTime).append(" = ")
-					.append(System.currentTimeMillis() - cachedTime).toString();
-		}
 	}
-
-	private static final SQLFileLoader sqlLoader = new SQLFileLoader();
 
 	private static final ConcurrentHashMap<String, NodeHolder> cacheByPath = new ConcurrentHashMap<String, NodeHolder>();
 	private static final ConcurrentHashMap<String, NodeHolder> cacheBySQL = new ConcurrentHashMap<String, NodeHolder>();
@@ -67,9 +57,8 @@ public class LoaderUtil {
 		NodeHolder nh = cacheBySQL.get(sql);
 		if (isCacheInvalid(nh)) {
 			InputStream in = new ByteArrayInputStream(sql.getBytes());
-			nh = cacheIf(
-					new SQLParser("The SQL passed as parameter.").parse(in),
-					sql, cacheBySQL);
+			nh = cacheIf(new SQLParser("The SQL passed as parameter.")
+					.parse(in), sql, cacheBySQL);
 		}
 		return nh.sqlNode;
 	}
@@ -83,7 +72,8 @@ public class LoaderUtil {
 
 	private static NodeHolder createNodeHolder(final String sqlPath) {
 		final String resourceInfo = "SQL file path:" + sqlPath;
-		final InputStream in = sqlLoader.getResourceAsStream(sqlPath);
+		final InputStream in = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(sqlPath);
 		if (in == null)
 			throw new SQLFileNotFoundException("SQL File not found. " + CRLF
 					+ resourceInfo);
@@ -100,7 +90,9 @@ public class LoaderUtil {
 	private static boolean isCacheInvalid(NodeHolder nh) {
 		if (nh == null)
 			return true;
-		if (nh.cachedTime + 300 < System.currentTimeMillis()) {
+		if (Setting.get().IS_DEVELOPMENT_MODE
+				&& nh.cachedTime + Setting.get().SQLFILE_CACHETIME < System
+						.currentTimeMillis()) {
 			return true;
 		}
 		return false;

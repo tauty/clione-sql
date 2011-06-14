@@ -1,4 +1,4 @@
-package tetz42.clione.loader;
+package tetz42.clione.io;
 
 import java.io.Closeable;
 import java.io.IOException;

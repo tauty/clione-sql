@@ -72,6 +72,16 @@ public class ClioneUtil {
 		return sb.toString();
 	}
 
+	public static <T> boolean isContain(T src, T... dests) {
+		if(src == null)
+			return false;
+		for (T dst : dests) {
+			if(src.equals(dst))
+				return true;
+		}
+		return false;
+	}
+
 	public static String nextStr(String src, int pos, int length) {
 		if (src.length() < pos + length)
 			return null;

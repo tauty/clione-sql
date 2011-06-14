@@ -83,4 +83,18 @@ public abstract class ExtFunction {
 					+ getFuncName() + "'\nsrc:" + getSrc() + "\nResource info:"
 					+ getResourceInfo());
 	}
+
+	protected ClioneFunction searchFunc(Filter filter) {
+		ClioneFunction cf = curExtention.get().getNext();
+		while (cf != null) {
+			if (filter.isMatch(cf))
+				return cf;
+			cf = cf.getNext();
+		}
+		return null;
+	}
+
+	public static interface Filter {
+		boolean isMatch(ClioneFunction cf);
+	}
 }

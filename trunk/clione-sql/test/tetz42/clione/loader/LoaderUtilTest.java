@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import tetz42.clione.SQLManager;
 import tetz42.clione.SQLManagerTest.Employee;
+import tetz42.clione.setting.Setting;
 
 public class LoaderUtilTest {
 
@@ -38,29 +39,40 @@ public class LoaderUtilTest {
 
 	@Test
 	public void hotReloading() throws Exception {
-		SQLManager sqlManager = sqlManager();
-		List<Employee> list;
-		list = sqlManager.useFile(getClass(), "Select.sql").findAll(
-				Employee.class, params("NO1", 100001).$("NO2", 100003));
-		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
-				"hotReloading_1st_sql");
-		assertEqualsWithFile(list, getClass(), "hotReloading_1st");
 
-		String sql1 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/Select.sql";
-		String sql2 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/SmallSelect.sql";
-
-		Thread.sleep(500);
-
+		String prop1 = "bin/clione.properties";
+		String prop2 = "bin/clione4lodertest.properties";
 		try {
-			swapFile(sql1, sql2);
+			swapFile(prop1, prop2);
+			Setting.clear();
 
+			SQLManager sqlManager = sqlManager();
+			List<Employee> list;
 			list = sqlManager.useFile(getClass(), "Select.sql").findAll(
 					Employee.class, params("NO1", 100001).$("NO2", 100003));
 			assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
-					"hotReloading_2nd_sql");
-			assertEqualsWithFile(list, getClass(), "hotReloading_2nd");
+					"hotReloading_1st_sql");
+			assertEqualsWithFile(list, getClass(), "hotReloading_1st");
+
+			String sql1 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/Select.sql";
+			String sql2 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/SmallSelect.sql";
+
+			Thread.sleep(Setting.get().SQLFILE_CACHETIME + 10);
+
+			try {
+				swapFile(sql1, sql2);
+
+				list = sqlManager.useFile(getClass(), "Select.sql").findAll(
+						Employee.class, params("NO1", 100001).$("NO2", 100003));
+				assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+						"hotReloading_2nd_sql");
+				assertEqualsWithFile(list, getClass(), "hotReloading_2nd");
+			} finally {
+				swapFile(sql1, sql2);
+			}
 		} finally {
-			swapFile(sql1, sql2);
+			swapFile(prop1, prop2);
+			Setting.clear();
 		}
 	}
 }
