@@ -1,8 +1,8 @@
 package tetz42.clione.lang;
 
-import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.util.ContextUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.lang.ExtFunction.Filter;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.util.ParamMap;
@@ -19,6 +20,21 @@ public class Extention extends ClioneFunction {
 
 	private static final Map<String, ExtFunction> funcMap = Collections
 			.synchronizedMap(new HashMap<String, ExtFunction>());
+
+	private static final Filter elseFilter = new Filter() {
+
+		@Override
+		public boolean isMatch(ClioneFunction cf) {
+			if (!Extention.class.isInstance(cf))
+				return false;
+			Extention ext = (Extention) cf;
+			if (isContain(ext.func, "elseif", "else", "ELSEIF", "ELSE")) {
+				return true;
+
+			}
+			return false;
+		}
+	};
 
 	static {
 		putFunction("L", new ExtFunction() {
@@ -85,7 +101,7 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("IF", new ExtFunction() {
+		putFunction("if", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -96,8 +112,14 @@ public class Extention extends ClioneFunction {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						return new Instruction().doNothing().nodeDispose(
-								condition.isNodeDisposed);
+						ClioneFunction cf = searchFunc(elseFilter);
+						if (cf != null)
+							return cf.perform(new ExtendedParamMap(
+									getParamMap()).caller(getFuncName()));
+						else
+							return new Instruction().useValueInBack()
+									.doNothing().nodeDispose(
+											condition.isNodeDisposed);
 					}
 				} else {
 					condition = getNextInstruction();
@@ -112,22 +134,72 @@ public class Extention extends ClioneFunction {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
-						return new Instruction().doNothing().nodeDispose(
-								condition.isNodeDisposed);
+						ClioneFunction cf = searchFunc(elseFilter);
+						if (cf != null)
+							return cf.perform(new ExtendedParamMap(
+									getParamMap()).caller(getFuncName()));
+						else
+							return new Instruction().useValueInBack()
+									.doNothing().nodeDispose(
+											condition.isNodeDisposed);
 					}
 				}
 			}
 		});
-		putFunction("IFLN", new ExtFunction() {
+		putFunction("elseif", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
-				Instruction inst = getFunction("IF").perform();
+				ParamMap paramMap = getParamMap();
+				if (ExtendedParamMap.class.isInstance(paramMap)) {
+					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
+					if (isContain(extMap.getCaller(), "if", "elseif", "IF",
+							"ELSEIF")) {
+						Instruction inst = getFunction("if").perform();
+						if (inst.doNothing)
+							inst.nodeDispose();
+						return inst;
+					}
+				}
+				return new Instruction();
+			}
+		});
+		putFunction("else", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				ParamMap paramMap = getParamMap();
+				if (ExtendedParamMap.class.isInstance(paramMap)) {
+					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
+					if (isContain(extMap.getCaller(), "if", "elseif", "IF",
+							"ELSEIF")) {
+						return getNextInstruction();
+					}
+				}
+				return new Instruction();
+			}
+		});
+		putFunction("IF", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				Instruction inst = getFunction("if").perform();
 				if (inst.doNothing)
 					inst.nodeDispose();
 				return inst;
 			}
 		});
+		putFunction("ELSEIF", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				Instruction inst = getFunction("elseif").perform();
+				if (inst.doNothing)
+					inst.nodeDispose();
+				return inst;
+			}
+		});
+		putFunction("ELSE", getFunction("else"));
 		putFunction("INCLUDE", new ExtFunction() {
 
 			@Override

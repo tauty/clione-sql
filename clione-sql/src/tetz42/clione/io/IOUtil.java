@@ -5,13 +5,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import tetz42.clione.exception.WrapException;
-
 public class IOUtil {
 
-	public static byte[] loadFromStream(InputStream in) {
-		try {
-			try {
+	public static byte[] loadFromStream(final InputStream in) {
+		
+		return new IOWrapper<byte[]>(in) {
+
+			@Override
+			protected byte[] execute() throws IOException {
 				if (in == null)
 					return null;
 				final int SIZE = 100;
@@ -37,32 +38,25 @@ public class IOUtil {
 							.get(i).length);
 				}
 				return b_all;
-			} finally {
-				if (in != null)
-					in.close();
 			}
-		} catch (IOException e) {
-			throw new WrapException(e);
-		}
+			
+		}.kick();
 	}
 
 	public static Properties getProperties(String path, ClassLoader loader) {
-		InputStream in = loader.getResourceAsStream(path);
+		final InputStream in = loader.getResourceAsStream(path);
 		if (in == null)
 			return null;
 
-		Properties prop = new Properties();
-		try {
-			try {
+		return new IOWrapper<Properties>(in) {
+
+			@Override
+			protected Properties execute() throws IOException {
+				Properties prop = new Properties();
 				prop.load(in);
-			} finally {
-				in.close();
+				return prop;
 			}
-		} catch (IOException e) {
-			throw new WrapException("Fail to load property file. The path is :"
-					+ path, e);
-		}
-		return prop;
+		}.kick();
 	}
 
 	public static Properties getProperties(String path) {

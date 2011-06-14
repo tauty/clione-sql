@@ -1,8 +1,0 @@
-Instruction{
-	params = ArrayList[ ]
-	isNodeDisposed = false
-	doNothing = true
-	useValueInBack = false
-	replacement = null
-	next = null
-}
