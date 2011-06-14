@@ -106,7 +106,6 @@ public class Extention extends ClioneFunction {
 								+ " must have next parameter like below:", "%"
 								+ getFuncName() + " PARAM1 or %"
 								+ getFuncName() + " PARAM1 :text"));
-					System.out.println(getSrc());
 					if (isParamExists(condition) ^ isNegative()) {
 						Instruction nextInst = condition.clearNext();
 						return nextInst != null ? nextInst : new Instruction()
