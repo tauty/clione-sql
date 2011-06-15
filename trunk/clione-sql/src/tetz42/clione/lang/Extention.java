@@ -11,8 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
+import tetz42.clione.loader.LoaderUtil;
+import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
 
 public class Extention extends ClioneFunction {
@@ -131,12 +134,13 @@ public class Extention extends ClioneFunction {
 						return false;
 					}
 				});
-				if (cf != null)
+				if (cf != null) {
 					return cf.perform(new ExtendedParamMap(getParamMap())
 							.caller(getFuncName()));
-				else
+				} else {
 					return new Instruction().useValueInBack().doNothing()
 							.nodeDispose(condition.isNodeDisposed);
+				}
 			}
 		});
 		putFunction("elseif", new ExtFunction() {
@@ -194,22 +198,27 @@ public class Extention extends ClioneFunction {
 		putFunction("INCLUDE", new ExtFunction() {
 
 			@Override
-			public Instruction perform() {
-				// TODO implementation
-				return null;
+			protected Instruction perform(Instruction inst) {
+				inst.merge();
+				SQLNode sqlNode = LoaderUtil.getNodeByPath(inst.replacement);
+				SQLGenerator generator = new SQLGenerator();
+				String sql = generator.genSql(getParamMap(), sqlNode);
+				Instruction result = new Instruction().replacement(sql);
+				result.params.addAll(generator.params);
+				return result;
 			}
 		});
-		// putFunction("TO_SQL", new ExtFunction() {
-		//
-		// @Override
-		// protected Instruction perform(Instruction inst) {
-		// inst = getFunction("CONCAT").perform(inst);
-		// Instruction sqlInst = new SQLLiteral(inst.params.get(0)
-		// .toString()).resourceInfo(getResourceInfo()).perform(
-		// getParamMap());
-		// return inst.clearParams().merge(sqlInst);
-		// }
-		// });
+//		putFunction("TO_SQL", new ExtFunction() {
+//
+//			@Override
+//			protected Instruction perform(Instruction inst) {
+//				inst = getFunction("CONCAT").perform(inst);
+//				Instruction sqlInst = new SQLLiteral(inst.params.get(0)
+//						.toString()).resourceInfo(getResourceInfo()).perform(
+//						getParamMap());
+//				return inst.clearParams().merge(sqlInst);
+//			}
+//		});
 		putFunction("SQL", new ExtFunction() {
 
 			@Override
