@@ -38,7 +38,7 @@ public abstract class ExtFunction {
 	}
 
 	private static void pop(List<?> list) {
-		list.get(list.size() - 1);
+		list.remove(list.size() - 1);
 	}
 
 	private static Extention getLatestCf() {
