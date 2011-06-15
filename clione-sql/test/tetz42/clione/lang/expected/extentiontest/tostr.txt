@@ -1,0 +1,9 @@
+Instruction{
+	params = ArrayList[ ]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = ",ASC"
+	next = null
+	map = null
+}

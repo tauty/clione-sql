@@ -1,0 +1,11 @@
+Instruction{
+	params = ArrayList[
+		"%##100#%#__##200#%#_%"
+	]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "? ESCAPE '#'"
+	next = null
+	map = null
+}

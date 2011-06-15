@@ -1,0 +1,12 @@
+Instruction{
+	params = ArrayList[
+		100
+		"TAKAKO"
+	]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "SELECT TEL, '\' FROM FOO WHERE ID = ? AND NAME = ?"
+	next = null
+	map = null
+}

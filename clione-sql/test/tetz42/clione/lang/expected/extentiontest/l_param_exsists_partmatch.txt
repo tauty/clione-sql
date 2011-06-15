@@ -1,0 +1,11 @@
+Instruction{
+	params = ArrayList[
+		"%tako%"
+	]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "? ESCAPE '#'"
+	next = null
+	map = null
+}
