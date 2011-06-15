@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.util.ObjDumper4j;
 
 public class ExtentionTest {
 
@@ -313,6 +314,60 @@ public class ExtentionTest {
 				"%if param1 'tako' %elseif param2 'ika'");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "if_elseif_valueInBack");
+	}
+
+	@Test
+	public void include() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include");
+	}
+
+	@Test
+	public void include_put() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %PUT 'age', '120', 'name_part', 'TA'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include_put");
+	}
+
+	@Test
+	public void include_on() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %ON 'age', '120', 'name_part', 'TA'");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include_on");
+	}
+
+	@Test
+	public void include_kakko() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE('tetz42/clione/sql/SQLManagerTest/Select.sql')");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include_kakko");
+	}
+
+	@Test
+	public void include_kakko_put() {
+		// '), ' bug was occurred and fail this test case. TODO fix it.
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE( 'tetz42/clione/sql/SQLManagerTest/Select.sql',"
+						+ " %PUT('age', '120'), %PUT('name_part', 'TA') )");
+		System.out.println(ObjDumper4j.dumper(cf));
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include_kakko_put");
+	}
+
+	@Test
+	public void include_kakko_on() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%INCLUDE( 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %ON('age', '120', 'name_part', 'TA') )");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "include_kakko_on");
 	}
 
 }

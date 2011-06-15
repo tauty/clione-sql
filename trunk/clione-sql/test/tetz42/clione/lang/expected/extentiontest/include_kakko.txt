@@ -1,10 +1,12 @@
 Instruction{
-	params = ArrayList[
-		"%##100#%#__##200#%#_%"
-	]
+	params = ArrayList[ ]
 	isNodeDisposed = false
 	doNothing = false
 	useValueInBack = false
-	replacement = "? ESCAPE '#'"
+	replacement = "SELECT
+        *
+    FROM
+        people"
 	next = null
+	map = null
 }

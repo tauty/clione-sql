@@ -5,6 +5,8 @@ import static tetz42.clione.util.ClioneUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import tetz42.clione.util.ParamMap;
+
 public class Instruction {
 
 	/**
@@ -21,6 +23,7 @@ public class Instruction {
 	public boolean useValueInBack = false;
 	public String replacement;
 	public Instruction next = null;
+	public ParamMap map = null;
 
 	public Instruction nodeDispose() {
 		return this.nodeDispose(true);
@@ -66,6 +69,13 @@ public class Instruction {
 		return next;
 	}
 
+	public Instruction $(String key, Object value) {
+		if (map == null)
+			map = new ParamMap();
+		map.put(key, value);
+		return this;
+	}
+
 	public Instruction merge() {
 		if (next != null) {
 			this.merge(next.merge());
@@ -90,6 +100,10 @@ public class Instruction {
 			else
 				replacement = repOne + (isEmpty(repOne) ? "" : " ") + repAno;
 		}
+		if (map == null)
+			map = another.map;
+		else if (another.map != null)
+			map.putAll(another.map);
 		return this;
 	}
 
