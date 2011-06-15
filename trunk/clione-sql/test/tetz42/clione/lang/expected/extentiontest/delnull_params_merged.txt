@@ -1,0 +1,14 @@
+Instruction{
+	params = ArrayList[
+		"tako"
+		"ika"
+		"namako"
+		"umiushi"
+	]
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = null
+	next = null
+	map = null
+}
