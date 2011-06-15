@@ -17,7 +17,6 @@ import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.ObjDumper4j;
 
 public class Extention extends ClioneFunction {
 
@@ -230,7 +229,6 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				System.out.println(ObjDumper4j.dumper(inst));
 				inst.merge();
 				SQLNode sqlNode = LoaderUtil.getNodeByPath(inst.replacement);
 				SQLGenerator generator = new SQLGenerator();
@@ -271,7 +269,7 @@ public class Extention extends ClioneFunction {
 	protected ClioneFunction inside;
 	protected final ExtFunction extFunction;
 
-	public Extention(String key, boolean isNegative, String literal) {
+	public Extention(String key, boolean isNegative) {
 		this.isNegative = isNegative;
 		this.func = key;
 		extFunction = funcMap.get(this.func);

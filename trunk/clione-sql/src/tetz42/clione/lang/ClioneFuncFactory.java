@@ -21,7 +21,7 @@ public class ClioneFuncFactory {
 
 	private static final Pattern delimPtn = Pattern.compile("[()'\":|]");
 	private static final Pattern funcPtn = Pattern
-			.compile("\\s*([$@&?#%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
+			.compile("[,\\s]*([$@&?%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
 	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
 
 	public static ClioneFuncFactory get() {
@@ -136,8 +136,15 @@ public class ClioneFuncFactory {
 	}
 
 	private ClioneFunction parseFunc(ClioneFunction cf) {
-		if (cf instanceof Unparsed)
-			cf = parseFunc(funcPtn.matcher(cf.getSrc()), 0, cf.getNext());
+		if (cf instanceof Unparsed) {
+			String s = cf.getSrc();
+			Matcher m = funcPtn.matcher(s);
+			cf = parseFunc(m, 0, cf.getNext());
+			if (s.length() != m.end())
+				throw new ClioneFormatException(joinByCrlf(
+						"Unsupported Grammer :", src, "Resouce info:"
+								+ getResourceInfo()));
+		}
 		if (cf == null)
 			return null;
 		cf.inside(parseFunc(cf.getInside()));
@@ -177,8 +184,7 @@ public class ClioneFuncFactory {
 			if (func.equals("&"))
 				return new LineCond(key, isNotEmpty(not));
 			if (func.equals("%"))
-				return new Extention(key, isNotEmpty(not), src.substring(m
-						.end(2)));
+				return new Extention(key, isNotEmpty(not));
 		}
 		throw new ClioneFormatException("Unsupported Grammer :" + src);
 	}
