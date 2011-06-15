@@ -1,12 +1,12 @@
 Instruction{
-	params = ArrayList[
-		"tako"
-		"ika"
-		"namako"
-	]
+	params = ArrayList[ ]
 	isNodeDisposed = false
 	doNothing = false
 	useValueInBack = false
-	replacement = null
+	replacement = "SELECT
+        *
+    FROM
+        people"
 	next = null
+	map = null
 }
