@@ -127,11 +127,11 @@ public class Extention extends ClioneFunction {
 						if (!Extention.class.isInstance(cf))
 							return false;
 						Extention ext = (Extention) cf;
-						if (isContain(ext.func, "elseif", "else", "ELSEIF",
+						if (!isContain(ext.func, "elseif", "else", "ELSEIF",
 								"ELSE")) {
-							return true;
+							return false;
 						}
-						return false;
+						return true;
 					}
 				});
 				if (cf != null) {
