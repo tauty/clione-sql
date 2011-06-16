@@ -1,0 +1,41 @@
+Extention{
+	func = "IF"
+	isNegative = false
+	inside = Parenthesises{
+		inside = Param{
+			key = "TAKO"
+			[tetz42.clione.lang.func.ClioneFunction]
+			next = Param{
+				key = "IKA"
+				[tetz42.clione.lang.func.ClioneFunction]
+				next = Param{
+					key = "NAMAKO"
+					[tetz42.clione.lang.func.ClioneFunction]
+					next = null
+				}
+			}
+		}
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+	}
+	extFunction = { }
+	[tetz42.clione.lang.func.ClioneFunction]
+	next = SQLLiteral{
+		sqlNode = SQLNode{
+			nodes = ArrayList[
+				LineNode{
+					sql = "SAKANA"
+					holders = ArrayList[ ]
+					childBlocks = ArrayList[ ]
+					beginLineNo = 1
+					endLineNo = 0
+					isDisposable = false
+				}
+			]
+			resourceInfo = "Inside of SQL comment "
+		}
+		literal = "SAKANA"
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+	}
+}

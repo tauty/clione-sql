@@ -1,0 +1,23 @@
+LineParam{
+	[tetz42.clione.lang.func.AbstractParam]
+	param = Parenthesises{
+		inside = Param{
+			key = "TAKO"
+			[tetz42.clione.lang.func.ClioneFunction]
+			next = Param{
+				key = "IKA"
+				[tetz42.clione.lang.func.ClioneFunction]
+				next = Param{
+					key = "NAMAKO"
+					[tetz42.clione.lang.func.ClioneFunction]
+					next = null
+				}
+			}
+		}
+		[tetz42.clione.lang.func.ClioneFunction]
+		next = null
+	}
+	isNegative = false
+	[tetz42.clione.lang.func.ClioneFunction]
+	next = null
+}
