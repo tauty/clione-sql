@@ -1,6 +1,6 @@
 package tetz42.clione.lang.func;
 
-import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
@@ -51,7 +51,7 @@ abstract public class AbstractParam extends ClioneFunction {
 	}
 
 	@Override
-	public void check() {
+	public void compile() {
 		if (param == null) {
 			throw new ClioneFormatException(getSrc()
 					+ " do not have parameter(s). "

@@ -1,6 +1,6 @@
 package tetz42.clione.lang.func;
 
-import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.lang.ContextUtil.*;
 
 import static tetz42.clione.util.ClioneUtil.*;
 import tetz42.clione.exception.ParameterNotFoundException;
