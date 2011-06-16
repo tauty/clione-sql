@@ -32,8 +32,12 @@ public class PlaceHolder {
 		Instruction inst = clione.perform(paramMap).merge();
 		if (inst.isNodeDisposed)
 			return inst;
-		if (inst.useValueInBack)
+		if (inst.useValueInBack) {
+			if(valueInBack == null)
+				return inst.doNothing();
+			inst.doNothing = false;
 			return inst.clearParams().replacement(valueInBack);
+		}
 		if(valueInBack == null)
 			return inst;
 		if (valueInBack.charAt(0) == '(') {
