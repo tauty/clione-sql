@@ -83,7 +83,7 @@ public class SQLManager {
 		this.con = con;
 	}
 
-	public SQLManager setNullValues(Object... nullValues) {
+	public SQLManager nullValues(Object... nullValues) {
 		this.nullValues = nullValues;
 		return this;
 	}
