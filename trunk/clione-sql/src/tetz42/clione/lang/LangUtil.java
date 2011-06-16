@@ -1,6 +1,6 @@
 package tetz42.clione.lang;
 
-import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.lang.ContextUtil.*;
 
 public class LangUtil {
 	public static boolean isParamExists(Instruction instruction) {

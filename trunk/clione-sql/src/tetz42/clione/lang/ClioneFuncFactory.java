@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +34,7 @@ public class ClioneFuncFactory {
 		this.src = src;
 		ClioneFunction cf = parseFunc(parseByDelim());
 		if (cf != null)
-			cf.check();
+			cf.compile();
 		return cf;
 	}
 

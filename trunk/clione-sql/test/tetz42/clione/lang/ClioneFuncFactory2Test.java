@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.func.ClioneFunction;
-import tetz42.clione.util.ContextUtil;
 
 public class ClioneFuncFactory2Test {
 	

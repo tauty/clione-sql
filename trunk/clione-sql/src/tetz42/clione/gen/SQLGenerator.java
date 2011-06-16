@@ -15,8 +15,8 @@
  */
 package tetz42.clione.gen;
 
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;

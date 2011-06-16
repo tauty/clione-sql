@@ -1,8 +1,8 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -314,7 +314,7 @@ public class Extention extends ClioneFunction {
 	}
 
 	@Override
-	public void check() {
+	public void compile() {
 		try {
 			// initial process
 			ExtFunction.push(this, null);

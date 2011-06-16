@@ -2,8 +2,8 @@ package tetz42.clione.util;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
 import static tetz42.test.Util.*;
 
 import org.junit.Test;

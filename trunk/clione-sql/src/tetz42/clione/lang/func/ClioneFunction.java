@@ -1,6 +1,6 @@
 package tetz42.clione.lang.func;
 
-import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.lang.ContextUtil.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
@@ -9,10 +9,6 @@ abstract public class ClioneFunction {
 
 	private ClioneFunction next;
 	
-	// TODO delete below after unit test checking.
-	@SuppressWarnings("unused")
-	private String resourceInfo = null;
-
 	public ClioneFunction nextFunc(ClioneFunction next) {
 		this.next = next;
 		return this;
@@ -36,7 +32,7 @@ abstract public class ClioneFunction {
 		return null;
 	}
 
-	public void check() {
+	public void compile() {
 	}
 
 	public Instruction getNextInstruction(ParamMap paramMap) {

@@ -1,7 +1,7 @@
 package tetz42.clione.parsar;
 
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

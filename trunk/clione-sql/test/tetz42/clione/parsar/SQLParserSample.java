@@ -1,7 +1,7 @@
 package tetz42.clione.parsar;
 
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.clione.util.ContextUtil.*;
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.parsar.ParsarUtil.*;
 
 import java.io.ByteArrayInputStream;

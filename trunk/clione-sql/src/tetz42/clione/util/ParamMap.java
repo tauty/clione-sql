@@ -16,6 +16,7 @@
 package tetz42.clione.util;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -30,7 +31,6 @@ public class ParamMap extends HashMap<String, Object> {
 
 	public static final Pattern KEY_PTN = Pattern.compile("([\"-),-~ ])[ -~]*");
 	public static final Pattern SYMBOL_PTN = Pattern.compile("[^A-Za-z0-9]+");
-	public static final Object ON = new Object();
 
 	@Override
 	public Object get(Object key) {
@@ -59,16 +59,17 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public <T> ParamMap $e(String key, T... values) {
+		ArrayList<T> list = new ArrayList<T>();
 		for (T value : values) {
 			if (ClioneUtil.isNotEmpty(value))
-				this.put(key, value);
+				list.add(value);
 		}
-		return this;
+		return this.$(key, values);
 	}
 
 	public ParamMap $on(String... keys) {
 		for (String key : keys)
-			this.put(key, ON);
+			this.put(key, Boolean.TRUE);
 		return this;
 	}
 
@@ -123,7 +124,7 @@ public class ParamMap extends HashMap<String, Object> {
 			throw new NullPointerException("Parameter key must not be null.");
 		Matcher keyM = KEY_PTN.matcher(key);
 		if (!keyM.matches())
-			throw new UnsupportedOperationException("Uusupported key : " + key);
+			throw new UnsupportedOperationException("Unsupported key : " + key);
 		Matcher symM = SYMBOL_PTN.matcher(keyM.group(1));
 		if (symM.matches())
 			key = key.substring(keyM.group(1).length());
