@@ -15,7 +15,7 @@ public abstract class IOWrapper<T> {
 		this.ioes = ioes;
 	}
 
-	public T kick() {
+	public T invoke() {
 		RuntimeException re = null;
 		Error err = null;
 		try {

@@ -84,7 +84,7 @@ public class LoaderUtil {
 				return cacheIf(new SQLParser(resourceInfo).parse(in), sqlPath,
 						cacheByPath);
 			}
-		}.kick();
+		}.invoke();
 	}
 
 	private static boolean isCacheInvalid(NodeHolder nh) {

@@ -40,7 +40,7 @@ public class IOUtil {
 				return b_all;
 			}
 			
-		}.kick();
+		}.invoke();
 	}
 
 	public static Properties getProperties(String path, ClassLoader loader) {
@@ -56,7 +56,7 @@ public class IOUtil {
 				prop.load(in);
 				return prop;
 			}
-		}.kick();
+		}.invoke();
 	}
 
 	public static Properties getProperties(String path) {
