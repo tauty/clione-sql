@@ -1,0 +1,12 @@
+Instruction{
+	params = ArrayList[
+		null
+	]
+	isNodeDisposed = true
+	doNothing = false
+	useValueInBack = false
+	replacement = null
+	next = null
+	map = null
+	status = false
+}
