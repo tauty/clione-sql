@@ -9,4 +9,5 @@ Instruction{
         people"
 	next = null
 	map = null
+	status = false
 }

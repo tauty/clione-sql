@@ -1,12 +1,10 @@
 Instruction{
-	params = ArrayList[
-		100
-		"TAKAKO"
-	]
+	params = ArrayList[ ]
 	isNodeDisposed = false
 	doNothing = false
 	useValueInBack = false
-	replacement = "SELECT * FROM FOO WHERE ID = ? AND NAME = ?"
+	replacement = "octopus"
 	next = null
 	map = null
+	status = false
 }

@@ -1,5 +1,6 @@
 Param{
 	key = "KEY"
+	isNegative = false
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = SQLLiteral{
 		sqlNode = SQLNode{
@@ -13,6 +14,7 @@ Param{
 							valueInBack = "'tako'"
 							clione = Param{
 								key = "INNER_PARAM"
+								isNegative = false
 								[tetz42.clione.lang.func.ClioneFunction]
 								next = null
 							}

@@ -8,4 +8,5 @@ Instruction{
 	replacement = " = ? "
 	next = null
 	map = null
+	status = true
 }

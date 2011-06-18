@@ -6,4 +6,5 @@ Instruction{
 	replacement = "= 'AAA'"
 	next = null
 	map = null
+	status = false
 }

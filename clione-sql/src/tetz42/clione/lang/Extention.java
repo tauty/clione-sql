@@ -1,7 +1,6 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.clione.lang.LangUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
@@ -94,7 +94,8 @@ public class Extention extends ClioneFunction {
 			public Instruction perform() {
 				Instruction condition = getInsideInstruction();
 				if (condition != null) {
-					if (isParamExists(condition.merge()) ^ isNegative()) {
+					// if (isParamExists(condition.merge()) ^ isNegative()) {
+					if (condition.merge().and() ^ isNegative()) {
 						Instruction nextInst = getNextInstruction();
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
@@ -109,8 +110,9 @@ public class Extention extends ClioneFunction {
 								+ " must have next parameter like below:", "%"
 								+ getFuncName() + " PARAM1 or %"
 								+ getFuncName() + " PARAM1 :text"));
-					if (isParamExists(condition) ^ isNegative()) {
-						Instruction nextInst = condition.clearNext();
+					Instruction nextInst = condition.clearNext();
+					// if (isParamExists(condition) ^ isNegative()) {
+					if (condition.and() ^ isNegative()) {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
 					} else {
@@ -195,6 +197,22 @@ public class Extention extends ClioneFunction {
 			}
 		});
 		putFunction("ELSE", getFunction("else"));
+		putFunction("and", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				boolean result = inst.and();
+				return inst.merge().status(result);
+			}
+		});
+		putFunction("or", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				boolean result = inst.or();
+				return inst.merge().status(result);
+			}
+		});
 		putFunction("PUT", new ExtFunction() {
 
 			@Override
@@ -230,7 +248,25 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst.merge();
-				SQLNode sqlNode = LoaderUtil.getNodeByPath(inst.replacement);
+				String path = inst.replacement;
+				if (path == null)
+					throw new ClioneFormatException(joinByCrlf(
+							"The parameter of %" + getFuncName()
+									+ " must be String literal.",
+							getResourceInfo()));
+				if (path.startsWith(".")) {
+					String res = getResourcePath();
+					if (res == null) {
+						throw new SQLFileNotFoundException(joinByCrlf(
+								"The relative path,'" + res
+										+ "' , can not found.",
+								getResourceInfo()));
+					}
+					int pos = res.lastIndexOf('/');
+					if (pos > 0)
+						path = res.substring(0, pos) + "/" + path;
+				}
+				SQLNode sqlNode = LoaderUtil.getNodeByPath(path);
 				SQLGenerator generator = new SQLGenerator();
 				ParamMap paramMap = new ParamMap();
 				if (inst.map != null)

@@ -1,5 +1,6 @@
 Param{
 	key = "KEY"
+	isNegative = false
 	[tetz42.clione.lang.func.ClioneFunction]
 	next = SQLLiteral{
 		sqlNode = SQLNode{

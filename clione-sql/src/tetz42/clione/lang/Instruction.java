@@ -24,7 +24,8 @@ public class Instruction {
 	public String replacement;
 	public Instruction next = null;
 	public ParamMap map = null;
-
+	public boolean status = false;
+	
 	public Instruction nodeDispose() {
 		return this.nodeDispose(true);
 	}
@@ -76,6 +77,27 @@ public class Instruction {
 		return this;
 	}
 
+	public Instruction status(boolean status){
+		this.status = status;
+		return this;
+	}
+	
+	public boolean and(){
+		if(status == false)
+			return false;
+		if(next == null)
+			return true;
+		return next.and();
+	}
+
+	public boolean or(){
+		if(status == true)
+			return true;
+		if(next == null)
+			return false;
+		return next.or();
+	}
+
 	public Instruction merge() {
 		if (next != null) {
 			this.merge(next.merge());
@@ -104,6 +126,7 @@ public class Instruction {
 			map = another.map;
 		else if (another.map != null)
 			map.putAll(another.map);
+		this.status = this.status && another.status;
 		return this;
 	}
 

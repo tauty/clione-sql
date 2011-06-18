@@ -79,6 +79,11 @@ public class SQLGenerator {
 	private void genSql(List<LineNode> lineNodes, ParamMap paramMap,
 			StringBuilder sb, ArrayList<Object> params) {
 		int startTimeLength = sb.length();
+		boolean isThereFirstDelim = false;
+		if(lineNodes.size() > 0){
+			if(delimPtn.matcher(lineNodes.get(0).sql).find())
+				isThereFirstDelim = true;
+		}
 		for (LineNode lineNode : lineNodes) {
 			lineNode.setLineNo(); // for line No. information of resourceInfo
 			ArrayList<Object> subParams = new ArrayList<Object>();
@@ -90,7 +95,7 @@ public class SQLGenerator {
 				this.genSql(lineNode.childBlocks, paramMap, subSb, subParams);
 				if (subSb.length() == 0)
 					continue;
-				subSql.append(CRLF).append(removeFirstDelimiter(subSb));
+				subSql.append(CRLF).append(subSb);
 			}
 			if (sb.length() == startTimeLength
 					&& parenthesisClosePtn.matcher(subSql).find())
@@ -100,6 +105,8 @@ public class SQLGenerator {
 			sb.append(subSql);
 			params.addAll(subParams);
 		}
+		if (!isThereFirstDelim)
+			removeFirstDelimiter(sb);
 	}
 
 	private StringBuilder genSubSql(LineNode block,
@@ -121,8 +128,12 @@ public class SQLGenerator {
 		return subSql;
 	}
 
-	private String removeFirstDelimiter(StringBuilder subSb) {
+	private void removeFirstDelimiter(StringBuilder subSb) {
 		Matcher m = delimPtn.matcher(subSb);
-		return m.find() ? m.group(1) + m.group(3) : subSb.toString();
+		if (m.find()) {
+			int len1 = m.group(1).length();
+			int len2 = m.group(2).length();
+			subSb.delete(len1, len1 + len2);
+		}
 	}
 }

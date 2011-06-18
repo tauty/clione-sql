@@ -14,6 +14,8 @@ import tetz42.clione.parsar.SQLParser;
 import tetz42.clione.setting.Setting;
 
 public class LoaderUtil {
+	
+	public static String sqlPathPrefix = "SQL file path:";
 
 	private static class NodeHolder {
 		private NodeHolder(SQLNode sqlNode, long systime) {
@@ -71,7 +73,7 @@ public class LoaderUtil {
 	}
 
 	private static NodeHolder createNodeHolder(final String sqlPath) {
-		final String resourceInfo = "SQL file path:" + sqlPath;
+		final String resourceInfo = sqlPathPrefix + sqlPath;
 		final InputStream in = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(sqlPath);
 		if (in == null)

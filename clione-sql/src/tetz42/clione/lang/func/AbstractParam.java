@@ -68,9 +68,9 @@ abstract public class AbstractParam extends ClioneFunction {
 
 	protected Instruction performTask(ParamMap paramMap, Instruction paramInst) {
 		if (isParamExists(paramInst) ^ isNegative) {
-			return caseParamExists(paramMap, paramInst);
+			return caseParamExists(paramMap, paramInst).status(true);
 		} else {
-			return caseParamNotExists(paramMap, paramInst);
+			return caseParamNotExists(paramMap, paramInst).status(false);
 		}
 	}
 

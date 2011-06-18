@@ -10,4 +10,5 @@ Instruction{
 	replacement = null
 	next = null
 	map = null
+	status = true
 }

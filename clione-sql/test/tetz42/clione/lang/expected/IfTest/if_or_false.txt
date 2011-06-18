@@ -1,11 +1,10 @@
 Instruction{
-	params = ArrayList[
-		"namako"
-	]
+	params = ArrayList[ ]
 	isNodeDisposed = false
-	doNothing = false
-	useValueInBack = false
+	doNothing = true
+	useValueInBack = true
 	replacement = null
 	next = null
 	map = null
+	status = false
 }

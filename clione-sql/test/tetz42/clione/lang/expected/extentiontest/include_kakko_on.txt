@@ -15,4 +15,5 @@ Instruction{
         AND name LIKE ?"
 	next = null
 	map = null
+	status = false
 }
