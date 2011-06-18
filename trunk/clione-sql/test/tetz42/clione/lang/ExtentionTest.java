@@ -9,7 +9,10 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.loader.LoaderUtil;
+import tetz42.clione.node.SQLNode;
 import tetz42.util.ObjDumper4j;
 
 public class ExtentionTest {
@@ -203,8 +206,8 @@ public class ExtentionTest {
 	@Test
 	public void delnull_list() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse("%COMPACT PARAM");
-		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
-				"tako", null, "ika", null, "namako")));
+		Instruction instruction = cf.perform(params("PARAM",
+				Arrays.asList("tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
 	}
 
@@ -322,6 +325,14 @@ public class ExtentionTest {
 				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include");
+	}
+
+	@Test
+	public void include_rpath() {
+		SQLNode sqlNode = LoaderUtil.getNodeByClass(getClass(),
+				"IncludeRpath.sql");
+		String sql = new SQLGenerator().genSql(params(), sqlNode);
+		assertEqualsWithFile(sql, getClass(), "include_rpath");
 	}
 
 	@Test

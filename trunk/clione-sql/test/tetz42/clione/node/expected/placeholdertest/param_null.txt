@@ -6,4 +6,5 @@ Instruction{
 	replacement = " IS NULL "
 	next = null
 	map = null
+	status = false
 }

@@ -3,7 +3,8 @@ Instruction{
 	isNodeDisposed = false
 	doNothing = false
 	useValueInBack = false
-	replacement = "SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ "
+	replacement = "octopus"
 	next = null
 	map = null
+	status = false
 }

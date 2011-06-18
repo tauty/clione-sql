@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import tetz42.clione.loader.LoaderUtil;
+
 public class ContextUtil {
 
 	private static class ResInfoHolder {
@@ -65,6 +67,13 @@ public class ContextUtil {
 		return joinByCrlf(resourceInfoes.get().toArray());
 	}
 
+	public static String getResourcePath() {
+		String resourceInfo = getLatest().resourceInfo;
+		if (resourceInfo.startsWith(LoaderUtil.sqlPathPrefix))
+			return resourceInfo.substring(LoaderUtil.sqlPathPrefix.length());
+		return null;
+	}
+
 	public static String popResourceInfo() {
 		List<ResInfoHolder> list = resourceInfoes.get();
 		return list.remove(list.size() - 1).toString();
@@ -83,7 +92,7 @@ public class ContextUtil {
 			return true;
 		if (nilValues.get().contains(obj))
 			return true;
-		if(Boolean.FALSE.equals(obj))
+		if (Boolean.FALSE.equals(obj))
 			return true;
 		return false;
 	}

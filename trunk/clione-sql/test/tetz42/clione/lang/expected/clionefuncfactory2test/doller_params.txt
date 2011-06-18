@@ -3,12 +3,15 @@ LineParam{
 	param = Parenthesises{
 		inside = Param{
 			key = "TAKO"
+			isNegative = false
 			[tetz42.clione.lang.func.ClioneFunction]
 			next = Param{
 				key = "IKA"
+				isNegative = false
 				[tetz42.clione.lang.func.ClioneFunction]
 				next = Param{
 					key = "NAMAKO"
+					isNegative = false
 					[tetz42.clione.lang.func.ClioneFunction]
 					next = null
 				}

@@ -15,4 +15,5 @@ Instruction{
 	replacement = " IN (?, ?, ?, ?, ?, ?, ?, ?) "
 	next = null
 	map = null
+	status = true
 }

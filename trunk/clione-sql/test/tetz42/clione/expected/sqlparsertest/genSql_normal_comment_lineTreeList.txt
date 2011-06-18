@@ -49,6 +49,7 @@ SQLNode{
 								[tetz42.clione.lang.func.AbstractParam]
 								param = Param{
 									key = "TAKO"
+									isNegative = false
 									[tetz42.clione.lang.func.ClioneFunction]
 									next = null
 								}
@@ -72,6 +73,7 @@ SQLNode{
 							valueInBack = "'tako'"
 							clione = Param{
 								key = "TAKO"
+								isNegative = false
 								[tetz42.clione.lang.func.ClioneFunction]
 								next = null
 							}

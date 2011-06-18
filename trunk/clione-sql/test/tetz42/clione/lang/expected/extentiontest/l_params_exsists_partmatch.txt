@@ -8,4 +8,5 @@ Instruction{
 	replacement = "? ESCAPE '#'"
 	next = null
 	map = null
+	status = false
 }

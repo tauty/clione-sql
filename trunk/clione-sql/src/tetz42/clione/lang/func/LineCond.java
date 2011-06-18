@@ -12,7 +12,7 @@ public class LineCond extends AbstractParam {
 	@Override
 	protected Instruction caseParamExists(ParamMap paramMap,
 			Instruction paramInst) {
-		return new Instruction().doNothing();
+		return new Instruction().doNothing().useValueInBack();
 	}
 
 	@Override

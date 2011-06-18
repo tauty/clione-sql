@@ -24,8 +24,11 @@ Instruction{
 			replacement = null
 			next = null
 			map = null
+			status = true
 		}
 		map = null
+		status = false
 	}
 	map = null
+	status = true
 }

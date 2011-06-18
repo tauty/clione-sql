@@ -1,41 +1,60 @@
 package tetz42.clione.lang.func;
 
+import static tetz42.clione.lang.ContextUtil.*;
+import static tetz42.clione.util.Pair.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import tetz42.clione.lang.Instruction;
+import tetz42.clione.util.Pair;
 import tetz42.clione.util.ParamMap;
 
 public class Param extends ClioneFunction {
 
 	protected final String key;
+	protected final boolean isNegative;
 
 	public Param(String key) {
+		this(key, false);
+	}
+
+	public Param(String key, boolean isNegative) {
 		this.key = key;
+		this.isNegative = isNegative;
 	}
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction inst = new Instruction();
-		inst.params.addAll(convToCol(paramMap.get(key)));
+		Pair<? extends Collection<?>, Boolean> pair = convToCol(paramMap
+				.get(key));
+		Instruction inst = new Instruction().status(pair.getSecond()
+				^ isNegative);
+		inst.params.addAll(pair.getFirst());
 		return inst.next(getNextInstruction(paramMap));
 	}
 
-	private Collection<?> convToCol(Object val) {
+	private Pair<? extends Collection<?>, Boolean> convToCol(Object val) {
 		if (val == null) {
-			return Arrays.asList(val);
+			return pair(Arrays.asList(val), false);
 		} else if (val.getClass().isArray()) {
 			ArrayList<Object> list = new ArrayList<Object>();
-			for (int i = 0; i < Array.getLength(val); i++) {
-				list.add(Array.get(val, i));
+			int length = Array.getLength(val);
+			boolean isTrue = false;
+			;
+			for (int i = 0; i < length; i++) {
+				Object e = Array.get(val, i);
+				if (!isNil(e))
+					isTrue = true;
+				list.add(e);
 			}
-			return list;
-		} else if (val instanceof Collection<?>)
-			return (Collection<?>) val;
-		else
-			return Arrays.asList(val);
+			return pair(list, isTrue);
+		} else if (val instanceof Collection<?>) {
+			Collection<?> col = (Collection<?>) val;
+			return pair(col, !isNil(col));
+		} else
+			return pair(Arrays.asList(val), true);
 	}
 
 	@Override

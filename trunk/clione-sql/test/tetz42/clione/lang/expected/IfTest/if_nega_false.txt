@@ -3,7 +3,8 @@ Instruction{
 	isNodeDisposed = false
 	doNothing = false
 	useValueInBack = false
-	replacement = "SELECT tel, '\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ "
+	replacement = null
 	next = null
 	map = null
+	status = false
 }

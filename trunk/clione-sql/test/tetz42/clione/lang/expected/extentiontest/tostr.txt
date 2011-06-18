@@ -6,4 +6,5 @@ Instruction{
 	replacement = ",ASC"
 	next = null
 	map = null
+	status = false
 }

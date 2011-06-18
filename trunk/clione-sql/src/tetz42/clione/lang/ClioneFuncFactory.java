@@ -172,8 +172,8 @@ public class ClioneFuncFactory {
 	private ClioneFunction gen(Matcher m, String func, String not, String key) {
 		if (isAllEmpty(func, not, key))
 			return null;
-		if (isAllEmpty(func, not))
-			return new Param(key);
+		if (isEmpty(func))
+			return new Param(key, isNotEmpty(not));
 		if (isNotEmpty(func)) {
 			if (func.equals("$"))
 				return new LineParam(key, isNotEmpty(not));
