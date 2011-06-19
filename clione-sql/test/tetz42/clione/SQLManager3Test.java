@@ -120,4 +120,33 @@ public class SQLManager3Test {
 		assertEqualsWithFile(list, getClass(), "if_line_block_null");
 	}
 
+	@Test
+	public void indent_whitespace_and_tab() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+
+		List<Employee> list = sqlManager.useFile(getClass(),
+				"IndentBlankAndTab.sql").findAll(Employee.class);
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"indent_whitespace_and_tab1_sql");
+		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab1");
+
+		list = sqlManager.useFile(getClass(), "IndentBlankAndTab.sql").findAll(
+				Employee.class, params("cond2", ".com"));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"indent_whitespace_and_tab2_sql");
+		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab2");
+
+		list = sqlManager.useFile(getClass(), "IndentBlankAndTab.sql").findAll(
+				Employee.class, params("cond1", ".com").$("cond2", ".com"));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"indent_whitespace_and_tab3_sql");
+		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab3");
+		
+		list = sqlManager.useFile(getClass(), "IndentBlankAndTab.sql").findAll(
+				Employee.class, params("cond1", ".com"));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"indent_whitespace_and_tab4_sql");
+		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab4");
+	}
+
 }
