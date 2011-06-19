@@ -187,7 +187,7 @@ public class SQLParser {
 			Matcher m = indentPtn.matcher(node.sql);
 			String curIndent = m.find() ? m.group(1) : "";
 
-			if (indent.length() < curIndent.length()) {
+			if (calcIndent(indent) < calcIndent(curIndent)) {
 				holder.back();
 				if (parentNode == null) {
 					// performed only 1st loop time.
@@ -196,7 +196,7 @@ public class SQLParser {
 				}
 				parentNode.childBlocks.addAll(buildNodes(holder, curIndent));
 				continue;
-			} else if (indent.length() > curIndent.length()
+			} else if (calcIndent(indent) > calcIndent(curIndent)
 					&& !closePtn.matcher(node.sql).find()) {
 				holder.back();
 				return list;

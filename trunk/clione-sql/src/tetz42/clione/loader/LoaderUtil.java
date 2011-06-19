@@ -53,6 +53,7 @@ public class LoaderUtil {
 				+ sqlFileName);
 	}
 
+	// TODO implementation as getNodeBySQL(String sql, String resouceInfo)
 	public static SQLNode getNodeBySQL(String sql) {
 		if (sql == null)
 			throw new NullPointerException("The SQL must not be null.");
@@ -60,6 +61,18 @@ public class LoaderUtil {
 		if (isCacheInvalid(nh)) {
 			InputStream in = new ByteArrayInputStream(sql.getBytes());
 			nh = cacheIf(new SQLParser("The SQL passed as parameter.")
+					.parse(in), sql, cacheBySQL);
+		}
+		return nh.sqlNode;
+	}
+
+	public static SQLNode getNodeBySQL(String sql, String resouceInfo) {
+		if (sql == null)
+			throw new NullPointerException("The SQL must not be null.");
+		NodeHolder nh = cacheBySQL.get(sql);
+		if (isCacheInvalid(nh)) {
+			InputStream in = new ByteArrayInputStream(sql.getBytes());
+			nh = cacheIf(new SQLParser(resouceInfo)
 					.parse(in), sql, cacheBySQL);
 		}
 		return nh.sqlNode;

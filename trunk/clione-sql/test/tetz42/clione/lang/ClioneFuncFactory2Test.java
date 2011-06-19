@@ -62,7 +62,7 @@ public class ClioneFuncFactory2Test {
 	@Test
 	public void if_params_literal() {
 		ClioneFunction clione = ClioneFuncFactory.get().parse(
-				"%IF(TAKO IKA NAMAKO) :SAKANA");
+				"%if(TAKO IKA NAMAKO) :SAKANA");
 		assertEqualsWithFile(clione, getClass(), "if_params_literal");
 	}
 }
