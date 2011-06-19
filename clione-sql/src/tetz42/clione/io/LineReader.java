@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class LineReader extends BufferedReader {
 
-	private static final Pattern joinPtn = Pattern.compile("--\\z");
+	private static final Pattern joinPtn = Pattern.compile("--\\s*\\z");
 	private static final Pattern blankPtn = Pattern.compile("\\A\\s*\\z");
 
 	int startNo = 0;
