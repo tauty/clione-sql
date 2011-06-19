@@ -1,5 +1,5 @@
 Extention{
-	func = "IF"
+	func = "if"
 	isNegative = false
 	inside = Parenthesises{
 		inside = Param{

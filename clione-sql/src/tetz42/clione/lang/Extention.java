@@ -28,13 +28,13 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst = getFunction("ESCLIKE").perform(inst);
-				inst = getFunction("CONCAT").perform(inst);
+				inst = getFunction("esc_like").perform(inst);
+				inst = getFunction("concat").perform(inst);
 				inst.replacement = "? ESCAPE '#'";
 				return inst;
 			}
 		});
-		putFunction("ESCLIKE", new ExtFunction() {
+		putFunction("esc_like", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -48,7 +48,7 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("CONCAT", new ExtFunction() {
+		putFunction("concat", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -70,8 +70,8 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("C", getFunction("CONCAT"));
-		putFunction("COMPACT", new ExtFunction() {
+		putFunction("C", getFunction("concat"));
+		putFunction("del_nil", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -152,8 +152,7 @@ public class Extention extends ClioneFunction {
 				ParamMap paramMap = getParamMap();
 				if (ExtendedParamMap.class.isInstance(paramMap)) {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
-					if (isContain(extMap.getCaller(), "if", "elseif", "IF",
-							"ELSEIF")) {
+					if (isContain(extMap.getCaller(), "if", "elseif")) {
 						extMap.caller(null);
 						return getFunction("if").perform();
 					}
@@ -168,35 +167,13 @@ public class Extention extends ClioneFunction {
 				ParamMap paramMap = getParamMap();
 				if (ExtendedParamMap.class.isInstance(paramMap)) {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
-					if (isContain(extMap.getCaller(), "if", "elseif", "IF",
-							"ELSEIF")) {
+					if (isContain(extMap.getCaller(), "if", "elseif")) {
 						return getNextInstruction();
 					}
 				}
 				return null;
 			}
 		});
-		putFunction("IF", new ExtFunction() {
-
-			@Override
-			public Instruction perform() {
-				Instruction inst = getFunction("if").perform();
-				if (inst.doNothing)
-					inst.nodeDispose();
-				return inst;
-			}
-		});
-		putFunction("ELSEIF", new ExtFunction() {
-
-			@Override
-			public Instruction perform() {
-				Instruction inst = getFunction("elseif").perform();
-				if (inst.doNothing)
-					inst.nodeDispose();
-				return inst;
-			}
-		});
-		putFunction("ELSE", getFunction("else"));
 		putFunction("and", new ExtFunction() {
 
 			@Override
@@ -213,7 +190,7 @@ public class Extention extends ClioneFunction {
 				return inst.merge().status(result);
 			}
 		});
-		putFunction("PUT", new ExtFunction() {
+		putFunction("put", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -231,7 +208,7 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("ON", new ExtFunction() {
+		putFunction("on", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -243,7 +220,7 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("INCLUDE", new ExtFunction() {
+		putFunction("include", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -279,17 +256,17 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("SQL", new ExtFunction() {
+		putFunction("STR", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst = getFunction("CONCAT").perform(inst);
+				inst = getFunction("C").perform(inst);
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
 			}
 		});
-		putFunction("STR", getFunction("SQL"));
+		putFunction("SQL", getFunction("STR"));
 	}
 
 	public static ExtFunction putFunction(String keyword, ExtFunction f) {

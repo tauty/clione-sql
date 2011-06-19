@@ -113,44 +113,6 @@ public class ExtentionTest {
 	}
 
 	@Test
-	public void ifln_true() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM");
-		Instruction instruction = cf.perform(paramsOn("PARAM"));
-		assertEqualsWithFile(instruction, getClass(), "ifln_true");
-	}
-
-	@Test
-	public void ifln_true_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM :ASC");
-		Instruction instruction = cf.perform(paramsOn("PARAM"));
-		assertEqualsWithFile(instruction, getClass(), "ifln_true_with_sql");
-	}
-
-	@Test
-	public void ifln_false() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM");
-		Instruction instruction = cf.perform(params());
-		assertEqualsWithFile(instruction, getClass(), "ifln_false");
-	}
-
-	@Test
-	public void ifln_false_with_sql() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%IF PARAM :ASC");
-		Instruction instruction = cf.perform(params());
-		assertEqualsWithFile(instruction, getClass(), "ifln_false_with_sql");
-	}
-
-	@Test
-	public void ifln_no_param() {
-		try {
-			ClioneFuncFactory.get().parse("%IF ");
-			fail();
-		} catch (ClioneFormatException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
 	public void l_param_exsists_forwardmatch() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse("%L PARAM '%'");
 		Instruction instruction = cf.perform(params("PARAM", "tako"));
@@ -205,7 +167,7 @@ public class ExtentionTest {
 
 	@Test
 	public void delnull_list() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%COMPACT PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%del_nil PARAM");
 		Instruction instruction = cf.perform(params("PARAM",
 				Arrays.asList("tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
@@ -214,7 +176,7 @@ public class ExtentionTest {
 	@Test
 	public void delnull_params() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%COMPACT PARAM1 PARAM2 PARAM3");
+				"%del_nil PARAM1 PARAM2 PARAM3");
 		Instruction inst = cf.perform(params("PARAM1",
 				Arrays.asList("tako", null, "ika", null, "namako")).$("PARAM3",
 				"umiushi"));
@@ -322,7 +284,7 @@ public class ExtentionTest {
 	@Test
 	public void include() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'");
+				"%include 'tetz42/clione/sql/SQLManagerTest/Select.sql'");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include");
 	}
@@ -338,8 +300,8 @@ public class ExtentionTest {
 	@Test
 	public void include_put() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
-						+ " %PUT 'age', '120', 'name_part', 'TA'");
+				"%include 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %put 'age', '120', 'name_part', 'TA'");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_put");
 	}
@@ -347,8 +309,8 @@ public class ExtentionTest {
 	@Test
 	public void include_on() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
-						+ " %ON 'age', '120', 'name_part', 'TA'");
+				"%include 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %on 'age', '120', 'name_part', 'TA'");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_on");
 	}
@@ -356,7 +318,7 @@ public class ExtentionTest {
 	@Test
 	public void include_kakko() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE('tetz42/clione/sql/SQLManagerTest/Select.sql')");
+				"%include('tetz42/clione/sql/SQLManagerTest/Select.sql')");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_kakko");
 	}
@@ -365,8 +327,8 @@ public class ExtentionTest {
 	public void include_kakko_put() {
 		// '), ' bug was occurred and fail this test case. TODO fix it.
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE( 'tetz42/clione/sql/SQLManagerTest/Select.sql',"
-						+ " %PUT('age', '120'), %PUT('name_part', 'TA') )");
+				"%include( 'tetz42/clione/sql/SQLManagerTest/Select.sql',"
+						+ " %put('age', '120'), %put('name_part', 'TA') )");
 		System.out.println(ObjDumper4j.dumper(cf));
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_kakko_put");
@@ -375,8 +337,8 @@ public class ExtentionTest {
 	@Test
 	public void include_kakko_on() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%INCLUDE( 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
-						+ " %ON('age', '120', 'name_part', 'TA') )");
+				"%include( 'tetz42/clione/sql/SQLManagerTest/Select.sql'"
+						+ " %on('age', '120', 'name_part', 'TA') )");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_kakko_on");
 	}

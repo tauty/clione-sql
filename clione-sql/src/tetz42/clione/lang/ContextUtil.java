@@ -2,9 +2,8 @@ package tetz42.clione.lang;
 
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 
 import tetz42.clione.loader.LoaderUtil;
 
@@ -30,11 +29,11 @@ public class ContextUtil {
 
 	}
 
-	private static ThreadLocal<List<ResInfoHolder>> resourceInfoes = new ThreadLocal<List<ResInfoHolder>>() {
+	private static ThreadLocal<LinkedList<ResInfoHolder>> resourceInfoes = new ThreadLocal<LinkedList<ResInfoHolder>>() {
 
 		@Override
-		protected List<ResInfoHolder> initialValue() {
-			return new ArrayList<ResInfoHolder>();
+		protected LinkedList<ResInfoHolder> initialValue() {
+			return new LinkedList<ResInfoHolder>();
 		}
 	};
 
@@ -47,7 +46,7 @@ public class ContextUtil {
 	};
 
 	public static void pushResouceInfo(String resourceInfo) {
-		resourceInfoes.get().add(new ResInfoHolder(resourceInfo));
+		resourceInfoes.get().push(new ResInfoHolder(resourceInfo));
 	}
 
 	public static void setBeginLineNo(int lineNo) {
@@ -59,8 +58,7 @@ public class ContextUtil {
 	}
 
 	private static ResInfoHolder getLatest() {
-		List<ResInfoHolder> list = resourceInfoes.get();
-		return list.get(list.size() - 1);
+		return resourceInfoes.get().getFirst();
 	}
 
 	public static String getResourceInfo() {
@@ -75,8 +73,7 @@ public class ContextUtil {
 	}
 
 	public static String popResourceInfo() {
-		List<ResInfoHolder> list = resourceInfoes.get();
-		return list.remove(list.size() - 1).toString();
+		return resourceInfoes.get().pop().toString();
 	}
 
 	public static void addNil(Object... nils) {

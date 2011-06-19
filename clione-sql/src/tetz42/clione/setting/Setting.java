@@ -14,12 +14,10 @@ public class Setting {
 		Setting local = setting;
 		if (local == null) {
 			synchronized (Setting.class) {
-				if (setting == null) {
-					setting = new Setting();
+				local = setting;
+				if (local == null) {
+					setting = local = new Setting();
 				}
-				// This method must not return null even if clear method is
-				// called special timing.
-				return setting;
 			}
 		}
 		return local;
@@ -32,6 +30,7 @@ public class Setting {
 	public String SQLFILE_ENCODING = null;
 	public boolean IS_DEVELOPMENT_MODE = false;
 	public int SQLFILE_CACHETIME = 0;
+	public int TAB_SIZE = 4;
 
 	private Setting() {
 		Properties prop = IOUtil.getProperties("clione.properties");

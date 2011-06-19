@@ -3,7 +3,7 @@ SELECT
 FROM
     employees
 WHERE
-	/*%IF cond */
+	/*%if $cond */
 		ADDRESS like /*%L '%' cond */'%.com'
-	/*%!IF cond :
+	/*%if $!cond :
 		ID /+ ids +/= 3 */

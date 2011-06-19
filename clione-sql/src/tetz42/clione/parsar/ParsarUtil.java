@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.node.LineNode;
+import tetz42.clione.setting.Setting;
 
 public class ParsarUtil {
 
@@ -15,6 +16,22 @@ public class ParsarUtil {
 	private static final Pattern opePtn = Pattern.compile(
 			"\\A((!?=|<>|(not\\s+)?in|is(\\s+not)?)\\s+)",
 			Pattern.CASE_INSENSITIVE);
+
+	public static int calcIndent(String indent) {
+		final int TAB_SIZE = Setting.get().TAB_SIZE;
+		byte[] bytes = indent.getBytes();
+		int tabUnitSize = 0;
+		int resultSize = 0;
+		for (byte b : bytes) {
+			if (b == ' ')
+				tabUnitSize++;
+			else if (b == '\t')
+				tabUnitSize = TAB_SIZE;
+			if (tabUnitSize == TAB_SIZE)
+				resultSize += tabUnitSize;
+		}
+		return resultSize + tabUnitSize;
+	}
 
 	public static class NodeHolder {
 		private List<LineNode> nodes;
