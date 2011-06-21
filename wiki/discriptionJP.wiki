@@ -1,10 +1,19 @@
+This document is written in Japanese.<br>
+If you can not understand Japanese and are eager to read this document, please register issues.<br>
+I will translate this document in English if the issues are registered.<br>
+
 = Introduction =
 
-clione-sqlの機能説明です。
+clione-sqlの使用方法です。
+基本編、応用編に分かれています。<br>
+開発を始めるには、まずは基本編に目を通しておけば充分でしょう。<br>
+基本編の内容では対応できない問題が発生した場合には、応用編を読んで対応してください。<br>
 
+=基本編=
 
-=テンプレート機能の基本(2WaySQL)=
-まず、下記のようなsqlファイルを用意します。
+==First Sample==
+まずは簡単なサンプルを使用して、簡単な使い方を覚えていただきます。
+下記のようなsqlファイルを用意します。
 
 [Sample.sql]
 {{{
@@ -17,14 +26,14 @@ WHERE
     AND FIELD2 = /* param2 */'AAA'
 }}}
 
-これを適切なパス(後述)に置き、Javaで下記のように実装します。
+これを適切なパス(後述)に置き、Javaで次のように実装します。
 
 {{{
 import static tetz42.clione.SQLManager.*;
            :
     public List<Entity> findTable1ByParam1AndParam2(int param1, String param2) {
         return sqlManager().useFile(getClass(), "Sample.sql")
-                .findAll( Entity.class, params("param1", 500).$("param2", "BBB") );
+                .findAll( Entity.class, params("param1", param1).$("param2", param2) );
     }
 }}}
 
@@ -39,7 +48,7 @@ WHERE
     AND FIELD2 = ?
 }}}
 <br>
-Sample.sqlのテンプレート内で使用されている「/`*` param1 `*`/」はANSIで定められたSQL文のコメントであるため、Sample1.sqlはそのまま通常のSQLとして実行することができます。このように、テンプレートでありながらも通常のSQL文としても扱える仕組みのことを、2WaySQLと言います。<br>
+Sample.sqlのテンプレート内で使用されている「/`*` param1 `*`/」はANSIで定められたSQL文のコメントであるため、Sample1.sqlはそのまま通常のSQLとして実行することができます。このように、テンプレートでありながらも通常のSQL文としても扱える仕組みのことを、*2WaySQL* と言います。<br>
 この仕組みによりclione-sqlでは、テンプレートとなるSQL文を実際に実行したり解析したりしながら開発＆リファクタリングすることが可能となります。<br>
 <br>
 なお、SQLファイルを下記のように「=」の前にパラメタを記述すると、パラメタの値に合わせてSQL文が変化するようになります。
@@ -62,7 +71,7 @@ WHERE
     FIELD1 IS NULL
 }}}
 <br>
-paramがListか配列の場合には、下記のようにIN句に変化します。
+paramがListか配列で要素数が2以上の場合には、下記のようにIN句に変化します。
 {{{
 SELECT
     *
@@ -71,10 +80,14 @@ FROM
 WHERE
     FIELD1 IN (?, ?, ?, ?, ?)
 }}}
+※List or 配列の要素数が1のときには「=」に、0の時には「IS NULL」に変化します。<br>
 <br>
 上記のように動作するのは、パラメタを「=, IS, IN, <>, !=, IS NOT, NOT IN」等の比較演算子の前においた場合です。<br>
 それ以外の「LIKE」等には対応していません。<br>
 なお「<>」など否定の比較演算子の前にパラメタを置いた場合には、nullの時には「IS NOT NULL」に、Listか配列の時には「NOT IN」に、それぞれ変化します。
+
+==INSERT, UPDATE, DELETE==
+
 
 ==SQLファイルの配置==
 SQLファイルは基本的にクラスパスの通ったディレクトリ以下のどこかに配置します。
@@ -100,5 +113,36 @@ import static tetz42.clione.SQLManager.*;
   * [渡されたClassオブジェクトのパッケージ]/sql/[クラス名]/[指定されたファイル名]
 というパスだと解釈されますので、そのパスに適切にSQLファイルを置くようにしてください。
 
+==ファイルを使用しないSQL==
+SQLファイルを作成するほどでもない簡単なSQL文を実行する場合には、下記のように直接実行することもできます。
+{{{
+import static tetz42.clione.SQLManager.*;
+           :
+    public void delete() {
+        return sqlManager().useSQL("DELETE FROM TABLE1").update();
+    }
+}}}
+もちろん、パラメタも使えます。
+{{{
+import static tetz42.clione.SQLManager.*;
+           :
+    public Entity findById(String id) {
+        return sqlManager().useSQL("SELECT * from TABLE1 WHERE ID=/* id */")
+                  .find( Entity.class, params("id", id) );
+    }
+}}}
+
+
+==パラメタについて==
+  *paramsメソッド
+  *条件bean使用
 
 =インデントベースの動的SQL=
+=便利な補助機能(%C, %L)=
+=文字列リテラル=
+=nilの概念=
+=propertiesファイル=
+=%if-%elseif-%else=
+=ブロック切替え=
+=%include=
+=%STR, %SQL=
