@@ -42,7 +42,6 @@ WHERE
 なおSample.sqlのテンプレート内で使用されている「/`*` param1 `*`/」はANSIで定められたSQL文のコメントであるため、Sample1.sqlはそのまま通常のSQLとして実行することができます。<br>
 これにより、clione-sqlではテンプレートとなるSQL文を、Osqleditやオブジェクトブラウザのような高機能なSQLエディタで実行して確認しながら開発＆リファクタリングすることが可能となります。<br>
 <br>
-<br>
 また、SQLファイルを下記のように「=」の前にパラメタを記述すると、パラメタの値に合わせてSQL文が変化するようになります。
 {{{
 SELECT
@@ -75,6 +74,31 @@ WHERE
 <br>
 上記のように動作するのは、パラメタを「=, IS, IN, <>, !=, IS NOT, NOT IN」等の比較演算子の前においた場合です。<br>
 それ以外の「LIKE」等には対応していません。<br>
-なお「<>」など否定演算子の前にパラメタを置いた場合には、nullの時には「IS NOT NULL」に、Listか配列の時には「NOT IN」に、それぞれ変化します。
+なお「<>」など否定の比較演算子の前にパラメタを置いた場合には、nullの時には「IS NOT NULL」に、Listか配列の時には「NOT IN」に、それぞれ変化します。
+
+==SQLファイルの配置==
+SQLファイルは基本的にクラスパスの通ったディレクトリ以下のどこかに配置します。
+配置した場所のパスを、下記のように指定します。
+{{{
+import static tetz42.clione.SQLManager.*;
+           :
+        sqlManager().useFile("com/sql/Sample.sql")
+                .find ...(省略)
+    }
+}}}
+またSQLファイルをクラスと関連付けて配置したいときのために、SQLManager#useFileメソッドではClassオブジェクトをパラメタに渡せるようになっています。<br>
+{{{
+import static tetz42.clione.SQLManager.*;
+           :
+        sqlManager().useFile(SampleDao.class, "Sample.sql")
+                .find ...(省略)
+    }
+}}}
+上記の例では、例えばSampleDaoのパッケージが「com.clione.dao」だったとすると、<br>
+  * com/clione/dao/sql/SampleDao/Sample.sql
+に配置されているとみなされます。つまり、
+  * [渡されたClassオブジェクトのパッケージ]/sql/[クラス名]/[指定されたファイル名]
+というパスだと解釈されますので、そのパスに適切にSQLファイルを置くようにしてください。
+
 
 =インデントベースの動的SQL=
