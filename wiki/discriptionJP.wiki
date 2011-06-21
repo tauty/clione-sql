@@ -149,6 +149,7 @@ import static tetz42.clione.SQLManager.*;
 
 =応用編=
 
+==SQLExecutor==
 ==文字列リテラル==
 ==nilの概念==
 ==propertiesファイル==
