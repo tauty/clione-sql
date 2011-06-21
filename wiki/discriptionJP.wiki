@@ -112,7 +112,7 @@ import static tetz42.clione.SQLManager.*;
 というパスだと解釈されますので、そのパスに適切にSQLファイルを置くようにしてください。
 
 ==ファイルを使用しないSQL==
-SQLファイルを作成するほどでもない簡単なSQL文を実行する場合には、下記のように直接実行することもできます。
+SQLファイルを作成するほどでもない簡単なSQL文の場合には、下記のように直接実行することもできます。
 {{{
 import static tetz42.clione.SQLManager.*;
            :
