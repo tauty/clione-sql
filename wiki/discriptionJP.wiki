@@ -12,7 +12,7 @@ clione-sqlの使用方法です。
 =基本編=
 
 ==2WaySQL==
-まずは簡単なサンプルを使用して、基本的な使い方を覚えていただきます。<br>
+まずは簡単なサンプルを使用して、2WaySQLの概念を説明します。<br>
 下記のようなsqlファイルを用意します。
 
 [Sample.sql]
@@ -131,6 +131,10 @@ import static tetz42.clione.SQLManager.*;
 }}}
 
 ==インデントベースの動的SQL==
+clione-sqlの名前の由来は、「Clione-sql is Line and Indent Oriented, NEsted-structured, 2WaySQL library.」です。<br>
+つまり「clione-sqlは行志向かつインデント志向で、再帰的な構造を持つ2WaySQLなライブラリです。」ってな感じです。<br>
+ここではこの名前の由来となった、行志向かつインデント志向な動的SQLについて説明します。<br>
+
 
 ==その他のパラメタ修飾記号==
 
