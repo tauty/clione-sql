@@ -147,10 +147,30 @@ WHERE
 }}}
 最初の例と比べると、パラメタに「$」という記号がついていることが分かると思います。<br>
 これをclione-sqlでは *パラメタ修飾記号* と呼びます。<br>
-
-
+下記のように、Javaソースでパラメタを指定するときには、パラメタ修飾記号は省略できます。
+{{{
+import static tetz42.clione.SQLManager.*;
+        :
+    public List<Person> findAllByAge(Integer ageFrom, Integer ageTo) throws SQLException {
+        return sqlManager().useFile(getClass(), "Select.sql")
+                .findAll(Person.class, params("age_from", ageFrom).$("age_to", ageTo));
+    }
+}}}
+なお省略せずに書いても良いですが、内部的には除去して扱います。<br>
+<br>
 パラメタ修飾記号には幾つか種類があり、それぞれで意味が違います。<br>
 「$」は「パラメタの値がnullだったら、行ごと削除する」という意味になります。
+よって、もしfindAllByAgeメソッドのパラメタageFromがnullだった場合、SQL文は下記のように変化します。
+{{{
+SELECT
+    *
+FROM
+    people
+WHERE
+    age <= ?
+}}}
+区切りの「AND」も自動的に除去されていることに気がついたでしょうか？<br>
+
 
 
 ==その他のパラメタ修飾記号==
