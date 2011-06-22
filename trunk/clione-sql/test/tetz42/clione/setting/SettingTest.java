@@ -12,19 +12,19 @@ public class SettingTest {
 
 	@After
 	public void after() {
-		Setting.clear();
+		Config.clear();
 	}
 
 	@Test
 	public void getUTF8() {
-		assertThat(Setting.get().SQLFILE_ENCODING, is("utf-8"));
+		assertThat(Config.get().SQLFILE_ENCODING, is("utf-8"));
 	}
 
 	@Test
 	public void no_file() {
 		hideFile("bin/clione.properties");
 		try {
-			assertNull(Setting.get().SQLFILE_ENCODING);
+			assertNull(Config.get().SQLFILE_ENCODING);
 		} finally {
 			restoreFile("bin/clione.properties");
 		}
@@ -34,7 +34,7 @@ public class SettingTest {
 	public void defaultValue() {
 		hideFile("bin/clione.properties");
 		try {
-			assertThat(nvl(Setting.get().SQLFILE_ENCODING, "shift_jis"),
+			assertThat(nvl(Config.get().SQLFILE_ENCODING, "shift_jis"),
 					is("shift_jis"));
 		} finally {
 			restoreFile("bin/clione.properties");

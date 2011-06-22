@@ -37,7 +37,7 @@ import tetz42.clione.node.LineNode;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
-import tetz42.clione.setting.Setting;
+import tetz42.clione.setting.Config;
 import tetz42.clione.util.SBHolder;
 
 public class SQLParser {
@@ -59,7 +59,7 @@ public class SQLParser {
 	public SQLNode parse(InputStream in) {
 		InputStreamReader ir;
 		try {
-			ir = new InputStreamReader(in, nvl(Setting.get().SQLFILE_ENCODING,
+			ir = new InputStreamReader(in, nvl(Config.get().SQLFILE_ENCODING,
 					"utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(e.getMessage() + CRLF

@@ -6,17 +6,17 @@ import java.util.Properties;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 
-public class Setting {
+public class Config {
 
-	private static Setting setting;
+	private static volatile Config config;
 
-	public static Setting get() {
-		Setting local = setting;
+	public static Config get() {
+		Config local = config;
 		if (local == null) {
-			synchronized (Setting.class) {
-				local = setting;
+			synchronized (Config.class) {
+				local = config;
 				if (local == null) {
-					setting = local = new Setting();
+					config = local = new Config();
 				}
 			}
 		}
@@ -24,7 +24,7 @@ public class Setting {
 	}
 
 	public synchronized static void clear() {
-		setting = null;
+		config = null;
 	}
 
 	public String SQLFILE_ENCODING = null;
@@ -32,7 +32,7 @@ public class Setting {
 	public int SQLFILE_CACHETIME = 0;
 	public int TAB_SIZE = 4;
 
-	private Setting() {
+	private Config() {
 		Properties prop = IOUtil.getProperties("clione.properties");
 		prop = prop != null ? prop : new Properties();
 		for (Field f : getClass().getFields()) {

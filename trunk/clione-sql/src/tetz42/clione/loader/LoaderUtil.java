@@ -11,10 +11,10 @@ import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.io.IOWrapper;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
-import tetz42.clione.setting.Setting;
+import tetz42.clione.setting.Config;
 
 public class LoaderUtil {
-	
+
 	public static String sqlPathPrefix = "SQL file path:";
 
 	private static class NodeHolder {
@@ -53,17 +53,8 @@ public class LoaderUtil {
 				+ sqlFileName);
 	}
 
-	// TODO implementation as getNodeBySQL(String sql, String resouceInfo)
 	public static SQLNode getNodeBySQL(String sql) {
-		if (sql == null)
-			throw new NullPointerException("The SQL must not be null.");
-		NodeHolder nh = cacheBySQL.get(sql);
-		if (isCacheInvalid(nh)) {
-			InputStream in = new ByteArrayInputStream(sql.getBytes());
-			nh = cacheIf(new SQLParser("The SQL passed as parameter.")
-					.parse(in), sql, cacheBySQL);
-		}
-		return nh.sqlNode;
+		return getNodeBySQL(sql, "The SQL passed as parameter.");
 	}
 
 	public static SQLNode getNodeBySQL(String sql, String resouceInfo) {
@@ -72,8 +63,7 @@ public class LoaderUtil {
 		NodeHolder nh = cacheBySQL.get(sql);
 		if (isCacheInvalid(nh)) {
 			InputStream in = new ByteArrayInputStream(sql.getBytes());
-			nh = cacheIf(new SQLParser(resouceInfo)
-					.parse(in), sql, cacheBySQL);
+			nh = cacheIf(new SQLParser(resouceInfo).parse(in), sql, cacheBySQL);
 		}
 		return nh.sqlNode;
 	}
@@ -105,8 +95,8 @@ public class LoaderUtil {
 	private static boolean isCacheInvalid(NodeHolder nh) {
 		if (nh == null)
 			return true;
-		if (Setting.get().IS_DEVELOPMENT_MODE
-				&& nh.cachedTime + Setting.get().SQLFILE_CACHETIME < System
+		if (Config.get().IS_DEVELOPMENT_MODE
+				&& nh.cachedTime + Config.get().SQLFILE_CACHETIME < System
 						.currentTimeMillis()) {
 			return true;
 		}

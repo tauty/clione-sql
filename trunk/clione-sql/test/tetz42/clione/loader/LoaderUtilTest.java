@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import tetz42.clione.SQLManager;
 import tetz42.clione.SQLManagerTest.Employee;
-import tetz42.clione.setting.Setting;
+import tetz42.clione.setting.Config;
 
 public class LoaderUtilTest {
 
@@ -44,8 +44,9 @@ public class LoaderUtilTest {
 		String prop2 = "bin/clione4lodertest.properties";
 		try {
 			swapFile(prop1, prop2);
-			Setting.clear();
+			Config.clear();
 
+			// 1st.
 			SQLManager sqlManager = sqlManager();
 			List<Employee> list;
 			list = sqlManager.useFile(getClass(), "Select.sql").findAll(
@@ -57,11 +58,19 @@ public class LoaderUtilTest {
 			String sql1 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/Select.sql";
 			String sql2 = "bin/tetz42/clione/loader/sql/LoaderUtilTest/SmallSelect.sql";
 
-			Thread.sleep(Setting.get().SQLFILE_CACHETIME + 10);
-
 			try {
 				swapFile(sql1, sql2);
+				
+				// 2nd. The cache is valid.
+				list = sqlManager.useFile(getClass(), "Select.sql").findAll(
+						Employee.class, params("NO1", 100001).$("NO2", 100003));
+				assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+						"hotReloading_1st_sql");
+				assertEqualsWithFile(list, getClass(), "hotReloading_1st");
 
+				Thread.sleep(Config.get().SQLFILE_CACHETIME + 10);
+
+				// 3rd. The cache is invalid and SQL file is reloaded.
 				list = sqlManager.useFile(getClass(), "Select.sql").findAll(
 						Employee.class, params("NO1", 100001).$("NO2", 100003));
 				assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
@@ -72,7 +81,7 @@ public class LoaderUtilTest {
 			}
 		} finally {
 			swapFile(prop1, prop2);
-			Setting.clear();
+			Config.clear();
 		}
 	}
 }
