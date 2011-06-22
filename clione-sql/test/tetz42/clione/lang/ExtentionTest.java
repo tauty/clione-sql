@@ -202,14 +202,14 @@ public class ExtentionTest {
 
 	@Test
 	public void tostr() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR(',' $PARAM)");
 		Instruction instruction = cf.perform(params("PARAM", "ASC"));
 		assertEqualsWithFile(instruction, getClass(), "tostr");
 	}
 
 	@Test
 	public void tostr_null() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR(',' $PARAM)");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "tostr_null");
 	}

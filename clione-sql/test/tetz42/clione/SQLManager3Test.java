@@ -141,12 +141,21 @@ public class SQLManager3Test {
 		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
 				"indent_whitespace_and_tab3_sql");
 		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab3");
-		
+
 		list = sqlManager.useFile(getClass(), "IndentBlankAndTab.sql").findAll(
 				Employee.class, params("cond1", ".com"));
 		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
 				"indent_whitespace_and_tab4_sql");
 		assertEqualsWithFile(list, getClass(), "indent_whitespace_and_tab4");
+	}
+
+	@Test
+	public void useSQL() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Integer> list = sqlManager.useSQL("select id from employees")
+				.findAll(Integer.class);
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(), "useSQL_sql");
+		assertEqualsWithFile(list, getClass(), "useSQL");
 	}
 
 }

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.node.LineNode;
-import tetz42.clione.setting.Setting;
+import tetz42.clione.setting.Config;
 
 public class ParsarUtil {
 
@@ -18,7 +18,7 @@ public class ParsarUtil {
 			Pattern.CASE_INSENSITIVE);
 
 	public static int calcIndent(String indent) {
-		final int TAB_SIZE = Setting.get().TAB_SIZE;
+		final int TAB_SIZE = Config.get().TAB_SIZE;
 		byte[] bytes = indent.getBytes();
 		int tabUnitSize = 0;
 		int resultSize = 0;
