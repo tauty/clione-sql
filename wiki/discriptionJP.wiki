@@ -134,6 +134,23 @@ import static tetz42.clione.SQLManager.*;
 clione-sqlの名前の由来は、「Clione-sql is Line and Indent Oriented, NEsted-structured, 2WaySQL library.」です。<br>
 つまり「clione-sqlは行志向かつインデント志向で、再帰的な構造を持つ2WaySQLなライブラリです。」ってな感じです。<br>
 ここではこの名前の由来となった、行志向かつインデント志向な動的SQLについて説明します。<br>
+<br>
+まずは下記のSQLファイルをご覧ください。
+{{{
+SELECT
+    *
+FROM
+    people
+WHERE
+    age >= /* $age_from */25
+    AND age <= /* $age_to */50
+}}}
+最初の例と比べると、パラメタに「$」という記号がついていることが分かると思います。<br>
+これをclione-sqlでは *パラメタ修飾記号* と呼びます。<br>
+
+
+パラメタ修飾記号には幾つか種類があり、それぞれで意味が違います。<br>
+「$」は「パラメタの値がnullだったら、行ごと削除する」という意味になります。
 
 
 ==その他のパラメタ修飾記号==
