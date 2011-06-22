@@ -156,7 +156,7 @@ import static tetz42.clione.SQLManager.*;
                 .findAll(Person.class, params("age_from", ageFrom).$("age_to", ageTo));
     }
 }}}
-なお省略せずに書いても良いですが、内部的には除去して扱います。<br>
+なお省略せずに書いても良いですが、内部的には除去して扱うためあまり意味はありません。<br>
 <br>
 パラメタ修飾記号には幾つか種類があり、それぞれで意味が違います。<br>
 「$」は「パラメタの値がnullだったら、行ごと削除する」という意味になります。
