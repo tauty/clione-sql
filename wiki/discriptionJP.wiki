@@ -247,6 +247,8 @@ WHERE
     　　hometown = /`*` ?prefecture ?country `*`/
    と、後ろの値がないときに両方ともnegativeなら、何も起こりません。
 
+    由来：これも特にないです。イメージです。
+
 ==様々なfindメソッド==
 
 ==INSERT, UPDATE, DELETEを実行するupdateメソッド==
@@ -393,7 +395,7 @@ Coming soon!
   'string'
   "field1 = /+ field1 +/"
   :field1 = /+ field1 +/
-  |field1 = /`*` field1 `*`/
+  |field1 = /* field1 */
 }}}
 ==コメント==
 Coming soon!
