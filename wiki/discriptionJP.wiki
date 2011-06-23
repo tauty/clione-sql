@@ -265,8 +265,8 @@ values(
     11
     ,/* name */
     ,/* last_name */
-    ,/*%C name last_name */
-    ,/*%C last_name name */
+    ,/*%C name ' ' last_name */
+    ,/*%C last_name '　' name */
 )
 }}}
 
