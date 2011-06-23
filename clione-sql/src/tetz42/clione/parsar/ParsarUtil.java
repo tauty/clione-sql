@@ -2,13 +2,16 @@ package tetz42.clione.parsar;
 
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.io.LineReader;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.setting.Config;
+import tetz42.clione.util.SBHolder;
 
 public class ParsarUtil {
 
@@ -16,6 +19,8 @@ public class ParsarUtil {
 	private static final Pattern opePtn = Pattern.compile(
 			"\\A((!?=|<>|(not\\s+)?in|is(\\s+not)?)\\s+)",
 			Pattern.CASE_INSENSITIVE);
+	private static final Pattern normalValuePtn = Pattern
+			.compile("\\A[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)*");
 
 	public static int calcIndent(String indent) {
 		final int TAB_SIZE = Config.get().TAB_SIZE;
@@ -60,7 +65,7 @@ public class ParsarUtil {
 		}
 	}
 
-	public static String getValueInBack(String src) {
+	public static String getValueInBack(String src, LineReader br, SBHolder sbh) {
 		if (isEmpty(src))
 			return null;
 		String operator = "";
@@ -70,17 +75,15 @@ public class ParsarUtil {
 			src = src.substring(m.end());
 		}
 		if (src.charAt(0) == '(' || src.charAt(0) == '\'')
-			return operator + getLiteralValue(src);
-		else if (isWordChar(src.charAt(0)))
-			return operator + getNormalValue(src);
+			return operator + getLiteralValue(src, br, sbh);
+		m = normalValuePtn.matcher(src);
+		if (m.find())
+			return operator + m.group();
 		return null;
 	}
 
-	private static String getNormalValue(String src) {
-		return src.substring(0, wordEnd(src));
-	}
-
-	private static String getLiteralValue(String src) {
+	private static String getLiteralValue(String src, LineReader br,
+			SBHolder sbh) {
 		Matcher m = delimPtn.matcher(src);
 		if (m.find()) {
 			if (m.group().equals("("))
@@ -123,28 +126,5 @@ public class ParsarUtil {
 		if (pos >= src.length())
 			return null;
 		return src.substring(pos, pos + 1);
-	}
-
-	static int wordEnd(String src) {
-		int pos = 0;
-		while (pos < src.length() && isWordChar(src.charAt(pos)))
-			pos++;
-		return pos;
-	}
-
-	private static boolean isWordChar(char c) {
-		if ('0' <= c && c <= '9')
-			return true;
-		if ('a' <= c && c <= 'z')
-			return true;
-		if ('A' <= c && c <= 'Z')
-			return true;
-		switch (c) {
-		case '_':
-		case '-':
-			return true;
-		default:
-			return false;
-		}
 	}
 }

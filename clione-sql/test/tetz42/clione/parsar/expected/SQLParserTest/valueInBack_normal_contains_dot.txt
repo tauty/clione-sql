@@ -1,0 +1,31 @@
+SQLNode{
+	nodes = ArrayList[
+		LineNode{
+			sql = "  "
+			holders = ArrayList[
+				PlaceHolder{
+					begin = 1
+					length = 0
+					valueInBack = "tako.ika.namako"
+					clione = LineParam{
+						[tetz42.clione.lang.func.AbstractParam]
+						param = Param{
+							key = "param1"
+							isNegative = false
+							[tetz42.clione.lang.func.ClioneFunction]
+							next = null
+						}
+						isNegative = false
+						[tetz42.clione.lang.func.ClioneFunction]
+						next = null
+					}
+				}
+			]
+			childBlocks = ArrayList[ ]
+			beginLineNo = 1
+			endLineNo = 0
+			isDisposable = false
+		}
+	]
+	resourceInfo = "From Test"
+}

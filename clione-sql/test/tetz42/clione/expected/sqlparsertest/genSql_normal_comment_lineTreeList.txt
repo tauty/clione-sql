@@ -85,7 +85,7 @@ SQLNode{
 					isDisposable = false
 				}
 				LineNode{
-					sql = "	OR HIJ = /**TAKO*/'tako'"
+					sql = "	OR HIJ = 'tako'"
 					holders = ArrayList[ ]
 					childBlocks = ArrayList[ ]
 					beginLineNo = 8
