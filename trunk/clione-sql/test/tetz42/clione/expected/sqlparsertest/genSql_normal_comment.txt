@@ -5,4 +5,4 @@ FROM /*! MYSQL */
 WHERE
 	ABC = ?
 	OR EFG = ?
-	OR HIJ = /**TAKO*/'tako'
+	OR HIJ = 'tako'

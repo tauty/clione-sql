@@ -34,8 +34,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.parsar.Caller;
-import tetz42.clione.parsar.SQLParser;
 
 public class SQLParserTest {
 
@@ -61,19 +59,6 @@ public class SQLParserTest {
 			con.close();
 		}
 		setThreadConnection(null);
-	}
-
-	@Test
-	public void wordEnd_1() {
-		SQLParser parser = new SQLParser("");
-
-		StringBuilder sb = new StringBuilder().append("tako ");
-		assertThat(Caller.wordEnd(parser, sb, 0), is(4));
-		assertThat(sb.substring(0, 4), is("tako"));
-
-		sb = new StringBuilder().append("tako");
-		assertThat(Caller.wordEnd(parser, sb, 0), is(4));
-		assertThat(sb.substring(0, 4), is("tako"));
 	}
 
 	@Test

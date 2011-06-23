@@ -120,9 +120,12 @@ public class SQLParser {
 				int start = sbh.getPreLength() + m.start();
 				m = findCommentEnd(br, sbh, m, lineNode);
 				int end = sbh.getPreLength() + m.end();
-				if (!"*+!".contains(sbh.sb.substring(start + 2, start + 3))) {
+				String commentFlg = sbh.sb.substring(start + 2, start + 3);
+				if ("*".equals(commentFlg))
+					sbh.delete(start, end);
+				else if (!"+!".contains(commentFlg)) {
 					// create place holder
-					String valueInBack = getValueInBack(sbh.sb.substring(end));
+					String valueInBack = getValueInBack(sbh.sb.substring(end), br, sbh);
 					lineNode.holders.add(new PlaceHolder(sbh.sb.substring(
 							start + 2, end - 2), valueInBack, start));
 					if (valueInBack == null) {
