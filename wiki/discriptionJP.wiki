@@ -250,6 +250,26 @@ WHERE
     name like /*%C '%' part_of_name '%' */'%愛%'
 }}}
 
+%concat, %Cのその他の使い方として、各種DBプロダクトに依存しないで文字列連結を行う、というのがあります。<br>
+文字列連結はANSI標準では「string1 || string2」なのですが、MySQLはconcat関数にしか対応していなかったり、SQL Serverは「string1 + string2」だったり、実情は全く統一されていません。<br>
+%concat, %Cを使えば下記のように、DBプロダクトに依存しない形で文字列連結を実現することができます。
+{{{
+INSERT INTO people (
+    id
+    ,name
+    ,last_name
+    ,full_name
+    ,full_name_jp
+)
+values(
+    11
+    ,/* name */
+    ,/* last_name */
+    ,/*%C name last_name */
+    ,/*%C last_name name */
+)
+}}}
+
 ===LIKE句用補助関数(%esc_like, %L)===
 LIKE句に値をbindするとき、値の中に'%'や'`_`'が含まれていると、LIKE句の記号として解釈されてしまうことが知られています。<br>
 ※ 念のため：'`_`'はLIKE句では任意の一文字にマッチします。<br>
