@@ -201,14 +201,27 @@ WHERE
 }}}
 上記のように書いた場合、ageがnullの時には「age IS NULL」に変換され、ageに値が入っているときには行削除が行われます。<br>
 
+==negativeとpositive==
+実は上の「インデントベースの動的SQL」の中で何度か登場した、「nullのときには･･･」という表現、厳密には間違っています。
+clione-sqlではパラメタの値に関してnegativeかpositiveかを判定します。このnegativeと判定される値の一つが「null」です。
+clione-sqlにてnegativeと判定される値は下記の通りです。
+ * null
+ * false(より正確には、Boolean.FALSEとequals判定で一致するもの)
+ * 空の配列 or List
+ * 要素が全てがnullの配列 or List
+ * その他、ユーザーがnegativeとして設定した値(※応用編にて後述)
+上記以外の値は、全てpositiveとして判定されます。
+
+※以降の説明では、この「negative」「positive」という用語を使います。
+
 ==パラメタ修飾記号==
 ここで、パラメタ修飾記号について詳しく説明します。<br>
 パラメタ修飾記号はパラメタの前につけることで特別な意味を持たせることができる記号のことです。<br>
 上でも触れていますが、パラメタとの間に「!」をつけることで意味を逆転させることができます。
 
- * $ ･･･ パラメタがnullだったときに行ごと削除します。(前述)
+ * $ ･･･ パラメタがnegativeだったときに行ごと削除します。(前述)
     由来：正規表現では行末を表す記号なので、行の制御をつかどらせることにしました。
- * & ･･･ パラメタがnullだったときに行ごと削除するのは「$」と同じです。違いはパラメタに値が入っていても何もおこなわないことです。下記みたいなケースで使います。
+ * & ･･･ パラメタがnegativeだったときに行ごと削除するのは「$」と同じです。違いはパラメタがpositiveでも何もおこなわないことです。下記みたいなケースで使います。
 {{{
 SELECT
     *
@@ -219,9 +232,9 @@ WHERE
     AND age /* $!age */= 25
 }}}
     由来：上のように、条件分岐っぽい使い方になると思ったので、条件文内で「and」として使われているこれを選びました。
- * @ ･･･ パラメタがnullのときに、ParameterNotFoundExceptionをthrowします。必須のパラメタに付与します。
+ * @ ･･･ パラメタがnegativeのときに、ParameterNotFoundExceptionをthrowします。必須のパラメタに付与します。
     由来：特にないです。なんとなく必須っぽいイメージがわきました。
- * ? ･･･ パラメタがnullのときに、右隣のパラメタを有効とします。右隣のパラメタもnullで、更にその右隣のパラメタがなかったら、パラメタの後ろの値を有効とします。つまり、
+ * ? ･･･ パラメタがnegativeのときに、右隣のパラメタを有効とします。右隣のパラメタもnegativeで、更にその右隣のパラメタがなかったら、パラメタの後ろの値を有効とします。つまり、
 {{{
 UPDATE people
 SET
@@ -229,10 +242,10 @@ SET
 WHERE
     ID = /* @id */'11'
 }}}
-   となっていた場合、prefecture に値が入っていればその値が、nullならcountry が、countryもnullなら後ろの値の'unknown'が有効となります。
+   となっていた場合、prefecture に値がpositiveならその値が、negativeならcountry が、countryもnegativeなら後ろの値の'unknown'が有効となります。
    もし、
     　　hometown = /`*` ?prefecture ?country `*`/
-   と、後ろの値がないときに両方nullなら、何も起こりません。
+   と、後ろの値がないときに両方ともnegativeなら、何も起こりません。
 
 ==様々なfindメソッド==
 
@@ -369,17 +382,73 @@ WHERE
  * 君と1000%
 などが含まれたレコードの件数が取得できるはずです。<br>
 <br>
-LIKE句に値をbindするときには、エスケープの必要がなければ%Cを、あれば%Lを、いちいち判断するのが面倒ならいつでも%Lを使用するようにしてください。
+LIKE句に値をbindするときには、エスケープの必要がなければ%Cを、あれば%Lを使ってください。<br>
+いちいち判断するのが面倒なら、いつでも%Lを使用していれば良いでしょう。
 
 =応用編=
 
-==コメント==
 ==文字列リテラル==
+Coming soon!
+{{{
+  'string'
+  "field1 = /+ field1 +/"
+  :field1 = /+ field1 +/
+  |field1 = /`*` field1 `*`/
+}}}
+==コメント==
+Coming soon!
+{{{
+-- コメント
+  /** 通常のコメントと解釈 */
+  -- こちらも通常のコメント
+  /*+ Oracleのヒント句 */
+  /*! MySQLのヒント句 */
+-- パラメタ
+  /* param */
+  -- &param
+}}}
+
 ==行の連結==
+Coming soon!
+{{{
+  FIELD IN /* values */('aaa', 'bbb', 'ccc' --
+      'ddd', 'eee')
+}}}
+
 ==SQLExecutor==
-==nilの概念==
+==negativeと判定する値の追加==
 ==propertiesファイル==
 ==%if-%elseif-%else==
+{{{
+   /*%if cond1 'AAA' %elseif cond2 'bbb' else 'ccc' */'ddd'
+}}}
 ==ブロック切替え==
+{{{
+WHERE
+  -- %if cond
+    fieldA1 = /* valueA1 */
+    AND fieldA2 = /* valueA2 */
+  -- %if !cond
+    --: fieldB1 = /+ valueB1 +/
+    --: AND fieldB2 = /+ valueB2 +/
+  /* %if condC
+    fieldC1 = /+ valueC1 +/
+    AND fieldC2 = /+ valueC2 +/
+  */
+}}}
 ==%include==
+{{{
+    /* %include('./Sub_Query') '
+        UNION
+'      %include('./Sub_Query' %on('option1')) */
+}}}
 ==%STR, %SQL==
+JavaからSQLに直接文字列 or clione-sqlにより解釈されたSQL文を書き込むことができる補助関数。<br>
+使い方を間違えるとSQLインジェクションをくらう危険性があるので、要注意！<br>
+別の手段がどうしてもないときのみ使用し、使用する場合もなるべくJavaの固定値(static finalな値とかenumとか)を渡すようにしてください。<br>
+間違っても、ユーザの入力した値をノーチェックで渡すようなことはないこと！<br>
+※警戒の意味を込めて、この二つの補助関数だけは1文字でもないのに大文字で表記しています。
+{{{
+    /* %STR(param1) */
+    /* %SQL(param2) */
+}}}
