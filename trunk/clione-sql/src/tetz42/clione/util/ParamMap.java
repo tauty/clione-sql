@@ -16,7 +16,6 @@
 package tetz42.clione.util;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -47,24 +46,16 @@ public class ParamMap extends HashMap<String, Object> {
 		return this;
 	}
 
-	public <T> ParamMap $(String key, T... values) {
-		this.put(key, values);
-		return this;
-	}
-
 	public ParamMap $e(String key, Object value) {
-		if (ClioneUtil.isNotEmpty(value))
-			this.put(key, value);
-		return this;
+		return this.$nv(key, value, "");
 	}
 
-	public <T> ParamMap $e(String key, T... values) {
-		ArrayList<T> list = new ArrayList<T>();
-		for (T value : values) {
-			if (ClioneUtil.isNotEmpty(value))
-				list.add(value);
+	public ParamMap $nv(String key, Object value, Object... negatives) {
+		for(Object negative : negatives) {
+			if(negative == null || negative.equals(value))
+				return this;
 		}
-		return this.$(key, values);
+		return this.$(key, value);
 	}
 
 	public ParamMap $on(String... keys) {

@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
 import static tetz42.clione.SQLManager.*;
-import static tetz42.test.Util.*;
+import static tetz42.test.Auty.*;
 
 import org.junit.Test;
 
