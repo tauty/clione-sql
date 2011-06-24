@@ -1,7 +1,7 @@
 package tetz42.clione.loader;
 
 import static tetz42.clione.SQLManager.*;
-import static tetz42.test.Util.*;
+import static tetz42.test.Auty.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

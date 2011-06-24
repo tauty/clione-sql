@@ -136,6 +136,11 @@ public class SQLExecutor {
 		return SQLIterator.genIterator(this, entityClass, null);
 	}
 
+	public SQLIterator<ResultMap> each(Map<String, Object> paramMap)
+			throws SQLException {
+		return SQLIterator.genIterator(this, ResultMap.class, paramMap);
+	}
+
 	public SQLIterator<ResultMap> each() throws SQLException {
 		return SQLIterator.genIterator(this, ResultMap.class, null);
 	}

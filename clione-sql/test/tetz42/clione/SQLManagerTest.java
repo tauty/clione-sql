@@ -18,7 +18,7 @@ package tetz42.clione;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static tetz42.clione.SQLManager.*;
-import static tetz42.test.Util.*;
+import static tetz42.test.Auty.*;
 import static tetz42.util.ObjDumper4j.*;
 
 import java.io.IOException;

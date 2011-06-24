@@ -1,6 +1,6 @@
 package tetz42.clione.parsar;
 
-import static tetz42.test.Util.*;
+import static tetz42.test.Auty.*;
 import org.junit.Test;
 
 import tetz42.clione.node.SQLNode;
