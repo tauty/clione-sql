@@ -56,7 +56,7 @@ Sample.sqlのテンプレート内で使用されている「/`*` param1 `*`/」
 ちなみにこの2WaySQL、発祥はあの有名なSeasar2です。<br>
 
 ==パラメタの値に応じたSQL文の変化==
-clione-sqlでは、パラメタの値が配列 or Listの場合には自動的にSQL文を変化させて対応します。<br>
+clione-sqlでは、パラメタの値に応じて自動的にSQL文を変化させることができます。<br>
 例として、下記のようなケースを考えます。
 {{{
 SELECT
@@ -66,7 +66,7 @@ FROM
 WHERE
     FIELD1 IN /* param */('aaa', 'bbb', 'ccc')
 }}}
-paramの値がsizeが5の配列(or List)だった場合、SQL文は下記のように変換されて値も正しくbindされます。
+paramの値がsizeが5の配列(or List)だった場合、SQL文は下記のように変換されます。
 {{{
 SELECT
     *
@@ -75,6 +75,7 @@ FROM
 WHERE
     FIELD1 IN (?, ?, ?, ?, ?)
 }}}
+このとき、配列(or List)の保持する値は順番どおり正しくbindされます。<br>
 また、INで判定したい値に固定のものがあった場合には、下記のように書くことも可能です。
 {{{
 SELECT
@@ -84,7 +85,7 @@ FROM
 WHERE
     FIELD1 IN ('aaa', 'bbb', /* param */'ccc')
 }}}
-この場合も、paramの値がsizeが5の配列(or List)だったら、下記のように変換されて正しくbindされます。
+この場合も、paramの値がsizeが5の配列(or List)だったら、下記のように変換され、保持する値も正しくbindされます。
 {{{
 SELECT
     *
@@ -93,7 +94,7 @@ FROM
 WHERE
     FIELD1 IN ('aaa', 'bbb', ?, ?, ?, ?, ?)
 }}}
-
+<br>
 更に、SQLファイルで下記のように「=」の前にパラメタを記述すると、パラメタの値に合わせて条件文ごとSQL文を変化させることができます。
 {{{
 SELECT
@@ -114,7 +115,7 @@ WHERE
     FIELD1 IS NULL
 }}}
 <br>
-paramがListか配列で要素数が2以上の場合には、下記のようにIN句に変化します。
+paramが配列(or List)でsizeが2以上の場合には、下記のようにIN句に変化します。
 {{{
 SELECT
     *
@@ -123,7 +124,7 @@ FROM
 WHERE
     FIELD1 IN (?, ?, ?, ?, ?)
 }}}
-※List or 配列の要素数が1のときには「=」に、0の時には「IS NULL」に変化します。<br>
+※配列(or List)の要素数が1のときには「=」に、0の時には「IS NULL」に変化します。<br>
 <br>
 上記のように動作するのは、パラメタを「=, IS, IN, <>, !=, IS NOT, NOT IN」等の比較演算子の前においた場合です。<br>
 それ以外の「LIKE」等には対応していません。<br>
