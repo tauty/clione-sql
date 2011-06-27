@@ -56,7 +56,45 @@ Sample.sqlのテンプレート内で使用されている「/`*` param1 `*`/」
 ちなみにこの2WaySQL、発祥はあの有名なSeasar2です。<br>
 
 ==パラメタの値に応じたSQL文の変化==
-SQLファイルで下記のように「=」の前にパラメタを記述すると、パラメタの値に合わせてSQL文を変化させることができます。
+clione-sqlでは、パラメタの値が配列 or Listの場合には自動的にSQL文を変化させて対応します。<br>
+例として、下記のようなケースを考えます。
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 IN /* param */('aaa', 'bbb', 'ccc')
+}}}
+paramの値がsizeが5の配列(or List)だった場合、SQL文は下記のように変換されて値も正しくbindされます。
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 IN (?, ?, ?, ?, ?)
+}}}
+また、INで判定したい値に固定のものがあった場合には、下記のように書くことも可能です。
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 IN ('aaa', 'bbb', /* param */'ccc')
+}}}
+この場合も、paramの値がsizeが5の配列(or List)だったら、下記のように変換されて正しくbindされます。
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 IN ('aaa', 'bbb', ?, ?, ?, ?, ?)
+}}}
+
+更に、SQLファイルで下記のように「=」の前にパラメタを記述すると、パラメタの値に合わせて条件文ごとSQL文を変化させることができます。
 {{{
 SELECT
     *
