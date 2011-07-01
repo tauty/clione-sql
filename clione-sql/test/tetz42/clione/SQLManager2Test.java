@@ -219,7 +219,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void find_by_emptyStr_asNull() throws IOException, SQLException {
-		SQLManager man = sqlManager(con).nullValues("");
+		SQLManager man = sqlManager(con).negativeValues("");
 		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
 				Sample.class, params("age", 34).$("name_part", ""));
 

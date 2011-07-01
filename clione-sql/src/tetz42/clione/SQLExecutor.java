@@ -30,7 +30,7 @@ public class SQLExecutor {
 		this.manager = manager;
 		this.sqlNode = sqlNode;
 		this.resourceInfo = sqlNode.resourceInfo;
-		this.sqlGenerator = new SQLGenerator(manager.getNullValues());
+		this.sqlGenerator = new SQLGenerator(manager.getNegativeValues());
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
