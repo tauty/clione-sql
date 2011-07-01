@@ -16,22 +16,29 @@ import tetz42.clione.io.IOUtil;
 public class ClioneUtil {
 
 	public static final String CRLF = System.getProperty("line.separator");
-	
-	public static <T> List<T> plus(List<T>... dests){
+
+	public static <T> List<T> join(List<T>... dests) {
 		List<T> list = new ArrayList<T>();
-		for(List<T> dest:dests){
+		for (List<T> dest : dests) {
 			list.addAll(dest);
 		}
 		return list;
 	}
-	
-	public static <T> T[] plus(T[]...dests ){
-		return null;
+
+	public static <T> Object[] join(T[]... dests) {
+		ArrayList<T> list = new ArrayList<T>();
+		for (T[] dest : dests) {
+			if (dest == null)
+				continue;
+			for (T e : dest)
+				list.add(e);
+		}
+		return list.toArray();
 	}
-	
-	public static <T> T nvl(T... objs){
-		for(T obj : objs){
-			if(obj != null)
+
+	public static <T> T nvl(T... objs) {
+		for (T obj : objs) {
+			if (obj != null)
 				return obj;
 		}
 		return null;
@@ -86,10 +93,10 @@ public class ClioneUtil {
 	}
 
 	public static <T> boolean isContain(T src, T... dests) {
-		if(src == null)
+		if (src == null)
 			return false;
 		for (T dst : dests) {
-			if(src.equals(dst))
+			if (src.equals(dst))
 				return true;
 		}
 		return false;

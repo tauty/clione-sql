@@ -37,7 +37,7 @@ public class ContextUtil {
 		}
 	};
 
-	private static ThreadLocal<HashSet<Object>> nilValues = new ThreadLocal<HashSet<Object>>() {
+	private static ThreadLocal<HashSet<Object>> negativeValues = new ThreadLocal<HashSet<Object>>() {
 
 		@Override
 		protected HashSet<Object> initialValue() {
@@ -76,40 +76,40 @@ public class ContextUtil {
 		return resourceInfoes.get().pop().toString();
 	}
 
-	public static void addNil(Object... nils) {
-		if (nils == null)
+	public static void addNegative(Object... negatives) {
+		if (negatives == null)
 			return;
-		for (Object nil : nils)
-			if (nil != null)
-				nilValues.get().add(nil);
+		for (Object negative : negatives)
+			if (negative != null)
+				negativeValues.get().add(negative);
 	}
 
-	public static boolean isNil(Object obj) {
+	public static boolean isNegative(Object obj) {
 		if (obj == null)
 			return true;
-		if (nilValues.get().contains(obj))
-			return true;
 		if (Boolean.FALSE.equals(obj))
+			return true;
+		if (negativeValues.get().contains(obj))
 			return true;
 		return false;
 	}
 
-	public static boolean isAllNil(Object... objs) {
+	public static boolean isAllNegative(Object... objs) {
 		for (Object obj : objs)
-			if (!isNil(obj))
+			if (!isNegative(obj))
 				return false;
 		return true;
 	}
 
-	public static boolean isAllNil(Iterable<?> objs) {
+	public static boolean isAllNegative(Iterable<?> objs) {
 		for (Object obj : objs)
-			if (!isNil(obj))
+			if (!isNegative(obj))
 				return false;
 		return true;
 	}
 
-	public static void clearNil() {
-		nilValues.get().clear();
+	public static void clearNegative() {
+		negativeValues.get().clear();
 	}
 
 }

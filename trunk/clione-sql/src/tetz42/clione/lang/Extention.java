@@ -71,7 +71,7 @@ public class Extention extends ClioneFunction {
 			}
 		});
 		putFunction("C", getFunction("concat"));
-		putFunction("del_nil", new ExtFunction() {
+		putFunction("del_negative", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -79,7 +79,7 @@ public class Extention extends ClioneFunction {
 				while (inst != null) {
 					List<Object> newParams = new ArrayList<Object>();
 					for (Object e : inst.params) {
-						if (!isNil(e))
+						if (!ContextUtil.isNegative(e))
 							newParams.add(e);
 					}
 					inst.params = newParams;

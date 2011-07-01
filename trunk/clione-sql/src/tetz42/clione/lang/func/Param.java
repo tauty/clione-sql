@@ -45,14 +45,14 @@ public class Param extends ClioneFunction {
 			;
 			for (int i = 0; i < length; i++) {
 				Object e = Array.get(val, i);
-				if (!isNil(e))
+				if (!isNegative(e))
 					isTrue = true;
 				list.add(e);
 			}
 			return pair(list, isTrue);
 		} else if (val instanceof Collection<?>) {
 			Collection<?> col = (Collection<?>) val;
-			return pair(col, !isNil(col));
+			return pair(col, !isNegative(col));
 		} else
 			return pair(Arrays.asList(val), true);
 	}
