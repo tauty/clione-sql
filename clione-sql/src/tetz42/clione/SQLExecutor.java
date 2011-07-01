@@ -34,6 +34,16 @@ public class SQLExecutor {
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
+	public SQLExecutor negativeValues(Object[] negativeValues) {
+		this.sqlGenerator.negativeValues(negativeValues);
+		return this;
+	}
+
+	public SQLExecutor appendNegativeValues(Object[] negativeValues) {
+		this.sqlGenerator.appendNegativeValues(negativeValues);
+		return this;
+	}
+
 	public Map<String, Object> find() throws SQLException {
 		return this.find((Map<String, Object>) null);
 	}

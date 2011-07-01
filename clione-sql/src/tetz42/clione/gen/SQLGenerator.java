@@ -40,19 +40,29 @@ public class SQLGenerator {
 
 	public String sql;
 	public ArrayList<Object> params;
-	private final Object[] nilValues;
+	private Object[] negativeValues;
 
 	public SQLGenerator() {
 		this(null);
 	}
 
-	public SQLGenerator(Object[] nilValues) {
-		this.nilValues = nilValues;
+	public SQLGenerator(Object[] negativeValues) {
+		this.negativeValues = negativeValues;
+	}
+
+	public SQLGenerator negativeValues(Object[] negativeValues) {
+		this.negativeValues = negativeValues;
+		return this;
+	}
+
+	public SQLGenerator appendNegativeValues(Object[] negativeValues) {
+		this.negativeValues = join(this.negativeValues, negativeValues);
+		return this;
 	}
 
 	public String genSql(Map<String, Object> map, SQLNode sqlNode) {
 		pushResouceInfo(sqlNode.resourceInfo);
-		addNil(nilValues);
+		addNegative(negativeValues);
 		try {
 			ParamMap paramMap;
 			if (map == null)
@@ -72,7 +82,7 @@ public class SQLGenerator {
 			return this.sql = sb.toString();
 		} finally {
 			popResourceInfo();
-			clearNil();
+			clearNegative();
 		}
 	}
 
@@ -80,8 +90,8 @@ public class SQLGenerator {
 			StringBuilder sb, ArrayList<Object> params) {
 		int startTimeLength = sb.length();
 		boolean isThereFirstDelim = false;
-		if(lineNodes.size() > 0){
-			if(delimPtn.matcher(lineNodes.get(0).sql).find())
+		if (lineNodes.size() > 0) {
+			if (delimPtn.matcher(lineNodes.get(0).sql).find())
 				isThereFirstDelim = true;
 		}
 		for (LineNode lineNode : lineNodes) {

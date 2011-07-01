@@ -167,7 +167,7 @@ public class ExtentionTest {
 
 	@Test
 	public void delnull_list() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%del_nil PARAM");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%del_negative PARAM");
 		Instruction instruction = cf.perform(params("PARAM",
 				Arrays.asList("tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
@@ -176,7 +176,7 @@ public class ExtentionTest {
 	@Test
 	public void delnull_params() {
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
-				"%del_nil PARAM1 PARAM2 PARAM3");
+				"%del_negative PARAM1 PARAM2 PARAM3");
 		Instruction inst = cf.perform(params("PARAM1",
 				Arrays.asList("tako", null, "ika", null, "namako")).$("PARAM3",
 				"umiushi"));
