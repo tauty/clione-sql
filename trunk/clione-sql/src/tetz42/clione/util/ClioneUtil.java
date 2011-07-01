@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,6 +16,18 @@ import tetz42.clione.io.IOUtil;
 public class ClioneUtil {
 
 	public static final String CRLF = System.getProperty("line.separator");
+	
+	public static <T> List<T> plus(List<T>... dests){
+		List<T> list = new ArrayList<T>();
+		for(List<T> dest:dests){
+			list.addAll(dest);
+		}
+		return list;
+	}
+	
+	public static <T> T[] plus(T[]...dests ){
+		return null;
+	}
 	
 	public static <T> T nvl(T... objs){
 		for(T obj : objs){

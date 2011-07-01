@@ -73,7 +73,7 @@ public class SQLManager {
 	private String resourceInfo;
 	private String executedSql;
 	private List<Object> executedParams;
-	private Object[] nullValues = null;
+	private Object[] negativeValues = null;
 
 	public SQLManager() {
 		this.con = null;
@@ -83,13 +83,21 @@ public class SQLManager {
 		this.con = con;
 	}
 
-	public SQLManager nullValues(Object... nullValues) {
-		this.nullValues = nullValues;
+	public SQLManager negativeValues(Object... negativeValues) {
+		this.negativeValues = negativeValues;
 		return this;
 	}
 
-	Object[] getNullValues() {
-		return nullValues;
+	public SQLManager addNegativeValues(Object... negativeValues) {
+		if(this.negativeValues == null)
+			this.negativeValues = negativeValues;
+		else
+			new ArrayList<Object>()
+		return this;
+	}
+
+	Object[] getNegativeValues() {
+		return negativeValues;
 	}
 
 	void putExecutor(SQLExecutor executor) {
