@@ -253,7 +253,7 @@ clione-sqlにてnegativeと判定される値は下記の通りです。
  * null
  * false(より正確には、Boolean.FALSEとequals判定で一致するもの)
  * 空の配列 or List
- * 要素が全てがnullの配列 or List
+ * 要素が全てがnegativeの配列 or List
  * その他、ユーザーがnegativeとして設定した値(※応用編にて後述)
 上記以外の値は、全てpositiveとして判定されます。
 
