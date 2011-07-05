@@ -41,6 +41,10 @@ public class LoaderUtil {
 	}
 
 	public static SQLNode getNodeByClass(Class<?> clazz, String sqlFileName) {
+		return getNodeByPath(getSQLPath(clazz, sqlFileName));
+	}
+
+	public static String getSQLPath(Class<?> clazz, String sqlFileName) {
 		if (clazz == null)
 			throw new NullPointerException("The class object must not be null.");
 		if (sqlFileName == null)
@@ -49,8 +53,7 @@ public class LoaderUtil {
 		String packageName = clazz.getPackage().getName().toLowerCase()
 				.replace(".", "/");
 		String className = clazz.getName().substring(packageName.length() + 1);
-		return getNodeByPath(packageName + "/sql/" + className + "/"
-				+ sqlFileName);
+		return packageName + "/sql/" + className + "/" + sqlFileName;
 	}
 
 	public static SQLNode getNodeBySQL(String sql) {

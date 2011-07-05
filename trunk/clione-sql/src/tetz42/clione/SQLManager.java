@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
+import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
 
 public class SQLManager {
@@ -66,6 +67,10 @@ public class SQLManager {
 
 	public static ParamMap paramsOn(String... keys) {
 		return params().$on(keys);
+	}
+
+	public static String getSQLPath(Class<?> clazz, String sqlFileName) {
+		return LoaderUtil.getSQLPath(clazz, sqlFileName);
 	}
 
 	private final Connection con;
