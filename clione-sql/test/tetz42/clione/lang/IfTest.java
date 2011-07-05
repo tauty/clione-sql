@@ -94,4 +94,21 @@ public class IfTest {
 		assertEqualsWithFile(inst, getClass(), "if_or_false");
 	}
 
+	@Test
+	public void if_with_condition() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%if desc :desc");
+		Instruction inst = cf.perform(params(new Condition(true)));
+		assertEqualsWithFile(inst, getClass(), "if_with_condition");
+		inst = cf.perform(params(new Condition(false)));
+		assertEqualsWithFile(inst, getClass(), "if_with_condition_false");
+	}
+
+	private static class Condition {
+		Condition(boolean desc) {
+			this.desc = desc;
+		}
+
+		@SuppressWarnings("unused")
+		boolean desc;
+	}
 }
