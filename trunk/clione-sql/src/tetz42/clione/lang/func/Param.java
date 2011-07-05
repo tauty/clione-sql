@@ -36,7 +36,7 @@ public class Param extends ClioneFunction {
 	}
 
 	private Pair<? extends Collection<?>, Boolean> convToCol(Object val) {
-		if (val == null) {
+		if (isNegative(val)) {
 			return pair(Arrays.asList(val), false);
 		} else if (val.getClass().isArray()) {
 			ArrayList<Object> list = new ArrayList<Object>();
