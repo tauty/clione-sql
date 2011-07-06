@@ -27,7 +27,7 @@ public class Config {
 		config = null;
 	}
 
-	public String SQLFILE_ENCODING = null;
+	public String SQLFILE_ENCODING = "utf-8";
 	public boolean IS_DEVELOPMENT_MODE = false;
 	public int SQLFILE_CACHETIME = 0;
 	public int TAB_SIZE = 4;
