@@ -4,11 +4,8 @@ import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.parsar.ParsarUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +32,42 @@ public class SQLParserSample {
 				.parse("tako'\r\nika\r\n'namako")));
 	}
 
-	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/|--");
+	private static final String LINE = "LINE";
+	private static final String COMMENT = "COMMENT";
+
+	private static final Pattern commentPtn = Pattern
+			.compile("/\\*|\\*/|--|'|(\r|\n|\r\n)");
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private String resourceInfo = null;
+
+	private List<LineNode> parseFunction2(String src) {
+		List<LineNode> flatList = new ArrayList<LineNode>();
+		MatcherHolder mh = new MatcherHolder(src, commentPtn).remember(LINE);
+		SBHolder sbh = new SBHolder();
+		while (mh.find()) {
+			String str = mh.get().group();
+			if (str.equals("*/")) {
+				throw new ClioneFormatException(joinByCrlf(
+						"SQL Format Error: too much '*/'", getResourceInfo()));
+			} else if (str.equals("--")) {
+				// find end of line and try to parse as function.
+			} else if (str.equals("/*")) {
+				// find end comment and try to parse as function.
+				sbh.append(mh.getRememberd(LINE));
+				mh.remember(COMMENT);
+				// :
+				mh.remember(LINE);
+			} else if (str.equals("'")) {
+				// find end string literal.
+			} else {
+				// fix line node and add to flatList
+			}
+		}
+
+		return flatList;
+	}
 
 	public SQLParserSample(String resourceInfo) {
 		this.resourceInfo = resourceInfo;
@@ -59,26 +87,21 @@ public class SQLParserSample {
 			byte[] bs = IOUtil.loadFromStream(in);
 			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
 		} catch (UnsupportedEncodingException e) {
-			throw new WrapException(e.getMessage() + CRLF
-					+ "The setting of 'clione.properties' might be wrong. "
-					+ "The key name = 'SQLFILE_ENCODING'", e);
+			throw new WrapException(joinByCrlf(e.getMessage(),
+					"The setting of 'clione.properties' might be wrong. ",
+					"The key name = 'SQLFILE_ENCODING'"), e);
 		}
 	}
 
 	private SQLNode parseRoot(String src) {
-		List<LineNode> wholeNodeList;
-		try {
-			wholeNodeList = parseFunction(src);
-			return parseIndent(wholeNodeList);
-		} catch (IOException e) {
-			// TODO delete this code later.
-			throw new WrapException(e);
-		}
+		List<LineNode> flatList = parseFunction2(src);
+		return parseIndent(flatList);
 	}
 
 	private List<LineNode> parseFunction(String src) throws IOException {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		LineReader br = new LineReader(reader);
+		MatcherHolder mh = new MatcherHolder(src, commentPtn);
+		LineReader br = null;
 		SBHolder sbh = new SBHolder();
 		LineNode lineNode = null;
 		String line;

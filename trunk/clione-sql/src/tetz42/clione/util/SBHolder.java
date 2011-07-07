@@ -8,7 +8,7 @@ public class SBHolder implements Appendable {
 	private int preLength = 0;
 
 	@Override
-	public Appendable append(CharSequence cs) throws IOException {
+	public Appendable append(CharSequence cs) {
 		preLength = sb.length();
 		sb.append(cs);
 		return this;
@@ -23,7 +23,7 @@ public class SBHolder implements Appendable {
 	}
 
 	@Override
-	public Appendable append(char c) throws IOException {
+	public Appendable append(char c) {
 		preLength = sb.length();
 		sb.append(c);
 		return this;
