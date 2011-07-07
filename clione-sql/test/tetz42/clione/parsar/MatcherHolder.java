@@ -1,0 +1,88 @@
+package tetz42.clione.parsar;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MatcherHolder {
+
+	private final Map<String, Matcher> matcherMap = new HashMap<String, Matcher>();
+	private final Map<String, Integer> posMap = new HashMap<String, Integer>();
+	private final Matcher matcher;
+	private final String src;
+
+	private int pos = 0;
+	private int last = 0;
+	private int prePos = 0;
+
+	public MatcherHolder(String src, Pattern ptn) {
+		this.matcher = ptn.matcher(src);
+		this.src = src;
+	}
+
+	public MatcherHolder bind(String key, Pattern ptn) {
+		matcherMap.put(key, ptn.matcher(src));
+		return this;
+	}
+
+	public boolean find() {
+		return find(matcher);
+	}
+
+	public boolean find(String key) {
+		Matcher m = matcherMap.get(key);
+		if (m == null)
+			throw new NullPointerException("Unknown Parameter '" + key
+					+ "' has passed!");
+		return find(m);
+	}
+
+	public Matcher get() {
+		return matcher;
+	}
+
+	public Matcher get(String key) {
+		Matcher m = matcherMap.get(key);
+		if (m == null)
+			throw new NullPointerException("Unknown Parameter '" + key
+					+ "' has passed!");
+		return m;
+	}
+
+	public MatcherHolder next() {
+		return next(1);
+	}
+
+	private MatcherHolder next(int i) {
+		pos += i;
+		return this;
+	}
+
+	public MatcherHolder remember(String key) {
+		posMap.put(key, pos);
+		return this;
+	}
+
+	public MatcherHolder back() {
+		pos = prePos;
+		return this;
+	}
+
+	public String getRememberd(String key) {
+		if(posMap.get(key) == null)
+			throw new NullPointerException("Unknown Parameter '" + key
+					+ "' has passed!");
+		return src.substring(posMap.get(key), last);
+	}
+
+	private boolean find(Matcher m) {
+		prePos = pos;
+		boolean result = m.find(pos);
+		pos = last = m.end();
+		if (prePos == pos)
+			pos++;
+		return result;
+	}
+
+}
