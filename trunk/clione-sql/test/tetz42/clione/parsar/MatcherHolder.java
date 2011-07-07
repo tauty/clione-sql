@@ -8,13 +8,14 @@ import java.util.regex.Pattern;
 public class MatcherHolder {
 
 	private final Map<String, Matcher> matcherMap = new HashMap<String, Matcher>();
-	private final Map<String, Integer> posMap = new HashMap<String, Integer>();
 	private final Matcher matcher;
 	private final String src;
 
 	private int pos = 0;
-	private int last = 0;
+	private int start = 0;
+	private int end = 0;
 	private int prePos = 0;
+	private int remembered = 0;
 
 	public MatcherHolder(String src, Pattern ptn) {
 		this.matcher = ptn.matcher(src);
@@ -59,27 +60,42 @@ public class MatcherHolder {
 		return this;
 	}
 
-	public MatcherHolder remember(String key) {
-		posMap.put(key, pos);
+	public MatcherHolder back() {
+		return back(1);
+	}
+
+	private MatcherHolder back(int i) {
+		pos -= i;
 		return this;
 	}
 
-	public MatcherHolder back() {
+	public MatcherHolder remember() {
+		remembered = pos;
+		return this;
+	}
+
+	public MatcherHolder historyBack() {
 		pos = prePos;
 		return this;
 	}
 
-	public String getRememberd(String key) {
-		if(posMap.get(key) == null)
-			throw new NullPointerException("Unknown Parameter '" + key
-					+ "' has passed!");
-		return src.substring(posMap.get(key), last);
+	public String getRememberdToStart() {
+		String result = src.substring(remembered, start);
+		remember();
+		return result;
+	}
+
+	public String getRememberdToEnd(String key) {
+		String result = src.substring(remembered, end);
+		remember();
+		return result;
 	}
 
 	private boolean find(Matcher m) {
 		prePos = pos;
 		boolean result = m.find(pos);
-		pos = last = m.end();
+		this.start = m.start();
+		pos = end = m.end();
 		if (prePos == pos)
 			pos++;
 		return result;

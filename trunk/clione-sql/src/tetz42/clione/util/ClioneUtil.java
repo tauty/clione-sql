@@ -44,6 +44,14 @@ public class ClioneUtil {
 		return null;
 	}
 
+	public static boolean isAllSpace(String s) {
+		for (byte b : s.getBytes()) {
+			if (b != ' ' && b != '\t')
+				return false;
+		}
+		return true;
+	}
+
 	public static boolean isAllEmpty(String... strs) {
 		for (String s : strs) {
 			if (isNotEmpty(s))
