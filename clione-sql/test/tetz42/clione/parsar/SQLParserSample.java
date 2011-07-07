@@ -32,11 +32,14 @@ public class SQLParserSample {
 				.parse("tako'\r\nika\r\n'namako")));
 	}
 
-	private static final String LINE = "LINE";
-	private static final String COMMENT = "COMMENT";
+	private static final String COMMENT = "COMMNET";
+	private static final String LINEEND = "LINEEND";
 
-	private static final Pattern commentPtn = Pattern
+	private static final Pattern divPtn = Pattern
 			.compile("/\\*|\\*/|--|'|(\r|\n|\r\n)");
+	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/");
+	private static final Pattern lineEndPtn = Pattern.compile("(.*)$",
+			Pattern.MULTILINE);
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
@@ -44,29 +47,64 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, commentPtn).remember(LINE);
-		SBHolder sbh = new SBHolder();
+		MatcherHolder mh = new MatcherHolder(src, divPtn)
+				.bind(COMMENT, commentPtn).bind(LINEEND, lineEndPtn).remember();
+		LineInfo info = new LineInfo(1);
 		while (mh.find()) {
 			String str = mh.get().group();
 			if (str.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
 			} else if (str.equals("--")) {
-				// find end of line and try to parse as function.
+				info.lineNo++;
+				if (!doLineComment(mh, info))
+					continue;
 			} else if (str.equals("/*")) {
 				// find end comment and try to parse as function.
-				sbh.append(mh.getRememberd(LINE));
-				mh.remember(COMMENT);
+				info.sb.append(mh.getRememberdToStart());
 				// :
-				mh.remember(LINE);
+				mh.remember();
 			} else if (str.equals("'")) {
 				// find end string literal.
 			} else {
 				// fix line node and add to flatList
 			}
+			info.lineNode.sql = info.sb.toString();
+			flatList.add(info.lineNode);
+			info.clear();
 		}
 
 		return flatList;
+	}
+
+	private static class LineInfo {
+		private LineNode lineNode;
+		private StringBuilder sb;
+		private int lineNo;
+
+		LineInfo(int lineNo) {
+			this.lineNode = new LineNode(lineNo);
+			this.sb = new StringBuilder();
+			this.lineNo = lineNo;
+		}
+
+		void clear() {
+			this.lineNode = new LineNode(lineNo);
+			this.sb.setLength(0);
+		}
+	}
+
+	private boolean doLineComment(MatcherHolder mh, LineInfo info) {
+		info.sb.append(mh.getRememberdToStart());
+		mh.find(LINEEND);
+		String s = mh.get().group(1);
+		if (isEmpty(s) || isAllSpace(s))
+			return false;
+		if (s.startsWith(" ") && "$@&?#%'\":|".contains(s.substring(1, 2))) {
+			info.lineNode.holders
+					.add(new PlaceHolder(s, null, info.sb.length()));
+		}
+		return true;
 	}
 
 	public SQLParserSample(String resourceInfo) {
@@ -100,7 +138,7 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction(String src) throws IOException {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, commentPtn);
+		MatcherHolder mh = new MatcherHolder(src, divPtn);
 		LineReader br = null;
 		SBHolder sbh = new SBHolder();
 		LineNode lineNode = null;
@@ -111,7 +149,7 @@ public class SQLParserSample {
 			else
 				lineNode.curLineNo(br.getCurLineNo());
 			sbh.append(line);
-			Matcher m = commentPtn.matcher(line);
+			Matcher m = divPtn.matcher(line);
 			while (m.find()) {
 				if (m.group().equals("*/"))
 					throw new ClioneFormatException(
@@ -179,7 +217,7 @@ public class SQLParserSample {
 					+ CRLF + getResourceInfo());
 		lineNode.curLineNo(br.getCurLineNo());
 		sbh.append(CRLF).append(line);
-		return findCommentEnd(br, sbh, commentPtn.matcher(line), lineNode);
+		return findCommentEnd(br, sbh, divPtn.matcher(line), lineNode);
 	}
 
 	private SQLNode parseIndent(List<LineNode> wholeNodeList) {

@@ -28,8 +28,7 @@ public class LineNode {
 	private int endLineNo = 0;
 
 	public LineNode(int lineNo) {
-		beginLineNo = lineNo;
-		setBeginLineNo(lineNo);
+		this(lineNo, 0);
 	}
 
 	public LineNode(int startNo, int endNo) {
