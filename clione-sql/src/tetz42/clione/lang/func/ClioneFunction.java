@@ -42,4 +42,8 @@ abstract public class ClioneFunction {
 	public abstract Instruction perform(ParamMap paramMap);
 
 	public abstract String getSrc();
+	
+	public String getLiteral() {
+		throw new UnsupportedOperationException("Unsupported.");
+	}
 }

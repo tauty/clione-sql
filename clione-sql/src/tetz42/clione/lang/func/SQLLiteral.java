@@ -35,4 +35,9 @@ public class SQLLiteral extends ClioneFunction {
 	public String getSrc() {
 		return "\"" + literal + "\"";
 	}
+
+	@Override
+	public String getLiteral() {
+		return literal;
+	}
 }

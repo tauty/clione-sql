@@ -25,6 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.lang.Instruction;
+import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.lang.func.SQLLiteral;
+import tetz42.clione.lang.func.StrLiteral;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
@@ -35,6 +38,7 @@ public class SQLGenerator {
 	private static final Pattern delimPtn = Pattern.compile(
 			"\\A(\\s*)(,|and\\s+|or\\s+)(.+)\\z", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL);
+	private static final Pattern blankPtn = Pattern.compile("\\A(\\s*)");
 	private static final Pattern parenthesisClosePtn = Pattern
 			.compile("^\\s*\\)");
 
@@ -89,10 +93,25 @@ public class SQLGenerator {
 	private void genSql(List<LineNode> lineNodes, ParamMap paramMap,
 			StringBuilder sb, ArrayList<Object> params) {
 		int startTimeLength = sb.length();
-		boolean isThereFirstDelim = false;
+		boolean existsFirstDelim = false;
 		if (lineNodes.size() > 0) {
-			if (delimPtn.matcher(lineNodes.get(0).sql).find())
-				isThereFirstDelim = true;
+			LineNode firstNode = lineNodes.get(0);
+			if (delimPtn.matcher(firstNode.sql).find())
+				existsFirstDelim = true;
+			else if (firstNode.holders.size() > 0) {
+				Matcher m = blankPtn.matcher(firstNode.sql);
+				PlaceHolder holder = firstNode.holders.get(0);
+				if (m.find()) {
+					if (m.group(1).length() == holder.begin) {
+						ClioneFunction cf = holder.getFunction();
+						if (cf instanceof SQLLiteral
+								|| cf instanceof StrLiteral) {
+							if (delimPtn.matcher(cf.getLiteral()).find())
+								existsFirstDelim = true;
+						}
+					}
+				}
+			}
 		}
 		for (LineNode lineNode : lineNodes) {
 			lineNode.setLineNo(); // for line No. information of resourceInfo
@@ -115,7 +134,7 @@ public class SQLGenerator {
 			sb.append(subSql);
 			params.addAll(subParams);
 		}
-		if (!isThereFirstDelim)
+		if (!existsFirstDelim)
 			removeFirstDelimiter(sb);
 	}
 
