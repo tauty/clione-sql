@@ -21,6 +21,10 @@ public class PlaceHolder {
 	private String valueInBack;
 
 	private final ClioneFunction clione;
+	
+	public ClioneFunction getFunction() {
+		return clione;
+	}
 
 	public PlaceHolder(String src, String valueInBack, int begin) {
 		this.valueInBack = valueInBack;
