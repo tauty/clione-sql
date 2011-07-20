@@ -134,7 +134,6 @@ public class SQLParserSample {
 		}
 		if("!+".contains(comment.substring(0, 1))) {
 			info.sb.append(mh.getRememberedToEnd(2));
-			mh.remember();
 			return;
 		}
 		mh.remember();
