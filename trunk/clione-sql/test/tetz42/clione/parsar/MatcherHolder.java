@@ -70,7 +70,7 @@ public class MatcherHolder {
 	}
 
 	public MatcherHolder remember() {
-		remembered = pos;
+		remembered = end;
 		return this;
 	}
 
@@ -79,14 +79,25 @@ public class MatcherHolder {
 		return this;
 	}
 
-	public String getRememberdToStart() {
+	public String getRememberedToStart() {
 		String result = src.substring(remembered, start);
 		remember();
 		return result;
 	}
 
-	public String getRememberdToEnd(String key) {
+	public String getRememberedToStartWithoutRemember() {
+		String result = src.substring(remembered, start);
+		return result;
+	}
+
+	public String getRememberedToEnd() {
 		String result = src.substring(remembered, end);
+		remember();
+		return result;
+	}
+
+	public String getRememberedToEnd(int minusFromStart) {
+		String result = src.substring(remembered - minusFromStart, end);
 		remember();
 		return result;
 	}
@@ -96,8 +107,13 @@ public class MatcherHolder {
 		boolean result = m.find(pos);
 		this.start = m.start();
 		pos = end = m.end();
-		if (prePos == pos)
+		if (prePos == pos) {
 			pos++;
+			if (pos > src.length()) {
+				// end of source string
+				return false;
+			}
+		}
 		return result;
 	}
 
