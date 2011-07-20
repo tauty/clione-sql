@@ -41,6 +41,7 @@ public class SQLParserSample {
 			.compile("/\\*|\\*/|(\r|\n|\r\n)");
 	private static final Pattern lineEndPtn = Pattern.compile("(.*)$",
 			Pattern.MULTILINE);
+	private static final String str_literal = "'(([^']|'')*)'";
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
