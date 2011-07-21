@@ -5,6 +5,7 @@ import static tetz42.clione.util.ClioneUtil.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
 
 public class ContextUtil {
@@ -112,4 +113,32 @@ public class ContextUtil {
 		negativeValues.get().clear();
 	}
 
+	public static String fusionPath(String absolutePath, String relativePath) {
+
+		// remove file name from absolute path
+		int pos = absolutePath.lastIndexOf('/');
+		pos = pos > 0 ? pos : 0;
+		absolutePath = absolutePath.substring(0, pos);
+
+		String aPath = absolutePath;
+		String rPath = relativePath;
+
+		while (rPath.startsWith(".")) {
+			if (rPath.startsWith("./")) {
+				rPath = rPath.substring(2);
+			} else if (rPath.startsWith("../") && isNotEmpty(aPath)) {
+				rPath = rPath.substring(3);
+				pos = aPath.lastIndexOf('/');
+				pos = pos > 0 ? pos : 0;
+				aPath = aPath.substring(0, pos);
+			} else {
+				throw new SQLFileNotFoundException(joinByCrlf(
+						"Can not resolve the path below:", absolutePath
+								+ relativePath));
+			}
+		}
+		aPath = isEmpty(aPath) ? "" : aPath + "/";
+
+		return aPath + rPath;
+	}
 }
