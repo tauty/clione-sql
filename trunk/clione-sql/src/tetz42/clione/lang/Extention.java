@@ -224,8 +224,8 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst.merge();
 				String path = inst.replacement;
+				inst.merge();
 				if (path == null)
 					throw new ClioneFormatException(joinByCrlf(
 							"The parameter of %" + getFuncName()
@@ -239,9 +239,7 @@ public class Extention extends ClioneFunction {
 										+ "' , can not found.",
 								getResourceInfo()));
 					}
-					int pos = res.lastIndexOf('/');
-					if (pos > 0)
-						path = res.substring(0, pos) + "/" + path;
+					path = fusionPath(res, path);
 				}
 				SQLNode sqlNode = LoaderUtil.getNodeByPath(path);
 				SQLGenerator generator = new SQLGenerator();

@@ -34,14 +34,19 @@ public class SQLParserSample {
 
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
+	private static final String S_QUOT = "Single Quotation";
+	private static final String D_QUOT = "Double Quotation";
 
 	private static final Pattern divPtn = Pattern
 			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r|\n|\r\n)|\\z");
-	private static final Pattern commentPtn = Pattern
-			.compile("/\\*|\\*/|(\r|\n|\r\n)");
 	private static final Pattern lineEndPtn = Pattern.compile("(.*)$",
 			Pattern.MULTILINE);
-	private static final String str_literal = "'(([^']|'')*)'";
+	private static final Pattern commentPtn = Pattern
+			.compile("/\\*|\\*/|(\r|\n|\r\n)");
+	private static final Pattern singleStrPtn = Pattern
+			.compile("(([^']|'')*)'");
+	private static final Pattern doubleStrPtn = Pattern
+			.compile("(([^\"]|\"\")*)\"");
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
@@ -72,7 +77,9 @@ public class SQLParserSample {
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		MatcherHolder mh = new MatcherHolder(src, divPtn).bind(COMMENT,
-				commentPtn).bind(LINEEND, lineEndPtn).remember();
+				commentPtn).bind(LINEEND, lineEndPtn)
+				.bind(S_QUOT, singleStrPtn).bind(D_QUOT, doubleStrPtn)
+				.remember();
 		LineInfo info = new LineInfo(1);
 		while (mh.find()) {
 			String div = mh.get().group();
@@ -86,17 +93,20 @@ public class SQLParserSample {
 			} else if (div.equals("/*")) {
 				doMultiComment(mh, info);
 			} else if (div.equals("(")) {
-				// find end parenthesis and try to parse as SQLNode.
+				doParenthesis(mh, info);
 			} else if (div.equals("'")) {
-				// find end string literal.
+				doString(mh, info, S_QUOT);
+			} else if (div.equals("\"")) {
+				doString(mh, info, D_QUOT);
 			} else {
 				// in case line end or end of source string
-				// fix line node and add to flatList
+				info.lineNode.sql = info.sb.toString();
+				flatList.add(info.lineNode);
+				info.clear();
 			}
-			info.lineNode.sql = info.sb.toString();
-			flatList.add(info.lineNode);
-			info.clear();
 		}
+
+		// 
 
 		return flatList;
 	}
@@ -118,7 +128,6 @@ public class SQLParserSample {
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.lineNode.holders.add(new PlaceHolder(comment, null, info.sb
 					.length()));
-			info.lineNo++; // prepare next line process
 		}
 		return true;
 	}
@@ -128,18 +137,23 @@ public class SQLParserSample {
 		info.sb.append(mh.getRememberedToStart());
 		findCommentEnd(mh, info);
 		String comment = mh.getRememberedToStartWithoutRemember();
-		if(isEmpty(comment) || comment.startsWith("*")) {
+		if (isEmpty(comment) || comment.startsWith("*")) {
 			mh.remember();
 			return;
 		}
-		if("!+".contains(comment.substring(0, 1))) {
+		if ("!+".contains(comment.substring(0, 1))) {
 			info.sb.append(mh.getRememberedToEnd(2));
 			return;
 		}
 		mh.remember();
-		
-		// TODO get valueInBack and create PlaceHolder 
-			
+
+		// TODO get valueInBack and create PlaceHolder
+	}
+
+	// find end parenthesis and try to parse as SQLNode.
+	private void doParenthesis(MatcherHolder mh, LineInfo info) {
+		info.sb.append(mh.getRememberedToStart());
+		// TODO implementation
 	}
 
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
@@ -155,6 +169,13 @@ public class SQLParserSample {
 		}
 		throw new ClioneFormatException(joinByCrlf(
 				"SQL Format Error: too much '/*'", getResourceInfo()));
+	}
+
+	// find end string literal.
+	private void doString(MatcherHolder mh, LineInfo info, final String type) {
+		if (!mh.find(type))
+			throw new ClioneFormatException(joinByCrlf("SQL Format Error: "
+					+ type + " unmatched!", getResourceInfo()));
 	}
 
 	public SQLParserSample(String resourceInfo) {
