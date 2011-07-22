@@ -39,8 +39,8 @@ public class SQLParserSample {
 
 	private static final Pattern divPtn = Pattern
 			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r|\n|\r\n)|\\z");
-	private static final Pattern lineEndPtn = Pattern.compile("(.*)$",
-			Pattern.MULTILINE);
+	private static final Pattern lineEndPtn = Pattern
+			.compile("(.*)(\r|\n|\r\n|\\z)");
 	private static final Pattern commentPtn = Pattern
 			.compile("/\\*|\\*/|(\r|\n|\r\n)");
 	private static final Pattern singleStrPtn = Pattern
@@ -82,14 +82,14 @@ public class SQLParserSample {
 				.remember();
 		LineInfo info = new LineInfo(1);
 		while (mh.find()) {
+			info.sb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
 			if (div.equals("*/") || div.equals(")")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '" + div + "'",
 						getResourceInfo()));
 			} else if (div.equals("--")) {
-				if (!doLineComment(mh, info))
-					continue;
+				doLineComment(mh, info);
 			} else if (div.equals("/*")) {
 				doMultiComment(mh, info);
 			} else if (div.equals("(")) {
@@ -103,6 +103,7 @@ public class SQLParserSample {
 				info.lineNode.sql = info.sb.toString();
 				flatList.add(info.lineNode);
 				info.clear();
+				info.lineNo++;
 			}
 		}
 
@@ -116,25 +117,21 @@ public class SQLParserSample {
 	 * line if it is the sign of join, otherwise don't add to SQL because it's
 	 * just a comment.
 	 */
-	private boolean doLineComment(MatcherHolder mh, LineInfo info) {
-		info.sb.append(mh.getRememberedToStart());
+	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
 		String comment = mh.get(LINEEND).group(1);
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
-			return false;
-		}
-		if (comment.startsWith(" ")
+		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.lineNode.holders.add(new PlaceHolder(comment, null, info.sb
 					.length()));
+			mh.back(mh.get(LINEEND).group(2).length()); // ready for next
 		}
-		return true;
 	}
 
 	// find end comment and try to parse as function.
 	private void doMultiComment(MatcherHolder mh, LineInfo info) {
-		info.sb.append(mh.getRememberedToStart());
 		findCommentEnd(mh, info);
 		String comment = mh.getRememberedToStartWithoutRemember();
 		if (isEmpty(comment) || comment.startsWith("*")) {
@@ -152,8 +149,8 @@ public class SQLParserSample {
 
 	// find end parenthesis and try to parse as SQLNode.
 	private void doParenthesis(MatcherHolder mh, LineInfo info) {
-		info.sb.append(mh.getRememberedToStart());
 		// TODO implementation
+		// should ignore String literal and comment.
 	}
 
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
@@ -176,6 +173,7 @@ public class SQLParserSample {
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: "
 					+ type + " unmatched!", getResourceInfo()));
+		// TODO implementation
 	}
 
 	public SQLParserSample(String resourceInfo) {
