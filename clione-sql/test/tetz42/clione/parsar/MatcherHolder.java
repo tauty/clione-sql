@@ -64,7 +64,7 @@ public class MatcherHolder {
 		return back(1);
 	}
 
-	private MatcherHolder back(int i) {
+	public MatcherHolder back(int i) {
 		pos -= i;
 		return this;
 	}
