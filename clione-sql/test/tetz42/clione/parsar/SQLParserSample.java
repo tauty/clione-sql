@@ -126,14 +126,14 @@ public class SQLParserSample {
 	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
 		String comment = mh.get(LINEEND).group(1);
-		System.out.println("LINEEND1[" + comment + "]");
+		// System.out.println("LINEEND1[" + comment + "]");
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.lineNode.holders.add(new PlaceHolder(comment, null, info.sb
 					.length()));
-			System.out.println("LINEEND2[" + mh.get(LINEEND).group(2) + "]");
+			// System.out.println("LINEEND2[" + mh.get(LINEEND).group(2) + "]");
 			mh.back(mh.get(LINEEND).group(2).length()); // ready for next
 			mh.remember();
 		}
@@ -182,7 +182,8 @@ public class SQLParserSample {
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: "
 					+ type + " unmatched!", getResourceInfo()));
-		// TODO implementation. Consider about additional lineNo when CRLF is detected.
+		// TODO implementation. Consider about additional lineNo when CRLF is
+		// detected.
 	}
 
 	public SQLParserSample(String resourceInfo) {
