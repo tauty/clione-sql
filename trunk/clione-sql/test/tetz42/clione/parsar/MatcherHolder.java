@@ -16,6 +16,7 @@ public class MatcherHolder {
 	private int end = 0;
 	private int prePos = 0;
 	private int remembered = 0;
+	private boolean isEnd = false;
 
 	public MatcherHolder(String src, Pattern ptn) {
 		this.matcher = ptn.matcher(src);
@@ -66,6 +67,8 @@ public class MatcherHolder {
 
 	public MatcherHolder back(int i) {
 		pos -= i;
+		end -= i;
+		isEnd = false;
 		return this;
 	}
 
@@ -76,6 +79,8 @@ public class MatcherHolder {
 
 	public MatcherHolder historyBack() {
 		pos = prePos;
+		end = prePos;
+		isEnd = false;
 		return this;
 	}
 
@@ -103,17 +108,16 @@ public class MatcherHolder {
 	}
 
 	private boolean find(Matcher m) {
+		if(isEnd)
+			return false;
 		prePos = pos;
 		boolean result = m.find(pos);
 		this.start = m.start();
 		pos = end = m.end();
-		if (prePos == pos) {
+		if (prePos == pos)
 			pos++;
-			if (pos > src.length()) {
-				// end of source string
-				return false;
-			}
-		}
+		if(end >= src.length())
+			isEnd = true;
 		return result;
 	}
 

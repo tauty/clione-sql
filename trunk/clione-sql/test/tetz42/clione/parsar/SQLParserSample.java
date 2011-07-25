@@ -28,8 +28,14 @@ public class SQLParserSample {
 
 	public static void main(String args[]) {
 		System.out.println("---------------------------");
+		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
+				.parse("tako\r\nika\r\nnamako\r\numiushi")));
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample("1111")
-				.parse("tako'\r\nika\r\n'namako")));
+				.parse("tako'\r\nika\r\n'namako\r\numiushi")));
+		System.out
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("3333")
+								.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
 	}
 
 	private static final String COMMENT = "COMMNET";
@@ -38,11 +44,11 @@ public class SQLParserSample {
 	private static final String D_QUOT = "Double Quotation";
 
 	private static final Pattern divPtn = Pattern
-			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r|\n|\r\n)|\\z");
+			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r\n|\r|\n)|\\z");
 	private static final Pattern lineEndPtn = Pattern
-			.compile("(.*)(\r|\n|\r\n|\\z)");
+			.compile("(.*)(\r\n|\r|\n|\\z)");
 	private static final Pattern commentPtn = Pattern
-			.compile("/\\*|\\*/|(\r|\n|\r\n)");
+			.compile("/\\*|\\*/|(\r\n|\r|\n)");
 	private static final Pattern singleStrPtn = Pattern
 			.compile("(([^']|'')*)'");
 	private static final Pattern doubleStrPtn = Pattern
@@ -102,8 +108,8 @@ public class SQLParserSample {
 				// in case line end or end of source string
 				info.lineNode.sql = info.sb.toString();
 				flatList.add(info.lineNode);
-				info.clear();
 				info.lineNo++;
+				info.clear();
 			}
 		}
 
@@ -120,13 +126,16 @@ public class SQLParserSample {
 	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
 		String comment = mh.get(LINEEND).group(1);
+		System.out.println("LINEEND1[" + comment + "]");
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.lineNode.holders.add(new PlaceHolder(comment, null, info.sb
 					.length()));
+			System.out.println("LINEEND2[" + mh.get(LINEEND).group(2) + "]");
 			mh.back(mh.get(LINEEND).group(2).length()); // ready for next
+			mh.remember();
 		}
 	}
 
@@ -173,7 +182,7 @@ public class SQLParserSample {
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: "
 					+ type + " unmatched!", getResourceInfo()));
-		// TODO implementation
+		// TODO implementation. Consider about additional lineNo when CRLF is detected.
 	}
 
 	public SQLParserSample(String resourceInfo) {
