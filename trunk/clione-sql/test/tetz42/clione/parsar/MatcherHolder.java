@@ -107,8 +107,20 @@ public class MatcherHolder {
 		return result;
 	}
 
+	public int getRememberd() {
+		return this.remembered;
+	}
+
+	public void setRememberd(int pos) {
+		this.pos = this.start = this.end = this.remembered = pos;
+	}
+	
+	public boolean isEnd() {
+		return this.isEnd; 
+	}
+
 	private boolean find(Matcher m) {
-		if(isEnd)
+		if (isEnd)
 			return false;
 		prePos = pos;
 		boolean result = m.find(pos);
@@ -116,9 +128,13 @@ public class MatcherHolder {
 		pos = end = m.end();
 		if (prePos == pos)
 			pos++;
-		if(end >= src.length())
+		if (end >= src.length())
 			isEnd = true;
 		return result;
+	}
+
+	public String getSrc() {
+		return this.src;
 	}
 
 }

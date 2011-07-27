@@ -22,9 +22,15 @@ public class StrLiteral extends ClioneFunction {
 	public String getSrc() {
 		return "'" + str + "'";
 	}
-	
+
 	@Override
 	public String getLiteral() {
 		return str;
 	}
+
+	@Override
+	public String toString() {
+		return "\"" + str + "\"";
+	}
+
 }
