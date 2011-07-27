@@ -43,7 +43,7 @@ public class SQLParserSample {
 	private static final String S_QUOT = "Single Quotation";
 	private static final String D_QUOT = "Double Quotation";
 
-	private static final Pattern divPtn = Pattern
+	private static final Pattern delimPtn = Pattern
 			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r\n|\r|\n)|\\z");
 	private static final Pattern lineEndPtn = Pattern
 			.compile("(.*)(\r\n|\r|\n|\\z)");
@@ -82,18 +82,28 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, divPtn).bind(COMMENT,
+		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn)
 				.bind(S_QUOT, singleStrPtn).bind(D_QUOT, doubleStrPtn)
 				.remember();
 		LineInfo info = new LineInfo(1);
+		parseFunc(flatList, mh, info);
+		if (!mh.isEnd())
+			throw new ClioneFormatException(joinByCrlf(
+					"SQL Format Error: too much ')'", getResourceInfo()));
+		return flatList;
+	}
+
+	private void parseFunc(final List<LineNode> flatList, MatcherHolder mh,
+			LineInfo info) {
 		while (mh.find()) {
 			info.sb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
-			if (div.equals("*/") || div.equals(")")) {
+			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
-						"SQL Format Error: too much '" + div + "'",
-						getResourceInfo()));
+						"SQL Format Error: too much '*/'", getResourceInfo()));
+			} else if (div.equals(")")) {
+				break;
 			} else if (div.equals("--")) {
 				doLineComment(mh, info);
 			} else if (div.equals("/*")) {
@@ -112,10 +122,20 @@ public class SQLParserSample {
 				info.clear();
 			}
 		}
+	}
 
-		// 
+	// find end parenthesis and try to parse as SQLNode.
+	private void doParenthesis(MatcherHolder mh, LineInfo info) {
+		List<LineNode> flatList = new ArrayList<LineNode>();
+		// int remembered = mh.getRememberd(); // hum...
+		parseFunc(flatList, mh, info);
+		if (mh.isEnd())
+			throw new ClioneFormatException(joinByCrlf(
+					"SQL Format Error: too much '('", getResourceInfo()));
+		// mh.setRememberd(remembered); // hum...
+		SQLNode sqlNode = parseIndent(flatList);
 
-		return flatList;
+		// TODO add sqlNode to info
 	}
 
 	/**
@@ -154,12 +174,6 @@ public class SQLParserSample {
 		mh.remember();
 
 		// TODO get valueInBack and create PlaceHolder
-	}
-
-	// find end parenthesis and try to parse as SQLNode.
-	private void doParenthesis(MatcherHolder mh, LineInfo info) {
-		// TODO implementation
-		// should ignore String literal and comment.
 	}
 
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
@@ -217,7 +231,7 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction(String src) throws IOException {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, divPtn);
+		MatcherHolder mh = new MatcherHolder(src, delimPtn);
 		LineReader br = null;
 		SBHolder sbh = new SBHolder();
 		LineNode lineNode = null;
@@ -228,7 +242,7 @@ public class SQLParserSample {
 			else
 				lineNode.curLineNo(br.getCurLineNo());
 			sbh.append(line);
-			Matcher m = divPtn.matcher(line);
+			Matcher m = delimPtn.matcher(line);
 			while (m.find()) {
 				if (m.group().equals("*/"))
 					throw new ClioneFormatException(
@@ -296,7 +310,7 @@ public class SQLParserSample {
 					+ CRLF + getResourceInfo());
 		lineNode.curLineNo(br.getCurLineNo());
 		sbh.append(CRLF).append(line);
-		return findCommentEnd(br, sbh, divPtn.matcher(line), lineNode);
+		return findCommentEnd(br, sbh, delimPtn.matcher(line), lineNode);
 	}
 
 	private SQLNode parseIndent(List<LineNode> wholeNodeList) {

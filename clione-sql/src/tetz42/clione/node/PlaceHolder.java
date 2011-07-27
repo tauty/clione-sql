@@ -22,14 +22,20 @@ public class PlaceHolder {
 
 	private final ClioneFunction clione;
 	
-	public ClioneFunction getFunction() {
-		return clione;
-	}
-
 	public PlaceHolder(String src, String valueInBack, int begin) {
 		this.valueInBack = valueInBack;
 		this.clione = ClioneFuncFactory.get().parse(src);
 		this.begin = begin;
+	}
+
+	public PlaceHolder(String src, String valueInFront, String valueInBack, int begin) {
+		this.valueInBack = valueInBack;
+		this.clione = ClioneFuncFactory.get().parse(src);
+		this.begin = begin;
+	}
+
+	public ClioneFunction getFunction() {
+		return clione;
 	}
 
 	public Instruction perform(ParamMap paramMap) {

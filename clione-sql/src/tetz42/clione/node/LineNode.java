@@ -28,7 +28,7 @@ public class LineNode {
 	private int endLineNo = 0;
 
 	public LineNode(int lineNo) {
-		this(lineNo, 0);
+		this(lineNo, lineNo);
 	}
 
 	public LineNode(int startNo, int endNo) {

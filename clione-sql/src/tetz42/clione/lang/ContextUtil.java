@@ -25,7 +25,7 @@ public class ContextUtil {
 				return resourceInfo + ", line number: Unknown";
 			}
 			return resourceInfo + ", line number:" + beginLineNo
-					+ (endLineNo == 0 ? "" : "-" + endLineNo);
+					+ (endLineNo == beginLineNo ? "" : "-" + endLineNo);
 		}
 
 	}
@@ -52,6 +52,7 @@ public class ContextUtil {
 
 	public static void setBeginLineNo(int lineNo) {
 		getLatest().beginLineNo = lineNo;
+		getLatest().endLineNo = lineNo;
 	}
 
 	public static void setEndLineNo(int lineNo) {
