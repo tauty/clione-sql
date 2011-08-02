@@ -1,6 +1,5 @@
 package tetz42.clione.exception;
 
-import java.sql.SQLException;
 
 public class SQLRuntimeException extends RuntimeException {
 
@@ -9,11 +8,13 @@ public class SQLRuntimeException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 3990864477820776624L;
 
-	public SQLRuntimeException(SQLException e) {
+	private static final String CRLF = System.getProperty("line.separator");
+	
+	public SQLRuntimeException(Throwable e) {
 		super(e.getMessage(), e);
 	}
 	
-	public SQLRuntimeException(String msg, SQLException e) {
-		super(msg, e);
+	public SQLRuntimeException(String msg, Throwable e) {
+		super(msg + CRLF + e.getMessage(), e);
 	}
 }
