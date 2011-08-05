@@ -64,7 +64,7 @@ public abstract class Using<T> {
 		} catch (Error e) {
 			throw err = e;
 		} finally {
-			// Exception from run method
+			// Exception from execute method
 			Throwable t = re != null ? re : err;
 
 			RuntimeException resourceClosingException = null;
@@ -82,6 +82,7 @@ public abstract class Using<T> {
 				}
 			}
 			resourceClosingException = sre;
+			sre = null;
 			for (ResultSet rs : rsets) {
 				try {
 					rs.close();
@@ -91,6 +92,7 @@ public abstract class Using<T> {
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, sre);
+			sre = null;
 			for (Statement stmt : stmts) {
 				try {
 					stmt.close();
@@ -100,6 +102,7 @@ public abstract class Using<T> {
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, sre);
+			sre = null;
 			for (Connection con : cons) {
 				try {
 					con.close();
