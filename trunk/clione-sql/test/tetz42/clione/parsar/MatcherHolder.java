@@ -101,6 +101,11 @@ public class MatcherHolder {
 		return result;
 	}
 
+	public String getRememberedToEndWithoutRemember() {
+		String result = src.substring(remembered, end);
+		return result;
+	}
+
 	public String getRememberedToEnd(int minusFromStart) {
 		String result = src.substring(remembered - minusFromStart, end);
 		remember();
@@ -123,14 +128,15 @@ public class MatcherHolder {
 		if (isEnd)
 			return false;
 		prePos = pos;
-		boolean result = m.find(pos);
+		if(!m.find(pos))
+			return false;
 		this.start = m.start();
 		pos = end = m.end();
 		if (prePos == pos)
 			pos++;
 		if (end >= src.length())
 			isEnd = true;
-		return result;
+		return true;
 	}
 
 	public String getSrc() {
