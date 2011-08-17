@@ -17,6 +17,7 @@ import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.io.LineReader;
 import tetz42.clione.node.LineNode;
+import tetz42.clione.node.Node;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
@@ -30,8 +31,16 @@ public class SQLParserSample {
 		System.out.println("---------------------------");
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
 				.parse("tako\r\nika\r\nnamako\r\numiushi")));
-		System.out.println(ObjDumper4j.dumper(new SQLParserSample("1111")
-				.parse("tako'\r\nika\r\n'namako\r\numiushi")));
+		System.out
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("1111")
+								.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
+		
+		// 挙動がおかしい。要チェック！
+		System.out
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("2222")
+								.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
 		System.out
 				.println(ObjDumper4j
 						.dumper(new SQLParserSample("3333")
@@ -40,11 +49,10 @@ public class SQLParserSample {
 
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
-	private static final String S_QUOT = "Single Quotation";
-	private static final String D_QUOT = "Double Quotation";
 
-	private static final Pattern delimPtn = Pattern
-			.compile("/\\*|\\*/|--|'|\\(|\\)|(\r\n|\r|\n)|\\z");
+	private static final Pattern delimPtn = Pattern.compile(
+			"/\\*|\\*/|--|'|\\(|\\)|and|or|,|(\r\n|\r|\n)|\\z",
+			Pattern.CASE_INSENSITIVE);
 	private static final Pattern lineEndPtn = Pattern
 			.compile("(.*)(\r\n|\r|\n|\\z)");
 	private static final Pattern commentPtn = Pattern
@@ -53,18 +61,52 @@ public class SQLParserSample {
 			.compile("(([^']|'')*)'");
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
+
+	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
+
 	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private static class LineInfo {
+		private Node node;
 		private LineNode lineNode;
-		private StringBuilder sb;
+		private StringBuilder nodeSb;
+		private StringBuilder lineSb;
 		private int lineNo;
 
 		LineInfo(int lineNo) {
+			this.node = new Node();
+			this.nodeSb = new StringBuilder();
 			this.lineNode = new LineNode(lineNo);
-			this.sb = new StringBuilder();
+			this.lineSb = new StringBuilder();
 			this.lineNo = lineNo;
+		}
+
+		void mergeNode() {
+			for (PlaceHolder h : this.node.holders) {
+				h.begin += this.lineSb.length();
+				lineNode.holders.add(h);
+			}
+			this.lineSb.append(this.nodeSb);
+			this.node = new Node();
+			this.nodeSb.setLength(0);
+		}
+
+		Node fixNode() {
+			this.node.sql = this.nodeSb.toString();
+			Node node = this.node;
+			this.node = new Node();
+			this.nodeSb.setLength(0);
+			return node;
+		}
+
+		LineNode fixLineNode() {
+			this.mergeNode();
+			this.lineNode.sql = this.lineSb.toString();
+			LineNode lineNode = this.lineNode;
+			this.lineNo++;
+			this.clear();
+			return lineNode;
 		}
 
 		void addLineNo() {
@@ -74,7 +116,7 @@ public class SQLParserSample {
 
 		void clear() {
 			this.lineNode = new LineNode(lineNo);
-			this.sb.setLength(0);
+			this.lineSb.setLength(0);
 		}
 	}
 
@@ -83,9 +125,8 @@ public class SQLParserSample {
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
-				commentPtn).bind(LINEEND, lineEndPtn)
-				.bind(S_QUOT, singleStrPtn).bind(D_QUOT, doubleStrPtn)
-				.remember();
+				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
+				.bind("\"", doubleStrPtn).remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -97,7 +138,7 @@ public class SQLParserSample {
 	private void parseFunc(final List<LineNode> flatList, MatcherHolder mh,
 			LineInfo info) {
 		while (mh.find()) {
-			info.sb.append(mh.getRememberedToStart());
+			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
@@ -110,16 +151,15 @@ public class SQLParserSample {
 				doMultiComment(mh, info);
 			} else if (div.equals("(")) {
 				doParenthesis(mh, info);
-			} else if (div.equals("'")) {
-				doString(mh, info, S_QUOT);
-			} else if (div.equals("\"")) {
-				doString(mh, info, D_QUOT);
+			} else if (div.equals("'") || div.equals("\"")) {
+				doString(mh, info, div);
+			} else if (div.equalsIgnoreCase("and")
+					|| div.equalsIgnoreCase("or") || div.equals(",")) {
+				info.mergeNode();
+				info.lineSb.append(mh.getRememberedToEnd());
 			} else {
 				// in case line end or end of source string
-				info.lineNode.sql = info.sb.toString();
-				flatList.add(info.lineNode);
-				info.lineNo++;
-				info.clear();
+				flatList.add(info.fixLineNode());
 			}
 		}
 	}
@@ -151,8 +191,8 @@ public class SQLParserSample {
 			info.addLineNo(); // because find the line end.
 		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
-			info.lineNode.holders.add(new PlaceHolder(comment, null, info.sb
-					.length()));
+			info.node.holders.add(new PlaceHolder(comment, null,
+					info.nodeSb.length()));
 			// System.out.println("LINEEND2[" + mh.get(LINEEND).group(2) + "]");
 			mh.back(mh.get(LINEEND).group(2).length()); // ready for next
 			mh.remember();
@@ -168,7 +208,7 @@ public class SQLParserSample {
 			return;
 		}
 		if ("!+".contains(comment.substring(0, 1))) {
-			info.sb.append(mh.getRememberedToEnd(2));
+			info.nodeSb.append(mh.getRememberedToEnd(2));
 			return;
 		}
 		mh.remember();
@@ -181,7 +221,7 @@ public class SQLParserSample {
 			if (mh.get(COMMENT).group().equals("*/"))
 				return; // normal end
 			else if (mh.get(COMMENT).group().equals("/*"))
-				// in case nested '/*' has detected
+				// in case nested '/*' is detected
 				findCommentEnd(mh, info);
 			else
 				// in case CRLF is detected
@@ -193,11 +233,13 @@ public class SQLParserSample {
 
 	// find end string literal.
 	private void doString(MatcherHolder mh, LineInfo info, final String type) {
+		info.lineSb.append(type);
 		if (!mh.find(type))
-			throw new ClioneFormatException(joinByCrlf("SQL Format Error: "
-					+ type + " unmatched!", getResourceInfo()));
-		// TODO implementation. Consider about additional lineNo when CRLF is
-		// detected.
+			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
+					+ type + "] unmatched!", getResourceInfo()));
+		Matcher m = crlfPth.matcher(mh.getRememberedToEndWithoutRemember());
+		while (m.find())
+			info.addLineNo();
 	}
 
 	public SQLParserSample(String resourceInfo) {
