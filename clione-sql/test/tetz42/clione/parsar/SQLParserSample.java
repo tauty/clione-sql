@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,7 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Config;
+import tetz42.clione.util.Pair;
 import tetz42.clione.util.SBHolder;
 import tetz42.util.ObjDumper4j;
 
@@ -36,7 +38,7 @@ public class SQLParserSample {
 						.dumper(new SQLParserSample("1111")
 								.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
 		
-		// 挙動がおかしい。要チェック！
+		// Fail case. TODO investigation!
 		System.out
 				.println(ObjDumper4j
 						.dumper(new SQLParserSample("2222")
@@ -68,12 +70,13 @@ public class SQLParserSample {
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private static class LineInfo {
+		LinkedList<LineInfo> stack = new LinkedList<LineInfo>(); 
 		private Node node;
 		private LineNode lineNode;
 		private StringBuilder nodeSb;
 		private StringBuilder lineSb;
 		private int lineNo;
-
+		
 		LineInfo(int lineNo) {
 			this.node = new Node();
 			this.nodeSb = new StringBuilder();
@@ -117,6 +120,36 @@ public class SQLParserSample {
 		void clear() {
 			this.lineNode = new LineNode(lineNo);
 			this.lineSb.setLength(0);
+		}
+		
+		LineInfo push() {
+			// backup
+			LineInfo backup = new LineInfo(0);
+			backup.node = this.node;
+			backup.lineNode = this.lineNode;
+			backup.nodeSb = this.nodeSb;
+			backup.lineSb = this.lineSb;
+			stack.push(backup);
+			
+			// reset
+			this.node = new Node();
+			this.lineNode = new LineNode(this.lineNo);
+			this.nodeSb = new StringBuilder();
+			this.lineSb = new StringBuilder();
+			return this;
+		}
+		
+		LineInfo pop() {
+			
+			// back to backup
+			LineInfo backup = stack.pop();
+			this.node = backup.node;
+			this.lineNode = backup.lineNode;
+			this.lineNode.curLineNo(this.lineNo);
+			this.nodeSb = backup.nodeSb;
+			this.lineSb = backup.lineSb;
+			
+			return this;
 		}
 	}
 
@@ -167,12 +200,12 @@ public class SQLParserSample {
 	// find end parenthesis and try to parse as SQLNode.
 	private void doParenthesis(MatcherHolder mh, LineInfo info) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		// int remembered = mh.getRememberd(); // hum...
+		info.push();
 		parseFunc(flatList, mh, info);
 		if (mh.isEnd())
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
-		// mh.setRememberd(remembered); // hum...
+		info.pop();
 		SQLNode sqlNode = parseIndent(flatList);
 
 		// TODO add sqlNode to info
