@@ -54,12 +54,12 @@ public class SQLGenerator {
 		this.negativeValues = negativeValues;
 	}
 
-	public SQLGenerator negativeValues(Object[] negativeValues) {
+	public SQLGenerator negativeValues(Object... negativeValues) {
 		this.negativeValues = negativeValues;
 		return this;
 	}
 
-	public SQLGenerator appendNegativeValues(Object[] negativeValues) {
+	public SQLGenerator appendNegativeValues(Object... negativeValues) {
 		this.negativeValues = join(this.negativeValues, negativeValues);
 		return this;
 	}
