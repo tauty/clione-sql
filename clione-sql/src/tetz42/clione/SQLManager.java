@@ -93,7 +93,7 @@ public class SQLManager {
 		return this;
 	}
 
-	public SQLManager addNegativeValues(Object... negativeValues) {
+	public SQLManager appendNegativeValues(Object... negativeValues) {
 		this.negativeValues = join(this.negativeValues, negativeValues);
 		return this;
 	}
