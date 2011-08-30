@@ -131,7 +131,7 @@ public class SQLParserSample {
 			backup.lineSb = this.lineSb;
 			stack.push(backup);
 			
-			// reset
+			// initialize
 			this.node = new Node();
 			this.lineNode = new LineNode(this.lineNo);
 			this.nodeSb = new StringBuilder();
@@ -141,7 +141,7 @@ public class SQLParserSample {
 		
 		LineInfo pop() {
 			
-			// back to backup
+			// reset to backup
 			LineInfo backup = stack.pop();
 			this.node = backup.node;
 			this.lineNode = backup.lineNode;
