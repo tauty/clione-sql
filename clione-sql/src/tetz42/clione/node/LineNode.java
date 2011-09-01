@@ -23,9 +23,7 @@ import java.util.List;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
-public class LineNode implements INode {
-	public String sql;
-	public List<IPlaceHolder> holders = new ArrayList<IPlaceHolder>();
+public class LineNode extends Node {
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
 	private int endLineNo = 0;

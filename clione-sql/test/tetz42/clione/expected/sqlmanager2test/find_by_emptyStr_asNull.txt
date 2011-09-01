@@ -1,5 +1,0 @@
-Sample{
-	id = 1
-	name = "Takako Kawada"
-	age = 34
-}
