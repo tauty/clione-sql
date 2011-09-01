@@ -28,8 +28,8 @@ import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.lang.func.StrLiteral;
+import tetz42.clione.node.IPlaceHolder;
 import tetz42.clione.node.LineNode;
-import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
 
@@ -44,6 +44,7 @@ public class SQLGenerator {
 
 	public String sql;
 	public ArrayList<Object> params;
+	public boolean isSqlOutputed = false;
 	private Object[] negativeValues;
 
 	public SQLGenerator() {
@@ -100,9 +101,9 @@ public class SQLGenerator {
 				existsFirstDelim = true;
 			else if (firstNode.holders.size() > 0) {
 				Matcher m = blankPtn.matcher(firstNode.sql);
-				PlaceHolder holder = firstNode.holders.get(0);
+				IPlaceHolder holder = firstNode.holders.get(0);
 				if (m.find()) {
-					if (m.group(1).length() == holder.begin) {
+					if (m.group(1).length() == holder.getPosition()) {
 						ClioneFunction cf = holder.getFunction();
 						if (cf instanceof SQLLiteral
 								|| cf instanceof StrLiteral) {
@@ -133,6 +134,7 @@ public class SQLGenerator {
 				sb.append(CRLF);
 			sb.append(subSql);
 			params.addAll(subParams);
+			isSqlOutputed = true;
 		}
 		if (!existsFirstDelim)
 			removeFirstDelimiter(sb);
@@ -142,15 +144,15 @@ public class SQLGenerator {
 			ArrayList<Object> subParams, ParamMap paramMap) {
 		StringBuilder subSql = new StringBuilder(block.sql);
 		int sabun = 0;
-		for (PlaceHolder holder : block.holders) {
+		for (IPlaceHolder holder : block.holders) {
 			Instruction inst = holder.perform(paramMap);
 			if (inst.isNodeDisposed)
 				return null;
 			if (inst.doNothing)
 				continue;
 			String replacement = inst.getReplacement();
-			subSql.replace(holder.begin + sabun, holder.begin + holder.length
-					+ sabun, replacement);
+			subSql.replace(holder.getPosition() + sabun, holder.getPosition()
+					+ holder.getLength() + sabun, replacement);
 			subParams.addAll(inst.params);
 			sabun += replacement.length();
 		}

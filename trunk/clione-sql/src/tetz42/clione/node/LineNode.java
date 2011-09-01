@@ -20,9 +20,12 @@ import static tetz42.clione.lang.ContextUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineNode {
+import tetz42.clione.lang.Instruction;
+import tetz42.clione.util.ParamMap;
+
+public class LineNode implements INode {
 	public String sql;
-	public List<PlaceHolder> holders = new ArrayList<PlaceHolder>();
+	public List<IPlaceHolder> holders = new ArrayList<IPlaceHolder>();
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
 	private int endLineNo = 0;
@@ -53,5 +56,11 @@ public class LineNode {
 
 	public void merge(LineNode node) {
 		// TODO implementation
+	}
+
+	@Override
+	public Instruction perform(ParamMap paramMap) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
