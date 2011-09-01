@@ -10,17 +10,21 @@ import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
 
-public class PlaceHolder {
+public class PlaceHolder implements IPlaceHolder {
 	private static final Pattern positivePtn = Pattern.compile(
 			"\\A(=|in|is)\\s+", Pattern.CASE_INSENSITIVE);
 	private static final Pattern negativePtn = Pattern.compile(
 			"\\A(!=|<>|not\\s+in|is\\s+not)\\s+", Pattern.CASE_INSENSITIVE);
 
-	public int begin;
-	public int length = 0;
+	private int begin;
+	private int length = 0;
 	private String valueInBack;
-
 	private final ClioneFunction clione;
+
+	public PlaceHolder(String src, String valueInBack) {
+		this.valueInBack = valueInBack;
+		this.clione = ClioneFuncFactory.get().parse(src);
+	}
 	
 	public PlaceHolder(String src, String valueInBack, int begin) {
 		this.valueInBack = valueInBack;
@@ -28,31 +32,27 @@ public class PlaceHolder {
 		this.begin = begin;
 	}
 
-	public PlaceHolder(String src, String valueInFront, String valueInBack, int begin) {
-		this.valueInBack = valueInBack;
-		this.clione = ClioneFuncFactory.get().parse(src);
-		this.begin = begin;
-	}
-
+	@Override
 	public ClioneFunction getFunction() {
 		return clione;
 	}
 
+	@Override
 	public Instruction perform(ParamMap paramMap) {
 		Instruction inst = clione.perform(paramMap).merge();
 		if (inst.isNodeDisposed)
 			return inst;
 		if (inst.useValueInBack) {
-			if(valueInBack == null)
+			if (valueInBack == null)
 				return inst.doNothing();
 			inst.doNothing = false;
 			return inst.clearParams().replacement(valueInBack);
 		}
-		if(valueInBack == null)
+		if (valueInBack == null)
 			return inst;
 		if (valueInBack.charAt(0) == '(') {
-			return inst.replacement(new StringBuilder().append("(").append(
-					inst.getReplacement()).append(")").toString());
+			return inst.replacement(new StringBuilder().append("(")
+					.append(inst.getReplacement()).append(")").toString());
 		}
 		Matcher m = positivePtn.matcher(valueInBack);
 		if (m.find()) {
@@ -78,4 +78,23 @@ public class PlaceHolder {
 		return inst;
 	}
 
+	@Override
+	public int getPosition() {
+		return this.begin;
+	}
+
+	@Override
+	public void setPosition(int pos) {
+		this.begin = pos;
+	}
+
+	@Override
+	public int getLength() {
+		return this.length;
+	}
+
+	@Override
+	public void movePosition(int num) {
+		this.begin += num;
+	}
 }

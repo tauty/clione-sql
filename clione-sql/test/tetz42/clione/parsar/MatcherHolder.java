@@ -142,5 +142,11 @@ public class MatcherHolder {
 	public String getSrc() {
 		return this.src;
 	}
-
+	
+	public char getNextChar(){
+		if(pos >= src.length()){
+			return 0;
+		}
+		return src.charAt(pos);
+	}
 }

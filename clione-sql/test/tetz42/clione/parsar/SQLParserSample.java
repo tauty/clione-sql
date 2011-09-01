@@ -17,13 +17,14 @@ import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.io.LineReader;
+import tetz42.clione.node.IPlaceHolder;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.Node;
+import tetz42.clione.node.ParenthesisPlaceHolder;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Config;
-import tetz42.clione.util.Pair;
 import tetz42.clione.util.SBHolder;
 import tetz42.util.ObjDumper4j;
 
@@ -34,19 +35,23 @@ public class SQLParserSample {
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
 				.parse("tako\r\nika\r\nnamako\r\numiushi")));
 		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("1111")
-								.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
-		
+				.println(ObjDumper4j.dumper(new SQLParserSample("1111")
+						.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
+
 		// Fail case. TODO investigation!
 		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("2222")
-								.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
+				.println(ObjDumper4j.dumper(new SQLParserSample("2222")
+						.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
+		
+		// Success -- line comment
 		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("3333")
-								.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
+				.println(ObjDumper4j.dumper(new SQLParserSample("3333")
+						.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
+		
+		// (parenthesis)
+		System.out
+				.println(ObjDumper4j.dumper(new SQLParserSample("p1111")
+						.parse("tako ika namako (\n\toctopus -- tako\n\tsquid-- ika\n\tsea cucumber-- namako\n) english -- $seacucumber")));
 	}
 
 	private static final String COMMENT = "COMMNET";
@@ -70,13 +75,18 @@ public class SQLParserSample {
 	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
 
 	private static class LineInfo {
-		LinkedList<LineInfo> stack = new LinkedList<LineInfo>(); 
+		LinkedList<LineInfo> stack = new LinkedList<LineInfo>();
 		private Node node;
 		private LineNode lineNode;
 		private StringBuilder nodeSb;
 		private StringBuilder lineSb;
 		private int lineNo;
-		
+
+		void addPlaceHolder(IPlaceHolder holder) {
+			holder.setPosition(this.nodeSb.length());
+			this.node.holders.add(holder);
+		}
+
 		LineInfo(int lineNo) {
 			this.node = new Node();
 			this.nodeSb = new StringBuilder();
@@ -86,8 +96,8 @@ public class SQLParserSample {
 		}
 
 		void mergeNode() {
-			for (PlaceHolder h : this.node.holders) {
-				h.begin += this.lineSb.length();
+			for (IPlaceHolder h : this.node.holders) {
+				h.movePosition(this.lineSb.length());
 				lineNode.holders.add(h);
 			}
 			this.lineSb.append(this.nodeSb);
@@ -121,7 +131,7 @@ public class SQLParserSample {
 			this.lineNode = new LineNode(lineNo);
 			this.lineSb.setLength(0);
 		}
-		
+
 		LineInfo push() {
 			// backup
 			LineInfo backup = new LineInfo(0);
@@ -130,7 +140,7 @@ public class SQLParserSample {
 			backup.nodeSb = this.nodeSb;
 			backup.lineSb = this.lineSb;
 			stack.push(backup);
-			
+
 			// initialize
 			this.node = new Node();
 			this.lineNode = new LineNode(this.lineNo);
@@ -138,9 +148,9 @@ public class SQLParserSample {
 			this.lineSb = new StringBuilder();
 			return this;
 		}
-		
+
 		LineInfo pop() {
-			
+
 			// reset to backup
 			LineInfo backup = stack.pop();
 			this.node = backup.node;
@@ -148,7 +158,7 @@ public class SQLParserSample {
 			this.lineNode.curLineNo(this.lineNo);
 			this.nodeSb = backup.nodeSb;
 			this.lineSb = backup.lineSb;
-			
+
 			return this;
 		}
 	}
@@ -157,9 +167,9 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
-				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
-				.bind("\"", doubleStrPtn).remember();
+		MatcherHolder mh = new MatcherHolder(src, delimPtn)
+				.bind(COMMENT, commentPtn).bind(LINEEND, lineEndPtn)
+				.bind("'", singleStrPtn).bind("\"", doubleStrPtn).remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -173,6 +183,7 @@ public class SQLParserSample {
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
+			System.out.println("["+div+"]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
@@ -202,13 +213,13 @@ public class SQLParserSample {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
 		parseFunc(flatList, mh, info);
+		System.out.println(ObjDumper4j.dumper(flatList));
 		if (mh.isEnd())
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();
-		SQLNode sqlNode = parseIndent(flatList);
 
-		// TODO add sqlNode to info
+		info.addPlaceHolder(new ParenthesisPlaceHolder(parseIndent(flatList)));
 	}
 
 	/**
@@ -219,17 +230,15 @@ public class SQLParserSample {
 	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
 		String comment = mh.get(LINEEND).group(1);
-		// System.out.println("LINEEND1[" + comment + "]");
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
+			return;
 		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
-			info.node.holders.add(new PlaceHolder(comment, null,
-					info.nodeSb.length()));
-			// System.out.println("LINEEND2[" + mh.get(LINEEND).group(2) + "]");
-			mh.back(mh.get(LINEEND).group(2).length()); // ready for next
-			mh.remember();
+			info.addPlaceHolder(new PlaceHolder(comment, null));
 		}
+		mh.back(mh.get(LINEEND).group(2).length()); // ready for next
+		mh.remember();
 	}
 
 	// find end comment and try to parse as function.
