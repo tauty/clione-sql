@@ -1,0 +1,21 @@
+Param{
+	isNegative = false
+	key = "KEY"
+	next = SQLLiteral{
+		literal = "LITERAL"
+		next = null
+		sqlNode = SQLNode{
+			nodes = ArrayList[
+				LineNode{
+					beginLineNo = 1
+					childBlocks = ArrayList[ ]
+					endLineNo = 0
+					holders = ArrayList[ ]
+					isDisposable = false
+					sql = "LITERAL"
+				}
+			]
+			resourceInfo = "Inside of SQL comment "
+		}
+	}
+}

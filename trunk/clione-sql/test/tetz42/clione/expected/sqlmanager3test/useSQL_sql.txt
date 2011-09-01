@@ -1,0 +1,6 @@
+--- sql ---
+select id from employees
+--- params ---
+[]
+--- resource ---
+The SQL passed as parameter.

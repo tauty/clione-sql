@@ -1,0 +1,12 @@
+--- sql ---
+SELECT
+    *
+FROM
+    employees
+WHERE
+	
+		ID  IS NULL 
+--- params ---
+[]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager3Test/IfLineBlock.sql

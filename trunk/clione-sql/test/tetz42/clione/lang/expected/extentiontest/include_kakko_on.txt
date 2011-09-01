@@ -1,0 +1,19 @@
+Instruction{
+	doNothing = false
+	isNodeDisposed = false
+	map = null
+	next = null
+	params = ArrayList[
+		true
+		true
+	]
+	replacement = "SELECT
+        *
+    FROM
+        people
+    WHERE
+        age = ?
+        AND name LIKE ?"
+	status = false
+	useValueInBack = false
+}

@@ -1,0 +1,25 @@
+LineCond{
+	isNegative = false
+	next = SQLLiteral{
+		literal = "She said, "You don't understand myself.""
+		next = null
+		sqlNode = SQLNode{
+			nodes = ArrayList[
+				LineNode{
+					beginLineNo = 1
+					childBlocks = ArrayList[ ]
+					endLineNo = 0
+					holders = ArrayList[ ]
+					isDisposable = false
+					sql = "She said, "You don't understand myself.""
+				}
+			]
+			resourceInfo = "Inside of SQL comment "
+		}
+	}
+	param = Param{
+		isNegative = false
+		key = "KEY"
+		next = null
+	}
+}
