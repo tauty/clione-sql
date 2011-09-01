@@ -1,0 +1,12 @@
+Instruction{
+	doNothing = false
+	isNodeDisposed = false
+	map = null
+	next = null
+	params = ArrayList[
+		"tako"
+	]
+	replacement = null
+	status = true
+	useValueInBack = false
+}

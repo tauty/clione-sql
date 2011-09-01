@@ -1,0 +1,28 @@
+SQLNode{
+	nodes = ArrayList[
+		LineNode{
+			beginLineNo = 1
+			childBlocks = ArrayList[ ]
+			endLineNo = 0
+			holders = ArrayList[
+				PlaceHolder{
+					begin = 1
+					clione = LineParam{
+						isNegative = false
+						next = null
+						param = Param{
+							isNegative = false
+							key = "param1"
+							next = null
+						}
+					}
+					length = 0
+					valueInBack = "tako.ika.namako"
+				}
+			]
+			isDisposable = false
+			sql = "  "
+		}
+	]
+	resourceInfo = "From Test"
+}

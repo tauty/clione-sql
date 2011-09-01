@@ -1,0 +1,23 @@
+Instruction{
+	doNothing = false
+	isNodeDisposed = false
+	map = null
+	next = Instruction{
+		doNothing = false
+		isNodeDisposed = false
+		map = null
+		next = null
+		params = ArrayList[
+			1000
+		]
+		replacement = null
+		status = true
+		useValueInBack = false
+	}
+	params = ArrayList[
+		"%##100#%#__##200#%#_%"
+	]
+	replacement = "? ESCAPE '#'"
+	status = false
+	useValueInBack = false
+}

@@ -1,0 +1,27 @@
+ArrayList[
+	Tameshi{
+		age = 35
+		id = 0
+		name = "Takao Kawada"
+	}
+	Tameshi{
+		age = 34
+		id = 1
+		name = "Takako Kawada"
+	}
+	Tameshi{
+		age = 2
+		id = 2
+		name = "Tao Kawada"
+	}
+	Tameshi{
+		age = 31
+		id = 3
+		name = "Hiromitsu Hara2"
+	}
+	Tameshi{
+		age = 31
+		id = 4
+		name = "Hiroko Hara2"
+	}
+]

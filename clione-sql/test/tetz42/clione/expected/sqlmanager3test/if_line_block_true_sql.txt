@@ -1,0 +1,12 @@
+--- sql ---
+SELECT
+    *
+FROM
+    employees
+WHERE
+	
+		ADDRESS like ? ESCAPE '#'
+--- params ---
+[%o.com]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager3Test/IfLineBlock.sql

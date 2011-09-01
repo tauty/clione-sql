@@ -1,0 +1,12 @@
+ArrayList[
+	Person{
+		age = 31
+		id = 3
+		name = "Hiromitsu Hara"
+	}
+	Person{
+		age = 31
+		id = 4
+		name = "Hiroko Hara"
+	}
+]

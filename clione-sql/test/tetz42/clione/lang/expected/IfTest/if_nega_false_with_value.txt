@@ -1,0 +1,10 @@
+Instruction{
+	doNothing = false
+	isNodeDisposed = false
+	map = null
+	next = null
+	params = ArrayList[ ]
+	replacement = "octopus"
+	status = false
+	useValueInBack = false
+}
