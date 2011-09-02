@@ -58,7 +58,23 @@ public class LineNode extends Node {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		// TODO Auto-generated method stub
-		return null;
+		this.setLineNo();
+		Instruction myInst = super.perform(paramMap);
+		if (myInst.isNodeDisposed)
+			return myInst;
+		boolean isChildMerged = false;
+		if (this.childBlocks.isEmpty())
+			return myInst;
+		for (LineNode child : this.childBlocks) {
+			Instruction inst = child.perform(paramMap);
+			if (inst.isNodeDisposed) {
+				continue;
+			}
+			myInst.merge(inst);
+			isChildMerged = true;
+		}
+		if (!isChildMerged)
+			myInst.nodeDispose();
+		return myInst;
 	}
 }
