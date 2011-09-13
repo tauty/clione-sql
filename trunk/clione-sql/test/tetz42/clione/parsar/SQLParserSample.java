@@ -31,34 +31,50 @@ import tetz42.util.ObjDumper4j;
 public class SQLParserSample {
 
 	public static void main(String args[]) {
+		
+		System.out.println(joinOnlyPtn.matcher("   union\nall  ").find());
+		
 		System.out.println("---------------------------");
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
 				.parse("tako\r\nika\r\nnamako\r\numiushi")));
 		System.out
-				.println(ObjDumper4j.dumper(new SQLParserSample("1111")
-						.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("1111")
+								.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
 
 		// Fail case. TODO investigation!
 		System.out
-				.println(ObjDumper4j.dumper(new SQLParserSample("2222")
-						.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
-		
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("2222")
+								.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
+
 		// Success -- line comment
 		System.out
-				.println(ObjDumper4j.dumper(new SQLParserSample("3333")
-						.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
-		
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("3333")
+								.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
+
 		// (parenthesis)
 		System.out
-				.println(ObjDumper4j.dumper(new SQLParserSample("p1111")
-						.parse("tako ika namako (\n\toctopus -- tako\n\tsquid-- ika\n\tsea cucumber-- namako\n) english -- $seacucumber")));
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("p1111")
+								.parse("tako ika namako (\n\toctopus -- tako\n\tsquid-- ika\n\tsea cucumber-- namako\n) english -- $seacucumber")));
+
+		// select - union select
+		System.out
+				.println(ObjDumper4j
+						.dumper(new SQLParserSample("uni1111")
+								.parse("\tselect 100 from dual\n\tunion all\n\tselect 200 from dual")));
 	}
 
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\\(|\\)|and|or|,|(\r\n|\r|\n)|\\z",
+			"/\\*|\\*/|--|'|\\(|\\)|and|or|,|union(\\sall)?|(\r\n|\r|\n)|\\z",
+			Pattern.CASE_INSENSITIVE);
+	private static final Pattern joinOnlyPtn = Pattern.compile(
+			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
 			Pattern.CASE_INSENSITIVE);
 	private static final Pattern lineEndPtn = Pattern
 			.compile("(.*)(\r\n|\r|\n|\\z)");
@@ -114,7 +130,6 @@ public class SQLParserSample {
 		}
 
 		LineNode fixLineNode() {
-			this.mergeNode();
 			this.lineNode.sql = this.lineSb.toString();
 			LineNode lineNode = this.lineNode;
 			this.lineNo++;
@@ -167,9 +182,9 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction2(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, delimPtn)
-				.bind(COMMENT, commentPtn).bind(LINEEND, lineEndPtn)
-				.bind("'", singleStrPtn).bind("\"", doubleStrPtn).remember();
+		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
+				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
+				.bind("\"", doubleStrPtn).remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -183,7 +198,7 @@ public class SQLParserSample {
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
-			System.out.println("["+div+"]");
+			System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
@@ -203,6 +218,11 @@ public class SQLParserSample {
 				info.lineSb.append(mh.getRememberedToEnd());
 			} else {
 				// in case line end or end of source string
+				info.mergeNode();
+				if(joinOnlyPtn.matcher(info.lineSb).find() && info.lineNode.holders.size() == 0) {
+					info.lineSb.append(CRLF);
+					continue;
+				}
 				flatList.add(info.fixLineNode());
 			}
 		}
