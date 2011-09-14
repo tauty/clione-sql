@@ -79,10 +79,9 @@ abstract public class AbstractParam extends ClioneFunction {
 		return paramInst.next(getNextInstruction(paramMap));
 	}
 
-	protected Instruction caseParamNotExists(ParamMap paramMap,
-			Instruction paramInst) {
+	protected Instruction caseParamNotExists(
+			@SuppressWarnings("unused") ParamMap paramMap, Instruction paramInst) {
 		return paramInst.nodeDispose();
 	}
-
 
 }

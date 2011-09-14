@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,9 +32,13 @@ import tetz42.util.ObjDumper4j;
 public class SQLParserSample {
 
 	public static void main(String args[]) {
-		
+
+		Map<String, String> map = HereDoc.get(SQLParserSample.class
+				.getResourceAsStream("SQLParserSample.txt"));
+		System.out.println(ObjDumper4j.dumper(map));
+
 		System.out.println(joinOnlyPtn.matcher("   union\nall  ").find());
-		
+
 		System.out.println("---------------------------");
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
 				.parse("tako\r\nika\r\nnamako\r\numiushi")));
@@ -219,7 +224,8 @@ public class SQLParserSample {
 			} else {
 				// in case line end or end of source string
 				info.mergeNode();
-				if(joinOnlyPtn.matcher(info.lineSb).find() && info.lineNode.holders.size() == 0) {
+				if (joinOnlyPtn.matcher(info.lineSb).find()
+						&& info.lineNode.holders.size() == 0) {
 					info.lineSb.append(CRLF);
 					continue;
 				}
@@ -373,8 +379,7 @@ public class SQLParserSample {
 					sbh.delete(start, end);
 				else if (!"+!".contains(commentFlg)) {
 					// create place holder
-					String valueInBack = getValueInBack(sbh.sb.substring(end),
-							br, sbh);
+					String valueInBack = getValueInBack(sbh.sb.substring(end));
 					lineNode.holders.add(new PlaceHolder(sbh.sb.substring(
 							start + 2, end - 2), valueInBack, start));
 					if (valueInBack == null) {

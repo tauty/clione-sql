@@ -156,7 +156,7 @@ public class ClioneFuncFactory {
 		if (!m.find() || m.start() > pos)
 			throw new ClioneFormatException("Unsupported Grammer :\n" + src
 					+ "\nResouce info:" + getResourceInfo());
-		ClioneFunction clione = gen(m, m.group(1), m.group(2), m.group(3));
+		ClioneFunction clione = gen(m.group(1), m.group(2), m.group(3));
 		if (clione == null)
 			return last;
 		if ("".equals(m.group(4))) { // it means group(4) matched as '$'.
@@ -169,7 +169,7 @@ public class ClioneFuncFactory {
 		return clione.nextFunc(parseFunc(m, m.end(), last));
 	}
 
-	private ClioneFunction gen(Matcher m, String func, String not, String key) {
+	private ClioneFunction gen(String func, String not, String key) {
 		if (isAllEmpty(func, not, key))
 			return null;
 		if (isEmpty(func))
