@@ -54,6 +54,7 @@ public class LineNode extends Node {
 
 	public void merge(LineNode node) {
 		// TODO implementation
+		System.out.println(node);
 	}
 
 	@Override

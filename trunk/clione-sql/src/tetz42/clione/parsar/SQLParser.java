@@ -125,7 +125,7 @@ public class SQLParser {
 					sbh.delete(start, end);
 				else if (!"+!".contains(commentFlg)) {
 					// create place holder
-					String valueInBack = getValueInBack(sbh.sb.substring(end), br, sbh);
+					String valueInBack = getValueInBack(sbh.sb.substring(end));
 					lineNode.holders.add(new PlaceHolder(sbh.sb.substring(
 							start + 2, end - 2), valueInBack, start));
 					if (valueInBack == null) {

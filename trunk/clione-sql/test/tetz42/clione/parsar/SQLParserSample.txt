@@ -1,0 +1,10 @@
+<<PTN1>>
+TAKO
+	IKA
+	NAMAKO
+<</PTN1>>
+<<PTN2>>
+	octopus
+		squid
+		sea cucumber
+<</PTN2>>

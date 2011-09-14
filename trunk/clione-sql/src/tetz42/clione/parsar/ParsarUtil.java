@@ -8,10 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.io.LineReader;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.setting.Config;
-import tetz42.clione.util.SBHolder;
 
 public class ParsarUtil {
 
@@ -65,7 +63,7 @@ public class ParsarUtil {
 		}
 	}
 
-	public static String getValueInBack(String src, LineReader br, SBHolder sbh) {
+	public static String getValueInBack(String src) {
 		if (isEmpty(src))
 			return null;
 		String operator = "";
@@ -75,15 +73,14 @@ public class ParsarUtil {
 			src = src.substring(m.end());
 		}
 		if (src.charAt(0) == '(' || src.charAt(0) == '\'')
-			return operator + getLiteralValue(src, br, sbh);
+			return operator + getLiteralValue(src);
 		m = normalValuePtn.matcher(src);
 		if (m.find())
 			return operator + m.group();
 		return null;
 	}
 
-	private static String getLiteralValue(String src, LineReader br,
-			SBHolder sbh) {
+	private static String getLiteralValue(String src) {
 		Matcher m = delimPtn.matcher(src);
 		if (m.find()) {
 			if (m.group().equals("("))
