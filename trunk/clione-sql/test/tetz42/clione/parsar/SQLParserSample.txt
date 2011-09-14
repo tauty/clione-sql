@@ -1,10 +1,15 @@
+You can write any comments
+    outside of tags.
 <<PTN1>>
 TAKO
 	IKA
 	NAMAKO
 <</PTN1>>
+You can write any comments
+    outside of tags.
 <<PTN2>>
 	octopus
 		squid
-		sea cucumber
-<</PTN2>>
+		sea cucumber<</PTN2>>
+You can write any comments
+    outside of tags.

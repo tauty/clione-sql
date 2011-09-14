@@ -218,17 +218,23 @@ public class SQLParserSample {
 			} else if (div.equals("'") || div.equals("\"")) {
 				doString(mh, info, div);
 			} else if (div.equalsIgnoreCase("and")
-					|| div.equalsIgnoreCase("or") || div.equals(",")) {
+					|| div.equalsIgnoreCase("or") || div.equals(",")
+					|| div.toLowerCase().startsWith("union")) {
 				info.mergeNode();
-				info.lineSb.append(mh.getRememberedToEnd());
+				String s = mh.getRememberedToEnd();
+				System.out.println("s=" + s);
+				info.nodeSb.append(s);
 			} else {
 				// in case line end or end of source string
 				info.mergeNode();
+				System.out.println(info.lineSb);
 				if (joinOnlyPtn.matcher(info.lineSb).find()
 						&& info.lineNode.holders.size() == 0) {
+					System.out.println("aaa");
 					info.lineSb.append(CRLF);
 					continue;
 				}
+				System.out.println("bbb");
 				flatList.add(info.fixLineNode());
 			}
 		}

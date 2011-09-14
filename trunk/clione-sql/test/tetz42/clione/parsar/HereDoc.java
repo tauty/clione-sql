@@ -10,7 +10,7 @@ import tetz42.clione.io.IOUtil;
 
 public class HereDoc {
 
-	private static Pattern ptn = Pattern.compile("^<<([^<>]+)>>\r\n",
+	private static Pattern ptn = Pattern.compile("^<<([^<>]+)>>(\r\n|\r|\n)",
 			Pattern.MULTILINE);
 
 	public static Map<String, String> get(InputStream in) {
@@ -24,13 +24,12 @@ public class HereDoc {
 		MatcherHolder mh = new MatcherHolder(s, ptn);
 		while (mh.find()) {
 			String key = mh.get().group(1);
-			mh.setRememberd(mh.getRememberd() + mh.get().group().length());
-			Pattern endPtn = Pattern.compile("^<</" + key + ">>\r\n",
-					Pattern.MULTILINE);
+			mh.remember();
+			Pattern endPtn = Pattern.compile("<</" + key + ">>");
 			mh.bind("END", endPtn);
 			if (!mh.find("END"))
 				throw new ClioneFormatException("The tag, <<" + key
-						+ ">>, should closed by <</" + key + ">>!");
+						+ ">>, must be closed by <</" + key + ">>!");
 			String val = mh.getRememberedToStart();
 			map.put(key, val);
 		}
