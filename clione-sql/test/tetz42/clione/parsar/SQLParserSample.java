@@ -50,7 +50,7 @@ public class SQLParserSample {
 		test("doubleQuote");
 		test("lineComment");
 		test("parenthesis");
-		test("NG_parenthesis");
+		test("complecated");
 		test("select");
 		test("unionSelect");
 	}
@@ -188,12 +188,10 @@ public class SQLParserSample {
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
-			System.out.println("[" + div + "]");
+			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
-			} else if (div.equals(")")) {
-				break;
 			} else if (div.equals("--")) {
 				doLineComment(mh, info);
 			} else if (div.equals("/*")) {
@@ -210,15 +208,14 @@ public class SQLParserSample {
 			} else {
 				// in case line end or end of source string
 				info.mergeNode();
-				System.out.println(info.lineSb);
 				if (joinOnlyPtn.matcher(info.lineSb).find()
 						&& info.lineNode.holders.size() == 0) {
-					System.out.println("aaa");
 					info.lineSb.append(CRLF);
 					continue;
 				}
-				System.out.println("bbb");
 				flatList.add(info.fixLineNode());
+				if (div.equals(")"))
+					break;
 			}
 		}
 	}
