@@ -1,15 +1,66 @@
-You can write any comments
-    outside of tags.
-<<PTN1>>
-TAKO
-	IKA
-	NAMAKO
-<</PTN1>>
-You can write any comments
-    outside of tags.
-<<PTN2>>
-	octopus
-		squid
-		sea cucumber<</PTN2>>
-You can write any comments
-    outside of tags.
+<<normal>>
+tako
+ika
+namako
+umiushi
+<</normal>>
+
+<<singleQuote>>
+tako'
+ika
+'namako
+umi'ushi
+uma
+kir''n' aaa
+<</singleQuote>>
+
+<<doubleQuote>>
+tako"
+ika
+"namako
+umi"ushi
+uma
+kir""n" aaa
+<</doubleQuote>>
+
+<<lineComment>>
+tako -- $octopus
+,ika -- &squid	
+,namako -- $seacucumber
+<</lineComment>>
+
+<<parenthesis>>
+tako ika namako (
+	octopus -- tako
+	squid-- ika
+	sea cucumber-- namako
+) english -- $seacucumber
+<</parenthesis>>
+
+<<select>>
+select
+		aaa
+		,bbb
+		,ccc
+	from
+		tableX x
+	where
+		x.aaa = 100
+		and x.delflg = false
+	order by
+		x.ccc
+		,x.bbb
+<</select>>
+
+<<unionSelect>>
+	select
+			100
+		from
+			dual
+	union all
+	select
+			200
+		from
+			dual
+<</unionSelect>>
+

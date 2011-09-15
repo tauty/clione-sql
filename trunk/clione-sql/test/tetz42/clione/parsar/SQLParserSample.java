@@ -31,53 +31,37 @@ import tetz42.util.ObjDumper4j;
 
 public class SQLParserSample {
 
+	private static final Map<String, String> map = HereDoc
+			.get(SQLParserSample.class
+					.getResourceAsStream("SQLParserSample.txt"));
+
+	private static void test(String key) {
+		System.out.println("[" + key + "]");
+		System.out.println(ObjDumper4j.dumper(new SQLParserSample(key)
+				.parse(map.get(key))));
+	}
+
 	public static void main(String args[]) {
-
-		Map<String, String> map = HereDoc.get(SQLParserSample.class
-				.getResourceAsStream("SQLParserSample.txt"));
-		System.out.println(ObjDumper4j.dumper(map));
-
 		System.out.println(joinOnlyPtn.matcher("   union\nall  ").find());
 
 		System.out.println("---------------------------");
-		System.out.println(ObjDumper4j.dumper(new SQLParserSample("0000")
-				.parse("tako\r\nika\r\nnamako\r\numiushi")));
-		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("1111")
-								.parse("tako'\r\nika\r\n'namako\r\numi'ushi\r\numa\r\nkir''n' aaa")));
-
-		// Fail case. TODO investigation!
-		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("2222")
-								.parse("tako\"\r\nika\r\n\"namako\r\numi\"ushi\r\numa\r\nkir\"\"n\" aaa")));
-
-		// Success -- line comment
-		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("3333")
-								.parse("tako -- $octopus\r\n,ika -- &squid\t\n,namako -- $seacucumber")));
-
-		// (parenthesis)
-		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("p1111")
-								.parse("tako ika namako (\n\toctopus -- tako\n\tsquid-- ika\n\tsea cucumber-- namako\n) english -- $seacucumber")));
-
-		// select - union select
-		System.out
-				.println(ObjDumper4j
-						.dumper(new SQLParserSample("uni1111")
-								.parse("\tselect 100 from dual\n\tunion all\n\tselect 200 from dual")));
+		test("normal");
+		test("singleQuote");
+		test("doubleQuote");
+		test("lineComment");
+		test("parenthesis");
+		test("select");
+		test("unionSelect");
 	}
 
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\\(|\\)|and|or|,|union(\\sall)?|(\r\n|\r|\n)|\\z",
-			Pattern.CASE_INSENSITIVE);
+			"/\\*|\\*/|--|'|\"|\\(|\\)"
+					+ "|(and|or|,|union([ \\t]+all)?)($|[ \\t]+)"
+					+ "|(\r\n|\r|\n)|\\z", Pattern.CASE_INSENSITIVE
+					| Pattern.MULTILINE);
 	private static final Pattern joinOnlyPtn = Pattern.compile(
 			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
 			Pattern.CASE_INSENSITIVE);
@@ -220,10 +204,8 @@ public class SQLParserSample {
 			} else if (div.equalsIgnoreCase("and")
 					|| div.equalsIgnoreCase("or") || div.equals(",")
 					|| div.toLowerCase().startsWith("union")) {
+				info.nodeSb.append(div);
 				info.mergeNode();
-				String s = mh.getRememberedToEnd();
-				System.out.println("s=" + s);
-				info.nodeSb.append(s);
 			} else {
 				// in case line end or end of source string
 				info.mergeNode();
