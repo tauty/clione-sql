@@ -228,7 +228,7 @@ public class SQLParserSample {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
 		parseFunc(flatList, mh, info);
-		System.out.println(ObjDumper4j.dumper(flatList));
+		System.out.println(ObjDumper4j.dumper("<flatList>\n", flatList));
 		if (mh.isEnd())
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
