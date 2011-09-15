@@ -37,6 +37,18 @@ tako ika namako (
 ) english -- $seacucumber
 <</parenthesis>>
 
+<<NG_parenthesis>>
+tako ika namako (
+	octopus -- tako
+	,squid-- ika
+	,sea cucumber-- namako
+	,func('uma', 'hitsuji', 'saru')
+	,subquery = (
+		select 'x' from dual
+	)
+) english -- $seacucumber
+<</NG_parenthesis>>
+
 <<select>>
 select
 		aaa

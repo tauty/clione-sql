@@ -50,6 +50,7 @@ public class SQLParserSample {
 		test("doubleQuote");
 		test("lineComment");
 		test("parenthesis");
+		test("NG_parenthesis");
 		test("select");
 		test("unionSelect");
 	}
