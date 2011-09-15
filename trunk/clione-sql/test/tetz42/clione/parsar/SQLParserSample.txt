@@ -37,7 +37,7 @@ tako ika namako (
 ) english -- $seacucumber
 <</parenthesis>>
 
-<<NG_parenthesis>>
+<<complecated>>
 tako ika namako (
 	octopus -- tako
 	,squid-- ika
@@ -47,7 +47,7 @@ tako ika namako (
 		select 'x' from dual
 	)
 ) english -- $seacucumber
-<</NG_parenthesis>>
+<</complecated>>
 
 <<select>>
 select
