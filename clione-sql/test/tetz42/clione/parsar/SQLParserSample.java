@@ -60,7 +60,7 @@ public class SQLParserSample {
 
 	private static final Pattern delimPtn = Pattern.compile(
 			"/\\*|\\*/|--|'|\"|\\(|\\)"
-					+ "|(and|or|,|union([ \\t]+all)?)($|[ \\t]+)"
+					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)"
 					+ "|(\r\n|\r|\n)|\\z", Pattern.CASE_INSENSITIVE
 					| Pattern.MULTILINE);
 	private static final Pattern joinOnlyPtn = Pattern.compile(
@@ -290,7 +290,7 @@ public class SQLParserSample {
 
 	// find end string literal.
 	private void doString(MatcherHolder mh, LineInfo info, final String type) {
-		info.lineSb.append(type);
+		info.nodeSb.append(type);
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
 					+ type + "] unmatched!", getResourceInfo()));
