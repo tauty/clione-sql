@@ -4,7 +4,6 @@ import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.parsar.ParsarUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.regex.Pattern;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
-import tetz42.clione.io.LineReader;
 import tetz42.clione.node.IPlaceHolder;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.Node;
@@ -26,7 +24,6 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Config;
-import tetz42.clione.util.SBHolder;
 import tetz42.util.ObjDumper4j;
 
 public class SQLParserSample {
@@ -59,10 +56,9 @@ public class SQLParserSample {
 	private static final String LINEEND = "LINEEND";
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\"|\\(|\\)"
-					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)"
-					+ "|(\r\n|\r|\n)|\\z", Pattern.CASE_INSENSITIVE
-					| Pattern.MULTILINE);
+			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
+					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern joinOnlyPtn = Pattern.compile(
 			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
 			Pattern.CASE_INSENSITIVE);
