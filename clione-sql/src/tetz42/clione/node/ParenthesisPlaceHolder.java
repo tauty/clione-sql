@@ -1,6 +1,5 @@
 package tetz42.clione.node;
 
-import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
@@ -16,14 +15,8 @@ public class ParenthesisPlaceHolder implements IPlaceHolder {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		SQLGenerator sqlGenerator = new SQLGenerator();
-		String sql = sqlGenerator.genSql(paramMap, sqlNode);
-		Instruction inst = new Instruction();
-		if (!sqlGenerator.isSqlOutputed) {
-			return inst.nodeDispose();
-		}
-		inst.replacement = "(" + sql + ")";
-		inst.params = sqlGenerator.params;
+		Instruction inst = sqlNode.perform(paramMap);
+		inst.replacement("(" + inst.getReplacement() + ")");
 		return inst;
 	}
 

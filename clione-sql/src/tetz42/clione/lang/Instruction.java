@@ -118,7 +118,7 @@ public class Instruction {
 			String repOne = this.getReplacement();
 			String repAno = another.getReplacement();
 			if (repOne.endsWith("?") && repAno.startsWith("?"))
-				replacement = repOne + ", " + repOne;
+				replacement = repOne + ", " + repAno;
 			else
 				replacement = repOne + (isEmpty(repOne) ? "" : " ") + repAno;
 		}
