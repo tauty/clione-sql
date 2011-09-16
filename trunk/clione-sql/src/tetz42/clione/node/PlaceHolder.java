@@ -18,20 +18,26 @@ public class PlaceHolder implements IPlaceHolder {
 
 	private int begin;
 	private int length = 0;
-	private String valueInBack;
+	private INode valueInBack;
 	private final ClioneFunction clione;
 
-	public PlaceHolder(String src, String valueInBack) {
-		this.valueInBack = valueInBack;
+	public PlaceHolder(String src, String sValueInBack) {
+		this.valueInBack = genStrNode(sValueInBack);
 		this.clione = ClioneFuncFactory.get().parse(src);
 	}
 	
-	public PlaceHolder(String src, String valueInBack, int begin) {
-		this.valueInBack = valueInBack;
+	public PlaceHolder(String src, String sValueInBack, int begin) {
+		this.valueInBack = genStrNode(sValueInBack);
 		this.clione = ClioneFuncFactory.get().parse(src);
 		this.begin = begin;
 	}
-
+	
+	private INode genStrNode(String src) {
+		if(src == null)
+			return null;
+		return new StrNode(src);
+	}
+	
 	@Override
 	public ClioneFunction getFunction() {
 		return clione;
@@ -46,15 +52,18 @@ public class PlaceHolder implements IPlaceHolder {
 			if (valueInBack == null)
 				return inst.doNothing();
 			inst.doNothing = false;
-			return inst.clearParams().replacement(valueInBack);
+			return valueInBack.perform(paramMap).useValueInBack();
 		}
 		if (valueInBack == null)
 			return inst;
-		if (valueInBack.charAt(0) == '(') {
+		if (inst.isNodeDisposed)
+			return inst;
+		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
+		if (sValueInBack.charAt(0) == '(') {
 			return inst.replacement(new StringBuilder().append("(")
 					.append(inst.getReplacement()).append(")").toString());
 		}
-		Matcher m = positivePtn.matcher(valueInBack);
+		Matcher m = positivePtn.matcher(sValueInBack);
 		if (m.find()) {
 			if (!isParamExists(inst)) {
 				inst.replacement(" IS NULL ").clearParams();
@@ -64,7 +73,7 @@ public class PlaceHolder implements IPlaceHolder {
 				inst.replacement(" IN (" + inst.getReplacement() + ") ");
 			}
 		} else {
-			m = negativePtn.matcher(valueInBack);
+			m = negativePtn.matcher(sValueInBack);
 			if (m.find()) {
 				if (!isParamExists(inst)) {
 					inst.replacement(" IS NOT NULL ").clearParams();
