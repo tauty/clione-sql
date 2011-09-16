@@ -62,6 +62,7 @@ public class SQLParserSample {
 	private static final Pattern joinOnlyPtn = Pattern.compile(
 			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
 			Pattern.CASE_INSENSITIVE);
+	// TODO Pattern.MULTILINE & '$' might be better solution. check it!
 	private static final Pattern lineEndPtn = Pattern
 			.compile("(.*)(\r\n|\r|\n|\\z)");
 	private static final Pattern commentPtn = Pattern
