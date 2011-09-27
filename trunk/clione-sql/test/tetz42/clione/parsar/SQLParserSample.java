@@ -233,14 +233,14 @@ public class SQLParserSample {
 		case '\'':
 		case '"':
 			mh.next();
-			doString(mh, info, "" + c);
+			doString(mh, info, "" + c); // TODO
 			break;
 		case '(':
 			mh.next();
-			doParenthesis(mh, info);
+			doParenthesis(mh, info); // TODO
 			break;
 		default:
-
+			// TODO
 		}
 	}
 
