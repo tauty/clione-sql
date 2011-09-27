@@ -217,6 +217,33 @@ public class SQLParserSample {
 		}
 	}
 
+	// find end comment and try to parse as function.
+	private void doMultiComment(MatcherHolder mh, LineInfo info) {
+		findCommentEnd(mh, info);
+		String comment = mh.getRememberedToStartWithoutRemember();
+		if (isEmpty(comment) || "!+*".contains(comment.substring(0, 1))) {
+			info.nodeSb.append(mh.getRememberedToEnd(2));
+			return;
+		}
+		mh.remember();
+
+		// TODO get valueInBack and create PlaceHolder
+		char c = mh.getNextChar();
+		switch (c) {
+		case '\'':
+		case '"':
+			mh.next();
+			doString(mh, info, "" + c);
+			break;
+		case '(':
+			mh.next();
+			doParenthesis(mh, info);
+			break;
+		default:
+
+		}
+	}
+
 	// find end parenthesis and try to parse as SQLNode.
 	private void doParenthesis(MatcherHolder mh, LineInfo info) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
@@ -227,8 +254,20 @@ public class SQLParserSample {
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();
-
 		info.addPlaceHolder(new ParenthesisPlaceHolder(parseIndent(flatList)));
+	}
+
+	// find end string literal.
+	private void doString(MatcherHolder mh, LineInfo info, final String type) {
+		info.nodeSb.append(type);
+		if (!mh.find(type))
+			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
+					+ type + "] unmatched!", getResourceInfo()));
+		String literal = mh.getRememberedToEnd();
+		info.nodeSb.append(literal);
+		Matcher m = crlfPth.matcher(literal);
+		while (m.find())
+			info.addLineNo();
 	}
 
 	/**
@@ -250,23 +289,6 @@ public class SQLParserSample {
 		mh.remember();
 	}
 
-	// find end comment and try to parse as function.
-	private void doMultiComment(MatcherHolder mh, LineInfo info) {
-		findCommentEnd(mh, info);
-		String comment = mh.getRememberedToStartWithoutRemember();
-		if (isEmpty(comment) || comment.startsWith("*")) {
-			mh.remember();
-			return;
-		}
-		if ("!+".contains(comment.substring(0, 1))) {
-			info.nodeSb.append(mh.getRememberedToEnd(2));
-			return;
-		}
-		mh.remember();
-
-		// TODO get valueInBack and create PlaceHolder
-	}
-
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
 		while (mh.find(COMMENT)) {
 			if (mh.get(COMMENT).group().equals("*/"))
@@ -280,17 +302,6 @@ public class SQLParserSample {
 		}
 		throw new ClioneFormatException(joinByCrlf(
 				"SQL Format Error: too much '/*'", getResourceInfo()));
-	}
-
-	// find end string literal.
-	private void doString(MatcherHolder mh, LineInfo info, final String type) {
-		info.nodeSb.append(type);
-		if (!mh.find(type))
-			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
-					+ type + "] unmatched!", getResourceInfo()));
-		Matcher m = crlfPth.matcher(mh.getRememberedToEndWithoutRemember());
-		while (m.find())
-			info.addLineNo();
 	}
 
 	public SQLParserSample(String resourceInfo) {
