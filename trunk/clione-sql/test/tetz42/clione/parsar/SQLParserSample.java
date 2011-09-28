@@ -16,12 +16,15 @@ import java.util.regex.Pattern;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
+import tetz42.clione.node.ConditionPlaceHolder;
+import tetz42.clione.node.INode;
 import tetz42.clione.node.IPlaceHolder;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.Node;
 import tetz42.clione.node.ParenthesisPlaceHolder;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
+import tetz42.clione.node.StrNode;
 import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Config;
 import tetz42.util.ObjDumper4j;
@@ -235,13 +238,13 @@ public class SQLParserSample {
 
 		String positiveOpe = null;
 		String negativeOpe = null;
-		if(mh.startsWith(OPERATOR)) {
+		if (mh.startsWith(OPERATOR)) {
 			positiveOpe = mh.get().group(1);
 			negativeOpe = mh.get().group(2);
 			System.out.println(positiveOpe + ", " + negativeOpe);
 		}
 
-		// TODO get valueInBack and create PlaceHolder
+		INode valueInBack;
 		char c = mh.getNextChar();
 		switch (c) {
 		case '\'':
@@ -249,7 +252,7 @@ public class SQLParserSample {
 			mh.next();
 			info.push();
 			doString(mh, info, "" + c);
-			String valueInBack = info.nodeSb.toString();
+			valueInBack = new StrNode(info.nodeSb.toString());
 			info.pop();
 			break;
 		case '(':
@@ -258,11 +261,19 @@ public class SQLParserSample {
 			doParenthesis(mh, info);
 			ParenthesisPlaceHolder holder = (ParenthesisPlaceHolder) info.node.holders
 					.get(0);
-			SQLNode sqlNode = holder.sqlNode();
+			valueInBack = holder.sqlNode();
 			info.pop();
 			break;
 		default:
-			// TODO
+			valueInBack = null;// TODO
+		}
+		if (positiveOpe == null && negativeOpe == null) {
+			info.mergeNode();
+			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
+		} else {
+			Node node = info.fixNode();
+			info.addPlaceHolder(new ConditionPlaceHolder(node, comment,
+					positiveOpe != null, valueInBack));
 		}
 	}
 
@@ -304,7 +315,7 @@ public class SQLParserSample {
 			return;
 		} else if (comment.startsWith(" ")
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
-			info.addPlaceHolder(new PlaceHolder(comment, null));
+			info.addPlaceHolder(new PlaceHolder(comment, (String) null));
 		}
 		mh.back(mh.get(LINEEND).group(2).length()); // ready for next
 		mh.remember();
