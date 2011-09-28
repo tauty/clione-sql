@@ -44,4 +44,8 @@ public class ParenthesisPlaceHolder implements IPlaceHolder {
 	public void movePosition(int num) {
 		this.pos += num;
 	}
+
+	public SQLNode sqlNode() {
+		return this.sqlNode;
+	}
 }

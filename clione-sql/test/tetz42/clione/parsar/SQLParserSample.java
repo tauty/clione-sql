@@ -54,6 +54,7 @@ public class SQLParserSample {
 
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
+	private static final String OPERATOR = "OPERATOR";
 
 	private static final Pattern delimPtn = Pattern.compile(
 			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
@@ -71,6 +72,10 @@ public class SQLParserSample {
 			.compile("(([^']|'')*)'");
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
+
+	private static final Pattern operatorPtn = Pattern.compile(
+			"(=|in\\s+|is\\s+)|(!=|<>|not\\s+in\\s+|is\\s+not\\s+)",
+			Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
 
@@ -171,7 +176,8 @@ public class SQLParserSample {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
-				.bind("\"", doubleStrPtn).remember();
+				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn)
+				.remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -227,17 +233,33 @@ public class SQLParserSample {
 		}
 		mh.remember();
 
+		String positiveOpe = null;
+		String negativeOpe = null;
+		if(mh.startsWith(OPERATOR)) {
+			positiveOpe = mh.get().group(1);
+			negativeOpe = mh.get().group(2);
+			System.out.println(positiveOpe + ", " + negativeOpe);
+		}
+
 		// TODO get valueInBack and create PlaceHolder
 		char c = mh.getNextChar();
 		switch (c) {
 		case '\'':
 		case '"':
 			mh.next();
-			doString(mh, info, "" + c); // TODO
+			info.push();
+			doString(mh, info, "" + c);
+			String valueInBack = info.nodeSb.toString();
+			info.pop();
 			break;
 		case '(':
 			mh.next();
-			doParenthesis(mh, info); // TODO
+			info.push();
+			doParenthesis(mh, info);
+			ParenthesisPlaceHolder holder = (ParenthesisPlaceHolder) info.node.holders
+					.get(0);
+			SQLNode sqlNode = holder.sqlNode();
+			info.pop();
 			break;
 		default:
 			// TODO
@@ -249,7 +271,6 @@ public class SQLParserSample {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
 		parseFunc(flatList, mh, info);
-		System.out.println(ObjDumper4j.dumper("<flatList>\n", flatList));
 		if (mh.isEnd())
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));

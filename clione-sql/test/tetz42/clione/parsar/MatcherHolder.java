@@ -40,6 +40,18 @@ public class MatcherHolder {
 		return find(m);
 	}
 
+	public boolean startsWith() {
+		return startsWith(matcher);
+	}
+
+	public boolean startsWith(String key) {
+		Matcher m = matcherMap.get(key);
+		if (m == null)
+			throw new NullPointerException("Unknown Parameter '" + key
+					+ "' has passed!");
+		return startsWith(m);
+	}
+
 	public Matcher get() {
 		return matcher;
 	}
@@ -119,9 +131,20 @@ public class MatcherHolder {
 	public void setRememberd(int pos) {
 		this.pos = this.start = this.end = this.remembered = pos;
 	}
-	
+
 	public boolean isEnd() {
-		return this.isEnd; 
+		return this.isEnd;
+	}
+
+	public String getSrc() {
+		return this.src;
+	}
+
+	public char getNextChar(){
+		if(pos >= src.length()){
+			return 0;
+		}
+		return src.charAt(pos);
 	}
 
 	private boolean find(Matcher m) {
@@ -139,14 +162,16 @@ public class MatcherHolder {
 		return true;
 	}
 
-	public String getSrc() {
-		return this.src;
-	}
-	
-	public char getNextChar(){
-		if(pos >= src.length()){
-			return 0;
-		}
-		return src.charAt(pos);
+	private boolean startsWith(Matcher m) {
+		if (isEnd)
+			return false;
+		if(!m.find(pos))
+			return false;
+		if(this.pos != m.start())
+			return false;
+		pos = end = m.end();
+		if (end >= src.length())
+			isEnd = true;
+		return true;
 	}
 }
