@@ -22,22 +22,29 @@ public class PlaceHolder implements IPlaceHolder {
 	private final ClioneFunction clione;
 
 	public PlaceHolder(String src, String sValueInBack) {
-		this.valueInBack = genStrNode(sValueInBack);
-		this.clione = ClioneFuncFactory.get().parse(src);
+		this(src, sValueInBack, 0);
 	}
-	
+
 	public PlaceHolder(String src, String sValueInBack, int begin) {
-		this.valueInBack = genStrNode(sValueInBack);
+		this(src, genStrNode(sValueInBack), begin);
+	}
+
+	public PlaceHolder(String src, INode valueInBack) {
+		this(src, valueInBack, 0);
+	}
+
+	public PlaceHolder(String src, INode valueInBack, int begin) {
+		this.valueInBack = valueInBack;
 		this.clione = ClioneFuncFactory.get().parse(src);
 		this.begin = begin;
 	}
-	
-	private INode genStrNode(String src) {
+
+	private static INode genStrNode(String src) {
 		if(src == null)
 			return null;
 		return new StrNode(src);
 	}
-	
+
 	@Override
 	public ClioneFunction getFunction() {
 		return clione;

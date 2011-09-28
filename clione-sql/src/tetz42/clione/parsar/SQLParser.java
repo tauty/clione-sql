@@ -112,7 +112,7 @@ public class SQLParser {
 							&& "$@&?#%'\":|".contains(s.substring(1))) {
 						// create place holder
 						lineNode.holders.add(new PlaceHolder(line.substring(m
-								.end()), null, m.start()));
+								.end()), (String)null, m.start()));
 						sbh.delete(m.start(), sbh.sb.length());
 					}
 					break;
