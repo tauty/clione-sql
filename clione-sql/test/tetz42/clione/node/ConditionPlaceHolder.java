@@ -9,7 +9,8 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 	private final String operator;
 	private final boolean isPositive;
 
-	public ConditionPlaceHolder(Node node, String comment, boolean isPositive, String operator, INode valueInBack) {
+	public ConditionPlaceHolder(Node node, String comment, boolean isPositive,
+			String operator, INode valueInBack) {
 		super(comment, valueInBack);
 		this.node = node;
 		this.operator = operator;
@@ -21,7 +22,5 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 		// TODO implementation!
 		return super.perform(paramMap);
 	}
-
-
 
 }
