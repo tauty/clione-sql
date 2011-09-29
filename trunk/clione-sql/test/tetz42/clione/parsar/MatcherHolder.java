@@ -70,6 +70,7 @@ public class MatcherHolder {
 
 	private MatcherHolder next(int i) {
 		pos += i;
+		end += i;
 		return this;
 	}
 
