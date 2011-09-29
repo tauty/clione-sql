@@ -53,6 +53,7 @@ public class SQLParserSample {
 		test("complecated");
 		test("select");
 		test("unionSelect");
+		test("multiComment");
 	}
 
 	private static final String COMMENT = "COMMNET";
@@ -76,14 +77,15 @@ public class SQLParserSample {
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
 
-	private static final Pattern operatorPtn = Pattern.compile(
-			"(=|in\\s+|is\\s+)|(!=|<>|not\\s+in\\s+|is\\s+not\\s+)",
-			Pattern.CASE_INSENSITIVE);
+	private static final Pattern operatorPtn = Pattern
+			.compile(
+					"(=\\s*|in\\s+|is\\s+)|(!=\\s*|<>\\s*|not\\s+in\\s+|is\\s+not\\s+)",
+					Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
 
-	private static final Pattern indentPtn = Pattern.compile("\\A(\\s+)");
-	private static final Pattern closePtn = Pattern.compile("\\A\\s*\\)");
+	private static final Pattern indentPtn = Pattern.compile("\\A([ \\t]+)");
+	private static final Pattern closePtn = Pattern.compile("\\A[ \\t]*\\)");
 
 	private static class LineInfo {
 		LinkedList<LineInfo> stack = new LinkedList<LineInfo>();
@@ -117,7 +119,15 @@ public class SQLParserSample {
 		}
 
 		Node fixNode() {
-			this.node.sql = this.nodeSb.toString();
+			Matcher m = indentPtn.matcher(this.nodeSb);
+			if (m.find()) {
+				String indent = m.group();
+				this.lineSb.append(indent);
+				this.node.sql = this.nodeSb.substring(indent.length());
+			} else {
+				this.node.sql = this.nodeSb.toString();
+			}
+
 			Node node = this.node;
 			this.node = new Node();
 			this.nodeSb.setLength(0);
@@ -206,9 +216,7 @@ public class SQLParserSample {
 				doParenthesis(mh, info);
 			} else if (div.equals("'") || div.equals("\"")) {
 				doString(mh, info, div);
-			} else if (div.equalsIgnoreCase("and")
-					|| div.equalsIgnoreCase("or") || div.equals(",")
-					|| div.toLowerCase().startsWith("union")) {
+			} else if (startsWith(div, "and", "or", "union") || div.equals(",")) {
 				info.nodeSb.append(div);
 				info.mergeNode();
 			} else {
@@ -226,37 +234,67 @@ public class SQLParserSample {
 		}
 	}
 
+	private boolean startsWith(String src, String... dests) {
+		src = src.toLowerCase();
+		for (String dst : dests) {
+			if (src.startsWith(dst))
+				return true;
+		}
+		return false;
+	}
+
 	// find end comment and try to parse as function.
 	private void doMultiComment(MatcherHolder mh, LineInfo info) {
 		findCommentEnd(mh, info);
-		String comment = mh.getRememberedToStartWithoutRemember();
-		if (isEmpty(comment) || "!+*".contains(comment.substring(0, 1))) {
-			info.nodeSb.append(mh.getRememberedToEnd(2));
+		String comment = mh.getRememberedToStart();
+		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
+			// Just a comment. Ignore.
 			return;
 		}
-		mh.remember();
-
-		String positiveOpe = null;
-		String negativeOpe = null;
-		if (mh.startsWith(OPERATOR)) {
-			positiveOpe = mh.get().group(1);
-			negativeOpe = mh.get().group(2);
-			System.out.println(positiveOpe + ", " + negativeOpe);
+		if ("!+".contains(comment.substring(0, 1))) {
+			// hint clause.
+			info.nodeSb.append("/*" + comment + "*/");
+			return;
 		}
 
+		String operator = null;
+		boolean isPositive = false;
+		if (mh.startsWith(OPERATOR)) {
+			String positiveOpe = mh.get(OPERATOR).group(1);
+			String negativeOpe = mh.get(OPERATOR).group(2);
+			isPositive = positiveOpe != null;
+			operator = isPositive ? positiveOpe : negativeOpe;
+			System.out.println(mh.get(OPERATOR).group() + ", " + positiveOpe
+					+ ", " + negativeOpe);
+		}
+
+		INode valueInBack = genValueInBack(mh, info);
+		if (operator == null) {
+			System.out.println("PlaceHolder:" + comment);
+			info.mergeNode();
+			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
+		} else {
+			System.out.println("ConditionPlaceHolder:" + comment);
+			Node node = info.fixNode();
+			info.addPlaceHolder(new ConditionPlaceHolder(node, comment,
+					isPositive, operator, valueInBack));
+		}
+	}
+
+	private INode genValueInBack(MatcherHolder mh, LineInfo info) {
 		INode valueInBack;
 		char c = mh.getNextChar();
 		switch (c) {
 		case '\'':
 		case '"':
-			mh.next();
+			mh.next().remember();
 			info.push();
 			doString(mh, info, "" + c);
 			valueInBack = new StrNode(info.nodeSb.toString());
 			info.pop();
 			break;
 		case '(':
-			mh.next();
+			mh.next().remember();
 			info.push();
 			doParenthesis(mh, info);
 			ParenthesisPlaceHolder holder = (ParenthesisPlaceHolder) info.node.holders
@@ -267,14 +305,7 @@ public class SQLParserSample {
 		default:
 			valueInBack = null;// TODO
 		}
-		if (positiveOpe == null && negativeOpe == null) {
-			info.mergeNode();
-			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
-		} else {
-			Node node = info.fixNode();
-			info.addPlaceHolder(new ConditionPlaceHolder(node, comment,
-					positiveOpe != null, valueInBack));
-		}
+		return valueInBack;
 	}
 
 	// find end parenthesis and try to parse as SQLNode.

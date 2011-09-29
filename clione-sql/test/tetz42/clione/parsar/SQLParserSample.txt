@@ -25,7 +25,7 @@ kir""n" aaa
 
 <<lineComment>>
 tako -- $octopus
-,ika -- &squid	
+,ika -- &squid
 ,namako -- $seacucumber
 <</lineComment>>
 
@@ -75,4 +75,24 @@ select
 		from
 			dual
 <</unionSelect>>
+
+<<multiComment>>
+select
+		*
+	from table1 t1
+		inner join table2 t2 on
+			t1.id = t2.id
+			and t2.locale = /* @locale */'ja'
+	where
+		t1.kind /* $kind */= 'animal'
+		and t2.name in /* %include 'tako.sql' */(
+			select
+					t3.name
+				from
+					table3 t3
+				where
+					t3.update_time > /* @startDate */'20101115'
+					and t3.update_time <= /* @endDate */'20111201'
+		)
+<</multiComment>>
 
