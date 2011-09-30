@@ -78,7 +78,9 @@ select
 
 <<multiComment>>
 select
-		*
+		t1.id
+		,t2.name
+		,t3.name
 	from table1 t1
 		inner join table2 t2 on
 			t1.id = t2.id
@@ -94,5 +96,7 @@ select
 					t3.update_time > /* @startDate */'20101115'
 					and t3.update_time <= /* @endDate */'20111201'
 		)
+		and t2.number /* ?number */= 100
+		and t2.del_flg = /* @del_flg */true
 <</multiComment>>
 
