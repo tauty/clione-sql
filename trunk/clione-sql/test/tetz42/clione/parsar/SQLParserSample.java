@@ -7,7 +7,6 @@ import static tetz42.clione.util.ClioneUtil.*;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,7 +17,6 @@ import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.node.ConditionPlaceHolder;
 import tetz42.clione.node.INode;
-import tetz42.clione.node.IPlaceHolder;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.Node;
 import tetz42.clione.node.ParenthesisPlaceHolder;
@@ -56,9 +54,12 @@ public class SQLParserSample {
 		test("multiComment");
 	}
 
+	public static final Pattern indentPtn = Pattern.compile("\\A([ \\t]+)");
+
 	private static final String COMMENT = "COMMNET";
 	private static final String LINEEND = "LINEEND";
 	private static final String OPERATOR = "OPERATOR";
+	private static final String NORMAL = "NORMAL";
 
 	private static final Pattern delimPtn = Pattern.compile(
 			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
@@ -81,107 +82,12 @@ public class SQLParserSample {
 			.compile(
 					"(=\\s*|in\\s+|is\\s+)|(!=\\s*|<>\\s*|not\\s+in\\s+|is\\s+not\\s+)",
 					Pattern.CASE_INSENSITIVE);
+	private static final Pattern normalValuePtn = Pattern
+			.compile("[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)*");
 
 	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
 
-	private static final Pattern indentPtn = Pattern.compile("\\A([ \\t]+)");
 	private static final Pattern closePtn = Pattern.compile("\\A[ \\t]*\\)");
-
-	private static class LineInfo {
-		LinkedList<LineInfo> stack = new LinkedList<LineInfo>();
-		private Node node;
-		private LineNode lineNode;
-		private StringBuilder nodeSb;
-		private StringBuilder lineSb;
-		private int lineNo;
-
-		void addPlaceHolder(IPlaceHolder holder) {
-			holder.setPosition(this.nodeSb.length());
-			this.node.holders.add(holder);
-		}
-
-		LineInfo(int lineNo) {
-			this.node = new Node();
-			this.nodeSb = new StringBuilder();
-			this.lineNode = new LineNode(lineNo);
-			this.lineSb = new StringBuilder();
-			this.lineNo = lineNo;
-		}
-
-		void mergeNode() {
-			for (IPlaceHolder h : this.node.holders) {
-				h.movePosition(this.lineSb.length());
-				lineNode.holders.add(h);
-			}
-			this.lineSb.append(this.nodeSb);
-			this.node = new Node();
-			this.nodeSb.setLength(0);
-		}
-
-		Node fixNode() {
-			Matcher m = indentPtn.matcher(this.nodeSb);
-			if (m.find()) {
-				String indent = m.group();
-				this.lineSb.append(indent);
-				this.node.sql = this.nodeSb.substring(indent.length());
-			} else {
-				this.node.sql = this.nodeSb.toString();
-			}
-
-			Node node = this.node;
-			this.node = new Node();
-			this.nodeSb.setLength(0);
-			return node;
-		}
-
-		LineNode fixLineNode() {
-			this.lineNode.sql = this.lineSb.toString();
-			LineNode lineNode = this.lineNode;
-			this.lineNo++;
-			this.clear();
-			return lineNode;
-		}
-
-		void addLineNo() {
-			this.lineNo++;
-			this.lineNode.curLineNo(lineNo);
-		}
-
-		void clear() {
-			this.lineNode = new LineNode(lineNo);
-			this.lineSb.setLength(0);
-		}
-
-		LineInfo push() {
-			// backup
-			LineInfo backup = new LineInfo(0);
-			backup.node = this.node;
-			backup.lineNode = this.lineNode;
-			backup.nodeSb = this.nodeSb;
-			backup.lineSb = this.lineSb;
-			stack.push(backup);
-
-			// initialize
-			this.node = new Node();
-			this.lineNode = new LineNode(this.lineNo);
-			this.nodeSb = new StringBuilder();
-			this.lineSb = new StringBuilder();
-			return this;
-		}
-
-		LineInfo pop() {
-
-			// reset to backup
-			LineInfo backup = stack.pop();
-			this.node = backup.node;
-			this.lineNode = backup.lineNode;
-			this.lineNode.curLineNo(this.lineNo);
-			this.nodeSb = backup.nodeSb;
-			this.lineSb = backup.lineSb;
-
-			return this;
-		}
-	}
 
 	private String resourceInfo = null;
 
@@ -189,8 +95,8 @@ public class SQLParserSample {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
-				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn)
-				.remember();
+				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn).bind(
+						NORMAL, normalValuePtn).remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -264,17 +170,17 @@ public class SQLParserSample {
 			String negativeOpe = mh.get(OPERATOR).group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
-			System.out.println(mh.get(OPERATOR).group() + ", " + positiveOpe
-					+ ", " + negativeOpe);
+			// System.out.println(mh.get(OPERATOR).group() + ", " + positiveOpe
+			// + ", " + negativeOpe);
 		}
 
 		INode valueInBack = genValueInBack(mh, info);
 		if (operator == null) {
-			System.out.println("PlaceHolder:" + comment);
+			// System.out.println("PlaceHolder:" + comment);
 			info.mergeNode();
 			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
 		} else {
-			System.out.println("ConditionPlaceHolder:" + comment);
+			// System.out.println("ConditionPlaceHolder:" + comment);
 			Node node = info.fixNode();
 			info.addPlaceHolder(new ConditionPlaceHolder(node, comment,
 					isPositive, operator, valueInBack));
@@ -282,7 +188,7 @@ public class SQLParserSample {
 	}
 
 	private INode genValueInBack(MatcherHolder mh, LineInfo info) {
-		INode valueInBack;
+		INode valueInBack = null;
 		char c = mh.getNextChar();
 		switch (c) {
 		case '\'':
@@ -303,7 +209,10 @@ public class SQLParserSample {
 			info.pop();
 			break;
 		default:
-			valueInBack = null;// TODO
+			if(mh.startsWith(NORMAL)) {
+				valueInBack = new StrNode(mh.get(NORMAL).group());
+				mh.remember();
+			}
 		}
 		return valueInBack;
 	}
