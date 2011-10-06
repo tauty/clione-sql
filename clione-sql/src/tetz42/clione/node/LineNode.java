@@ -19,11 +19,16 @@ import static tetz42.clione.lang.ContextUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public class LineNode extends Node {
+
+	private static final Pattern emptyLinePtn = Pattern
+			.compile("\\A[ \\t]*\\z");
+
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
 	private int endLineNo = 0;
@@ -34,9 +39,8 @@ public class LineNode extends Node {
 
 	public LineNode(int startNo, int endNo) {
 		beginLineNo = startNo;
-		setBeginLineNo(startNo);
 		endLineNo = endNo;
-		setEndLineNo(endNo);
+		setLineNo();
 	}
 
 	public LineNode curLineNo(int lineNo) {
@@ -77,5 +81,10 @@ public class LineNode extends Node {
 		if (!isChildMerged)
 			myInst.nodeDispose();
 		return myInst;
+	}
+
+	public boolean isEmpty() {
+		return emptyLinePtn.matcher(this.sql).find()
+				&& this.holders.size() == 0 && this.childBlocks.size() == 0;
 	}
 }
