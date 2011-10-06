@@ -16,6 +16,7 @@ import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.node.ConditionPlaceHolder;
+import tetz42.clione.node.EmptyLineNode;
 import tetz42.clione.node.INode;
 import tetz42.clione.node.LineNode;
 import tetz42.clione.node.Node;
@@ -52,6 +53,7 @@ public class SQLParserSample {
 		test("select");
 		test("unionSelect");
 		test("multiComment");
+		test("emptyLine");
 	}
 
 	public static final Pattern indentPtn = Pattern.compile("\\A([ \\t]+)");
@@ -60,6 +62,7 @@ public class SQLParserSample {
 	private static final String LINEEND = "LINEEND";
 	private static final String OPERATOR = "OPERATOR";
 	private static final String NORMAL = "NORMAL";
+	private static final String EMPTYLN = "EMPTYLN";
 
 	private static final Pattern delimPtn = Pattern.compile(
 			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
@@ -77,6 +80,8 @@ public class SQLParserSample {
 			.compile("(([^']|'')*)'");
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
+	private static final Pattern emptyLinePtn = Pattern
+			.compile("[ \\t]*(\r\n|\r|\n)");
 
 	private static final Pattern operatorPtn = Pattern
 			.compile(
@@ -96,7 +101,8 @@ public class SQLParserSample {
 		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
 				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn).bind(
-						NORMAL, normalValuePtn).remember();
+						NORMAL, normalValuePtn).bind(EMPTYLN, emptyLinePtn)
+				.remember();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -107,6 +113,7 @@ public class SQLParserSample {
 
 	private void parseFunc(final List<LineNode> flatList, MatcherHolder mh,
 			LineInfo info) {
+		doEmptyLine(flatList, mh, info);
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
@@ -126,7 +133,7 @@ public class SQLParserSample {
 				info.nodeSb.append(div);
 				info.mergeNode();
 			} else {
-				// in case line end or end of source string
+				// in case line end, end of parenthesis or end of source string
 				info.mergeNode();
 				if (joinOnlyPtn.matcher(info.lineSb).find()
 						&& info.lineNode.holders.size() == 0) {
@@ -136,7 +143,17 @@ public class SQLParserSample {
 				flatList.add(info.fixLineNode());
 				if (div.equals(")"))
 					break;
+				doEmptyLine(flatList, mh, info);
 			}
+		}
+	}
+
+	private void doEmptyLine(List<LineNode> flatList, MatcherHolder mh,
+			LineInfo info) {
+		while (mh.startsWith(EMPTYLN)) {
+			flatList.add(new EmptyLineNode(info.lineNo));
+			info.fixLineNode();
+			mh.remember();
 		}
 	}
 
@@ -209,7 +226,7 @@ public class SQLParserSample {
 			info.pop();
 			break;
 		default:
-			if(mh.startsWith(NORMAL)) {
+			if (mh.startsWith(NORMAL)) {
 				valueInBack = new StrNode(mh.get(NORMAL).group());
 				mh.remember();
 			}
@@ -319,11 +336,20 @@ public class SQLParserSample {
 	}
 
 	private List<LineNode> buildNodes(NodeHolder holder, String indent) {
+		return buildNodes(holder, indent, new ArrayList<LineNode>());
+	}
+
+	private List<LineNode> buildNodes(NodeHolder holder, String indent,
+			ArrayList<LineNode> empties) {
 		ArrayList<LineNode> list = new ArrayList<LineNode>();
 
 		LineNode parentNode = null;
 		LineNode node;
 		while (null != (node = holder.next())) {
+			if (node instanceof EmptyLineNode) {
+				empties.add(node);
+				continue;
+			}
 			Matcher m = indentPtn.matcher(node.sql);
 			String curIndent = m.find() ? m.group(1) : "";
 
@@ -334,7 +360,8 @@ public class SQLParserSample {
 					indent = curIndent;
 					continue;
 				}
-				parentNode.childBlocks.addAll(buildNodes(holder, curIndent));
+				parentNode.childBlocks.addAll(buildNodes(holder, curIndent,
+						empties));
 				continue;
 			} else if (calcIndent(indent) > calcIndent(curIndent)
 					&& !closePtn.matcher(node.sql).find()) {
@@ -342,6 +369,8 @@ public class SQLParserSample {
 				return list;
 			}
 
+			list.addAll(empties);
+			empties.clear();
 			list.add(parentNode = node);
 		}
 		return list;

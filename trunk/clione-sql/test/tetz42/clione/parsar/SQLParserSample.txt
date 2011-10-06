@@ -98,5 +98,23 @@ select
 		)
 		and t2.number /* ?number */= 100
 		and t2.del_flg = /* @del_flg */true
+
 <</multiComment>>
 
+<<emptyLine>>
+
+select
+		t1.id
+
+from table1 t1
+where
+
+	t1.kind /* $kind */= (
+		select
+
+			'aaa'
+		from
+			dual
+	)
+
+<</emptyLine>>
