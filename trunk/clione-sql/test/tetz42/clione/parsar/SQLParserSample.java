@@ -1,7 +1,6 @@
 package tetz42.clione.parsar;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.clione.parsar.ParsarUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
 import java.io.InputStream;
@@ -24,7 +23,6 @@ import tetz42.clione.node.ParenthesisPlaceHolder;
 import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
-import tetz42.clione.parsar.ParsarUtil.NodeHolder;
 import tetz42.clione.setting.Config;
 import tetz42.util.ObjDumper4j;
 
@@ -54,6 +52,7 @@ public class SQLParserSample {
 		test("unionSelect");
 		test("multiComment");
 		test("emptyLine");
+		test("emptyLine2");
 	}
 
 	public static final Pattern indentPtn = Pattern.compile("\\A([ \\t]+)");
@@ -68,18 +67,20 @@ public class SQLParserSample {
 			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
 					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	private static final Pattern joinOnlyPtn = Pattern.compile(
-			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
-			Pattern.CASE_INSENSITIVE);
-	// TODO Pattern.MULTILINE & '$' might be better solution. check it!
-	private static final Pattern lineEndPtn = Pattern
-			.compile("(.*)(\r\n|\r|\n|\\z)");
 	private static final Pattern commentPtn = Pattern
 			.compile("/\\*|\\*/|(\r\n|\r|\n)");
+	private static final Pattern lineEndPtn = Pattern
+			.compile("(.*)(\r\n|\r|\n|\\z)");
 	private static final Pattern singleStrPtn = Pattern
 			.compile("(([^']|'')*)'");
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
+
+	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
+
+	private static final Pattern joinOnlyPtn = Pattern.compile(
+			"\\A[ \\t]*(and|or|,|union(\\s+all)?)[ \\t]*\\z",
+			Pattern.CASE_INSENSITIVE);
 	private static final Pattern emptyLinePtn = Pattern
 			.compile("[ \\t]*(\r\n|\r|\n)");
 
@@ -90,13 +91,40 @@ public class SQLParserSample {
 	private static final Pattern normalValuePtn = Pattern
 			.compile("[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)*");
 
-	private static final Pattern crlfPth = Pattern.compile("\r\n|\r|\n");
-
-	private static final Pattern closePtn = Pattern.compile("\\A[ \\t]*\\)");
+	// private static final Pattern closePtn = Pattern.compile("\\A[ \\t]*\\)");
 
 	private String resourceInfo = null;
 
-	private List<LineNode> parseFunction2(String src) {
+	public SQLParserSample(String resourceInfo) {
+		this.resourceInfo = resourceInfo;
+	}
+
+	public SQLNode parse(InputStream in) {
+		try {
+			byte[] bs = IOUtil.loadFromStream(in);
+			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
+		} catch (UnsupportedEncodingException e) {
+			throw new WrapException(joinByCrlf(e.getMessage(),
+					"The setting of 'clione.properties' might be wrong. ",
+					"The key name = 'SQLFILE_ENCODING'"), e);
+		}
+	}
+
+	public SQLNode parse(String src) {
+		try {
+			pushResouceInfo(resourceInfo);
+			return parseRoot(src);
+		} finally {
+			popResourceInfo();
+		}
+	}
+
+	private SQLNode parseRoot(String src) {
+		List<LineNode> flatList = parseFunction(src);
+		return parseIndent(flatList);
+	}
+
+	private List<LineNode> parseFunction(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
@@ -187,21 +215,32 @@ public class SQLParserSample {
 			String negativeOpe = mh.get(OPERATOR).group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
-			// System.out.println(mh.get(OPERATOR).group() + ", " + positiveOpe
-			// + ", " + negativeOpe);
 		}
 
 		INode valueInBack = genValueInBack(mh, info);
 		if (operator == null) {
-			// System.out.println("PlaceHolder:" + comment);
 			info.mergeNode();
 			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
 		} else {
-			// System.out.println("ConditionPlaceHolder:" + comment);
 			Node node = info.fixNode();
 			info.addPlaceHolder(new ConditionPlaceHolder(node, comment,
 					isPositive, operator, valueInBack));
 		}
+	}
+
+	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
+		while (mh.find(COMMENT)) {
+			if (mh.get(COMMENT).group().equals("*/"))
+				return; // normal end
+			else if (mh.get(COMMENT).group().equals("/*"))
+				// in case nested '/*' is detected
+				findCommentEnd(mh, info);
+			else
+				// in case CRLF is detected
+				info.addLineNo();
+		}
+		throw new ClioneFormatException(joinByCrlf(
+				"SQL Format Error: too much '/*'", getResourceInfo()));
 	}
 
 	private INode genValueInBack(MatcherHolder mh, LineInfo info) {
@@ -278,52 +317,10 @@ public class SQLParserSample {
 		mh.remember();
 	}
 
-	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
-		while (mh.find(COMMENT)) {
-			if (mh.get(COMMENT).group().equals("*/"))
-				return; // normal end
-			else if (mh.get(COMMENT).group().equals("/*"))
-				// in case nested '/*' is detected
-				findCommentEnd(mh, info);
-			else
-				// in case CRLF is detected
-				info.addLineNo();
-		}
-		throw new ClioneFormatException(joinByCrlf(
-				"SQL Format Error: too much '/*'", getResourceInfo()));
-	}
-
-	public SQLParserSample(String resourceInfo) {
-		this.resourceInfo = resourceInfo;
-	}
-
-	public SQLNode parse(String src) {
-		try {
-			pushResouceInfo(resourceInfo);
-			return parseRoot(src);
-		} finally {
-			popResourceInfo();
-		}
-	}
-
-	public SQLNode parse(InputStream in) {
-		try {
-			byte[] bs = IOUtil.loadFromStream(in);
-			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
-		} catch (UnsupportedEncodingException e) {
-			throw new WrapException(joinByCrlf(e.getMessage(),
-					"The setting of 'clione.properties' might be wrong. ",
-					"The key name = 'SQLFILE_ENCODING'"), e);
-		}
-	}
-
-	private SQLNode parseRoot(String src) {
-		List<LineNode> flatList = parseFunction2(src);
-		return parseIndent(flatList);
-	}
-
-	private SQLNode parseIndent(List<LineNode> wholeNodeList) {
-		NodeHolder holder = new NodeHolder(wholeNodeList);
+	private SQLNode parseIndent(List<LineNode> flatList) {
+		while (flatList.size() > 0 && flatList.get(0).isEmpty())
+			flatList.remove(0);
+		NodeHolder holder = new NodeHolder(flatList);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;
 		do {
@@ -363,8 +360,9 @@ public class SQLParserSample {
 				parentNode.childBlocks.addAll(buildNodes(holder, curIndent,
 						empties));
 				continue;
-			} else if (calcIndent(indent) > calcIndent(curIndent)
-					&& !closePtn.matcher(node.sql).find()) {
+				// } else if (calcIndent(indent) > calcIndent(curIndent)
+				// && !closePtn.matcher(node.sql).find()) {
+			} else if (calcIndent(indent) > calcIndent(curIndent)) {
 				holder.back();
 				return list;
 			}
@@ -374,5 +372,48 @@ public class SQLParserSample {
 			list.add(parentNode = node);
 		}
 		return list;
+	}
+
+	private static int calcIndent(String indent) {
+		final int TAB_SIZE = Config.get().TAB_SIZE;
+		byte[] bytes = indent.getBytes();
+		int tabUnitSize = 0;
+		int resultSize = 0;
+		for (byte b : bytes) {
+			if (b == ' ')
+				tabUnitSize++;
+			else if (b == '\t')
+				tabUnitSize = TAB_SIZE;
+			if (tabUnitSize == TAB_SIZE)
+				resultSize += tabUnitSize;
+		}
+		return resultSize + tabUnitSize;
+	}
+
+	static class NodeHolder {
+		private List<LineNode> nodes;
+		private int pos;
+
+		public NodeHolder(List<LineNode> nodes) {
+			this.nodes = nodes;
+			this.pos = 0;
+		}
+
+		public LineNode next() {
+			LineNode node = get();
+			pos++;
+			return node;
+		}
+
+		public LineNode get() {
+			if (pos >= nodes.size())
+				return null;
+			return nodes.get(pos);
+		}
+
+		public LineNode back() {
+			pos--;
+			return get();
+		}
 	}
 }

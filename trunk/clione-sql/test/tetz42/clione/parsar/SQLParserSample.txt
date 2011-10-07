@@ -118,3 +118,26 @@ where
 	)
 
 <</emptyLine>>
+
+<<emptyLine2>>
+/**
+ * This comment must be deleted.
+ */
+
+select
+		t1.id
+
+		-- This comment must be deleted but this line don't.
+
+from table1 t1
+where
+
+	t1.kind /* $kind */= (
+		select
+
+			'aaa'
+		from
+			dual
+	)
+
+<</emptyLine2>>
