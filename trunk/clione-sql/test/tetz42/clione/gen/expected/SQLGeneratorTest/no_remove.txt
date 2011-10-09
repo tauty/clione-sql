@@ -1,8 +1,0 @@
-SELECT
-        *
-    FROM
-        people
-    WHERE
-        age = ?
-    
-        AND name LIKE ?

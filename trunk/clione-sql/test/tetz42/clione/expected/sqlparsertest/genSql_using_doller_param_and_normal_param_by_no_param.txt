@@ -1,6 +1,0 @@
-SELECT
-    *
-FROM
-    EMPLOYEES
-WHERE
-	EFG = 'tako'

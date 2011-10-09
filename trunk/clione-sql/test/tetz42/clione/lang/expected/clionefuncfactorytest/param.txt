@@ -1,5 +1,0 @@
-Param{
-	isNegative = false
-	key = "KEY"
-	next = null
-}
