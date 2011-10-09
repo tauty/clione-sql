@@ -1,9 +1,0 @@
-RequireParam{
-	isNegative = false
-	next = null
-	param = Param{
-		isNegative = false
-		key = "KEY"
-		next = null
-	}
-}

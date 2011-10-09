@@ -1,3 +1,0 @@
-UPDATE people set
-	name = --
-	CONCAT(trim(name), '2')

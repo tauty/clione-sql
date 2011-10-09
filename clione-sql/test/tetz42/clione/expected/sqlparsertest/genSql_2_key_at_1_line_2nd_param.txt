@@ -1,7 +1,0 @@
-SELECT
-    *
-FROM
-    EMPLOYEES
-WHERE
-	ABC IN ('tako', ?)
-	AND DEF IN (30, ?)

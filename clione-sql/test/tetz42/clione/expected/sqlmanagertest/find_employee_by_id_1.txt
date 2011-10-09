@@ -1,7 +1,0 @@
-Employee{
-	SHAIN_NO = 100001
-	age = 0
-	id = 1
-	name = "猪熊柔"
-	shozokuBuKa = "柔道部女子課"
-}

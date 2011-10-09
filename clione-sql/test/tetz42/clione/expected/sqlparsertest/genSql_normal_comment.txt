@@ -1,8 +1,0 @@
-SELECT /*+ ORDERD */
-    *
-FROM /*! MYSQL */
-    EMPLOYEES
-WHERE
-	ABC = ?
-	OR EFG = ?
-	OR HIJ = 'tako'

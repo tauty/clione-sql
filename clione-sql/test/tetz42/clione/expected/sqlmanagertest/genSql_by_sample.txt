@@ -1,8 +1,0 @@
-SELECT
-    *
-FROM
-    EMPLOYEES
-WHERE
-	? = ID
-	AND ? = NAME
-	AND ? = ZIP_CODE
