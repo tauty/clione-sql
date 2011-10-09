@@ -1,0 +1,38 @@
+Extention{
+	func = "if"
+	isNegative = false
+	inside = Parenthesises{
+		inside = Param{
+			key = "TAKO"
+			isNegative = false
+			next = Param{
+				key = "IKA"
+				isNegative = false
+				next = Param{
+					key = "NAMAKO"
+					isNegative = false
+					next = null
+				}
+			}
+		}
+		next = null
+	}
+	extFunction = { }
+	next = SQLLiteral{
+		literal = "SAKANA"
+		sqlNode = SQLNode{
+			resourceInfo = "Inside of SQL comment "
+			nodes = ArrayList[
+				LineNode{
+					beginLineNo = 1
+					endLineNo = 0
+					isDisposable = false
+					sql = "SAKANA"
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[ ]
+				}
+			]
+		}
+		next = null
+	}
+}

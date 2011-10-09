@@ -1,0 +1,5 @@
+Param{
+	key = "KEY"
+	isNegative = false
+	next = null
+}

@@ -1,0 +1,12 @@
+LineCond{
+	isNegative = false
+	param = Param{
+		key = "KEY"
+		isNegative = false
+		next = null
+	}
+	next = StrLiteral{
+		str = "tako"
+		next = null
+	}
+}

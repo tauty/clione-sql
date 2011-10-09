@@ -1,0 +1,20 @@
+LineParam{
+	isNegative = false
+	param = Parenthesises{
+		inside = Param{
+			key = "TAKO"
+			isNegative = false
+			next = Param{
+				key = "IKA"
+				isNegative = false
+				next = Param{
+					key = "NAMAKO"
+					isNegative = false
+					next = null
+				}
+			}
+		}
+		next = null
+	}
+	next = null
+}

@@ -1,0 +1,13 @@
+DefaultParam{
+	isNegative = false
+	param = Param{
+		key = "KEY"
+		isNegative = false
+		next = null
+	}
+	next = Param{
+		key = "PARAM"
+		isNegative = false
+		next = null
+	}
+}

@@ -1,0 +1,13 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "SELECT
+        *
+    FROM
+        people"
+	status = false
+	params = ArrayList[ ]
+	next = null
+	map = null
+}
