@@ -1,0 +1,7 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	ABC IN ('tako', 'ika')
+	AND DEF IN (30, 50)

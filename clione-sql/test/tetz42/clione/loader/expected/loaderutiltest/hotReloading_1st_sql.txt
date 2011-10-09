@@ -1,0 +1,15 @@
+--- sql ---
+SELECT
+    *
+FROM
+    aaa
+WHERE
+	2 = ID
+	OR SHAIN_NO IN(
+		?
+		,?
+	)
+--- params ---
+[100001, 100003]
+--- resource ---
+SQL file path:tetz42/clione/loader/sql/LoaderUtilTest/Select.sql

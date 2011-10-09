@@ -1,0 +1,6 @@
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	EFG IN (100, 200, 300)
