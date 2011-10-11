@@ -43,6 +43,15 @@ public class LineNode extends Node {
 		setLineNo();
 	}
 
+	@Override
+	public boolean isMultiLine() {
+		if((endLineNo - beginLineNo) > 0)
+			return true;
+		if(childBlocks.size() > 0)
+			return true;
+		return false;
+	}
+
 	public LineNode curLineNo(int lineNo) {
 		endLineNo = lineNo;
 		setEndLineNo(lineNo);

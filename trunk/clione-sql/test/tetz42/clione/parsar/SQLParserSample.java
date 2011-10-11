@@ -35,7 +35,7 @@ public class SQLParserSample {
 	private static void test(String key) {
 		System.out.println("[" + key + "]");
 		System.out.println(ObjDumper4j.dumper(new SQLParserSample(key)
-				.parse(map.get(key))));
+				.parse(map.get(key))).primitiveFirst().classFlatten());
 	}
 
 	public static void main(String args[]) {
@@ -121,6 +121,8 @@ public class SQLParserSample {
 
 	private SQLNode parseRoot(String src) {
 		List<LineNode> flatList = parseFunction(src);
+		while (flatList.size() > 0 && flatList.get(0).isEmpty())
+			flatList.remove(0);
 		return parseIndent(flatList);
 	}
 
@@ -318,8 +320,6 @@ public class SQLParserSample {
 	}
 
 	private SQLNode parseIndent(List<LineNode> flatList) {
-		while (flatList.size() > 0 && flatList.get(0).isEmpty())
-			flatList.remove(0);
 		NodeHolder holder = new NodeHolder(flatList);
 		List<LineNode> resultList = new ArrayList<LineNode>();
 		List<LineNode> list;

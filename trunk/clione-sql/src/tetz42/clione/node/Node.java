@@ -31,4 +31,9 @@ public class Node implements INode {
 		return myInst.replacement(sql.toString());
 	}
 
+	@Override
+	public boolean isMultiLine() {
+		return false;
+	}
+
 }
