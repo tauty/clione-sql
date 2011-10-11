@@ -20,4 +20,9 @@ public class StrNode implements INode {
 	public String toString() {
 		return "\"" + sql + "\"";
 	}
+
+	@Override
+	public boolean isMultiLine() {
+		return false;
+	}
 }

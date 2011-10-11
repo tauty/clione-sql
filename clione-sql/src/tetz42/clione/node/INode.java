@@ -5,4 +5,5 @@ import tetz42.clione.util.ParamMap;
 
 public interface INode {
 	Instruction perform(ParamMap paramMap);
+	boolean isMultiLine();
 }
