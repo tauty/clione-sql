@@ -126,7 +126,7 @@ public class Instruction {
 			String repOne = this.getReplacement();
 			String repAno = another.getReplacement();
 			if (isLine) {
-				replacement = repOne + (isEmpty(repOne) ? "" : CRLF) + repAno;
+				replacement = repOne + CRLF + repAno;
 			} else {
 				if (repOne.endsWith("?") && repAno.startsWith("?"))
 					replacement = repOne + ", " + repAno;

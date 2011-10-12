@@ -76,9 +76,9 @@ public class LineNode extends Node {
 		Instruction myInst = super.perform(paramMap);
 		if (myInst.isNodeDisposed)
 			return myInst;
-		boolean isChildMerged = false;
 		if (this.childBlocks.isEmpty())
 			return myInst;
+		boolean isChildMerged = false;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
 			if (inst.isNodeDisposed)
