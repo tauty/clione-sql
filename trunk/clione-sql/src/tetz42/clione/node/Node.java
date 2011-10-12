@@ -7,7 +7,7 @@ import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
 
 public class Node implements INode {
-	public String sql;
+	public String sql = "";
 	public List<IPlaceHolder> holders = new ArrayList<IPlaceHolder>();
 
 	@Override

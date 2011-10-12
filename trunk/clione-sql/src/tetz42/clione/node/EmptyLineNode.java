@@ -15,7 +15,7 @@ public class EmptyLineNode extends LineNode {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		return new Instruction().replacement("");
+		return new Instruction().replacement(" ");
 	}
 
 	@Override

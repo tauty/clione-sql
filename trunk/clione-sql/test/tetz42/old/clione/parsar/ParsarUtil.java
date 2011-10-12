@@ -1,4 +1,4 @@
-package tetz42.clione.parsar;
+package tetz42.old.clione.parsar;
 
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;

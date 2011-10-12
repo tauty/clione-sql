@@ -81,10 +81,9 @@ public class LineNode extends Node {
 			return myInst;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
-			if (inst.isNodeDisposed) {
+			if (inst.isNodeDisposed)
 				continue;
-			}
-			myInst.merge(inst);
+			myInst.mergeLine(inst);
 			isChildMerged = true;
 		}
 		if (!isChildMerged)

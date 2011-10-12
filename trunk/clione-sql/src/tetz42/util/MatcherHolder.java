@@ -1,4 +1,4 @@
-package tetz42.clione.parsar;
+package tetz42.util;
 
 import java.util.HashMap;
 import java.util.Map;
