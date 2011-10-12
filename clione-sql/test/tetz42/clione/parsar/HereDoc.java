@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.io.IOUtil;
+import tetz42.util.MatcherHolder;
 
 public class HereDoc {
 

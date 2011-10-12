@@ -24,6 +24,7 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.setting.Config;
+import tetz42.util.MatcherHolder;
 import tetz42.util.ObjDumper4j;
 
 public class SQLParserSample {

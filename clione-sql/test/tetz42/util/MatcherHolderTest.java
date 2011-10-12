@@ -1,4 +1,4 @@
-package tetz42.clione.parsar;
+package tetz42.util;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import tetz42.util.MatcherHolder;
 
 
 public class MatcherHolderTest {

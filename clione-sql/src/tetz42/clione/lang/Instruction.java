@@ -25,7 +25,7 @@ public class Instruction {
 	public Instruction next = null;
 	public ParamMap map = null;
 	public boolean status = false;
-	
+
 	public Instruction nodeDispose() {
 		return this.nodeDispose(true);
 	}
@@ -77,23 +77,23 @@ public class Instruction {
 		return this;
 	}
 
-	public Instruction status(boolean status){
+	public Instruction status(boolean status) {
 		this.status = status;
 		return this;
 	}
-	
-	public boolean and(){
-		if(status == false)
+
+	public boolean and() {
+		if (status == false)
 			return false;
-		if(next == null)
+		if (next == null)
 			return true;
 		return next.and();
 	}
 
-	public boolean or(){
-		if(status == true)
+	public boolean or() {
+		if (status == true)
 			return true;
-		if(next == null)
+		if (next == null)
 			return false;
 		return next.or();
 	}
@@ -106,7 +106,15 @@ public class Instruction {
 		return this;
 	}
 
+	public Instruction mergeLine(Instruction another) {
+		return merge(another, true);
+	}
+
 	public Instruction merge(Instruction another) {
+		return merge(another, false);
+	}
+
+	private Instruction merge(Instruction another, boolean isLine) {
 		params.addAll(another.params);
 		if (!isNodeDisposed) // true win
 			isNodeDisposed = another.isNodeDisposed;
@@ -117,10 +125,15 @@ public class Instruction {
 		if (replacement != null || another.replacement != null) {
 			String repOne = this.getReplacement();
 			String repAno = another.getReplacement();
-			if (repOne.endsWith("?") && repAno.startsWith("?"))
-				replacement = repOne + ", " + repAno;
-			else
-				replacement = repOne + (isEmpty(repOne) ? "" : " ") + repAno;
+			if (isLine) {
+				replacement = repOne + (isEmpty(repOne) ? "" : CRLF) + repAno;
+			} else {
+				if (repOne.endsWith("?") && repAno.startsWith("?"))
+					replacement = repOne + ", " + repAno;
+				else
+					replacement = repOne + (isEmpty(repOne) ? "" : " ")
+							+ repAno;
+			}
 		}
 		if (map == null)
 			map = another.map;
