@@ -3,7 +3,7 @@ SQLNode{
 	nodes = ArrayList[
 		LineNode{
 			beginLineNo = 1
-			endLineNo = 0
+			endLineNo = 1
 			isDisposable = false
 			sql = "  "
 			childBlocks = ArrayList[ ]

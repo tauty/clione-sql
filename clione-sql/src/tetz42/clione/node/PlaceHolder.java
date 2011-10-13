@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import tetz42.clione.lang.ClioneFuncFactory;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.ParamMap;
 
 public class PlaceHolder implements IPlaceHolder {
@@ -50,6 +51,18 @@ public class PlaceHolder implements IPlaceHolder {
 		return clione;
 	}
 
+	private Instruction convInst(Instruction inst) {
+		if (valueInBack != null && valueInBack instanceof SQLNode) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("(");
+			if(valueInBack.isMultiLine())
+				sb.append(ClioneUtil.CRLF);
+			sb.append(inst.replacement).append(")");
+			inst.replacement(sb.toString());
+		}
+		return inst;
+	}
+
 	@Override
 	public Instruction perform(ParamMap paramMap) {
 		Instruction inst = clione.perform(paramMap).merge();
@@ -59,17 +72,17 @@ public class PlaceHolder implements IPlaceHolder {
 			if (valueInBack == null)
 				return inst.doNothing();
 			inst.doNothing = false;
-			return valueInBack.perform(paramMap).useValueInBack();
+			return convInst(valueInBack.perform(paramMap).useValueInBack());
 		}
-		if (valueInBack == null)
-			return inst;
-		if (inst.isNodeDisposed)
-			return inst;
+		inst = convInst(inst);
+
+//		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
+//		if (sValueInBack.charAt(0) == '(') {
+//			return inst.replacement(new StringBuilder().append("(")
+//					.append(inst.getReplacement()).append(")").toString());
+//		}
+
 		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
-		if (sValueInBack.charAt(0) == '(') {
-			return inst.replacement(new StringBuilder().append("(")
-					.append(inst.getReplacement()).append(")").toString());
-		}
 		Matcher m = positivePtn.matcher(sValueInBack);
 		if (m.find()) {
 			if (!isParamExists(inst)) {
