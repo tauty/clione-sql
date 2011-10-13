@@ -78,17 +78,23 @@ public class LineNode extends Node {
 			return myInst;
 		if (this.childBlocks.isEmpty())
 			return myInst;
-		boolean isChildMerged = false;
+		return myInst.mergeLine(mergeChildren(paramMap));
+	}
+
+	protected Instruction mergeChildren(ParamMap paramMap) {
+		Instruction result = null;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
 			if (inst.isNodeDisposed)
 				continue;
-			myInst.mergeLine(inst);
-			isChildMerged = true;
+			if(result == null)
+				result = inst;
+			else
+				result.mergeLine(inst);
 		}
-		if (!isChildMerged)
-			myInst.nodeDispose();
-		return myInst;
+		if(result == null)
+			result = new Instruction().nodeDispose();
+		return result;
 	}
 
 	public boolean isEmpty() {
