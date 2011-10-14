@@ -8,7 +8,7 @@ import java.util.Properties;
 public class IOUtil {
 
 	public static byte[] loadFromStream(final InputStream in) {
-		
+
 		return new IOWrapper<byte[]>(in) {
 
 			@Override
@@ -31,6 +31,8 @@ public class IOUtil {
 					}
 					list.add(b);
 				}
+				if(list.size() == 0)
+					return new byte[0];
 				byte[] b_all = new byte[SIZE * (list.size() - 1)
 						+ list.get(list.size() - 1).length];
 				for (int i = 0; i < list.size(); i++) {
@@ -39,7 +41,7 @@ public class IOUtil {
 				}
 				return b_all;
 			}
-			
+
 		}.invoke();
 	}
 

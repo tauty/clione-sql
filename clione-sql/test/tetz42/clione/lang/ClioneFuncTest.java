@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ParameterNotFoundException;
 import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.util.ObjDumper4j;
 
 public class ClioneFuncTest {
 
@@ -164,6 +165,7 @@ public class ClioneFuncTest {
 				.get()
 				.parse(
 						"\"SELECT * FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */ \"");
+		System.out.println(ObjDumper4j.dumper(cf));
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "doublequote");
 	}
@@ -174,6 +176,7 @@ public class ClioneFuncTest {
 				.get()
 				.parse(
 						"|SELECT TEL, '\\' FROM FOO WHERE ID = /* ID */ AND NAME = /* NAME */");
+		System.out.println(ObjDumper4j.dumper(cf));
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
 		assertEqualsWithFile(inst, getClass(), "semicolon");
 	}
@@ -185,6 +188,7 @@ public class ClioneFuncTest {
 				.parse(
 						":SELECT * FROM FOO WHERE ID = /\\* ID *\\/ AND NAME = /\\* NAME *\\/");
 		Instruction inst = cf.perform(params("NAME", "TAKAKO").$("ID", 100));
+		System.out.println(ObjDumper4j.dumper(cf));
 		assertEqualsWithFile(inst, getClass(), "colon");
 	}
 
