@@ -82,6 +82,8 @@ public class PlaceHolder implements IPlaceHolder {
 //					.append(inst.getReplacement()).append(")").toString());
 //		}
 
+		if(valueInBack == null)
+			return inst;
 		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
 		Matcher m = positivePtn.matcher(sValueInBack);
 		if (m.find()) {
