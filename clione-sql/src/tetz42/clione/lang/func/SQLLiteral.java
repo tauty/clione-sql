@@ -1,7 +1,5 @@
 package tetz42.clione.lang.func;
 
-import java.io.ByteArrayInputStream;
-
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.node.SQLNode;
@@ -16,8 +14,7 @@ public class SQLLiteral extends ClioneFunction {
 	public SQLLiteral(String literal) {
 		this.literal = literal;
 		// TODO better resource comment
-		this.sqlNode = new SQLParser("Inside of SQL comment ")
-				.parse(new ByteArrayInputStream(literal.getBytes()));
+		this.sqlNode = new SQLParser("Inside of SQL comment ").parse(literal);
 	}
 
 	@Override

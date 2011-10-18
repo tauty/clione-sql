@@ -3,6 +3,7 @@ package tetz42.clione.node;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.util.ParamMap;
+import tetz42.util.ObjDumper4j;
 
 public class ParenthesisPlaceHolder implements IPlaceHolder {
 
@@ -17,6 +18,7 @@ public class ParenthesisPlaceHolder implements IPlaceHolder {
 	public Instruction perform(ParamMap paramMap) {
 		Instruction inst = sqlNode.perform(paramMap);
 		inst.replacement("(" + inst.getReplacement() + ")");
+		System.out.println(ObjDumper4j.dumper(inst));
 		return inst;
 	}
 

@@ -158,8 +158,7 @@ public class MatcherHolder {
 		pos = end = m.end();
 		if (prePos == pos)
 			pos++;
-		if (end >= src.length())
-			isEnd = true;
+		isEnd = m.hitEnd();
 		return true;
 	}
 
@@ -171,8 +170,7 @@ public class MatcherHolder {
 		if(this.pos != m.start())
 			return false;
 		pos = end = m.end();
-		if (end >= src.length())
-			isEnd = true;
+		isEnd = m.hitEnd();
 		return true;
 	}
 }

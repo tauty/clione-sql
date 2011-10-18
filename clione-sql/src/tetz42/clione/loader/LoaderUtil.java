@@ -12,6 +12,7 @@ import tetz42.clione.io.IOWrapper;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
 import tetz42.clione.setting.Config;
+import tetz42.util.ObjDumper4j;
 
 public class LoaderUtil {
 
@@ -36,6 +37,7 @@ public class LoaderUtil {
 		NodeHolder nh = cacheByPath.get(sqlPath);
 		if (isCacheInvalid(nh)) {
 			nh = createNodeHolder(sqlPath);
+			System.out.println(ObjDumper4j.dumper(nh.sqlNode).classFlatten().primitiveFirst());
 		}
 		return nh.sqlNode;
 	}

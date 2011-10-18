@@ -56,6 +56,7 @@ public class Instruction {
 	}
 
 	public String getReplacement() {
+		System.out.println("getReplacement" + replacement);
 		return replacement != null ? replacement : genQuestions();
 	}
 
