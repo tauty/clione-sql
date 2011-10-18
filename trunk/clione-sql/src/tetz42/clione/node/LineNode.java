@@ -28,6 +28,10 @@ public class LineNode extends Node {
 
 	private static final Pattern emptyLinePtn = Pattern
 			.compile("\\A[ \\t]*\\z");
+	private static final Pattern firstDelimPtn = Pattern.compile(
+			"\\A([ \\t]*)(,|(and|or|)\\s+)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern lastDelimPtn = Pattern.compile(
+			"(,|and|or)\\z", Pattern.CASE_INSENSITIVE);
 
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
@@ -100,5 +104,16 @@ public class LineNode extends Node {
 	public boolean isEmpty() {
 		return emptyLinePtn.matcher(this.sql).find()
 				&& this.holders.size() == 0 && this.childBlocks.size() == 0;
+	}
+
+	public boolean isFirstDelim() {
+		// TODO implementation
+		
+		return false;
+	}
+
+	public boolean isLastDelim() {
+		// TODO implementation
+		return false;
 	}
 }

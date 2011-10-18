@@ -57,7 +57,7 @@ public class PlaceHolder implements IPlaceHolder {
 			sb.append("(");
 			if(valueInBack.isMultiLine())
 				sb.append(ClioneUtil.CRLF);
-			sb.append(inst.replacement).append(")");
+			sb.append(inst.getReplacement()).append(")");
 			inst.replacement(sb.toString());
 		}
 		return inst;

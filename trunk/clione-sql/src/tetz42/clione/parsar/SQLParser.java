@@ -134,7 +134,7 @@ public class SQLParser {
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
-			// System.out.println("[" + div + "]");
+			//			System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
