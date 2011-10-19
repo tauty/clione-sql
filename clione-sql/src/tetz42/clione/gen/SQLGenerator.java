@@ -43,7 +43,7 @@ public class SQLGenerator {
 			.compile("^\\s*\\)");
 
 	public String sql;
-	public ArrayList<Object> params;
+	public List<Object> params;
 	public boolean isSqlOutputed = false;
 	private Object[] negativeValues;
 
@@ -79,12 +79,15 @@ public class SQLGenerator {
 				paramMap.putAll(map);
 			}
 
-			StringBuilder sb = new StringBuilder();
-			ArrayList<Object> params = new ArrayList<Object>();
-
-			this.genSql(sqlNode.nodes, paramMap, sb, params);
-			this.params = params;
-			return this.sql = sb.toString();
+//			StringBuilder sb = new StringBuilder();
+//			ArrayList<Object> params = new ArrayList<Object>();
+//
+//			this.genSql(sqlNode.nodes, paramMap, sb, params);
+//			this.params = params;
+//			return this.sql = sb.toString();
+			Instruction inst = sqlNode.perform(paramMap);
+			this.params = inst.params;
+			return this.sql = inst.replacement;
 		} finally {
 			popResourceInfo();
 			clearNegative();
