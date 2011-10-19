@@ -106,7 +106,7 @@ public class LineNode extends Node {
 				result.mergeLine(inst);
 			}
 			lastMergedNode = child;
-			if(!EmptyLineNode.class.isInstance(child))
+			if (!EmptyLineNode.class.isInstance(child))
 				isAllEmpty = false;
 		}
 		if (result == null || isAllEmpty)
@@ -136,9 +136,8 @@ public class LineNode extends Node {
 	}
 
 	private void removeDelimiter(Instruction result, Matcher m) {
-		String replacement = result.replacement.substring(0, m.start(1))
-				+ result.replacement.substring(m.end(1));
-		result.replacement(replacement);
+		String s = result.replacement;
+		result.replacement(s.substring(0, m.start(1)) + s.substring(m.end(1)));
 	}
 
 	public boolean isEmpty() {
