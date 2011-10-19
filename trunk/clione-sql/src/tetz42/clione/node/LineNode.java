@@ -19,6 +19,7 @@ import static tetz42.clione.lang.ContextUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.lang.Instruction;
@@ -29,9 +30,9 @@ public class LineNode extends Node {
 	private static final Pattern emptyLinePtn = Pattern
 			.compile("\\A[ \\t]*\\z");
 	private static final Pattern firstDelimPtn = Pattern.compile(
-			"\\A([ \\t]*)(,|(and|or|)\\s+)", Pattern.CASE_INSENSITIVE);
+			"\\A[ \\t]*(,|(and|or)\\s+)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern lastDelimPtn = Pattern.compile(
-			"(,|and|or)\\z", Pattern.CASE_INSENSITIVE);
+			"(,|and|or)[ \\t]*\\z", Pattern.CASE_INSENSITIVE);
 
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
@@ -49,9 +50,9 @@ public class LineNode extends Node {
 
 	@Override
 	public boolean isMultiLine() {
-		if((endLineNo - beginLineNo) > 0)
+		if ((endLineNo - beginLineNo) > 0)
 			return true;
-		if(childBlocks.size() > 0)
+		if (childBlocks.size() > 0)
 			return true;
 		return false;
 	}
@@ -87,18 +88,52 @@ public class LineNode extends Node {
 
 	protected Instruction mergeChildren(ParamMap paramMap) {
 		Instruction result = null;
+		LineNode firstNode = childBlocks.get(0);
+		LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
+		LineNode firstMergedNode = null;
+		LineNode lastMergedNode = null;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
 			if (inst.isNodeDisposed)
 				continue;
-			if(result == null)
+			if (result == null) {
 				result = inst;
-			else
+				firstMergedNode = child;
+			} else {
 				result.mergeLine(inst);
+			}
+			lastMergedNode = child;
 		}
-		if(result == null)
-			result = new Instruction().nodeDispose();
+		if (result == null)
+			return new Instruction().nodeDispose();
+		return removeDelimiters(result, firstNode, firstMergedNode, lastNode,
+				lastMergedNode);
+	}
+
+	private Instruction removeDelimiters(Instruction result,
+			LineNode firstNode, LineNode firstMergedNode, LineNode lastNode,
+			LineNode lastMergedNode) {
+		if (firstNode != firstMergedNode && !firstNode.isFirstDelim()
+				&& firstMergedNode.isFirstDelim()) {
+			// remove first Delim
+			Matcher m = firstDelimPtn.matcher(result.replacement);
+			if (m.find())
+				removeDelimiter(result, m);
+		}
+		if (lastNode != lastMergedNode && !lastNode.isLastDelim()
+				&& lastMergedNode.isLastDelim()) {
+			// remove last Delim
+			Matcher m = lastDelimPtn.matcher(result.replacement);
+			if (m.find())
+				removeDelimiter(result, m);
+		}
 		return result;
+	}
+
+	private void removeDelimiter(Instruction result, Matcher m) {
+		String replacement = result.replacement.substring(0, m.start(1))
+				+ result.replacement.substring(m.end(1));
+		result.replacement(replacement);
 	}
 
 	public boolean isEmpty() {
@@ -107,13 +142,20 @@ public class LineNode extends Node {
 	}
 
 	public boolean isFirstDelim() {
-		// TODO implementation
-		
-		return false;
+		Matcher m = firstDelimPtn.matcher(sql);
+		if (!m.find())
+			return false;
+		if (holders.isEmpty())
+			return true;
+		return m.start(1) < holders.get(0).getPosition();
 	}
 
 	public boolean isLastDelim() {
-		// TODO implementation
-		return false;
+		Matcher m = lastDelimPtn.matcher(sql);
+		if (!m.find())
+			return false;
+		if (holders.isEmpty())
+			return true;
+		return m.end(1) >= holders.get(holders.size() - 1).getPosition();
 	}
 }
