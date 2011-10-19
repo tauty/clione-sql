@@ -3,13 +3,13 @@ SQLNode{
 	nodes = ArrayList[
 		LineNode{
 			beginLineNo = 1
-			endLineNo = 0
+			endLineNo = 1
 			isDisposable = false
 			sql = "SELECT /*+ ORDERD */"
 			childBlocks = ArrayList[
 				LineNode{
 					beginLineNo = 2
-					endLineNo = 0
+					endLineNo = 2
 					isDisposable = false
 					sql = "    *"
 					childBlocks = ArrayList[ ]
@@ -20,13 +20,13 @@ SQLNode{
 		}
 		LineNode{
 			beginLineNo = 3
-			endLineNo = 0
+			endLineNo = 3
 			isDisposable = false
 			sql = "FROM /*! MYSQL */"
 			childBlocks = ArrayList[
 				LineNode{
 					beginLineNo = 4
-					endLineNo = 0
+					endLineNo = 4
 					isDisposable = false
 					sql = "    EMPLOYEES"
 					childBlocks = ArrayList[ ]
@@ -37,13 +37,13 @@ SQLNode{
 		}
 		LineNode{
 			beginLineNo = 5
-			endLineNo = 0
+			endLineNo = 5
 			isDisposable = false
 			sql = "WHERE"
 			childBlocks = ArrayList[
 				LineNode{
 					beginLineNo = 6
-					endLineNo = 0
+					endLineNo = 6
 					isDisposable = false
 					sql = "	ABC = "
 					childBlocks = ArrayList[ ]
@@ -66,7 +66,7 @@ SQLNode{
 				}
 				LineNode{
 					beginLineNo = 7
-					endLineNo = 0
+					endLineNo = 7
 					isDisposable = false
 					sql = "	OR EFG = "
 					childBlocks = ArrayList[ ]
@@ -85,13 +85,21 @@ SQLNode{
 				}
 				LineNode{
 					beginLineNo = 8
-					endLineNo = 0
+					endLineNo = 8
 					isDisposable = false
 					sql = "	OR HIJ = 'tako'"
 					childBlocks = ArrayList[ ]
 					holders = ArrayList[ ]
 				}
 			]
+			holders = ArrayList[ ]
+		}
+		LineNode{
+			beginLineNo = 9
+			endLineNo = 9
+			isDisposable = false
+			sql = ""
+			childBlocks = ArrayList[ ]
 			holders = ArrayList[ ]
 		}
 	]
