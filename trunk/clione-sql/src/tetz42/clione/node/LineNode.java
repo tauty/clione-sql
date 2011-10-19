@@ -81,17 +81,20 @@ public class LineNode extends Node {
 		Instruction myInst = super.perform(paramMap);
 		if (myInst.isNodeDisposed)
 			return myInst;
-		if (this.childBlocks.isEmpty())
-			return myInst;
-		return myInst.mergeLine(mergeChildren(paramMap));
+		Instruction inst = mergeChildren(paramMap);
+		return inst.doNothing && !inst.isNodeDisposed ? myInst : myInst
+				.mergeLine(inst);
 	}
 
 	protected Instruction mergeChildren(ParamMap paramMap) {
+		if (this.childBlocks.isEmpty())
+			return new Instruction().doNothing();
 		Instruction result = null;
 		LineNode firstNode = childBlocks.get(0);
 		LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
 		LineNode firstMergedNode = null;
 		LineNode lastMergedNode = null;
+		boolean isAllEmpty = true;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
 			if (inst.isNodeDisposed)
@@ -103,8 +106,10 @@ public class LineNode extends Node {
 				result.mergeLine(inst);
 			}
 			lastMergedNode = child;
+			if(!EmptyLineNode.class.isInstance(child))
+				isAllEmpty = false;
 		}
-		if (result == null)
+		if (result == null || isAllEmpty)
 			return new Instruction().nodeDispose();
 		return removeDelimiters(result, firstNode, firstMergedNode, lastNode,
 				lastMergedNode);
