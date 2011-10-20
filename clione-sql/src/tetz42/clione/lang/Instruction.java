@@ -56,8 +56,12 @@ public class Instruction {
 	}
 
 	public String getReplacement() {
-		System.out.println("getReplacement" + replacement);
 		return replacement != null ? replacement : genQuestions();
+	}
+
+	public Instruction addReplacement(String str) {
+		replacement = replacement + str;
+		return this;
 	}
 
 	public Instruction clearParams() {

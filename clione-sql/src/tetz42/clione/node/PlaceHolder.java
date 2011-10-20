@@ -74,39 +74,7 @@ public class PlaceHolder implements IPlaceHolder {
 			inst.doNothing = false;
 			return convInst(valueInBack.perform(paramMap).useValueInBack());
 		}
-		inst = convInst(inst);
-
-//		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
-//		if (sValueInBack.charAt(0) == '(') {
-//			return inst.replacement(new StringBuilder().append("(")
-//					.append(inst.getReplacement()).append(")").toString());
-//		}
-
-		if(valueInBack == null)
-			return inst;
-		String sValueInBack = valueInBack.perform(paramMap).getReplacement();
-		Matcher m = positivePtn.matcher(sValueInBack);
-		if (m.find()) {
-			if (!isParamExists(inst)) {
-				inst.replacement(" IS NULL ").clearParams();
-			} else if (inst.params.size() == 1) {
-				inst.replacement(" = " + inst.getReplacement() + " ");
-			} else {
-				inst.replacement(" IN (" + inst.getReplacement() + ") ");
-			}
-		} else {
-			m = negativePtn.matcher(sValueInBack);
-			if (m.find()) {
-				if (!isParamExists(inst)) {
-					inst.replacement(" IS NOT NULL ").clearParams();
-				} else if (inst.params.size() == 1) {
-					inst.replacement(" <> " + inst.getReplacement() + " ");
-				} else {
-					inst.replacement(" NOT IN (" + inst.getReplacement() + ") ");
-				}
-			}
-		}
-		return inst;
+		return convInst(inst);
 	}
 
 	@Override
