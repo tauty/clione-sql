@@ -5,5 +5,5 @@ FROM
 WHERE
 	-- %if $cond
 		ADDRESS like /*%L '%' cond */'%.com'
-	-- %if $!cond :
+	-- %if $!cond
 		-- :ID /+ ids +/= 3
