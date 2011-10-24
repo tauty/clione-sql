@@ -1,0 +1,12 @@
+--- sql ---
+SELECT
+    *
+FROM
+    employees
+WHERE
+			ID  IN ( ?, ?) 
+
+--- params ---
+[1, 2]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager3Test/IfBlock.sql
