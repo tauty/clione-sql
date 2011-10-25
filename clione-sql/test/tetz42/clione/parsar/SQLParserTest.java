@@ -15,4 +15,11 @@ public class SQLParserTest {
 
 	}
 
+	@Test
+	public void bug_case() {
+		SQLNode sqlNode = new SQLParser("From Test")
+		.parse("ID /* ids */= 3 ");
+		assertEqualsWithFile(sqlNode, getClass(), "bug_case");
+	}
+
 }
