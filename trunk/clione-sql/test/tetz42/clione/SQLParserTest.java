@@ -92,40 +92,32 @@ public class SQLParserTest {
 
 	@Test
 	public void genSql_ireco_comment() throws IOException, SQLException {
-		// /* - /* - */ \n */�̃P�[�X
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass()
 						.getResourceAsStream("sql/SQLManagerTest/RecursiveCommentSelect.sql"));
 		System.out.println(dumper(man.sqlNode));
 		man.genSql(new HashMap<String, Object>());
-		// TODO
-		// �{���͂��̃P�[�X��WHERE�傲�Ə��������BgenSql�ŃR�����g�𖳎������@�́A����̉ۑ�B
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_ireco_comment");
 	}
 
 	@Test
 	public void genSql_ireco_comment2() throws IOException, SQLException {
-		// /* - \n /* - */ \n */�̃P�[�X
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream(
 						"sql/SQLManagerTest/RecursiveCommentSelect2.sql"));
 		System.out.println(dumper(man.sqlNode));
 		man.genSql(new HashMap<String, Object>());
-		// TODO
-		// �{���͂��̃P�[�X��WHERE�傲�Ə��������BgenSql�ŃR�����g�𖳎������@�́A����̉ۑ�B
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_ireco_comment2");
 	}
 
 	@Test(expected = ClioneFormatException.class)
 	public void genSql_wrong_comment() throws IOException, SQLException {
-		// /* - */ \n */�̃P�[�X
 		sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/SQLManagerTest/WrongCommentSelect.sql"));
 	}
 
 	@Test(expected = ClioneFormatException.class)
 	public void genSql_wrong_comment2() throws IOException, SQLException {
-		// /* - \n /* - */�̃P�[�X
 		sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/SQLManagerTest/WrongCommentSelect2.sql"));
 	}

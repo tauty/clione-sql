@@ -1,10 +1,5 @@
 package tetz42.clione.node;
 
-import static tetz42.clione.lang.LangUtil.*;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import tetz42.clione.lang.ClioneFuncFactory;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
@@ -12,10 +7,6 @@ import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.ParamMap;
 
 public class PlaceHolder implements IPlaceHolder {
-	private static final Pattern positivePtn = Pattern.compile(
-			"\\A(=|in|is)\\s+", Pattern.CASE_INSENSITIVE);
-	private static final Pattern negativePtn = Pattern.compile(
-			"\\A(!=|<>|not\\s+in|is\\s+not)\\s+", Pattern.CASE_INSENSITIVE);
 
 	private int begin;
 	private int length = 0;

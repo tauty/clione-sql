@@ -11,6 +11,7 @@ public class MatcherHolder {
 	private final Matcher matcher;
 	private final String src;
 
+	private Matcher lastMatcher;
 	private int pos = 0;
 	private int start = 0;
 	private int end = 0;
@@ -19,7 +20,7 @@ public class MatcherHolder {
 	private boolean isEnd = false;
 
 	public MatcherHolder(String src, Pattern ptn) {
-		this.matcher = ptn.matcher(src);
+		this.lastMatcher = this.matcher = ptn.matcher(src);
 		this.src = src;
 	}
 
@@ -53,15 +54,7 @@ public class MatcherHolder {
 	}
 
 	public Matcher get() {
-		return matcher;
-	}
-
-	public Matcher get(String key) {
-		Matcher m = matcherMap.get(key);
-		if (m == null)
-			throw new NullPointerException("Unknown Parameter '" + key
-					+ "' has passed!");
-		return m;
+		return lastMatcher;
 	}
 
 	public MatcherHolder next() {
@@ -149,6 +142,7 @@ public class MatcherHolder {
 	}
 
 	private boolean find(Matcher m) {
+		lastMatcher = m;
 		if (isEnd)
 			return false;
 		prePos = pos;
@@ -158,11 +152,13 @@ public class MatcherHolder {
 		pos = end = m.end();
 		if (prePos == pos)
 			pos++;
-		isEnd = m.hitEnd();
+		if (end >= src.length())
+			isEnd = true;
 		return true;
 	}
 
 	private boolean startsWith(Matcher m) {
+		lastMatcher = m;
 		if (isEnd)
 			return false;
 		if(!m.find(pos))
@@ -170,7 +166,8 @@ public class MatcherHolder {
 		if(this.pos != m.start())
 			return false;
 		pos = end = m.end();
-		isEnd = m.hitEnd();
+		if (end >= src.length())
+			isEnd = true;
 		return true;
 	}
 }

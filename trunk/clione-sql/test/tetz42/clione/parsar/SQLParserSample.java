@@ -214,8 +214,8 @@ public class SQLParserSample {
 		String operator = null;
 		boolean isPositive = false;
 		if (mh.startsWith(OPERATOR)) {
-			String positiveOpe = mh.get(OPERATOR).group(1);
-			String negativeOpe = mh.get(OPERATOR).group(2);
+			String positiveOpe = mh.get().group(1);
+			String negativeOpe = mh.get().group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
 		}
@@ -233,9 +233,9 @@ public class SQLParserSample {
 
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
 		while (mh.find(COMMENT)) {
-			if (mh.get(COMMENT).group().equals("*/"))
+			if (mh.get().group().equals("*/"))
 				return; // normal end
-			else if (mh.get(COMMENT).group().equals("/*"))
+			else if (mh.get().group().equals("/*"))
 				// in case nested '/*' is detected
 				findCommentEnd(mh, info);
 			else
@@ -269,7 +269,7 @@ public class SQLParserSample {
 			break;
 		default:
 			if (mh.startsWith(NORMAL)) {
-				valueInBack = new StrNode(mh.get(NORMAL).group());
+				valueInBack = new StrNode(mh.get().group());
 				mh.remember();
 			}
 		}
@@ -308,7 +308,7 @@ public class SQLParserSample {
 	 */
 	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
-		String comment = mh.get(LINEEND).group(1);
+		String comment = mh.get().group(1);
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 			return;
@@ -316,7 +316,7 @@ public class SQLParserSample {
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.addPlaceHolder(new PlaceHolder(comment, (String) null));
 		}
-		mh.back(mh.get(LINEEND).group(2).length()); // ready for next
+		mh.back(mh.get().group(2).length()); // ready for next
 		mh.remember();
 	}
 
