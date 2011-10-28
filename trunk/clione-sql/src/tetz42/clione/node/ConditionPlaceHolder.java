@@ -12,11 +12,11 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 	private static final int IN_MAX = 1000;
 
-	private final Node node;
+	private final INode node;
 	private final String operator;
 	private final boolean isPositive;
 
-	public ConditionPlaceHolder(Node node, String comment, boolean isPositive,
+	public ConditionPlaceHolder(INode node, String comment, boolean isPositive,
 			String operator, INode valueInBack) {
 		super(comment, valueInBack);
 		this.node = node;
@@ -35,7 +35,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 		if (inst.useValueInBack) {
 			nodeInst.addReplacement(" " + operator + " ");
-			return nodeInst.merge(inst);
+			return nodeInst.useValueInBack().merge(inst);
 		}
 
 		if (inst.params.size() <= IN_MAX)
@@ -63,6 +63,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 	private Instruction build(Instruction nodeInst, Instruction inst) {
 		Instruction result = new Instruction().merge(nodeInst);
+		result.status = inst.status;
 		if (!isParamExists(inst)) {
 			result.addReplacement(isPositive ? " IS NULL" : " IS NOT NULL");
 			return result;
