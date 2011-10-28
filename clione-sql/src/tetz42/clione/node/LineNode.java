@@ -29,6 +29,7 @@ public class LineNode extends Node {
 
 	private static final Pattern emptyLinePtn = Pattern
 			.compile("\\A[ \\t]*\\z");
+	private static final Pattern emptyPtn = Pattern.compile("\\s*");
 	private static final Pattern firstDelimPtn = Pattern.compile(
 			"\\A[ \\t]*(,|(and|or)\\s+)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern lastDelimPtn = Pattern.compile(
@@ -94,11 +95,13 @@ public class LineNode extends Node {
 		LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
 		LineNode firstMergedNode = null;
 		LineNode lastMergedNode = null;
-		boolean isAllEmpty = true;
+		boolean isDisposeExsists = false;
 		for (LineNode child : this.childBlocks) {
 			Instruction inst = child.perform(paramMap);
-			if (inst.isNodeDisposed)
+			if (inst.isNodeDisposed) {
+				isDisposeExsists = true;
 				continue;
+			}
 			if (result == null) {
 				result = inst;
 				firstMergedNode = child;
@@ -106,10 +109,10 @@ public class LineNode extends Node {
 				result.mergeLine(inst);
 			}
 			lastMergedNode = child;
-			if (!EmptyLineNode.class.isInstance(child))
-				isAllEmpty = false;
 		}
-		if (result == null || isAllEmpty)
+		if (isDisposeExsists
+				&& (result == null || result.replacement == null || emptyPtn
+						.matcher(result.replacement).matches()))
 			return new Instruction().nodeDispose();
 		return removeDelimiters(result, firstNode, firstMergedNode, lastNode,
 				lastMergedNode);

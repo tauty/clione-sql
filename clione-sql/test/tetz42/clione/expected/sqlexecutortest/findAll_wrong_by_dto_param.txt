@@ -7,7 +7,6 @@ SELECT
     WHERE
         age = ?
         AND name LIKE ?
-
 --- params ---
 [31, %H%]
 --- resource ---

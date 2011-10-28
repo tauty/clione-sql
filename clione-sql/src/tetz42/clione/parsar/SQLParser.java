@@ -134,7 +134,7 @@ public class SQLParser {
 		while (mh.find()) {
 			info.nodeSb.append(mh.getRememberedToStart());
 			String div = mh.get().group();
-			//			System.out.println("[" + div + "]");
+			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
@@ -146,7 +146,7 @@ public class SQLParser {
 				doParenthesis(mh, info);
 			} else if (div.equals("'") || div.equals("\"")) {
 				doString(mh, info, div);
-			} else if (startsWith(div, "and", "or", "union") || div.equals(",")) {
+			} else if (div.equals(",") || startsWith(div, "and", "or", "union")) {
 				info.nodeSb.append(div);
 				info.mergeNode();
 			} else {
@@ -163,6 +163,11 @@ public class SQLParser {
 				doEmptyLine(flatList, mh, info);
 			}
 		}
+		if (!info.isEmpty()) {
+			info.mergeNode();
+			flatList.add(info.fixLineNode());
+		}
+
 	}
 
 	private void doEmptyLine(List<LineNode> flatList, MatcherHolder mh,
@@ -200,8 +205,8 @@ public class SQLParser {
 		String operator = null;
 		boolean isPositive = false;
 		if (mh.startsWith(OPERATOR)) {
-			String positiveOpe = mh.get(OPERATOR).group(1);
-			String negativeOpe = mh.get(OPERATOR).group(2);
+			String positiveOpe = mh.get().group(1);
+			String negativeOpe = mh.get().group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
 		}
@@ -219,9 +224,9 @@ public class SQLParser {
 
 	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
 		while (mh.find(COMMENT)) {
-			if (mh.get(COMMENT).group().equals("*/"))
+			if (mh.get().group().equals("*/"))
 				return; // normal end
-			else if (mh.get(COMMENT).group().equals("/*"))
+			else if (mh.get().group().equals("/*"))
 				// in case nested '/*' is detected
 				findCommentEnd(mh, info);
 			else
@@ -255,7 +260,7 @@ public class SQLParser {
 			break;
 		default:
 			if (mh.startsWith(NORMAL)) {
-				valueInBack = new StrNode(mh.get(NORMAL).group());
+				valueInBack = new StrNode(mh.get().group());
 				mh.remember();
 			}
 		}
@@ -267,7 +272,7 @@ public class SQLParser {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
 		parseFunc(flatList, mh, info);
-		if (mh.isEnd())
+		if (mh.isEnd() && !")".equals(mh.get().group()))
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();
@@ -294,7 +299,7 @@ public class SQLParser {
 	 */
 	private void doLineComment(MatcherHolder mh, LineInfo info) {
 		mh.find(LINEEND);
-		String comment = mh.get(LINEEND).group(1);
+		String comment = mh.get().group(1);
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 			return;
@@ -302,7 +307,7 @@ public class SQLParser {
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.addPlaceHolder(new PlaceHolder(comment, (String) null));
 		}
-		mh.back(mh.get(LINEEND).group(2).length()); // ready for next
+		mh.back(mh.get().group(2).length()); // ready for next
 		mh.remember();
 	}
 

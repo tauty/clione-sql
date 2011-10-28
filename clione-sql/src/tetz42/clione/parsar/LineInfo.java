@@ -16,6 +16,11 @@ public class LineInfo {
 	StringBuilder lineSb;
 	int lineNo;
 
+	boolean isEmpty() {
+		return nodeSb.length() == 0 && node.holders.size() == 0
+				&& lineSb.length() == 0 && lineNode.holders.size() == 0;
+	}
+
 	void addPlaceHolder(IPlaceHolder holder) {
 		holder.setPosition(this.nodeSb.length());
 		this.node.holders.add(holder);
@@ -40,7 +45,7 @@ public class LineInfo {
 	}
 
 	Node fixNode() {
-		Matcher m = SQLParserSample.indentPtn.matcher(this.nodeSb);
+		Matcher m = SQLParser.indentPtn.matcher(this.nodeSb);
 		if (m.find()) {
 			String indent = m.group();
 			this.lineSb.append(indent);
@@ -103,4 +108,3 @@ public class LineInfo {
 		return this;
 	}
 }
-
