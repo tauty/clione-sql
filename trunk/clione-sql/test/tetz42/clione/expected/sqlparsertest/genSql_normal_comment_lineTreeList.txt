@@ -1,0 +1,98 @@
+SQLNode{
+	resourceInfo = "SQL file path:tetz42/clione/sql/SQLManagerTest/NormalComment.sql"
+	nodes = ArrayList[
+		LineNode{
+			beginLineNo = 1
+			endLineNo = 1
+			isDisposable = false
+			sql = "SELECT /*+ ORDERD */"
+			childBlocks = ArrayList[
+				LineNode{
+					beginLineNo = 2
+					endLineNo = 2
+					isDisposable = false
+					sql = "    *"
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[ ]
+				}
+			]
+			holders = ArrayList[ ]
+		}
+		LineNode{
+			beginLineNo = 3
+			endLineNo = 3
+			isDisposable = false
+			sql = "FROM /*! MYSQL */"
+			childBlocks = ArrayList[
+				LineNode{
+					beginLineNo = 4
+					endLineNo = 4
+					isDisposable = false
+					sql = "    EMPLOYEES"
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[ ]
+				}
+			]
+			holders = ArrayList[ ]
+		}
+		LineNode{
+			beginLineNo = 5
+			endLineNo = 5
+			isDisposable = false
+			sql = "WHERE"
+			childBlocks = ArrayList[
+				LineNode{
+					beginLineNo = 6
+					endLineNo = 6
+					isDisposable = false
+					sql = "	ABC = "
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[
+						PlaceHolder{
+							begin = 7
+							length = 0
+							valueInBack = "'tako'"
+							clione = LineParam{
+								isNegative = false
+								param = Param{
+									key = "TAKO"
+									isNegative = false
+									next = null
+								}
+								next = null
+							}
+						}
+					]
+				}
+				LineNode{
+					beginLineNo = 7
+					endLineNo = 7
+					isDisposable = false
+					sql = "	OR EFG = "
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[
+						PlaceHolder{
+							begin = 10
+							length = 0
+							valueInBack = "'tako'"
+							clione = Param{
+								key = "TAKO"
+								isNegative = false
+								next = null
+							}
+						}
+					]
+				}
+				LineNode{
+					beginLineNo = 8
+					endLineNo = 8
+					isDisposable = false
+					sql = "	OR HIJ = 'tako'"
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[ ]
+				}
+			]
+			holders = ArrayList[ ]
+		}
+	]
+}

@@ -1,0 +1,9 @@
+--- sql ---
+SELECT
+		*
+	FROM
+		employees
+--- params ---
+[]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager3Test/IndentBlankAndTab.sql

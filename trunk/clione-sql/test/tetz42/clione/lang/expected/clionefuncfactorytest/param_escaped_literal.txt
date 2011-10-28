@@ -1,0 +1,48 @@
+Param{
+	key = "KEY"
+	isNegative = false
+	next = SQLLiteral{
+		literal = "/* INNER_PARAM */'tako' IN('\100', '\200', '\nec')"
+		sqlNode = SQLNode{
+			resourceInfo = "Inside of SQL comment "
+			nodes = ArrayList[
+				LineNode{
+					beginLineNo = 1
+					endLineNo = 2
+					isDisposable = false
+					sql = " IN"
+					childBlocks = ArrayList[ ]
+					holders = ArrayList[
+						PlaceHolder{
+							begin = 0
+							length = 0
+							valueInBack = "'tako'"
+							clione = Param{
+								key = "INNER_PARAM"
+								isNegative = false
+								next = null
+							}
+						}
+						ParenthesisPlaceHolder{
+							pos = 3
+							sqlNode = SQLNode{
+								resourceInfo = "Inside of SQL comment "
+								nodes = ArrayList[
+									LineNode{
+										beginLineNo = 1
+										endLineNo = 1
+										isDisposable = false
+										sql = "'\100', '\200', '\nec'"
+										childBlocks = ArrayList[ ]
+										holders = ArrayList[ ]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+		next = null
+	}
+}
