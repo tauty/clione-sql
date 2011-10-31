@@ -23,6 +23,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.lang.Instruction;
+import tetz42.clione.lang.func.ClioneFunction;
+import tetz42.clione.lang.func.SQLLiteral;
+import tetz42.clione.lang.func.StrLiteral;
+import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.ParamMap;
 
 public class LineNode extends Node {
@@ -30,10 +34,6 @@ public class LineNode extends Node {
 	private static final Pattern emptyLinePtn = Pattern
 			.compile("\\A[ \\t]*\\z");
 	private static final Pattern emptyPtn = Pattern.compile("\\s*");
-	private static final Pattern firstDelimPtn = Pattern.compile(
-			"\\A[ \\t]*(,|(and|or)\\s+)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern lastDelimPtn = Pattern.compile(
-			"(,|and|or)[ \\t]*\\z", Pattern.CASE_INSENSITIVE);
 
 	public List<LineNode> childBlocks = new ArrayList<LineNode>();
 	private int beginLineNo = 0;
@@ -126,21 +126,22 @@ public class LineNode extends Node {
 			// remove first Delim
 			Matcher m = firstDelimPtn.matcher(result.replacement);
 			if (m.find())
-				removeDelimiter(result, m);
+				removeDelimiter(result, m, 2);
 		}
 		if (lastNode != lastMergedNode && !lastNode.isLastDelim()
 				&& lastMergedNode.isLastDelim()) {
-			// remove last Delim
+			// remove last Delimiter
 			Matcher m = lastDelimPtn.matcher(result.replacement);
 			if (m.find())
-				removeDelimiter(result, m);
+				removeDelimiter(result, m, 1);
 		}
 		return result;
 	}
 
-	private void removeDelimiter(Instruction result, Matcher m) {
+	private void removeDelimiter(Instruction result, Matcher m, int group) {
 		String s = result.replacement;
-		result.replacement(s.substring(0, m.start(1)) + s.substring(m.end(1)));
+		result.replacement(s.substring(0, m.start(group))
+				+ s.substring(m.end(group)));
 	}
 
 	public boolean isEmpty() {
@@ -148,21 +149,49 @@ public class LineNode extends Node {
 				&& this.holders.size() == 0 && this.childBlocks.size() == 0;
 	}
 
+	private static final Pattern firstDelimPtn = Pattern.compile(
+			"\\A([ \\t]*)(,|(and|or)\\s+|union\\s+(all\\s+)?)?",
+			Pattern.CASE_INSENSITIVE);
+
 	public boolean isFirstDelim() {
 		Matcher m = firstDelimPtn.matcher(sql);
-		if (!m.find())
-			return false;
-		if (holders.isEmpty())
-			return true;
-		return m.start(1) < holders.get(0).getPosition();
+		m.find();
+		String delim = m.group(2);
+
+		if (holders.size() != 0) {
+			IPlaceHolder holder = holders.get(0);
+			if (holder.getPosition() <= m.end(1)) {
+				ClioneFunction cf = holder.getFunction();
+				if (cf instanceof SQLLiteral || cf instanceof StrLiteral) {
+					Matcher m2 = firstDelimPtn.matcher(cf.getLiteral());
+					return m2.find() && !ClioneUtil.isEmpty(m2.group(2));
+				}
+				return false;
+			}
+		}
+		return !ClioneUtil.isEmpty(delim);
 	}
+
+	private static final Pattern lastDelimPtn = Pattern
+			.compile("(,|and|or|union(\\s+all)?)?([ \\t]*)\\z",
+					Pattern.CASE_INSENSITIVE);
 
 	public boolean isLastDelim() {
 		Matcher m = lastDelimPtn.matcher(sql);
-		if (!m.find())
-			return false;
-		if (holders.isEmpty())
-			return true;
-		return m.end(1) >= holders.get(holders.size() - 1).getPosition();
+		m.find();
+		String delim = m.group(1);
+
+		if (holders.size() != 0) {
+			IPlaceHolder holder = holders.get(holders.size() - 1);
+			if (holder.getPosition() >= m.start(2)) {
+				ClioneFunction cf = holder.getFunction();
+				if (cf instanceof SQLLiteral || cf instanceof StrLiteral) {
+					Matcher m2 = lastDelimPtn.matcher(cf.getLiteral());
+					return m2.find() && ClioneUtil.isEmpty(m.group(1));
+				}
+				return false;
+			}
+		}
+		return !ClioneUtil.isEmpty(delim);
 	}
 }

@@ -18,29 +18,14 @@ package tetz42.clione.gen;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import tetz42.clione.lang.Instruction;
-import tetz42.clione.lang.func.ClioneFunction;
-import tetz42.clione.lang.func.SQLLiteral;
-import tetz42.clione.lang.func.StrLiteral;
-import tetz42.clione.node.IPlaceHolder;
-import tetz42.clione.node.LineNode;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
 
 public class SQLGenerator {
-
-	private static final Pattern delimPtn = Pattern.compile(
-			"\\A(\\s*)(,|and\\s+|or\\s+)(.+)\\z", Pattern.CASE_INSENSITIVE
-					| Pattern.DOTALL);
-	private static final Pattern blankPtn = Pattern.compile("\\A(\\s*)");
-	private static final Pattern parenthesisClosePtn = Pattern
-			.compile("^\\s*\\)");
 
 	public String sql;
 	public List<Object> params;
@@ -79,95 +64,12 @@ public class SQLGenerator {
 				paramMap.putAll(map);
 			}
 
-//			StringBuilder sb = new StringBuilder();
-//			ArrayList<Object> params = new ArrayList<Object>();
-//
-//			this.genSql(sqlNode.nodes, paramMap, sb, params);
-//			this.params = params;
-//			return this.sql = sb.toString();
 			Instruction inst = sqlNode.perform(paramMap);
 			this.params = inst.params;
 			return this.sql = inst.replacement;
 		} finally {
 			popResourceInfo();
 			clearNegative();
-		}
-	}
-
-	private void genSql(List<LineNode> lineNodes, ParamMap paramMap,
-			StringBuilder sb, ArrayList<Object> params) {
-		int startTimeLength = sb.length();
-		boolean existsFirstDelim = false;
-		if (lineNodes.size() > 0) {
-			LineNode firstNode = lineNodes.get(0);
-			if (delimPtn.matcher(firstNode.sql).find())
-				existsFirstDelim = true;
-			else if (firstNode.holders.size() > 0) {
-				Matcher m = blankPtn.matcher(firstNode.sql);
-				IPlaceHolder holder = firstNode.holders.get(0);
-				if (m.find()) {
-					if (m.group(1).length() == holder.getPosition()) {
-						ClioneFunction cf = holder.getFunction();
-						if (cf instanceof SQLLiteral
-								|| cf instanceof StrLiteral) {
-							if (delimPtn.matcher(cf.getLiteral()).find())
-								existsFirstDelim = true;
-						}
-					}
-				}
-			}
-		}
-		for (LineNode lineNode : lineNodes) {
-			lineNode.setLineNo(); // for line No. information of resourceInfo
-			ArrayList<Object> subParams = new ArrayList<Object>();
-			StringBuilder subSql = genSubSql(lineNode, subParams, paramMap);
-			if (subSql == null)
-				continue;
-			if (!lineNode.childBlocks.isEmpty()) {
-				StringBuilder subSb = new StringBuilder();
-				this.genSql(lineNode.childBlocks, paramMap, subSb, subParams);
-				if (subSb.length() == 0)
-					continue;
-				subSql.append(CRLF).append(subSb);
-			}
-			if (sb.length() == startTimeLength
-					&& parenthesisClosePtn.matcher(subSql).find())
-				continue; // ignore ')'
-			if (sb.length() != 0)
-				sb.append(CRLF);
-			sb.append(subSql);
-			params.addAll(subParams);
-			isSqlOutputed = true;
-		}
-		if (!existsFirstDelim)
-			removeFirstDelimiter(sb);
-	}
-
-	private StringBuilder genSubSql(LineNode block,
-			ArrayList<Object> subParams, ParamMap paramMap) {
-		StringBuilder subSql = new StringBuilder(block.sql);
-		int sabun = 0;
-		for (IPlaceHolder holder : block.holders) {
-			Instruction inst = holder.perform(paramMap);
-			if (inst.isNodeDisposed)
-				return null;
-			if (inst.doNothing)
-				continue;
-			String replacement = inst.getReplacement();
-			subSql.replace(holder.getPosition() + sabun, holder.getPosition()
-					+ holder.getLength() + sabun, replacement);
-			subParams.addAll(inst.params);
-			sabun += replacement.length();
-		}
-		return subSql;
-	}
-
-	private void removeFirstDelimiter(StringBuilder subSb) {
-		Matcher m = delimPtn.matcher(subSb);
-		if (m.find()) {
-			int len1 = m.group(1).length();
-			int len2 = m.group(2).length();
-			subSb.delete(len1, len1 + len2);
 		}
 	}
 }
