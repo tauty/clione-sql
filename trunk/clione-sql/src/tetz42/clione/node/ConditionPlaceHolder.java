@@ -41,7 +41,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 		if (inst.params.size() <= IN_MAX)
 			return build(nodeInst, inst);
 
-		Instruction result = new Instruction().addReplacement("("
+		Instruction result = new Instruction().replacement("("
 				+ ClioneUtil.CRLF);
 		Object[] paramAry = inst.params.toArray();
 		for (int i = 0; i * IN_MAX <= paramAry.length; i++) {
@@ -52,7 +52,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			end = end < inst.params.size() ? end : paramAry.length;
 
 			ArrayList<Object> list = new ArrayList<Object>();
-			for(int j = start; j<end; j++)
+			for (int j = start; j < end; j++)
 				list.add(inst.params.get(j));
 
 			Instruction subInst = new Instruction();
