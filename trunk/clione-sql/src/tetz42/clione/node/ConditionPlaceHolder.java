@@ -43,13 +43,17 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 		Instruction result = new Instruction().addReplacement("("
 				+ ClioneUtil.CRLF);
-		for (int i = 0; i * IN_MAX >= inst.params.size(); i++) {
+		Object[] paramAry = inst.params.toArray();
+		for (int i = 0; i * IN_MAX <= paramAry.length; i++) {
+
 			result.addReplacement("\t").addReplacement(i == 0 ? "" : "OR ");
 			int start = i * IN_MAX;
 			int end = (i + 1) * IN_MAX;
-			end = end < inst.params.size() ? end : inst.params.size();
-			ArrayList<Object> list = new ArrayList<Object>(end - start);
-			System.arraycopy(inst.params, start, list, 0, end - start);
+			end = end < inst.params.size() ? end : paramAry.length;
+
+			ArrayList<Object> list = new ArrayList<Object>();
+			for(int j = start; j<end; j++)
+				list.add(inst.params.get(j));
 
 			Instruction subInst = new Instruction();
 			subInst.params = list;
