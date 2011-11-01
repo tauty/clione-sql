@@ -3,6 +3,8 @@ package tetz42.clione.node;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.test.Auty.*;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import tetz42.clione.lang.Instruction;
@@ -55,6 +57,20 @@ public class PlaceHolderTest {
 				"ID "), "?AAA", true, "= ", new StrNode("'AAA'"));
 		Instruction inst = holder.perform(params());
 		assertEqualsWithFile(inst, getClass(), "param_useInBack");
+	}
+
+	@Test
+	public void param_over1000() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "?AAA", true, "= ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 3333; i++) {
+			list.add("value" + i);
+		}
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param_over1000");
 	}
 
 }
