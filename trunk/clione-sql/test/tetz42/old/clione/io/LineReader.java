@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.clione.io;
+package tetz42.old.clione.io;
 
 import static tetz42.clione.util.ClioneUtil.*;
 

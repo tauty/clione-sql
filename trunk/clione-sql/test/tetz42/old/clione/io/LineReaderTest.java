@@ -1,4 +1,4 @@
-package tetz42.clione.io;
+package tetz42.old.clione.io;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.Test;
+
 
 public class LineReaderTest {
 
