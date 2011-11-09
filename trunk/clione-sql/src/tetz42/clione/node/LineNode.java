@@ -40,12 +40,8 @@ public class LineNode extends Node {
 	private int endLineNo = 0;
 
 	public LineNode(int lineNo) {
-		this(lineNo, lineNo);
-	}
-
-	public LineNode(int startNo, int endNo) {
-		beginLineNo = startNo;
-		endLineNo = endNo;
+		beginLineNo = lineNo;
+		endLineNo = lineNo;
 		setLineNo();
 	}
 
