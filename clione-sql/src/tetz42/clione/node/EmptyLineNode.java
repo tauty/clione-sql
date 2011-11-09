@@ -9,10 +9,6 @@ public class EmptyLineNode extends LineNode {
 		super(lineNo);
 	}
 
-	public EmptyLineNode(int startNo, int endNo) {
-		super(startNo, endNo);
-	}
-
 	@Override
 	public Instruction perform(ParamMap paramMap) {
 		return new Instruction().replacement("");
