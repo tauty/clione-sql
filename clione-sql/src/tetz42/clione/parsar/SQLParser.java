@@ -132,8 +132,8 @@ public class SQLParser {
 			LineInfo info) {
 		doEmptyLine(flatList, mh, info);
 		while (mh.find()) {
-			info.nodeSb.append(mh.getRememberedToStart());
-			String div = mh.get().group();
+			info.nodeSb.append(mh.nextToken());
+			String div = mh.getDelim();
 			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
@@ -167,7 +167,6 @@ public class SQLParser {
 			info.mergeNode();
 			flatList.add(info.fixLineNode());
 		}
-
 	}
 
 	private void doEmptyLine(List<LineNode> flatList, MatcherHolder mh,
@@ -191,7 +190,7 @@ public class SQLParser {
 	// find end comment and try to parse as function.
 	private void doMultiComment(MatcherHolder mh, LineInfo info) {
 		findCommentEnd(mh, info);
-		String comment = mh.getRememberedToStart();
+		String comment = mh.nextToken();
 		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
 			// Just a comment. Ignore.
 			return;
@@ -285,7 +284,7 @@ public class SQLParser {
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
 					+ type + "] unmatched!", getResourceInfo()));
-		String literal = mh.getRememberedToEnd();
+		String literal = mh.nextTokenDelim();
 		info.nodeSb.append(literal);
 		Matcher m = crlfPth.matcher(literal);
 		while (m.find())

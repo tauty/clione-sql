@@ -31,7 +31,7 @@ public class HereDoc {
 			if (!mh.find("END"))
 				throw new ClioneFormatException("The tag, <<" + key
 						+ ">>, must be closed by <</" + key + ">>!");
-			String val = mh.getRememberedToStart();
+			String val = mh.nextToken();
 			map.put(key, val);
 		}
 		return map;

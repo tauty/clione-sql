@@ -146,7 +146,7 @@ public class SQLParserSample {
 			LineInfo info) {
 		doEmptyLine(flatList, mh, info);
 		while (mh.find()) {
-			info.nodeSb.append(mh.getRememberedToStart());
+			info.nodeSb.append(mh.nextToken());
 			String div = mh.get().group();
 			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
@@ -200,7 +200,7 @@ public class SQLParserSample {
 	// find end comment and try to parse as function.
 	private void doMultiComment(MatcherHolder mh, LineInfo info) {
 		findCommentEnd(mh, info);
-		String comment = mh.getRememberedToStart();
+		String comment = mh.nextToken();
 		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
 			// Just a comment. Ignore.
 			return;
@@ -294,7 +294,7 @@ public class SQLParserSample {
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
 					+ type + "] unmatched!", getResourceInfo()));
-		String literal = mh.getRememberedToEnd();
+		String literal = mh.nextTokenDelim();
 		info.nodeSb.append(literal);
 		Matcher m = crlfPth.matcher(literal);
 		while (m.find())
