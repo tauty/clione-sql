@@ -29,6 +29,30 @@ public class MatcherHolder {
 		return this;
 	}
 
+	public String getDelim() {
+		if (lastMatcher == null)
+			return "";
+		return get().group();
+	}
+
+	public boolean hasNext() {
+		return hasNext(matcher);
+	}
+
+	public boolean hasNext(String key) {
+		Matcher m = matcherMap.get(key);
+		if (m == null)
+			throw new NullPointerException("Unknown Parameter '" + key
+					+ "' has passed!");
+		return hasNext(m);
+	}
+
+	// TODO [delim]aaa[delim]bbb[delim] -> '', 'aaa', 'bbb', ''
+	private boolean hasNext(Matcher m) {
+		boolean result = find(m);
+		return result ? result : remembered < src.length();
+	}
+
 	public boolean find() {
 		return find(matcher);
 	}
@@ -90,24 +114,24 @@ public class MatcherHolder {
 		return this;
 	}
 
-	public String getRememberedToStart() {
+	public String nextToken() {
 		String result = src.substring(remembered, start);
 		remember();
 		return result;
 	}
 
-	public String getRememberedToStartWithoutRemember() {
+	public String getToken() {
 		String result = src.substring(remembered, start);
 		return result;
 	}
 
-	public String getRememberedToEnd() {
+	public String nextTokenDelim() {
 		String result = src.substring(remembered, end);
 		remember();
 		return result;
 	}
 
-	public String getRememberedToEndWithoutRemember() {
+	public String getTokenDelim() {
 		String result = src.substring(remembered, end);
 		return result;
 	}
@@ -134,8 +158,8 @@ public class MatcherHolder {
 		return this.src;
 	}
 
-	public char getNextChar(){
-		if(pos >= src.length()){
+	public char getNextChar() {
+		if (pos >= src.length()) {
 			return 0;
 		}
 		return src.charAt(pos);
@@ -146,8 +170,12 @@ public class MatcherHolder {
 		if (isEnd)
 			return false;
 		prePos = pos;
-		if(!m.find(pos))
+		if (!m.find(pos)) {
+			lastMatcher = null;
+			isEnd = true;
+			start = end = pos = src.length();
 			return false;
+		}
 		this.start = m.start();
 		pos = end = m.end();
 		if (prePos == pos)
@@ -161,9 +189,9 @@ public class MatcherHolder {
 		lastMatcher = m;
 		if (isEnd)
 			return false;
-		if(!m.find(pos))
+		if (!m.find(pos))
 			return false;
-		if(this.pos != m.start())
+		if (this.pos != m.start())
 			return false;
 		pos = end = m.end();
 		if (end >= src.length())
