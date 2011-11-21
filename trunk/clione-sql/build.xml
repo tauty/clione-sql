@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ====================================================================== 
-     2010/11/09 9:05:24                                                        
+<!-- ======================================================================
+     2010/11/09 9:05:24
 
-     project    
+     project
      description
-                   
-     tetz                                                                
+
+     tetz
      ====================================================================== -->
 <project name="project" default="mkjar">
 	<description>
@@ -13,7 +13,7 @@
     </description>
 
 	<property name="basename" value="clione-sql" />
-	<property name="version" value="0.4.3" />
+	<property name="version" value="0.5.0b1" />
 	<property name="src" location="./src" />
 	<property name="classes" location="./classes" />
 	<property name="lib" location="./lib" />
