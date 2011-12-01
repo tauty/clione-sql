@@ -12,10 +12,11 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.UnsupportedTypeException;
 import tetz42.clione.io.IOUtil;
+import tetz42.util.Const;
 
 public class ClioneUtil {
 
-	public static final String CRLF = System.getProperty("line.separator");
+	public static final String CRLF = Const.CRLF;
 
 	public static <T> List<T> join(List<T>... dests) {
 		List<T> list = new ArrayList<T>();

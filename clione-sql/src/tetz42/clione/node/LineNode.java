@@ -87,12 +87,19 @@ public class LineNode extends Node {
 		if (this.childBlocks.isEmpty())
 			return new Instruction().doNothing();
 		Instruction result = null;
-		LineNode firstNode = childBlocks.get(0);
-		LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
+		// LineNode firstNode = childBlocks.get(0);
+		// LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
+		LineNode firstNode = null;
+		LineNode lastNode = null;
 		LineNode firstMergedNode = null;
 		LineNode lastMergedNode = null;
 		boolean isDisposeExsists = false;
 		for (LineNode child : this.childBlocks) {
+			if (!EmptyLineNode.class.isInstance(child)) {
+				lastNode = child;
+				if (firstNode == null)
+					firstNode = child;
+			}
 			Instruction inst = child.perform(paramMap);
 			if (inst.isNodeDisposed) {
 				isDisposeExsists = true;
@@ -100,11 +107,14 @@ public class LineNode extends Node {
 			}
 			if (result == null) {
 				result = inst;
-				firstMergedNode = child;
 			} else {
 				result.mergeLine(inst);
 			}
-			lastMergedNode = child;
+			if (firstMergedNode == null
+					&& !EmptyLineNode.class.isInstance(child))
+				firstMergedNode = child;
+			if (!EmptyLineNode.class.isInstance(child))
+				lastMergedNode = child;
 		}
 		if (isDisposeExsists
 				&& (result == null || result.replacement == null || emptyPtn
@@ -117,6 +127,8 @@ public class LineNode extends Node {
 	private Instruction removeDelimiters(Instruction result,
 			LineNode firstNode, LineNode firstMergedNode, LineNode lastNode,
 			LineNode lastMergedNode) {
+		if(firstNode == null || firstMergedNode == null)
+			return result;
 		if (firstNode != firstMergedNode && !firstNode.isFirstDelim()
 				&& firstMergedNode.isFirstDelim()) {
 			// remove first Delim
@@ -146,7 +158,7 @@ public class LineNode extends Node {
 	}
 
 	private static final Pattern firstDelimPtn = Pattern.compile(
-			"\\A([ \\t]*)(,|(and|or)\\s+|union\\s+(all\\s+)?)?",
+			"\\A(\\s*)(,|(and|or)\\s+|union\\s+(all\\s+)?)?",
 			Pattern.CASE_INSENSITIVE);
 
 	public boolean isFirstDelim() {

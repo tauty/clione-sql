@@ -3,9 +3,9 @@ package tetz42.clione.io;
 import java.io.Closeable;
 import java.io.IOException;
 
-import tetz42.clione.exception.IORuntimeException;
-import tetz42.clione.exception.ResourceClosingException;
-import tetz42.clione.exception.WrapException;
+import tetz42.util.exception.IORuntimeException;
+import tetz42.util.exception.ResourceClosingException;
+import tetz42.util.exception.WrapException;
 
 public abstract class IOWrapper<T> {
 

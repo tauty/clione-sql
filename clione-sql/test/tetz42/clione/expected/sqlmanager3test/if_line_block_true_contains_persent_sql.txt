@@ -6,6 +6,7 @@ FROM
 WHERE
 	
 		ADDRESS like ? ESCAPE '#'
+
 --- params ---
 [%#%o#_com]
 --- resource ---

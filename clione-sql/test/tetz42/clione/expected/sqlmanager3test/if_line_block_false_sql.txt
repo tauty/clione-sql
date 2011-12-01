@@ -6,6 +6,7 @@ FROM
 WHERE
 	
 		ID  IN ( ?, ?)
+
 --- params ---
 [1, 2]
 --- resource ---

@@ -5,7 +5,8 @@ Instruction{
 	replacement = "SELECT
         *
     FROM
-        people"
+        people
+"
 	status = false
 	params = ArrayList[ ]
 	next = null

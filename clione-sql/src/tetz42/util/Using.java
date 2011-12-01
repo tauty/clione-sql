@@ -9,10 +9,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import tetz42.clione.exception.IORuntimeException;
-import tetz42.clione.exception.SQLRuntimeException;
 import tetz42.clione.exception.UnsupportedTypeException;
-import tetz42.clione.exception.WrapException;
+import tetz42.util.exception.IORuntimeException;
+import tetz42.util.exception.SQLRuntimeException;
+import tetz42.util.exception.WrapException;
 
 public abstract class Using<T> {
 

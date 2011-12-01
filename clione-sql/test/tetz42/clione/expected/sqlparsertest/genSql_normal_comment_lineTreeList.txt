@@ -94,5 +94,13 @@ SQLNode{
 			]
 			holders = ArrayList[ ]
 		}
+		LineNode{
+			beginLineNo = 9
+			endLineNo = 9
+			isDisposable = false
+			sql = ""
+			childBlocks = ArrayList[ ]
+			holders = ArrayList[ ]
+		}
 	]
 }

@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import tetz42.clione.exception.SQLRuntimeException;
-import tetz42.clione.exception.WrapException;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.exception.SQLRuntimeException;
+import tetz42.util.exception.WrapException;
 
 public class SQLIterator<T> implements Iterable<T> {
 

@@ -1,0 +1,12 @@
+SELECT
+	*
+FROM
+	DUAL
+WHERE
+	ID = 'AAA'
+	AND (
+		( 
+			FOO = 'FOO'
+			AND BAR = 'BAR'
+		)
+	)

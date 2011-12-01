@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.node.ConditionPlaceHolder;
 import tetz42.clione.node.EmptyLineNode;
@@ -24,8 +23,9 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.setting.Config;
-import tetz42.util.MatcherHolder;
+import tetz42.util.RegexpTokenizer;
 import tetz42.util.ObjDumper4j;
+import tetz42.util.exception.WrapException;
 
 public class SQLParserSample {
 
@@ -129,11 +129,11 @@ public class SQLParserSample {
 
 	private List<LineNode> parseFunction(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
+		RegexpTokenizer mh = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
 				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn).bind(
 						NORMAL, normalValuePtn).bind(EMPTYLN, emptyLinePtn)
-				.remember();
+				.updateTokenPosition();
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, mh, info);
 		if (!mh.isEnd())
@@ -142,12 +142,12 @@ public class SQLParserSample {
 		return flatList;
 	}
 
-	private void parseFunc(final List<LineNode> flatList, MatcherHolder mh,
+	private void parseFunc(final List<LineNode> flatList, RegexpTokenizer mh,
 			LineInfo info) {
 		doEmptyLine(flatList, mh, info);
 		while (mh.find()) {
 			info.nodeSb.append(mh.nextToken());
-			String div = mh.get().group();
+			String div = mh.matcher().group();
 			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
@@ -179,12 +179,12 @@ public class SQLParserSample {
 		}
 	}
 
-	private void doEmptyLine(List<LineNode> flatList, MatcherHolder mh,
+	private void doEmptyLine(List<LineNode> flatList, RegexpTokenizer mh,
 			LineInfo info) {
 		while (mh.startsWith(EMPTYLN)) {
 			flatList.add(new EmptyLineNode(info.lineNo));
 			info.fixLineNode();
-			mh.remember();
+			mh.updateTokenPosition();
 		}
 	}
 
@@ -198,7 +198,7 @@ public class SQLParserSample {
 	}
 
 	// find end comment and try to parse as function.
-	private void doMultiComment(MatcherHolder mh, LineInfo info) {
+	private void doMultiComment(RegexpTokenizer mh, LineInfo info) {
 		findCommentEnd(mh, info);
 		String comment = mh.nextToken();
 		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
@@ -214,8 +214,8 @@ public class SQLParserSample {
 		String operator = null;
 		boolean isPositive = false;
 		if (mh.startsWith(OPERATOR)) {
-			String positiveOpe = mh.get().group(1);
-			String negativeOpe = mh.get().group(2);
+			String positiveOpe = mh.matcher().group(1);
+			String negativeOpe = mh.matcher().group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
 		}
@@ -231,11 +231,11 @@ public class SQLParserSample {
 		}
 	}
 
-	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
+	private void findCommentEnd(RegexpTokenizer mh, LineInfo info) {
 		while (mh.find(COMMENT)) {
-			if (mh.get().group().equals("*/"))
+			if (mh.matcher().group().equals("*/"))
 				return; // normal end
-			else if (mh.get().group().equals("/*"))
+			else if (mh.matcher().group().equals("/*"))
 				// in case nested '/*' is detected
 				findCommentEnd(mh, info);
 			else
@@ -246,20 +246,20 @@ public class SQLParserSample {
 				"SQL Format Error: too much '/*'", getResourceInfo()));
 	}
 
-	private INode genValueInBack(MatcherHolder mh, LineInfo info) {
+	private INode genValueInBack(RegexpTokenizer mh, LineInfo info) {
 		INode valueInBack = null;
 		char c = mh.getNextChar();
 		switch (c) {
 		case '\'':
 		case '"':
-			mh.next().remember();
+			mh.forward().updateTokenPosition();
 			info.push();
 			doString(mh, info, "" + c);
 			valueInBack = new StrNode(info.nodeSb.toString());
 			info.pop();
 			break;
 		case '(':
-			mh.next().remember();
+			mh.forward().updateTokenPosition();
 			info.push();
 			doParenthesis(mh, info);
 			ParenthesisPlaceHolder holder = (ParenthesisPlaceHolder) info.node.holders
@@ -269,15 +269,15 @@ public class SQLParserSample {
 			break;
 		default:
 			if (mh.startsWith(NORMAL)) {
-				valueInBack = new StrNode(mh.get().group());
-				mh.remember();
+				valueInBack = new StrNode(mh.matcher().group());
+				mh.updateTokenPosition();
 			}
 		}
 		return valueInBack;
 	}
 
 	// find end parenthesis and try to parse as SQLNode.
-	private void doParenthesis(MatcherHolder mh, LineInfo info) {
+	private void doParenthesis(RegexpTokenizer mh, LineInfo info) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
 		parseFunc(flatList, mh, info);
@@ -289,7 +289,7 @@ public class SQLParserSample {
 	}
 
 	// find end string literal.
-	private void doString(MatcherHolder mh, LineInfo info, final String type) {
+	private void doString(RegexpTokenizer mh, LineInfo info, final String type) {
 		info.nodeSb.append(type);
 		if (!mh.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
@@ -306,9 +306,9 @@ public class SQLParserSample {
 	 * line if it is the sign of join, otherwise don't add to SQL because it's
 	 * just a comment.
 	 */
-	private void doLineComment(MatcherHolder mh, LineInfo info) {
+	private void doLineComment(RegexpTokenizer mh, LineInfo info) {
 		mh.find(LINEEND);
-		String comment = mh.get().group(1);
+		String comment = mh.matcher().group(1);
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 			return;
@@ -316,8 +316,8 @@ public class SQLParserSample {
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.addPlaceHolder(new PlaceHolder(comment, (String) null));
 		}
-		mh.back(mh.get().group(2).length()); // ready for next
-		mh.remember();
+		mh.backward(mh.matcher().group(2).length()); // ready for next
+		mh.updateTokenPosition();
 	}
 
 	private SQLNode parseIndent(List<LineNode> flatList) {
