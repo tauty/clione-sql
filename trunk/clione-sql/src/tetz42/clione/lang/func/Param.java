@@ -42,7 +42,6 @@ public class Param extends ClioneFunction {
 			ArrayList<Object> list = new ArrayList<Object>();
 			int length = Array.getLength(val);
 			boolean isTrue = false;
-			;
 			for (int i = 0; i < length; i++) {
 				Object e = Array.get(val, i);
 				if (!isNegative(e))
