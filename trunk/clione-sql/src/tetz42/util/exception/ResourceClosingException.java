@@ -1,4 +1,4 @@
-package tetz42.clione.exception;
+package tetz42.util.exception;
 
 import static tetz42.clione.util.ClioneUtil.*;
 

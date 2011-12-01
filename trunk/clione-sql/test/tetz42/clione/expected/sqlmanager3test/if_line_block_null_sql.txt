@@ -6,6 +6,7 @@ FROM
 WHERE
 	
 		ID  IS NULL
+
 --- params ---
 []
 --- resource ---

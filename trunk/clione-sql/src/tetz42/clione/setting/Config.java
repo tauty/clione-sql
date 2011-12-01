@@ -3,8 +3,8 @@ package tetz42.clione.setting;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
-import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
+import tetz42.util.exception.WrapException;
 
 public class Config {
 

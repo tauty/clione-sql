@@ -26,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.exception.WrapException;
 import tetz42.clione.io.IOUtil;
 import tetz42.clione.node.ConditionPlaceHolder;
 import tetz42.clione.node.EmptyLineNode;
@@ -38,7 +37,8 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.setting.Config;
-import tetz42.util.MatcherHolder;
+import tetz42.util.RegexpTokenizer;
+import tetz42.util.exception.WrapException;
 
 public class SQLParser {
 
@@ -51,7 +51,7 @@ public class SQLParser {
 	private static final String EMPTYLN = "EMPTYLN";
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)|\\z"
+			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)"
 					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern commentPtn = Pattern
@@ -115,37 +115,37 @@ public class SQLParser {
 
 	private List<LineNode> parseFunction(String src) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
-		MatcherHolder mh = new MatcherHolder(src, delimPtn).bind(COMMENT,
+		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(LINEEND, lineEndPtn).bind("'", singleStrPtn)
 				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn).bind(
-						NORMAL, normalValuePtn).bind(EMPTYLN, emptyLinePtn)
-				.remember();
+						NORMAL, normalValuePtn).bind(EMPTYLN, emptyLinePtn);
 		LineInfo info = new LineInfo(1);
-		parseFunc(flatList, mh, info);
-		if (!mh.isEnd())
+		parseFunc(flatList, rt, info);
+		if (!rt.isEnd())
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much ')'", getResourceInfo()));
 		return flatList;
 	}
 
-	private void parseFunc(final List<LineNode> flatList, MatcherHolder mh,
+	private void parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
 			LineInfo info) {
-		doEmptyLine(flatList, mh, info);
-		while (mh.find()) {
-			info.nodeSb.append(mh.nextToken());
-			String div = mh.getDelim();
+		doEmptyLine(flatList, rt, info);
+		// while (mh.find()) {
+		while (rt.hasNext()) {
+			info.nodeSb.append(rt.nextToken());
+			String div = rt.getDelim();
 			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(joinByCrlf(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
 			} else if (div.equals("--")) {
-				doLineComment(mh, info);
+				doLineComment(rt, info);
 			} else if (div.equals("/*")) {
-				doMultiComment(mh, info);
+				doMultiComment(rt, info);
 			} else if (div.equals("(")) {
-				doParenthesis(mh, info);
+				doParenthesis(rt, info);
 			} else if (div.equals("'") || div.equals("\"")) {
-				doString(mh, info, div);
+				doString(rt, info, div);
 			} else if (div.equals(",") || startsWith(div, "and", "or", "union")) {
 				info.nodeSb.append(div);
 				info.mergeNode();
@@ -160,21 +160,21 @@ public class SQLParser {
 				flatList.add(info.fixLineNode());
 				if (div.equals(")"))
 					break;
-				doEmptyLine(flatList, mh, info);
+				doEmptyLine(flatList, rt, info);
 			}
 		}
-		if (!info.isEmpty()) {
-			info.mergeNode();
-			flatList.add(info.fixLineNode());
-		}
+		// if (!info.isEmpty()) {
+		// info.mergeNode();
+		// flatList.add(info.fixLineNode());
+		// }
 	}
 
-	private void doEmptyLine(List<LineNode> flatList, MatcherHolder mh,
+	private void doEmptyLine(List<LineNode> flatList, RegexpTokenizer rt,
 			LineInfo info) {
-		while (mh.startsWith(EMPTYLN)) {
+		while (rt.startsWith(EMPTYLN)) {
 			flatList.add(new EmptyLineNode(info.lineNo));
 			info.fixLineNode();
-			mh.remember();
+			rt.updateTokenPosition();
 		}
 	}
 
@@ -188,29 +188,33 @@ public class SQLParser {
 	}
 
 	// find end comment and try to parse as function.
-	private void doMultiComment(MatcherHolder mh, LineInfo info) {
-		findCommentEnd(mh, info);
-		String comment = mh.nextToken();
+	private void doMultiComment(RegexpTokenizer rt, LineInfo info) {
+		findCommentEnd(rt, info);
+		// String comment = mh.nextToken();
+		String comment = rt.getToken();
 		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
 			// Just a comment. Ignore.
+			rt.updateTokenPosition();
 			return;
 		}
 		if ("!+".contains(comment.substring(0, 1))) {
 			// hint clause.
-			info.nodeSb.append("/*" + comment + "*/");
+			// info.nodeSb.append("/*" + comment + "*/");
+			info.nodeSb.append(rt.nextDelimTokenDelim());
 			return;
 		}
+		rt.updateTokenPosition();
 
 		String operator = null;
 		boolean isPositive = false;
-		if (mh.startsWith(OPERATOR)) {
-			String positiveOpe = mh.get().group(1);
-			String negativeOpe = mh.get().group(2);
+		if (rt.startsWith(OPERATOR)) {
+			String positiveOpe = rt.matcher().group(1);
+			String negativeOpe = rt.matcher().group(2);
 			isPositive = positiveOpe != null;
 			operator = isPositive ? positiveOpe : negativeOpe;
 		}
 
-		INode valueInBack = genValueInBack(mh, info);
+		INode valueInBack = genValueInBack(rt, info);
 		if (operator == null) {
 			info.mergeNode();
 			info.addPlaceHolder(new PlaceHolder(comment, valueInBack));
@@ -221,13 +225,13 @@ public class SQLParser {
 		}
 	}
 
-	private void findCommentEnd(MatcherHolder mh, LineInfo info) {
-		while (mh.find(COMMENT)) {
-			if (mh.get().group().equals("*/"))
+	private void findCommentEnd(RegexpTokenizer rt, LineInfo info) {
+		while (rt.find(COMMENT)) {
+			if (rt.matcher().group().equals("*/"))
 				return; // normal end
-			else if (mh.get().group().equals("/*"))
+			else if (rt.matcher().group().equals("/*"))
 				// in case nested '/*' is detected
-				findCommentEnd(mh, info);
+				findCommentEnd(rt, info);
 			else
 				// in case CRLF is detected
 				info.addLineNo();
@@ -236,42 +240,42 @@ public class SQLParser {
 				"SQL Format Error: too much '/*'", getResourceInfo()));
 	}
 
-	private INode genValueInBack(MatcherHolder mh, LineInfo info) {
+	private INode genValueInBack(RegexpTokenizer rt, LineInfo info) {
 		INode valueInBack = null;
-		char c = mh.getNextChar();
+		char c = rt.getNextChar();
 		switch (c) {
 		case '\'':
 		case '"':
-			mh.next().remember();
+			rt.forward().updateTokenPosition();
 			info.push();
-			doString(mh, info, "" + c);
+			doString(rt, info, "" + c);
 			valueInBack = new StrNode(info.nodeSb.toString());
 			info.pop();
 			break;
 		case '(':
-			mh.next().remember();
+			rt.forward().updateTokenPosition();
 			info.push();
-			doParenthesis(mh, info);
+			doParenthesis(rt, info);
 			ParenthesisPlaceHolder holder = (ParenthesisPlaceHolder) info.node.holders
 					.get(0);
 			valueInBack = holder.sqlNode();
 			info.pop();
 			break;
 		default:
-			if (mh.startsWith(NORMAL)) {
-				valueInBack = new StrNode(mh.get().group());
-				mh.remember();
+			if (rt.startsWith(NORMAL)) {
+				valueInBack = new StrNode(rt.matcher().group());
+				rt.updateTokenPosition();
 			}
 		}
 		return valueInBack;
 	}
 
 	// find end parenthesis and try to parse as SQLNode.
-	private void doParenthesis(MatcherHolder mh, LineInfo info) {
+	private void doParenthesis(RegexpTokenizer rt, LineInfo info) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
-		parseFunc(flatList, mh, info);
-		if (mh.isEnd() && !")".equals(mh.get().group()))
+		parseFunc(flatList, rt, info);
+		if (rt.isEnd() && !")".equals(rt.matcher().group()))
 			throw new ClioneFormatException(joinByCrlf(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();
@@ -279,12 +283,12 @@ public class SQLParser {
 	}
 
 	// find end string literal.
-	private void doString(MatcherHolder mh, LineInfo info, final String type) {
+	private void doString(RegexpTokenizer rt, LineInfo info, final String type) {
 		info.nodeSb.append(type);
-		if (!mh.find(type))
+		if (!rt.find(type))
 			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
 					+ type + "] unmatched!", getResourceInfo()));
-		String literal = mh.nextTokenDelim();
+		String literal = rt.nextTokenDelim();
 		info.nodeSb.append(literal);
 		Matcher m = crlfPth.matcher(literal);
 		while (m.find())
@@ -296,9 +300,9 @@ public class SQLParser {
 	 * line if it is the sign of join, otherwise don't add to SQL because it's
 	 * just a comment.
 	 */
-	private void doLineComment(MatcherHolder mh, LineInfo info) {
-		mh.find(LINEEND);
-		String comment = mh.get().group(1);
+	private void doLineComment(RegexpTokenizer rt, LineInfo info) {
+		rt.find(LINEEND);
+		String comment = rt.matcher().group(1);
 		if (isEmpty(comment) || isAllSpace(comment)) {
 			info.addLineNo(); // because find the line end.
 			return;
@@ -306,8 +310,8 @@ public class SQLParser {
 				&& "$@&?#%'\":|".contains(comment.substring(1, 2))) {
 			info.addPlaceHolder(new PlaceHolder(comment, (String) null));
 		}
-		mh.back(mh.get().group(2).length()); // ready for next
-		mh.remember();
+		rt.backward(rt.matcher().group(2).length()); // ready for next
+		rt.updateTokenPosition();
 	}
 
 	private SQLNode parseIndent(List<LineNode> flatList) {

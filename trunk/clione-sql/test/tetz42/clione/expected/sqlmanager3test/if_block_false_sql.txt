@@ -5,6 +5,7 @@ FROM
     employees
 WHERE
 			ID  IN ( ?, ?) 
+
 --- params ---
 [1, 2]
 --- resource ---

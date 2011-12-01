@@ -35,8 +35,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
-import tetz42.clione.exception.WrapException;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.exception.WrapException;
 
 public class SQLManagerTest {
 

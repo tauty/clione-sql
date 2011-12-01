@@ -1,4 +1,4 @@
-package tetz42.clione.exception;
+package tetz42.util.exception;
 
 
 public class SQLRuntimeException extends RuntimeException {

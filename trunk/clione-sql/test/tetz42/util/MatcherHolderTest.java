@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import tetz42.util.MatcherHolder;
+import tetz42.util.RegexpTokenizer;
 
 
 public class MatcherHolderTest {
@@ -16,12 +16,12 @@ public class MatcherHolderTest {
 	
 	@Test
 	public void getNextChar() throws Exception{
-		MatcherHolder mh = new MatcherHolder("0abcdefgh9", ptn);
+		RegexpTokenizer mh = new RegexpTokenizer("0abcdefgh9", ptn);
 		assertThat(mh.find(), is(true));
-		assertThat(mh.get().group(), is("0"));
+		assertThat(mh.matcher().group(), is("0"));
 		assertThat(mh.getNextChar(), is('a'));
 		assertThat(mh.find(), is(true));
-		assertThat(mh.get().group(), is("9"));
+		assertThat(mh.matcher().group(), is("9"));
 		assertThat(mh.getNextChar(), is((char)0));
 	}
 	

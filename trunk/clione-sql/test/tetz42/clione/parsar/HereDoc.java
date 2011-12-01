@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.io.IOUtil;
-import tetz42.util.MatcherHolder;
+import tetz42.util.RegexpTokenizer;
 
 public class HereDoc {
 
@@ -22,10 +22,10 @@ public class HereDoc {
 
 	private static Map<String, String> parse(String s) {
 		Map<String, String> map = new HashMap<String, String>();
-		MatcherHolder mh = new MatcherHolder(s, ptn);
+		RegexpTokenizer mh = new RegexpTokenizer(s, ptn);
 		while (mh.find()) {
-			String key = mh.get().group(1);
-			mh.remember();
+			String key = mh.matcher().group(1);
+			mh.updateTokenPosition();
 			Pattern endPtn = Pattern.compile("<</" + key + ">>");
 			mh.bind("END", endPtn);
 			if (!mh.find("END"))

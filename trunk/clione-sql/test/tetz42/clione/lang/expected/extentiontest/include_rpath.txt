@@ -8,5 +8,6 @@ SELECT
         	OR name in (SELECT
         *
     FROM
-        people)
+        people
+)
         )

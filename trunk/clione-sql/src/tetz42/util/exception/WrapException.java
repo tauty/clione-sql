@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.clione.exception;
+package tetz42.util.exception;
 
 public class WrapException extends RuntimeException {
 

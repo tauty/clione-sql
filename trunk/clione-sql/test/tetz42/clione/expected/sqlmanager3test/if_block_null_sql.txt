@@ -5,6 +5,7 @@ FROM
     employees
 WHERE
 			ID  IS NULL 
+
 --- params ---
 []
 --- resource ---
