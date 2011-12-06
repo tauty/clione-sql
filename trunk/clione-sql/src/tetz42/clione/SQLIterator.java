@@ -26,12 +26,17 @@ public class SQLIterator<T> implements Iterable<T> {
 	private final HashMap<String, FSet> fieldMap;
 
 	public SQLIterator(SQLExecutor executor, Class<T> clazz,
-			Map<String, Object> paramMap) throws SQLException {
+			Map<String, Object> paramMap) {
 		this.executor = executor;
 		this.clazz = clazz;
-		executor.stmt = executor.genStmt(paramMap);
-		executor.rs = executor.stmt.executeQuery();
-		this.md = executor.rs.getMetaData();
+		try {
+			executor.stmt = executor.genStmt(paramMap);
+			executor.rs = executor.stmt.executeQuery();
+			this.md = executor.rs.getMetaData();
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(joinByCrlf(e.getMessage(),
+					executor.getSQLInfo()), e);
+		}
 		Class<?> entityClass = clazz;
 		fieldMap = new HashMap<String, FSet>();
 		while (entityClass != null && entityClass != Object.class) {
