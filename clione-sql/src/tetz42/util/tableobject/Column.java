@@ -1,42 +1,18 @@
 package tetz42.util.tableobject;
 
+import static tetz42.util.tableobject.TOUtil.*;
+
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import tetz42.util.exception.WrapException;
-import tetz42.util.tableobject.annotation.Title;
+import tetz42.util.tableobject.annotation.ColumnDef;
+import tetz42.util.tableobject.tables.TableObject1.ContextValues;
+import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
 
 public class Column<T> {
-
-	protected static final Set<String> primitiveSet;
-	static {
-		HashSet<String> map = new HashSet<String>();
-		map.add(Object.class.getName());
-		map.add(Class.class.getName());
-		map.add(Boolean.class.getName());
-		map.add(Character.class.getName());
-		map.add(Number.class.getName());
-		map.add(Byte.class.getName());
-		map.add(Short.class.getName());
-		map.add(Integer.class.getName());
-		map.add(Long.class.getName());
-		map.add(Float.class.getName());
-		map.add(Double.class.getName());
-		map.add(BigInteger.class.getName());
-		map.add(BigDecimal.class.getName());
-		map.add(AtomicInteger.class.getName());
-		map.add(AtomicLong.class.getName());
-		map.add(String.class.getName());
-		primitiveSet = Collections.unmodifiableSet(map);
-	}
 
 	private final Class<T> cls;
 	private final Map<String, String> aliasMap;
@@ -45,14 +21,23 @@ public class Column<T> {
 	private boolean isSkip = false;
 	private int x = 0;
 	private int y = 0;
+	private int width = HeaderInfo.UNDEFINED;
 
 	public Column(Class<T> cls, String key) {
-		this(cls, key, null);
+		this(cls, key, null, null);
 	}
 
-	public Column(Class<T> cls, String key, Map<String, String> aliasMap) {
+	public Column(Class<T> cls, String key,
+			LinkedHashMap<String, HeaderInfo> headerClsMap,
+			Map<String, String> aliasMap) {
 		this.cls = cls;
 		this.key = key;
+		if (headerClsMap != null) {
+			HeaderInfo headerInfo = headerClsMap.get(key);
+			if (headerInfo != null) {
+				setWidth(headerInfo.width);
+			}
+		}
 		this.aliasMap = aliasMap;
 	}
 
@@ -76,7 +61,7 @@ public class Column<T> {
 	}
 
 	public String getKeyAlias() {
-		if(aliasMap == null || aliasMap.containsKey(key))
+		if (aliasMap == null || !aliasMap.containsKey(key))
 			return key;
 		return aliasMap.get(key);
 	}
@@ -98,6 +83,17 @@ public class Column<T> {
 		return y;
 	}
 
+	public int getWidth() {
+		return this.width;
+	}
+
+	private void setWidth(int width) {
+		if (width == HeaderInfo.UNDEFINED)
+			this.width = HeaderInfo.UNDEFINED;
+		else
+			this.width = width * 256;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void add(T another) {
 		if (another == null) {
@@ -113,17 +109,16 @@ public class Column<T> {
 		}
 	}
 
-	public Iterable<Column<String>> each(final Map<String, String> aliasMap, final int wholeLevel,
-			final int curLevel, final boolean isAll) {
-
-		final boolean isPrimitiveOut = isAll || curLevel == 1;
-		final int levelMargin = wholeLevel - curLevel;
+	public Iterable<Column<String>> each(final ContextValues context,
+			final int level, final boolean isAll) {
+		final int levelMargin = context.displayHeaders.length - level;
 
 		return new Iterable<Column<String>>() {
 
 			@Override
 			public Iterator<Column<String>> iterator() {
-				if (primitiveSet.contains(cls.getName())) {
+				// if (primitiveSet.contains(cls.getName())) {
+				if (isPrimitive(cls)) {
 					return new Iterator<Column<String>>() {
 
 						boolean returned = false;
@@ -136,8 +131,9 @@ public class Column<T> {
 						@Override
 						public Column<String> next() {
 							Column<String> column = new Column<String>(
-									String.class, key, aliasMap);
-							if (!isPrimitiveOut) {
+									String.class, key, context.headerClsMap,
+									aliasMap);
+							if (!isAll) {
 								column.skip();
 							} else {
 								if (value == null)
@@ -171,18 +167,22 @@ public class Column<T> {
 						@Override
 						public Column<String> next() {
 							Column<String> column = new Column<String>(
-									String.class, key, aliasMap);
-							if (curLevel == 1) {
+									String.class, key, context.headerClsMap,
+									aliasMap);
+							// TODO temporary implementation. fix below.
+							if (level == 1) {
 								if (index == 0)
 									column.x = fields.length - 1;
 								else
 									column.skip();
 							} else {
 								String key = fields[index].getName();
-								Title def = fields[index]
-										.getAnnotation(Title.class);
-								if (def != null)
-									key = def.value();
+								ColumnDef def = fields[index]
+										.getAnnotation(ColumnDef.class);
+								if (def != null) {
+									key = def.title();
+									column.setWidth(def.width());
+								}
 								column.key = key;
 								try {
 									if (value == null)

@@ -1,12 +1,23 @@
 package tetz42.util.tableobject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 
+import tetz42.util.tableobject.tables.TableObject1.ContextValues;
+
 public class Row {
-	private LinkedHashMap<Object, Column<Object>> map = new LinkedHashMap<Object, Column<Object>>();
+
+	private final ContextValues context;
+	private final LinkedHashMap<Object, Column<Object>> map = new LinkedHashMap<Object, Column<Object>>();
+
+	private boolean isRemoved = false;
+
+	public Row(ContextValues context) {
+		this.context = context;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Column<T> get(Class<T> clazz, String key) {
@@ -20,12 +31,29 @@ public class Row {
 		return map;
 	}
 
-	public Iterable<Column<String>> each() {
-		return each(null, 2, 2, true);
+	@SuppressWarnings("unchecked")
+	public <T> List<Column<T>> columnList(Class<T> clazz) {
+		ArrayList<Column<T>> list = new ArrayList<Column<T>>();
+		for (Column<Object> col : map.values()) {
+			if (clazz.isInstance(col.get()))
+				list.add((Column<T>) col);
+		}
+		return list;
 	}
 
-	public Iterable<Column<String>> each(final Map<String, String> aliasMap, final int wholeLevel,
-			final int curLevel, final boolean isAll) {
+	public Iterable<Column<String>> each() {
+		return each(1, true);
+	}
+
+	public void remove() {
+		this.isRemoved = true;
+	}
+
+	public boolean isRemoved() {
+		return isRemoved;
+	}
+
+	public Iterable<Column<String>> each(final int level, final boolean isAll) {
 		return new Iterable<Column<String>>() {
 
 			@Override
@@ -48,7 +76,8 @@ public class Row {
 						if (colIte != null && colIte.hasNext())
 							return colIte.next();
 						Entry<Object, Column<Object>> e = iterator.next();
-						colIte = e.getValue().each(aliasMap, wholeLevel, curLevel, isAll)
+						// TODO temporary implementation. fix below.
+						colIte = e.getValue().each(context, level + 1, isAll)
 								.iterator();
 						return colIte.next();
 					}

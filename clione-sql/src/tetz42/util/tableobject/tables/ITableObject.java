@@ -13,10 +13,7 @@ public interface ITableObject {
 
 	public abstract Iterable<Column<String>> headers(int level);
 
-	public abstract Iterable<Column<String>> headersAll(int level);
-
 	public abstract Iterable<Column<String>> headers();
 
 	public abstract List<Row> rows();
-
 }

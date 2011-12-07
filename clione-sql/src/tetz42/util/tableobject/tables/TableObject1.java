@@ -1,5 +1,8 @@
 package tetz42.util.tableobject.tables;
 
+import static tetz42.util.tableobject.TOUtil.*;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,53 +16,110 @@ import tetz42.util.tableobject.Row;
 
 public class TableObject1<T1> implements Cloneable, ITableObject {
 	private final Class<T1> cls1;
-	protected final LinkedHashMap<String, Class<?>> headerClsMap;
 	private final List<Row> rowList;
 	private final Map<String, Integer> indexMap;
 	private final List<Row> tailRowList;
 	private final Map<String, Integer> tailIndexMap;
-	private final Map<String, String> aliasMap;
+	protected final ContextValues context = new ContextValues();
 
 	protected Row currentRow;
-	private int headerLevel;
+
+	public static class ContextValues {
+		public int headerDepth = 0;
+		public final Map<String, String> aliasMap = new HashMap<String, String>();
+		public final LinkedHashMap<String, HeaderInfo> headerClsMap = new LinkedHashMap<String, HeaderInfo>();
+		public int[] displayHeaders = null;
+
+	}
+
+	public boolean isTopHeader(int level) {
+		setDefaultDisplayHeaders();
+		return level == context.displayHeaders[0];
+	}
+
+	public static class HeaderInfo {
+		public static final int UNDEFINED = -1;
+		public final Class<?> cls;
+		public final int width;
+
+		protected HeaderInfo(Class<?> cls, int width) {
+			this.cls = cls;
+			this.width = width;
+		}
+
+		protected HeaderInfo(Class<?> cls) {
+			this(cls, UNDEFINED);
+		}
+	}
 
 	public TableObject1(Class<T1> cls1) {
 		this.cls1 = cls1;
-		this.headerLevel = 1;
-		this.headerClsMap = new LinkedHashMap<String, Class<?>>();
-		this.aliasMap = new HashMap<String, String>();
 		this.rowList = new ArrayList<Row>();
 		this.indexMap = new HashMap<String, Integer>();
 		this.tailRowList = new ArrayList<Row>();
 		this.tailIndexMap = new HashMap<String, Integer>();
+		setHeaderDepth(this.cls1);
 	}
 
-	public void setHeaderLevel(int level) {
-		this.headerLevel = level;
+	protected final void setHeaderDepth(Class<?> clazz) {
+		System.out.println("<%-------------------------");
+		context.headerDepth = max(context.headerDepth, countDepth(clazz, 0));
+		System.out.println(context.headerDepth);
+		System.out.println("-------------------------%>");
+	}
+
+	private int countDepth(Class<?> clazz, int paramCount) {
+		System.out.println(clazz.getName());
+		paramCount++;
+		if (isPrimitive(clazz))
+			return paramCount;
+		int count = paramCount;
+		for (Field f : clazz.getDeclaredFields()) {
+			count = max(count, countDepth(f.getType(), paramCount));
+		}
+		return count;
+	}
+
+	public void setDisplayHeaders(int... displayHeaders) {
+		if (displayHeaders.length == 0)
+			throw new InvalidParameterException(
+					"No parameter detected. Must be passed 1 more parameters.");
+		context.displayHeaders = displayHeaders;
+	}
+
+	private void setDefaultDisplayHeaders() {
+		if (context.displayHeaders != null)
+			return;
+		int[] displayHeaders = new int[context.headerDepth];
+		for (int i = 0; i < displayHeaders.length; i++)
+			displayHeaders[i] = i;
+		context.displayHeaders = displayHeaders;
 	}
 
 	public void setHeader(String... keys) {
 		setHeaderAs1(keys);
 	}
 
+	public void setHeader(String key, int width) {
+		setHeaderAs1(key, width);
+	}
+
 	public void setHeaderAs1(String... keys) {
 		for (String key : keys)
-			headerClsMap.put(key, cls1);
+			context.headerClsMap.put(key, new HeaderInfo(cls1));
 	}
 
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#setAlias(java.lang.String, java.lang.String)
-	 */
+	public void setHeaderAs1(String key, int width) {
+		context.headerClsMap.put(key, new HeaderInfo(cls1, width));
+	}
+
 	public void setAlias(String name, String alias) {
-		aliasMap.put(name, alias);
+		context.aliasMap.put(name, alias);
 	}
 
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#getAlias(java.lang.String)
-	 */
 	public String getAlias(String name) {
-		if (aliasMap.containsKey(name))
-			return aliasMap.get(name);
+		if (context.aliasMap.containsKey(name))
+			return context.aliasMap.get(name);
 		return name;
 	}
 
@@ -69,6 +129,24 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 
 	public Column<T1> getAs1(String key) {
 		return currentRow.get(cls1, key);
+	}
+
+	public List<Column<T1>> columns1() {
+		return currentRow.columnList(cls1);
+	}
+
+	private int rowIndex = 0;
+
+	public void resetRowIndex() {
+		rowIndex = 0;
+	}
+
+	public boolean nextRow() {
+		if (rowIndex >= rowList.size())
+			return false;
+		setRow(rowIndex);
+		rowIndex++;
+		return true;
 	}
 
 	public void newRow() {
@@ -133,42 +211,46 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		return tail(tailIndexMap.get(rowKey));
 	}
 
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#headers(int)
-	 */
 	public Iterable<Column<String>> headers(int level) {
-		return headers(level, false);
+		return headers(level, isTopHeader(level));
 	}
 
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#headersAll(int)
-	 */
-	public Iterable<Column<String>> headersAll(int level) {
+	public Iterable<Column<String>> headers(int level, boolean isAll) {
+		setDefaultDisplayHeaders();
+		return genRow().each(level, isAll);
+	}
+
+	public Iterable<Column<String>> headers() {
+		int level = context.headerDepth - 1;
+		setDisplayHeaders(level);
 		return headers(level, true);
 	}
 
-	private Iterable<Column<String>> headers(int level, boolean isAll) {
-		if (headerLevel < level)
-			throw new InvalidParameterException(
-					"Parameter, 'level', should be smaller than 'headerLevel'.");
-		return genRow().each(this.aliasMap, headerLevel, level, isAll);
+	public void removeRow() {
+		if (currentRow != null)
+			currentRow.remove();
 	}
 
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#headers()
-	 */
-	public Iterable<Column<String>> headers() {
-		return genRow().each();
-	}
-
-	/* (non-Javadoc)
-	 * @see tetz42.util.tableobject.tables.ITableObject#rows()
-	 */
 	public List<Row> rows() {
 		ArrayList<Row> list = new ArrayList<Row>();
+		avoidRemovedRow();
 		list.addAll(rowList);
 		list.addAll(tailRowList);
 		return list;
+	}
+
+	private void avoidRemovedRow() {
+		avoidRemovedRow(rowList);
+		avoidRemovedRow(tailRowList);
+	}
+
+	private List<Row> avoidRemovedRow(List<Row> ls) {
+		for (int i = ls.size() - 1; i >= 0; i--) {
+			if (ls.get(i).isRemoved()) {
+				ls.remove(i);
+			}
+		}
+		return ls;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,21 +271,18 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	}
 
 	private Row genRow() {
-		Row row = new Row();
-		for (Map.Entry<String, Class<?>> e : headerClsMap.entrySet())
-			row.get(e.getValue(), e.getKey());
+		Row row = new Row(context);
+		for (Map.Entry<String, HeaderInfo> e : context.headerClsMap.entrySet())
+			row.get(e.getValue().cls, e.getKey());
 		return row;
 	}
 
 	@Override
 	public String toString() {
+		this.setDefaultDisplayHeaders();
 		StringBuilder sb = new StringBuilder();
-		if (headerLevel == 1) {
-			appendHeaders(sb, this.headers());
-		} else {
-			appendHeaders(sb, this.headers(1));
-			appendHeaders(sb, this.headers(2));
-		}
+		for (int i = 0; i < context.displayHeaders.length; i++)
+			appendHeaders(sb, this.headers(context.displayHeaders[i]));
 		for (Row row : this.rows()) {
 			for (Column<String> col : row.each()) {
 				sb.append(col.get()).append("\t");
