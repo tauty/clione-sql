@@ -1,5 +1,7 @@
 package tetz42.util.tableobject.tables;
 
+import java.util.List;
+
 import tetz42.util.tableobject.Column;
 
 public class TableObject2<T1, T2> extends TableObject1<T1> {
@@ -8,15 +10,24 @@ public class TableObject2<T1, T2> extends TableObject1<T1> {
 	public TableObject2(Class<T1> cls1, Class<T2> cls2) {
 		super(cls1);
 		this.cls2 = cls2;
+		setHeaderDepth(this.cls2);
 	}
 
 	public void setHeaderAs2(String... keys) {
 		for (String key : keys)
-			headerClsMap.put(key, cls2);
+			context.headerClsMap.put(key, new HeaderInfo(cls2));
+	}
+
+	public void setHeaderAs2(String key, int width) {
+		context.headerClsMap.put(key, new HeaderInfo(cls2, width));
 	}
 
 	public Column<T2> getAs2(String key) {
 		return currentRow.get(cls2, key);
+	}
+
+	public List<Column<T2>> columns2() {
+		return currentRow.columnList(cls2);
 	}
 
 	@SuppressWarnings("unchecked")

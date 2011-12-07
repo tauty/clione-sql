@@ -5,8 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Title {
-	String value();
+public @interface ColumnDef {
+	String title();
+	int width() default HeaderInfo.UNDEFINED;
 }
