@@ -22,7 +22,7 @@ public class Row {
 	@SuppressWarnings("unchecked")
 	public <T> Column<T> get(Class<T> clazz, String key) {
 		if (!map.containsKey(key)) {
-			map.put(key, (Column<Object>) new Column<T>(clazz, key));
+			map.put(key, (Column<Object>) new Column<T>(clazz, key, context));
 		}
 		return (Column<T>) map.get(key);
 	}
@@ -77,8 +77,7 @@ public class Row {
 							return colIte.next();
 						Entry<Object, Column<Object>> e = iterator.next();
 						// TODO temporary implementation. fix below.
-						colIte = e.getValue().each(context, level + 1, isAll)
-								.iterator();
+						colIte = e.getValue().each(level + 1, isAll).iterator();
 						return colIte.next();
 					}
 

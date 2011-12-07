@@ -12,7 +12,9 @@ import java.util.Map;
 import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.WrapException;
 import tetz42.util.tableobject.Column;
+import tetz42.util.tableobject.RemovedMap;
 import tetz42.util.tableobject.Row;
+import tetz42.util.tableobject.annotation.ColumnDef;
 
 public class TableObject1<T1> implements Cloneable, ITableObject {
 	private final Class<T1> cls1;
@@ -26,10 +28,58 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 
 	public static class ContextValues {
 		public int headerDepth = 0;
+		public final RemovedMap removed = new RemovedMap();
 		public final Map<String, String> aliasMap = new HashMap<String, String>();
 		public final LinkedHashMap<String, HeaderInfo> headerClsMap = new LinkedHashMap<String, HeaderInfo>();
 		public int[] displayHeaders = null;
 
+		public List<Field> validFields(Class<?> clazz) {
+			ArrayList<Field> list = new ArrayList<Field>();
+			for (Field f : clazz.getDeclaredFields()) {
+				if (!isRemoved(clazz, f))
+					list.add(f);
+			}
+			return list;
+		}
+
+		public int classWidth(Class<?> clazz) {
+			int width = 0;
+			List<Field> fields = validFields(clazz);
+			for (Field f : fields) {
+				int fwidth = fieldWidth(f);
+				if (fwidth != HeaderInfo.UNDEFINED)
+					width += fwidth;
+			}
+			return width;
+		}
+
+		public int fieldWidth(Field f) {
+			ColumnDef def = f.getAnnotation(ColumnDef.class);
+			if (def != null)
+				return def.width();
+			return HeaderInfo.UNDEFINED;
+		}
+
+		public String fieldTitle(Field f) {
+			ColumnDef def = f.getAnnotation(ColumnDef.class);
+			if (def != null && def.title() != null)
+				return def.title();
+			return f.getName();
+		}
+
+		public boolean isRemoved(Class<?> clazz, Field f) {
+			return removed.isRemoved(clazz.getName(), f.getName());
+		}
+	}
+
+	@Override
+	public int headerDepth() {
+		setDefaultDisplayHeaders();
+		return context.displayHeaders.length;
+	}
+
+	public void removeColumnByField(Class<?> clazz, String fieldName) {
+		context.removed.mark(clazz.getName(), fieldName);
 	}
 
 	public boolean isTopHeader(int level) {
@@ -62,14 +112,10 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	}
 
 	protected final void setHeaderDepth(Class<?> clazz) {
-		System.out.println("<%-------------------------");
 		context.headerDepth = max(context.headerDepth, countDepth(clazz, 0));
-		System.out.println(context.headerDepth);
-		System.out.println("-------------------------%>");
 	}
 
 	private int countDepth(Class<?> clazz, int paramCount) {
-		System.out.println(clazz.getName());
 		paramCount++;
 		if (isPrimitive(clazz))
 			return paramCount;
@@ -281,7 +327,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	public String toString() {
 		this.setDefaultDisplayHeaders();
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < context.displayHeaders.length; i++)
+		for (int i = 0; i < headerDepth(); i++)
 			appendHeaders(sb, this.headers(context.displayHeaders[i]));
 		for (Row row : this.rows()) {
 			for (Column<String> col : row.each()) {

@@ -392,6 +392,119 @@ public class TableObjectFactoryTest {
 		assertEqualsWithFile(to.toString(), getClass(), "removeTest-after");
 	}
 
+	@Test
+	public void removeColumnTest() {
+		TableObject4<String, Integer, ColumnSet1, ColumnSet2> to = TableObjectFactory
+				.create(String.class, Integer.class, ColumnSet1.class,
+						ColumnSet2.class);
+
+		// ------ tableObj4 と同じ Start -----//
+		to.setHeaderAs2("Header1", "Header2");
+		to.setHeaderAs1("Header3");
+		to.setHeaderAs3("Header4", "Header5");
+		to.setHeaderAs4("Header6");
+		to.setHeaderAs1("Last");
+
+		// tako
+		to.setRow("tako");
+		to.getAs2("Header1").set(1729);
+		to.getAs2("Header2").set(42);
+		to.getAs1("Header3").set("42と1729ついて");
+
+		to.getAs3("Header4").get().column1 = "宇宙全ての";
+		to.getAs3("Header4").get().column2 = "答えは？";
+		to.getAs3("Header4").get().column3 = 42;
+
+		to.getAs3("Header5").get().column1 = "二通りの自然数の３乗数の和";
+		to.getAs3("Header5").get().column2 = "で表現できる最小数";
+		to.getAs3("Header5").get().column3 = 1729;
+
+		to.getAs4("Header6").get().column1 = 42;
+		to.getAs4("Header6").get().column2 = 1729;
+		to.getAs4("Header6").get().column3 = "もう一度書きます。";
+
+		to.getAs1("Last").set("以上。");
+
+		// final
+		to.setTailRow("final");
+		to.getAs2("Header1").set(1729);
+		to.getAs2("Header2").set(42);
+		to.getAs1("Header3").set("42と1729ついて");
+
+		to.getAs3("Header4").get().column1 = "宇宙全ての";
+		to.getAs3("Header4").get().column2 = "答えは？";
+		to.getAs3("Header4").get().column3 = 42;
+
+		to.getAs3("Header5").get().column1 = "二通りの自然数の３乗数の和";
+		to.getAs3("Header5").get().column2 = "で表現できる最小数";
+		to.getAs3("Header5").get().column3 = 1729;
+
+		to.getAs4("Header6").get().column1 = 42;
+		to.getAs4("Header6").get().column2 = 1729;
+		to.getAs4("Header6").get().column3 = "もう一度書きます。";
+
+		to.getAs1("Last").set("以上。");
+
+		// ika
+		to.setRow("ika");
+		to.getAs2("Header1").set(314);
+		to.getAs2("Header2").set(1592);
+		to.getAs1("Header3").set("314と1592ついて");
+
+		to.getAs3("Header4").get().column1 = "円周率";
+		to.getAs3("Header4").get().column2 = "です。ただの。";
+		to.getAs3("Header4").get().column3 = 314;
+
+		to.getAs3("Header5").get().column1 = "円周率の";
+		to.getAs3("Header5").get().column2 = "４～７桁目";
+		to.getAs3("Header5").get().column3 = 1592;
+
+		to.getAs4("Header6").get().column1 = 314;
+		to.getAs4("Header6").get().column2 = 1592;
+		to.getAs4("Header6").get().column3 = "もう一度書くんです。";
+
+		to.getAs1("Last").set("終了。");
+
+		// final
+		to.setTailRow("final");
+		to.getAs2("Header1").set(42 + 314);
+		to.getAs2("Header2").set(1729 + 1592);
+		to.getAs1("Header3").set("42と1729ついてと314と1592ついて");
+
+		to.getAs3("Header4").get().column1 += "円周率";
+		to.getAs3("Header4").get().column2 += "です。ただの。";
+		to.getAs3("Header4").get().column3 += 314;
+
+		to.getAs3("Header5").get().column1 += "円周率の";
+		to.getAs3("Header5").get().column2 += "４～７桁目";
+		to.getAs3("Header5").get().column3 += 1592;
+
+		to.getAs4("Header6").get().column1 += 314;
+		to.getAs4("Header6").get().column2 += 1592;
+		to.getAs4("Header6").get().column3 += "もう一度書くんです。";
+
+		to.getAs1("Last").set("That's all for today.");
+
+		// 書換テスト
+		to.row(0).getAs4("Header6").get().column3 += "おーほっほっほっほっ。";
+		to.row("ika").getAs4("Header6").get().column3 += "ゲボハハハハ。";
+		to.tail().getAs3("Header5").get().column2 += " www";
+		to.tail("final").getAs4("Header6").get().column3 += " lol";
+
+		// ------ tableObj4 と同じ End ------ //
+
+		assertEqualsWithFile(to.toString(), getClass(),
+				"removeColumnTest-before");
+
+		to.removeColumnByField(ColumnSet1.class, "column2");
+		assertEqualsWithFile(to.toString(), getClass(),
+				"removeColumnTest-remove_1-2");
+
+		to.removeColumnByField(ColumnSet2.class, "column1");
+		assertEqualsWithFile(to.toString(), getClass(),
+				"removeColumnTest-remove_1-2_and_2-1");
+	}
+
 	public static class ColumnSet1 {
 		@ColumnDef(title = "カラム１。")
 		public String column1;

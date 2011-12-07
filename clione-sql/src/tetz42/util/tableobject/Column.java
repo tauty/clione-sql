@@ -4,18 +4,16 @@ import static tetz42.util.tableobject.TOUtil.*;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 import tetz42.util.exception.WrapException;
-import tetz42.util.tableobject.annotation.ColumnDef;
 import tetz42.util.tableobject.tables.TableObject1.ContextValues;
 import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
 
 public class Column<T> {
 
 	private final Class<T> cls;
-	private final Map<String, String> aliasMap;
+	private final ContextValues context;
 	private String key;
 	private T value;
 	private boolean isSkip = false;
@@ -23,22 +21,16 @@ public class Column<T> {
 	private int y = 0;
 	private int width = HeaderInfo.UNDEFINED;
 
-	public Column(Class<T> cls, String key) {
-		this(cls, key, null, null);
-	}
-
-	public Column(Class<T> cls, String key,
-			LinkedHashMap<String, HeaderInfo> headerClsMap,
-			Map<String, String> aliasMap) {
+	public Column(Class<T> cls, String key, ContextValues context) {
 		this.cls = cls;
 		this.key = key;
-		if (headerClsMap != null) {
-			HeaderInfo headerInfo = headerClsMap.get(key);
+		this.context = context;
+		if (context.headerClsMap != null) {
+			HeaderInfo headerInfo = context.headerClsMap.get(key);
 			if (headerInfo != null) {
 				setWidth(headerInfo.width);
 			}
 		}
-		this.aliasMap = aliasMap;
 	}
 
 	public void set(T value) {
@@ -61,9 +53,9 @@ public class Column<T> {
 	}
 
 	public String getKeyAlias() {
-		if (aliasMap == null || !aliasMap.containsKey(key))
+		if (context.aliasMap == null || !context.aliasMap.containsKey(key))
 			return key;
-		return aliasMap.get(key);
+		return context.aliasMap.get(key);
 	}
 
 	public Column<T> skip() {
@@ -109,8 +101,7 @@ public class Column<T> {
 		}
 	}
 
-	public Iterable<Column<String>> each(final ContextValues context,
-			final int level, final boolean isAll) {
+	public Iterable<Column<String>> each(final int level, final boolean isAll) {
 		final int levelMargin = context.displayHeaders.length - level;
 
 		return new Iterable<Column<String>>() {
@@ -131,8 +122,7 @@ public class Column<T> {
 						@Override
 						public Column<String> next() {
 							Column<String> column = new Column<String>(
-									String.class, key, context.headerClsMap,
-									aliasMap);
+									String.class, key, context);
 							if (!isAll) {
 								column.skip();
 							} else {
@@ -157,39 +147,34 @@ public class Column<T> {
 					return new Iterator<Column<String>>() {
 
 						int index = 0;
-						Field[] fields = cls.getDeclaredFields();
+						List<Field> fields = context.validFields(cls);
 
 						@Override
 						public boolean hasNext() {
-							return index < fields.length;
+							return index < fields.size();
 						}
 
 						@Override
 						public Column<String> next() {
 							Column<String> column = new Column<String>(
-									String.class, key, context.headerClsMap,
-									aliasMap);
+									String.class, key, context);
 							// TODO temporary implementation. fix below.
 							if (level == 1) {
-								if (index == 0)
-									column.x = fields.length - 1;
-								else
+								if (index == 0) {
+									column.x = fields.size() - 1;
+									column.setWidth(context.classWidth(cls));
+								} else {
 									column.skip();
-							} else {
-								String key = fields[index].getName();
-								ColumnDef def = fields[index]
-										.getAnnotation(ColumnDef.class);
-								if (def != null) {
-									key = def.title();
-									column.setWidth(def.width());
 								}
-								column.key = key;
+							} else {
+								Field f = fields.get(index);
+								column.key = context.fieldTitle(f);
+								column.setWidth(context.fieldWidth(f));
 								try {
 									if (value == null)
 										column.set("");
 									else
-										column.set(""
-												+ fields[index].get(value));
+										column.set("" + f.get(value));
 								} catch (Exception e) {
 									throw new WrapException(e);
 								}
