@@ -30,6 +30,10 @@ public class TableObject2<T1, T2> extends TableObject1<T1> {
 		return currentRow.columnList(cls2);
 	}
 
+	public List<Column<T2>> columns2(String... keys) {
+		return columns(cls2, keys);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public TableObject2<T1, T2> row(int index) {
