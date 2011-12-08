@@ -32,6 +32,10 @@ public class TableObject4<T1, T2, T3, T4> extends TableObject3<T1, T2, T3> {
 		return currentRow.columnList(cls4);
 	}
 
+	public List<Column<T4>> columns4(String... keys) {
+		return columns(cls4, keys);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public TableObject4<T1, T2, T3, T4> row(int index) {

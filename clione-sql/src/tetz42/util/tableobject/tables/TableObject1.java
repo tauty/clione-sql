@@ -15,6 +15,7 @@ import tetz42.util.tableobject.Column;
 import tetz42.util.tableobject.RemovedMap;
 import tetz42.util.tableobject.Row;
 import tetz42.util.tableobject.annotation.ColumnDef;
+import tetz42.util.tableobject.annotation.Hidden;
 
 public class TableObject1<T1> implements Cloneable, ITableObject {
 	private final Class<T1> cls1;
@@ -36,7 +37,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		public List<Field> validFields(Class<?> clazz) {
 			ArrayList<Field> list = new ArrayList<Field>();
 			for (Field f : clazz.getDeclaredFields()) {
-				if (!isRemoved(clazz, f))
+				if (!isRemoved(clazz, f) && !isHidden(f))
 					list.add(f);
 			}
 			return list;
@@ -70,11 +71,15 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		public boolean isRemoved(Class<?> clazz, Field f) {
 			return removed.isRemoved(clazz.getName(), f.getName());
 		}
+
+		public boolean isHidden(Field f) {
+			return f.getAnnotation(Hidden.class) != null;
+		}
 	}
 
 	@Override
 	public int headerDepth() {
-		setDefaultDisplayHeaders();
+		setifDefaultDisplayHeaders();
 		return context.displayHeaders.length;
 	}
 
@@ -83,7 +88,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	}
 
 	public boolean isTopHeader(int level) {
-		setDefaultDisplayHeaders();
+		setifDefaultDisplayHeaders();
 		return level == context.displayHeaders[0];
 	}
 
@@ -127,13 +132,10 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	}
 
 	public void setDisplayHeaders(int... displayHeaders) {
-		if (displayHeaders.length == 0)
-			throw new InvalidParameterException(
-					"No parameter detected. Must be passed 1 more parameters.");
 		context.displayHeaders = displayHeaders;
 	}
 
-	private void setDefaultDisplayHeaders() {
+	private void setifDefaultDisplayHeaders() {
 		if (context.displayHeaders != null)
 			return;
 		int[] displayHeaders = new int[context.headerDepth];
@@ -179,6 +181,35 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 
 	public List<Column<T1>> columns1() {
 		return currentRow.columnList(cls1);
+	}
+
+	protected final <T> List<Column<T>> columns(Class<T> cls, String... keys) {
+		List<Column<T>> list = new ArrayList<Column<T>>();
+		for (String key : keys) {
+			int i = key.indexOf('|');
+			if (i == -1) {
+				list.add(currentRow.get(cls, key));
+			} else {
+				String rowKey = key.substring(0, i);
+				String colKey = key.substring(i + 1);
+				list.add(getRowByKey(rowKey).get(cls, colKey));
+			}
+		}
+		return list;
+	}
+
+	public List<Column<T1>> columns1(String... keys) {
+		return columns(cls1, keys);
+	}
+
+	private Row getRowByKey(String rowKey) {
+		if (indexMap.containsKey(rowKey)) {
+			return rowList.get(indexMap.get(rowKey));
+		} else if (tailIndexMap.containsKey(rowKey)) {
+			return tailRowList.get(tailIndexMap.get(rowKey));
+		}
+		throw new InvalidParameterException("The row key, '" + rowKey
+				+ "', has not been registered.");
 	}
 
 	private int rowIndex = 0;
@@ -262,7 +293,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 	}
 
 	public Iterable<Column<String>> headers(int level, boolean isAll) {
-		setDefaultDisplayHeaders();
+		setifDefaultDisplayHeaders();
 		return genRow().each(level, isAll);
 	}
 
@@ -325,7 +356,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 
 	@Override
 	public String toString() {
-		this.setDefaultDisplayHeaders();
+		this.setifDefaultDisplayHeaders();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < headerDepth(); i++)
 			appendHeaders(sb, this.headers(context.displayHeaders[i]));
