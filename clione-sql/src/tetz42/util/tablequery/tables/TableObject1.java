@@ -1,6 +1,6 @@
-package tetz42.util.tableobject.tables;
+package tetz42.util.tablequery.tables;
 
-import static tetz42.util.tableobject.TOUtil.*;
+import static tetz42.util.tablequery.TOUtil.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,11 +11,11 @@ import java.util.Map;
 
 import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.WrapException;
-import tetz42.util.tableobject.Column;
-import tetz42.util.tableobject.RemovedMap;
-import tetz42.util.tableobject.Row;
-import tetz42.util.tableobject.annotation.ColumnDef;
-import tetz42.util.tableobject.annotation.Hidden;
+import tetz42.util.tablequery.Column;
+import tetz42.util.tablequery.RemovedMap;
+import tetz42.util.tablequery.Row;
+import tetz42.util.tablequery.annotation.ColumnDef;
+import tetz42.util.tablequery.annotation.Hidden;
 
 public class TableObject1<T1> implements Cloneable, ITableObject {
 	private final Class<T1> cls1;
@@ -33,19 +33,6 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		public final Map<String, String> aliasMap = new HashMap<String, String>();
 		public final LinkedHashMap<String, HeaderInfo> headerClsMap = new LinkedHashMap<String, HeaderInfo>();
 		public int[] displayHeaders = null;
-
-		public int fieldNum(Class<?> clazz) {
-			int result = 0;
-			List<Field> fields = validFields(clazz);
-			for(Field f : fields) {
-				if(isPrimitive(f.getType())) {
-					result++;
-				}else {
-					result += fieldNum(f.getType());
-				}
-			}
-			return result;
-		}
 
 		public List<Field> validFields(Class<?> clazz) {
 			ArrayList<Field> list = new ArrayList<Field>();

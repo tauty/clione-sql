@@ -101,96 +101,105 @@ public class Column<T> {
 		}
 	}
 
-	public Iterable<Column<String>> each(final int level, final boolean isAll) {
+	private Iterator<Column<String>> each(final Object value,
+			final Class<?> cls, final int level, final boolean isAll) {
 		final int levelMargin = context.displayHeaders.length - level;
 
+		class PrimitiveIte implements Iterator<Column<String>> {
+
+			boolean returned = false;
+
+			@Override
+			public boolean hasNext() {
+				return !returned;
+			}
+
+			@Override
+			public Column<String> next() {
+				Column<String> column = new Column<String>(String.class, key,
+						context);
+				if (!isAll) {
+					column.skip();
+				} else {
+					if (value == null)
+						column.set("");
+					else
+						column.set("" + value);
+					column.y = levelMargin;
+				}
+				returned = true;
+				return column;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException(
+						"'remove' is not supported.");
+			}
+		}
+
+		class ContainerIte implements Iterator<Column<String>> {
+
+			int index = 0;
+			List<Field> fields = context.validFields(cls);
+
+			@Override
+			public boolean hasNext() {
+				return index < fields.size();
+			}
+
+			@Override
+			public Column<String> next() {
+				Column<String> column = new Column<String>(String.class, key,
+						context);
+				// TODO temporary implementation. fix below.
+				if (level == 1) {
+					if (index == 0) {
+						column.x = fields.size() - 1;
+						column.setWidth(context.classWidth(cls));
+					} else {
+						column.skip();
+					}
+				} else {
+					Field f = fields.get(index);
+					column.key = context.fieldTitle(f);
+					column.setWidth(context.fieldWidth(f));
+					try {
+						if (value == null)
+							column.set("");
+						else
+							column.set("" + f.get(value));
+					} catch (Exception e) {
+						throw new WrapException(e);
+					}
+				}
+				index++;
+				return column;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException(
+						"'remove' is not supported.");
+			}
+		}
+
+		if (isPrimitive(cls)) {
+			return new PrimitiveIte();
+		} else {
+			return new ContainerIte();
+		}
+	}
+
+	public Iterable<Column<String>> each(final int level, final boolean isAll) {
 		return new Iterable<Column<String>>() {
 
 			@Override
 			public Iterator<Column<String>> iterator() {
-				// if (primitiveSet.contains(cls.getName())) {
-				if (isPrimitive(cls)) {
-					return new Iterator<Column<String>>() {
-
-						boolean returned = false;
-
-						@Override
-						public boolean hasNext() {
-							return !returned;
-						}
-
-						@Override
-						public Column<String> next() {
-							Column<String> column = new Column<String>(
-									String.class, key, context);
-							if (!isAll) {
-								column.skip();
-							} else {
-								if (value == null)
-									column.set("");
-								else
-									column.set("" + value);
-								column.y = levelMargin;
-							}
-							returned = true;
-							return column;
-						}
-
-						@Override
-						public void remove() {
-							throw new UnsupportedOperationException(
-									"'remove' is not supported.");
-						}
-					};
-				} else {
-
-					return new Iterator<Column<String>>() {
-
-						int index = 0;
-						List<Field> fields = context.validFields(cls);
-
-						@Override
-						public boolean hasNext() {
-							return index < fields.size();
-						}
-
-						@Override
-						public Column<String> next() {
-							Column<String> column = new Column<String>(
-									String.class, key, context);
-							// TODO temporary implementation. fix below.
-							if (level == 1) {
-								if (index == 0) {
-									column.x = fields.size() - 1;
-									column.setWidth(context.classWidth(cls));
-								} else {
-									column.skip();
-								}
-							} else {
-								Field f = fields.get(index);
-								column.key = context.fieldTitle(f);
-								column.setWidth(context.fieldWidth(f));
-								try {
-									if (value == null)
-										column.set("");
-									else
-										column.set("" + f.get(value));
-								} catch (Exception e) {
-									throw new WrapException(e);
-								}
-							}
-							index++;
-							return column;
-						}
-
-						@Override
-						public void remove() {
-							throw new UnsupportedOperationException(
-									"'remove' is not supported.");
-						}
-					};
-				}
+				return each(value, cls, level, isAll);
 			}
+
 		};
 	}
+
 }
