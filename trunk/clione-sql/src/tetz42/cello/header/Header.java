@@ -3,6 +3,7 @@ package tetz42.cello.header;
 import static tetz42.cello.TOUtil.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -28,6 +29,7 @@ public class Header<T> {
 		headerCellMap = new RecursiveMap<List<HCell>>();
 		this.context = new Context(this);
 		cellSetting(clazz);
+		this.context.init();
 	}
 
 	public Context getContext() {
@@ -42,11 +44,11 @@ public class Header<T> {
 			RecursiveMap<List<HCell>> hcellMap, int depth) {
 
 		// generate HCell
-		HCell cell = new HCell(field, depth);
+		HCell cell = new HCell(context, field, depth);
 		depth = setCell(cell, hcellMap, depth);
 
 		if (value instanceof CellUnitMap<?>) {
-			HCell subCell = new HCell(field.getAnnotation(EachHeaderDef.class),
+			HCell subCell = new HCell(context, field.getAnnotation(EachHeaderDef.class),
 					ROOT, ++depth);
 			hcellMap = hcellMap.get(ROOT);
 			depth = setCell(subCell, hcellMap, depth);
@@ -78,7 +80,7 @@ public class Header<T> {
 
 		// generate HCell
 		int depth = template.getDepth();
-		HCell cell = new HCell(value.getHeaderDef(), key, depth);
+		HCell cell = new HCell(context, value.getHeaderDef(), key, depth);
 		depth = setCell(cell, hcellMap, depth);
 
 		if (isPrimitive(value))
@@ -114,41 +116,10 @@ public class Header<T> {
 		return getFromList(getList(keys));
 	}
 
-//	public Iterable<Cell<String>> each(final int level, final boolean isAll) {
-//		return new Iterable<Cell<String>>() {
-//
-//			@Override
-//			public Iterator<Cell<String>> iterator() {
-//				return new Iterator<Cell<String>>() {
-//
-//					private final Iterator<Entry<Object, Cell<Object>>> iterator = map
-//							.entrySet().iterator();
-//					private Iterator<Cell<String>> colIte;
-//
-//					@Override
-//					public boolean hasNext() {
-//						boolean hasColNext = colIte == null ? false : colIte
-//								.hasNext();
-//						return iterator.hasNext() || hasColNext;
-//					}
-//
-//					@Override
-//					public Cell<String> next() {
-//						if (colIte != null && colIte.hasNext())
-//							return colIte.next();
-//						Entry<Object, Cell<Object>> e = iterator.next();
-//						// TODO temporary implementation. fix below.
-//						colIte = e.getValue().each(level + 1, isAll).iterator();
-//						return colIte.next();
-//					}
-//
-//					@Override
-//					public void remove() {
-//						throw new UnsupportedOperationException(
-//								"'remove' is not supported.");
-//					}
-//				};
-//			}
-//		};
-//	}
+	public Iterable<Cell<String>> each(final int level) {
+		ArrayList<Cell<String>> list = new ArrayList<Cell<String>>();
+		
+		// TODO
+		return list;
+	}
 }
