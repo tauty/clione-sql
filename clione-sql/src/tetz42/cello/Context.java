@@ -1,6 +1,6 @@
 package tetz42.cello;
 
-import static tetz42.cello.TOUtil.*;
+import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -16,13 +16,11 @@ import tetz42.cello.header.Header;
 
 public class Context {
 
-	private static final int UNDEFINED = -1;
-
 	private final Header<?> header;
 
-	public final Map<String, String> aliasMap = new HashMap<String, String>();
+	private final Map<String, Map<String, String>> convertMap = new HashMap<String, Map<String, String>>();
 	public int headerDepth;
-	public int[] displayHeaders = null;
+	public int[] displayHeaders;
 
 	public Context(Header<?> header) {
 		this.header = header;
@@ -35,7 +33,21 @@ public class Context {
 			displayHeaders[i] = i + 1;
 		this.displayHeaders = displayHeaders;
 	}
+	
+	public void putConversion(String schema, String convertFrom, String convertTo){
+		Map<String, String> map = convertMap.get(schema);
+		if(map == null)
+			convertMap.put(schema, map = new HashMap<String, String>());
+		map.put(convertFrom, convertTo);
+	}
 
+	public String getConversion(String schema, String convertFrom){
+		Map<String, String> map = convertMap.get(schema);
+		if(map == null)
+			return null;
+		return map.get(convertFrom);
+	}
+	
 	public boolean isTopLevel(int level) {
 		if (this.displayHeaders.length == 0)
 			return false;

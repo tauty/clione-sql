@@ -1,6 +1,6 @@
 package tetz42.cello.contents;
 
-import static tetz42.cello.TOUtil.*;
+import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
 

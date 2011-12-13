@@ -1,6 +1,6 @@
 package tetz42.cello.header;
 
-import static tetz42.cello.TOUtil.*;
+import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
 
@@ -12,18 +12,24 @@ import tetz42.cello.annotation.HeaderDef;
 public class HCell implements ICell {
 
 	private final int depth;
-	
+
 	private final String name;
 	private String title;
 	private int width;
 	private String style = "";
 	private boolean isConvert;
-	private String converSchema;
+	private String convertSchema;
 
 	private boolean isRemoved = false;
 
 	private final Context context;
-	
+
+	private boolean isSkip;
+
+	private int x;
+
+	private int y;
+
 	/**
 	 * For ROOT Element
 	 */
@@ -61,7 +67,7 @@ public class HCell implements ICell {
 				this.width = def.width();
 				this.style = def.style();
 				this.isConvert = def.convert();
-				this.converSchema = def.convertSchema();
+				this.convertSchema = def.convertSchema();
 			}
 		}
 		this.depth = depth;
@@ -82,13 +88,17 @@ public class HCell implements ICell {
 		if (def == null) {
 			depth = UNDEFINED;
 		} else {
-			this.title = def.title();
+			this.title = this.name;
 			this.width = def.width();
 			this.style = def.style();
 			this.isConvert = def.convert();
-			this.converSchema = def.convertSchema();
+			this.convertSchema = def.convertSchema();
 		}
 		this.depth = depth;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setTitle(String title) {
@@ -97,10 +107,6 @@ public class HCell implements ICell {
 
 	public String getTitle() {
 		return title;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public void setWidth(int width) {
@@ -123,6 +129,7 @@ public class HCell implements ICell {
 		this.style = style;
 	}
 
+	@Override
 	public String getStyle() {
 		return style;
 	}
@@ -143,36 +150,53 @@ public class HCell implements ICell {
 		return isConvert;
 	}
 
-	public void setConverSchema(String converSchema) {
-		this.converSchema = converSchema;
+	public void setConvertSchema(String convertSchema) {
+		this.convertSchema = convertSchema;
 	}
 
-	public String getConverSchema() {
-		return converSchema;
+	public String getConvertSchema() {
+		return convertSchema;
 	}
-	
+
 	@Override
 	public String getValue() {
-		// TODO Auto-generated method stub
-		return null;
+		String title = this.getTitle();
+		if (isEmpty(title))
+			title = this.getName();
+		if (this.isConvert()) {
+			String s = this.context.getConversion(this.getConvertSchema(),
+					title);
+			if (s != null)
+				title = s;
+		}
+		return title;
+	}
+
+	public void skip() {
+		this.isSkip = true;
 	}
 
 	@Override
 	public boolean isSkip() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isSkip;
+	}
+
+	public void setX(int x) {
+		this.x = x;
 	}
 
 	@Override
 	public int getX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	@Override
 	public int getY() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.y;
 	}
 
 }

@@ -1,6 +1,6 @@
 package tetz42.cello.annotation;
 
-import static tetz42.cello.TOUtil.*;
+import static tetz42.cello.CelloUtil.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EachHeaderDef {
-	String title();
-
 	// String name() default "";
 
 	int width() default UNDEFINED;
