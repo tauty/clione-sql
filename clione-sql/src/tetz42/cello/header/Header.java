@@ -3,11 +3,14 @@ package tetz42.cello.header;
 import static tetz42.cello.TOUtil.*;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import tetz42.cello.Context;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachHeaderDef;
+import tetz42.cello.contents.Cell;
 import tetz42.cello.contents.CellUnitMap;
 
 public class Header<T> {
@@ -111,4 +114,41 @@ public class Header<T> {
 		return getFromList(getList(keys));
 	}
 
+//	public Iterable<Cell<String>> each(final int level, final boolean isAll) {
+//		return new Iterable<Cell<String>>() {
+//
+//			@Override
+//			public Iterator<Cell<String>> iterator() {
+//				return new Iterator<Cell<String>>() {
+//
+//					private final Iterator<Entry<Object, Cell<Object>>> iterator = map
+//							.entrySet().iterator();
+//					private Iterator<Cell<String>> colIte;
+//
+//					@Override
+//					public boolean hasNext() {
+//						boolean hasColNext = colIte == null ? false : colIte
+//								.hasNext();
+//						return iterator.hasNext() || hasColNext;
+//					}
+//
+//					@Override
+//					public Cell<String> next() {
+//						if (colIte != null && colIte.hasNext())
+//							return colIte.next();
+//						Entry<Object, Cell<Object>> e = iterator.next();
+//						// TODO temporary implementation. fix below.
+//						colIte = e.getValue().each(level + 1, isAll).iterator();
+//						return colIte.next();
+//					}
+//
+//					@Override
+//					public void remove() {
+//						throw new UnsupportedOperationException(
+//								"'remove' is not supported.");
+//					}
+//				};
+//			}
+//		};
+//	}
 }
