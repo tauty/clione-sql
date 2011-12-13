@@ -27,12 +27,12 @@ public class HeaderTest {
 
 		assertThat(header.get("fooStr").getDepth(), is(1));
 		assertThat(header.get("fooStr").getTitle(), is("foo:String"));
-		assertThat(header.get("fooStr").getName(), is("foo:anotherName"));
+		assertThat(header.get("fooStr").getName(), is("fooStr"));
 		assertThat(header.get("fooStr").getWidth(), is(2));
 
 		assertThat(header.get("bar", "barInt").getDepth(), is(2));
 		assertThat(header.get("bar", "barInt").getTitle(), is("bar:int"));
-		assertThat(header.get("bar", "barInt").getName(), is("bar:anotherName"));
+		assertThat(header.get("bar", "barInt").getName(), is("barInt"));
 		assertThat(header.get("bar", "barInt").getWidth(), is(4));
 
 		assertThat(header.get("bar", "barStr").getDepth(), is(2));
@@ -52,7 +52,7 @@ class Foo {
 	@HeaderDef(title = "foo:int", width = 1)
 	int fooInt;
 
-	@HeaderDef(title = "foo:String", width = 2, name="foo:anotherName")
+	@HeaderDef(title = "foo:String", width = 2)
 	String fooStr;
 
 	@HeaderDef(title = "bar:Bar", width = 3)
@@ -67,7 +67,7 @@ class Foo {
 }
 
 class Bar {
-	@HeaderDef(title = "bar:int", width = 4, name="bar:anotherName")
+	@HeaderDef(title = "bar:int", width = 4)
 	int barInt;
 
 	@HeaderDef(title = "bar:String", width = 5)

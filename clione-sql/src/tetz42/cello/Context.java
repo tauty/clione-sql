@@ -3,7 +3,6 @@ package tetz42.cello;
 import static tetz42.cello.TOUtil.*;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,12 +21,25 @@ public class Context {
 	private final Header<?> header;
 
 	public final Map<String, String> aliasMap = new HashMap<String, String>();
-	public int headerDepth = 0;
+	public int headerDepth;
 	public int[] displayHeaders = null;
 
 	public Context(Header<?> header) {
 		this.header = header;
+	}
+
+	public void init() {
 		this.headerDepth = this.header.getDepth();
+		int[] displayHeaders = new int[header.getDepth()];
+		for (int i = 0; i < displayHeaders.length; i++)
+			displayHeaders[i] = i + 1;
+		this.displayHeaders = displayHeaders;
+	}
+
+	public boolean isTopLevel(int level) {
+		if (this.displayHeaders.length == 0)
+			return false;
+		return this.displayHeaders[0] == level;
 	}
 
 	public List<Field> validFields(Class<?> clazz) {

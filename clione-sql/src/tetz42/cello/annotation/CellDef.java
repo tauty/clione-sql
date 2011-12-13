@@ -5,14 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
+import static tetz42.cello.TOUtil.*;
 
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CellDef {
-	String name() default "";
+	// String name() default "";
 
-	int width() default HeaderInfo.UNDEFINED;
-	
+	int width() default UNDEFINED;
+
 	String style() default "";
 }

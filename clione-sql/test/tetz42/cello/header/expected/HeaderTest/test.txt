@@ -27,9 +27,13 @@ Header{
 		}
 	}
 	context = Context{
-		headerDepth = 0
+		headerDepth = 3
 		header = Header{...}
 		aliasMap = HashMap{ }
-		displayHeaders = null
+		displayHeaders = int[][
+			1
+			2
+			3
+		]
 	}
 }
