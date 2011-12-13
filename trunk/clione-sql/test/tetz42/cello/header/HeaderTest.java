@@ -73,7 +73,7 @@ class Bar {
 	@HeaderDef(title = "bar:String", width = 5)
 	String barStr;
 
-	@EachHeaderDef(title = "baz:CellUnitMap", width = 6)
+	@EachHeaderDef(width = 6)
 	CellUnitMap<Baz> bazzes = CellUnitMap.create(Baz.class);
 
 	int ignoredInt;

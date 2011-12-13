@@ -1,12 +1,10 @@
 package tetz42.cello.header;
 
-import static tetz42.cello.TOUtil.*;
+import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import tetz42.cello.Context;
 import tetz42.cello.RecursiveMap;

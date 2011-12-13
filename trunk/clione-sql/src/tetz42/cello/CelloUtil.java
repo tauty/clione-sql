@@ -19,31 +19,31 @@ import java.util.concurrent.atomic.AtomicLong;
 import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.WrapException;
 
-public class TOUtil {
+public class CelloUtil {
 
 	public static final int UNDEFINED = -1;
 	public static final String ROOT = null;
 
 	protected static final Set<String> primitiveSet;
 	static {
-		HashSet<String> map = new HashSet<String>();
-		map.add(Object.class.getName());
-		map.add(Class.class.getName());
-		map.add(Boolean.class.getName());
-		map.add(Character.class.getName());
-		map.add(Number.class.getName());
-		map.add(Byte.class.getName());
-		map.add(Short.class.getName());
-		map.add(Integer.class.getName());
-		map.add(Long.class.getName());
-		map.add(Float.class.getName());
-		map.add(Double.class.getName());
-		map.add(BigInteger.class.getName());
-		map.add(BigDecimal.class.getName());
-		map.add(AtomicInteger.class.getName());
-		map.add(AtomicLong.class.getName());
-		map.add(String.class.getName());
-		primitiveSet = Collections.unmodifiableSet(map);
+		HashSet<String> set = new HashSet<String>();
+		set.add(Object.class.getName());
+		set.add(Class.class.getName());
+		set.add(Boolean.class.getName());
+		set.add(Character.class.getName());
+		set.add(Number.class.getName());
+		set.add(Byte.class.getName());
+		set.add(Short.class.getName());
+		set.add(Integer.class.getName());
+		set.add(Long.class.getName());
+		set.add(Float.class.getName());
+		set.add(Double.class.getName());
+		set.add(BigInteger.class.getName());
+		set.add(BigDecimal.class.getName());
+		set.add(AtomicInteger.class.getName());
+		set.add(AtomicLong.class.getName());
+		set.add(String.class.getName());
+		primitiveSet = Collections.unmodifiableSet(set);
 	}
 
 	public static boolean isPrimitive(Class<?> clazz) {
