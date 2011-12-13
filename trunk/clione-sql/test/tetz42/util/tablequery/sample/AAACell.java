@@ -1,4 +1,4 @@
-package tetz42.util.tablequery;
+package tetz42.util.tablequery.sample;
 
 public @interface AAACell {
 

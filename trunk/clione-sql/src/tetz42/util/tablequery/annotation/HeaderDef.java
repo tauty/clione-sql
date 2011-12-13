@@ -7,10 +7,12 @@ import java.lang.annotation.Target;
 
 import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
 
-@Target( { ElementType.FIELD, ElementType.TYPE })
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ColumnDef {
+public @interface HeaderDef {
 	String title();
+
+	String name() default "";
 
 	int width() default HeaderInfo.UNDEFINED;
 }

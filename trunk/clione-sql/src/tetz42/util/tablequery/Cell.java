@@ -9,10 +9,12 @@ public class Cell<T> {
 
 	private final Object receiver;
 	private final Field field;
+	private final Context context;
 
-	public Cell(Object receiver, Field field) {
+	public Cell(Object receiver, Field field, Context context) {
 		this.receiver = receiver;
 		this.field = field;
+		this.context = context;
 	}
 
 	public void set(T value) {

@@ -1,9 +1,12 @@
 package tetz42.util.tablequery;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -43,6 +46,24 @@ public class TOUtil {
 
 	public static int max(int x, int y) {
 		return x > y ? x : y;
+	}
+
+	public static boolean isEmpty(Object o) {
+		if (o == null)
+			return true;
+		if (o instanceof CharSequence) {
+			CharSequence s = (CharSequence) o;
+			return s.length() == 0;
+		} else if (o.getClass().isArray()) {
+			return Array.getLength(o) == 0;
+		} else if (o instanceof Collection) {
+			Collection<?> c = (Collection<?>) o;
+			return c.size() == 0;
+		} else if (o instanceof Map) {
+			Map<?, ?> m = (Map<?, ?>) o;
+			return m.size() == 0;
+		}
+		return false;
 	}
 
 }
