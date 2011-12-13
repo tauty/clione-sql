@@ -1,0 +1,35 @@
+Header{
+	depth = 3
+	headerCellMap = RecursiveMap{
+		"fooInt": RecursiveMap{ }
+		"fooStr": RecursiveMap{ }
+		"bar": RecursiveMap{
+			"barInt": RecursiveMap{ }
+			"barStr": RecursiveMap{ }
+			"bazzes": RecursiveMap{
+				null: RecursiveMap{
+					"bazInt": RecursiveMap{ }
+					"bazStr": RecursiveMap{ }
+				}
+			}
+		}
+		"bars": RecursiveMap{
+			null: RecursiveMap{
+				"barInt": RecursiveMap{ }
+				"barStr": RecursiveMap{ }
+				"bazzes": RecursiveMap{
+					null: RecursiveMap{
+						"bazInt": RecursiveMap{ }
+						"bazStr": RecursiveMap{ }
+					}
+				}
+			}
+		}
+	}
+	context = Context{
+		headerDepth = 0
+		header = Header{...}
+		aliasMap = HashMap{ }
+		displayHeaders = null
+	}
+}
