@@ -14,8 +14,6 @@ import tetz42.util.exception.WrapException;
 import tetz42.util.tablequery.Column;
 import tetz42.util.tablequery.RemovedMap;
 import tetz42.util.tablequery.Row;
-import tetz42.util.tablequery.annotation.ColumnDef;
-import tetz42.util.tablequery.annotation.Hidden;
 
 public class TableObject1<T1> implements Cloneable, ITableObject {
 	private final Class<T1> cls1;
@@ -55,16 +53,10 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		}
 
 		public int fieldWidth(Field f) {
-			ColumnDef def = f.getAnnotation(ColumnDef.class);
-			if (def != null)
-				return def.width();
 			return HeaderInfo.UNDEFINED;
 		}
 
 		public String fieldTitle(Field f) {
-			ColumnDef def = f.getAnnotation(ColumnDef.class);
-			if (def != null && def.title() != null)
-				return def.title();
 			return f.getName();
 		}
 
@@ -73,7 +65,7 @@ public class TableObject1<T1> implements Cloneable, ITableObject {
 		}
 
 		public boolean isHidden(Field f) {
-			return f.getAnnotation(Hidden.class) != null;
+			return true;
 		}
 	}
 
