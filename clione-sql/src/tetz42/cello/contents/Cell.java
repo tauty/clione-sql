@@ -33,8 +33,9 @@ public class Cell<T> implements ICell {
 		setValue(this.receiver, this.field, value);
 	}
 
+	@SuppressWarnings("unchecked")
 	public T get() {
-		return getOrNewValue(this.receiver, this.field);
+		return (T) getOrNewValue(this.receiver, this.field);
 	}
 
 	public void setStyle(String style) {

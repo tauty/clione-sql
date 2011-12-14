@@ -102,8 +102,9 @@ public class CelloUtil {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T getValue(Object receiver, String fieldName) {
-		return getValue(receiver, getField(receiver, fieldName));
+		return (T) getValue(receiver, getField(receiver, fieldName));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -120,7 +121,6 @@ public class CelloUtil {
 
 	public static <T> T newInstance(Class<T> clazz) {
 		try {
-			// return clazz.newInstance();
 			Constructor<T> constructor = clazz.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			return constructor.newInstance();
@@ -135,7 +135,7 @@ public class CelloUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T getOrNewValue(Object receiver, Class<?> fieldClass,
 			Field field) {
-		T value = getValue(receiver, field);
+		T value = (T) getValue(receiver, field);
 		if (value == null) {
 			value = (T) newInstance(fieldClass);
 			setValue(receiver, field, value);
@@ -143,8 +143,9 @@ public class CelloUtil {
 		return value;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T getOrNewValue(Object receiver, Field field) {
-		return getOrNewValue(receiver, field.getType(), field);
+		return (T) getOrNewValue(receiver, field.getType(), field);
 	}
 
 	public static <T> List<T> getListOnMap(RecursiveMap<List<T>> hcellMap) {
