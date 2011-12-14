@@ -3,7 +3,8 @@ package tetz42.cello;
 public interface ICell {
 	String getValue();
 	String getStyle();
-	boolean isSkip();
+	int getWidth();
 	int getX();
 	int getY();
+	boolean isSkipped();
 }

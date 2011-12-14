@@ -1,0 +1,284 @@
+ArrayList[
+	EmptyCell{ }
+	EmptyCell{...}
+	HCell{
+		depth = 2
+		name = "barInt"
+		title = "bar:int"
+		width = 4
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{
+			depth = 3
+			header = Header{
+				depth = 3
+				headerCellMap = RecursiveMap{
+					"fooInt": RecursiveMap{ }
+					"fooStr": RecursiveMap{ }
+					"bar": RecursiveMap{
+						"barInt": RecursiveMap{ }
+						"barStr": RecursiveMap{ }
+						"bazzes": RecursiveMap{
+							null: RecursiveMap{
+								"bazInt": RecursiveMap{ }
+								"bazStr": RecursiveMap{ }
+							}
+							"keyX": RecursiveMap{
+								"bazInt": RecursiveMap{ }
+								"bazStr": RecursiveMap{ }
+							}
+							"keyY": RecursiveMap{
+								"bazInt": RecursiveMap{ }
+								"bazStr": RecursiveMap{ }
+							}
+						}
+					}
+					"bars": RecursiveMap{
+						null: RecursiveMap{
+							"barInt": RecursiveMap{ }
+							"barStr": RecursiveMap{ }
+							"bazzes": RecursiveMap{
+								null: RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+							}
+						}
+						"key1": RecursiveMap{
+							"barInt": RecursiveMap{ }
+							"barStr": RecursiveMap{ }
+							"bazzes": RecursiveMap{
+								null: RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+								"key1-1": RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+								"key1-2": RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+							}
+						}
+						"key2": RecursiveMap{
+							"barInt": RecursiveMap{ }
+							"barStr": RecursiveMap{ }
+							"bazzes": RecursiveMap{
+								null: RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+								"key2-1": RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+								"key2-2": RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+							}
+						}
+					}
+				}
+				context = Context{...}
+			}
+			convertMap = HashMap{ }
+			displayHeaders = int[][
+				1
+				2
+				3
+			]
+		}
+	}
+	HCell{
+		depth = 2
+		name = "barStr"
+		title = "bar:String"
+		width = 5
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "keyX"
+		title = "keyX"
+		width = 6
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 2
+		isRemoved = false
+		isSkipped = false
+		x = 2
+		y = 1
+		realDepth = 2
+		context = Context{...}
+	}
+	EmptyCell{...}
+	HCell{
+		depth = 2
+		name = "keyY"
+		title = "keyY"
+		width = 6
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 2
+		isRemoved = false
+		isSkipped = false
+		x = 2
+		y = 1
+		realDepth = 2
+		context = Context{...}
+	}
+	EmptyCell{...}
+	EmptyCell{...}
+	EmptyCell{...}
+	HCell{
+		depth = 2
+		name = "bazInt"
+		title = "baz:int"
+		width = 7
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazStr"
+		title = "baz:String"
+		width = 8
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazInt"
+		title = "baz:int"
+		width = 7
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazStr"
+		title = "baz:String"
+		width = 8
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	EmptyCell{...}
+	EmptyCell{...}
+	HCell{
+		depth = 2
+		name = "bazInt"
+		title = "baz:int"
+		width = 7
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazStr"
+		title = "baz:String"
+		width = 8
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazInt"
+		title = "baz:int"
+		width = 7
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+	HCell{
+		depth = 2
+		name = "bazStr"
+		title = "baz:String"
+		width = 8
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+]

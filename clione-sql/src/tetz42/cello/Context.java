@@ -16,10 +16,12 @@ import tetz42.cello.header.Header;
 
 public class Context {
 
-	private final Header<?> header;
+	private static final ICell emptyCell = new EmptyCell();
 
+	private final Header<?> header;
 	private final Map<String, Map<String, String>> convertMap = new HashMap<String, Map<String, String>>();
-	public int headerDepth;
+
+	public int depth;
 	public int[] displayHeaders;
 
 	public Context(Header<?> header) {
@@ -27,28 +29,37 @@ public class Context {
 	}
 
 	public void init() {
-		this.headerDepth = this.header.getDepth();
 		int[] displayHeaders = new int[header.getDepth()];
 		for (int i = 0; i < displayHeaders.length; i++)
 			displayHeaders[i] = i + 1;
-		this.displayHeaders = displayHeaders;
+		setDisplayHeaders(displayHeaders);
 	}
-	
-	public void putConversion(String schema, String convertFrom, String convertTo){
+
+	public Header<?> getHeader() {
+		return this.header;
+	}
+
+	public void setDisplayHeaders(int... indexes) {
+		this.displayHeaders = indexes;
+		this.depth = indexes.length;
+	}
+
+	public void putConversion(String schema, String convertFrom,
+			String convertTo) {
 		Map<String, String> map = convertMap.get(schema);
-		if(map == null)
+		if (map == null)
 			convertMap.put(schema, map = new HashMap<String, String>());
 		map.put(convertFrom, convertTo);
 	}
 
-	public String getConversion(String schema, String convertFrom){
+	public String getConversion(String schema, String convertFrom) {
 		Map<String, String> map = convertMap.get(schema);
-		if(map == null)
+		if (map == null)
 			return null;
 		return map.get(convertFrom);
 	}
-	
-	public boolean isTopLevel(int level) {
+
+	public boolean isTop(int level) {
 		if (this.displayHeaders.length == 0)
 			return false;
 		return this.displayHeaders[0] == level;
@@ -78,9 +89,6 @@ public class Context {
 		HeaderDef h = f.getAnnotation(HeaderDef.class);
 		if (h != null)
 			return h.width();
-		CellDef c = f.getAnnotation(CellDef.class);
-		if (c != null)
-			return c.width();
 		return UNDEFINED;
 	}
 
@@ -95,17 +103,48 @@ public class Context {
 		return !isStatic(f) && !isHidden(f);
 	}
 
-	public boolean isRemoved(Class<?> clazz, Field f) {
-		// TODO implementation
-		return false;
-		// return removed.isRemoved(clazz.getName(), f.getName());
-	}
-
 	public boolean isHidden(Field f) {
 		return f.getAnnotation(HeaderDef.class) == null
 				&& f.getAnnotation(CellDef.class) == null
 				&& f.getAnnotation(EachHeaderDef.class) == null
 				&& f.getAnnotation(EachCellDef.class) == null;
+	}
+
+	public ICell getEmptyCell() {
+		return emptyCell;
+	}
+
+	private static class EmptyCell implements ICell {
+
+		@Override
+		public boolean isSkipped() {
+			return true;
+		}
+
+		@Override
+		public String getStyle() {
+			return null;
+		}
+
+		@Override
+		public String getValue() {
+			return null;
+		}
+
+		@Override
+		public int getX() {
+			return 0;
+		}
+
+		@Override
+		public int getY() {
+			return 0;
+		}
+
+		@Override
+		public int getWidth() {
+			return 0;
+		}
 	}
 
 }

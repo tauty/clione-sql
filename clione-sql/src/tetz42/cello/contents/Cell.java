@@ -4,18 +4,29 @@ import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
 
-import tetz42.cello.Context;
+import tetz42.cello.ICell;
+import tetz42.cello.annotation.CellDef;
+import tetz42.cello.annotation.EachCellDef;
 
-public class Cell<T> {
+public class Cell<T> implements ICell {
 
 	private final Object receiver;
 	private final Field field;
-	private final Context context;
+	private String style;
 
-	public Cell(Object receiver, Field field, Context context) {
+	Cell(Object receiver, Field field) {
 		this.receiver = receiver;
 		this.field = field;
-		this.context = context;
+		CellDef cellDef = field.getAnnotation(CellDef.class);
+		if (cellDef != null)
+			this.style = cellDef.style();
+	}
+
+	public Cell(CellUnitMap<T> cumap, EachCellDef cellDef) {
+		this.receiver = cumap;
+		this.field = null;
+		if (cellDef != null)
+			this.style = cellDef.style();
 	}
 
 	public void set(T value) {
@@ -24,5 +35,39 @@ public class Cell<T> {
 
 	public T get() {
 		return getOrNewValue(this.receiver, this.field);
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
+	@Override
+	public String getStyle() {
+		return this.style;
+	}
+
+	@Override
+	public String getValue() {
+		return String.valueOf(get());
+	}
+
+	@Override
+	public int getX() {
+		return 1;
+	}
+
+	@Override
+	public int getY() {
+		return 1;
+	}
+
+	@Override
+	public boolean isSkipped() {
+		return false;
+	}
+
+	@Override
+	public int getWidth() {
+		return UNDEFINED;
 	}
 }
