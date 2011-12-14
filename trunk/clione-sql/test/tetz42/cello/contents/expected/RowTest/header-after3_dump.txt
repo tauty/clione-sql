@@ -1,0 +1,1 @@
+				baz:int(Style:)	baz:String(Style:)	baz:int(Style:)	baz:String(Style:)													

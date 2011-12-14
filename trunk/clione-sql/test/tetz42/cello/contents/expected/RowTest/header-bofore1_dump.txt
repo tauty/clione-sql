@@ -1,0 +1,1 @@
+foo:int(Style:)	foo:String(Style:)	bar:Bar(Style:)		

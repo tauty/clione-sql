@@ -5,14 +5,18 @@ import static tetz42.cello.CelloUtil.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import tetz42.cello.Context;
+import tetz42.cello.ICell;
+import tetz42.cello.IRow;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachCellDef;
 import tetz42.cello.annotation.EachHeaderDef;
+import tetz42.cello.header.HCell;
 import tetz42.util.exception.WrapException;
 
-public class Row<T> {
+public class Row<T> implements IRow{
 
 	private final RecursiveMap<List<Cell<Object>>> cellMap;
 	private final Context context;
@@ -74,19 +78,20 @@ public class Row<T> {
 
 		// generate cell
 		List<Cell<Object>> list = getListOnMap(cellMap);
-		Cell<Object> cell = new CellForMap<Object>((CellUnitMap<Object>) cumap, key);
+		Cell<Object> cell = new CellForMap<Object>((CellUnitMap<Object>) cumap,
+				key);
 		list.add(cell);
 
 		Object value = cell.get();
 
 		// TODO too difficult. fix someday.
-//		if (value instanceof CellUnitMap<?>) {
-//			CellUnitMap<?> cumap = (CellUnitMap<?>) value;
-//			cumap.init(context, cellMap.keys(), this, field
-//					.getAnnotation(EachHeaderDef.class), field
-//					.getAnnotation(EachCellDef.class));
-//			return;
-//		}
+		// if (value instanceof CellUnitMap<?>) {
+		// CellUnitMap<?> cumap = (CellUnitMap<?>) value;
+		// cumap.init(context, cellMap.keys(), this, field
+		// .getAnnotation(EachHeaderDef.class), field
+		// .getAnnotation(EachCellDef.class));
+		// return;
+		// }
 
 		if (isPrimitive(value))
 			return;
@@ -106,4 +111,36 @@ public class Row<T> {
 		}
 		return cellMap.getValue();
 	}
+
+	@Override
+	public List<ICell> each() {
+		List<ICell> list = new ArrayList<ICell>();
+		each(this.cellMap, list);
+		return list;
+	}
+
+	private void each(RecursiveMap<List<Cell<Object>>> cellMap, List<ICell> list) {
+		if (isRemoved(cellMap))
+			return;
+
+//		if (cellMap.size() == 0) {
+//		list.add(getFromList(cellMap.getValue()));
+		Cell<Object> cell = getFromList(cellMap.getValue());
+		if (isPrimitive(cell.get())) {
+			list.add(cell);
+		} else {
+			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
+					.entrySet()) {
+				each(e.getValue(), list);
+			}
+		}
+	}
+
+	private boolean isRemoved(RecursiveMap<List<Cell<Object>>> cellMap) {
+		RecursiveMap<List<HCell>> hCellMap = this.context.getHeader()
+				.getHeaderCellMap(cellMap.keys());
+		HCell hCell = getFromList(hCellMap.getValue());
+		return hCell.isRemoved();
+	}
+
 }

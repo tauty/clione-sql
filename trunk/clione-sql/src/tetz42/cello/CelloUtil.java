@@ -23,6 +23,7 @@ public class CelloUtil {
 
 	public static final int UNDEFINED = -1;
 	public static final String ROOT = null;
+	public static final String CRLF = "\r\n";
 
 	protected static final Set<String> primitiveSet;
 	static {

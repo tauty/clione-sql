@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 
 import tetz42.cello.Context;
 import tetz42.cello.ICell;
+import tetz42.cello.IHeader;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.contents.CellUnitMap;
-import tetz42.util.ObjDumper4j;
 
-public class Header<T> {
+public class Header<T> implements IHeader {
 
 	private final RecursiveMap<List<HCell>> headerCellMap;
 	private final Context context;
@@ -53,9 +53,8 @@ public class Header<T> {
 
 		// generate HCell
 		int depth = template.getRealDepth();
-		if(template.getDepth() == UNDEFINED)
+		if (template.getDepth() == UNDEFINED)
 			depth++; // same condition when the template was generated
-		System.out.println("template#depth = " + depth);
 		HCell cell = new HCell(context, cumap.getHeaderDef(), key, depth);
 		depth = setCell(cell, hcellMap, depth);
 		Object value = newInstance(cumap.getTemplate());
@@ -121,13 +120,21 @@ public class Header<T> {
 		return getFromList(getList(keys));
 	}
 
+	@Override
+	public Iterable<Iterable<ICell>> each() {
+		List<Iterable<ICell>> result = new ArrayList<Iterable<ICell>>();
+		for (int depth : context.displayHeaders) {
+			result.add(each(depth));
+		}
+		return result;
+	}
+
 	public List<ICell> each(int depth) {
 		calcCellSize();
 
 		ArrayList<ICell> list = new ArrayList<ICell>();
 		System.out.println("------------- start:" + depth + "---------------");
 		each(depth, this.headerCellMap, list);
-		System.out.println(ObjDumper4j.dumper(list));
 		System.out.println("--------------  end  ----------------");
 		System.out.println();
 
@@ -191,4 +198,5 @@ public class Header<T> {
 		hCell.setX(size);
 		return size;
 	}
+
 }
