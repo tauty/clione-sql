@@ -44,7 +44,6 @@ public class Header<T> implements IHeader {
 		genHCellRecursively(newInstance(clazz), null, headerCellMap, 0);
 	}
 
-	// TODO refactoring
 	public void defineHeader(CellUnitMap<?> cumap, String key,
 			RecursiveMap<List<HCell>> hcellMap) {
 
@@ -144,6 +143,9 @@ public class Header<T> implements IHeader {
 	private void each(int depth, RecursiveMap<List<HCell>> hcellMap,
 			ArrayList<ICell> list) {
 		HCell hCell = getFromList(hcellMap.getValue());
+		if(hCell.isRemoved())
+			return;
+
 		System.out.println("hCell#name = " + hCell.getName() + ", depth = "
 				+ hCell.getDepth());
 		if (hCell.getDepth() == depth) {
