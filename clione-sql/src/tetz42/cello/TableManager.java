@@ -70,6 +70,15 @@ public class TableManager<T> implements ITableManager {
 		rows().setCurrentRowAs(key);
 	}
 
+	public void putConversion(String convertFrom, String convertTo) {
+		putConversion("", convertFrom, convertTo);
+	}
+
+	public void putConversion(String schema, String convertFrom,
+			String convertTo) {
+		this.context.putConversion(schema, convertFrom, convertTo);
+	}
+
 	@Override
 	public IHeader header() {
 		return this.header;
