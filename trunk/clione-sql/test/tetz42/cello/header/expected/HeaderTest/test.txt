@@ -27,7 +27,7 @@ Header{
 		}
 	}
 	context = Context{
-		headerDepth = 3
+		depth = 3
 		header = Header{...}
 		convertMap = HashMap{ }
 		displayHeaders = int[][

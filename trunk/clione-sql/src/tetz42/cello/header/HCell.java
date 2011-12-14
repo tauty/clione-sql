@@ -17,44 +17,26 @@ public class HCell implements ICell {
 	private String title;
 	private int width;
 	private String style = "";
-	private boolean isConvert;
+	private boolean isConverted;
 	private String convertSchema;
-
+	private int size;
 	private boolean isRemoved = false;
-
 	private final Context context;
-
-	private boolean isSkip;
-
-	private int x;
-
-	private int y;
-
-	/**
-	 * For ROOT Element
-	 */
-	public HCell(Context context, int depth) {
-		this(context, null, depth);
-	}
-
-	/**
-	 * For Not Header Element
-	 * 
-	 * @param field
-	 */
-	public HCell(Context context, Field field) {
-		this(context, field, UNDEFINED);
-	}
+	private boolean isSkipped;
+	private int x = 1;
+	private int y = 1;
+	private int realDepth;
 
 	/**
 	 * For Header Element
-	 * 
+	 *
 	 * @param field
 	 * @param def
 	 * @param depth
 	 */
-	public HCell(Context context, Field field, int depth) {
+	HCell(Context context, Field field, int depth) {
 		this.context = context;
+		this.realDepth = depth;
 		if (field == null) {
 			this.name = ROOT;
 		} else {
@@ -62,11 +44,12 @@ public class HCell implements ICell {
 			this.name = field.getName();
 			if (def == null) {
 				depth = UNDEFINED;
+				realDepth--;
 			} else {
 				this.title = def.title();
 				this.width = def.width();
 				this.style = def.style();
-				this.isConvert = def.convert();
+				this.isConverted = def.convert();
 				this.convertSchema = def.convertSchema();
 			}
 		}
@@ -75,23 +58,25 @@ public class HCell implements ICell {
 
 	/**
 	 * For CellUnitMap Template class.
-	 * 
+	 *
 	 * @param field
 	 *            - the field of CellUnitMap
 	 * @param key
 	 *            - the key name of cell
 	 * @param depth
 	 */
-	public HCell(Context context, EachHeaderDef def, String key, int depth) {
+	HCell(Context context, EachHeaderDef def, String key, int depth) {
 		this.context = context;
 		this.name = key;
+		this.realDepth = depth;
 		if (def == null) {
 			depth = UNDEFINED;
+			realDepth--;
 		} else {
 			this.title = this.name;
 			this.width = def.width();
 			this.style = def.style();
-			this.isConvert = def.convert();
+			this.isConverted = def.convert();
 			this.convertSchema = def.convertSchema();
 		}
 		this.depth = depth;
@@ -136,6 +121,7 @@ public class HCell implements ICell {
 
 	public void setDefaultCellStyle(String style) {
 		// TODO implementation
+		System.out.println(style);
 	}
 
 	public int getDepth() {
@@ -143,11 +129,11 @@ public class HCell implements ICell {
 	}
 
 	public void setConvert(boolean isConvert) {
-		this.isConvert = isConvert;
+		this.isConverted = isConvert;
 	}
 
-	public boolean isConvert() {
-		return isConvert;
+	public boolean isConverted() {
+		return isConverted;
 	}
 
 	public void setConvertSchema(String convertSchema) {
@@ -163,7 +149,7 @@ public class HCell implements ICell {
 		String title = this.getTitle();
 		if (isEmpty(title))
 			title = this.getName();
-		if (this.isConvert()) {
+		if (this.isConverted()) {
 			String s = this.context.getConversion(this.getConvertSchema(),
 					title);
 			if (s != null)
@@ -173,15 +159,15 @@ public class HCell implements ICell {
 	}
 
 	public void skip() {
-		this.isSkip = true;
+		this.isSkipped = true;
 	}
 
 	@Override
-	public boolean isSkip() {
-		return this.isSkip;
+	public boolean isSkipped() {
+		return this.isSkipped;
 	}
 
-	public void setX(int x) {
+	void setX(int x) {
 		this.x = x;
 	}
 
@@ -190,13 +176,25 @@ public class HCell implements ICell {
 		return this.x;
 	}
 
-	public void setY(int y) {
+	void setY(int y) {
 		this.y = y;
 	}
 
 	@Override
 	public int getY() {
 		return this.y;
+	}
+
+	void setSize(int size) {
+		this.size = size;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public int getRealDepth() {
+		return realDepth;
 	}
 
 }
