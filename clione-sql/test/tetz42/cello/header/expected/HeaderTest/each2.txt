@@ -1,0 +1,74 @@
+ArrayList[
+	EmptyCell{ }
+	EmptyCell{...}
+	HCell{
+		depth = 2
+		name = "barInt"
+		title = "bar:int"
+		width = 4
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{
+			depth = 3
+			header = Header{
+				depth = 3
+				headerCellMap = RecursiveMap{
+					"fooInt": RecursiveMap{ }
+					"fooStr": RecursiveMap{ }
+					"bar": RecursiveMap{
+						"barInt": RecursiveMap{ }
+						"barStr": RecursiveMap{ }
+						"bazzes": RecursiveMap{
+							null: RecursiveMap{
+								"bazInt": RecursiveMap{ }
+								"bazStr": RecursiveMap{ }
+							}
+						}
+					}
+					"bars": RecursiveMap{
+						null: RecursiveMap{
+							"barInt": RecursiveMap{ }
+							"barStr": RecursiveMap{ }
+							"bazzes": RecursiveMap{
+								null: RecursiveMap{
+									"bazInt": RecursiveMap{ }
+									"bazStr": RecursiveMap{ }
+								}
+							}
+						}
+					}
+				}
+				context = Context{...}
+			}
+			convertMap = HashMap{ }
+			displayHeaders = int[][
+				1
+				2
+				3
+			]
+		}
+	}
+	HCell{
+		depth = 2
+		name = "barStr"
+		title = "bar:String"
+		width = 5
+		style = ""
+		isConverted = false
+		convertSchema = ""
+		size = 1
+		isRemoved = false
+		isSkipped = false
+		x = 1
+		y = 2
+		realDepth = 2
+		context = Context{...}
+	}
+]
