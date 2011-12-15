@@ -1,5 +1,0 @@
-Header1	Header2	Header3			Header4			Header5			LastColumn		
-		カラム１。	カラム２。	カラム３。	カラム１。	カラム２。	カラム３。	カラム１。	カラム２。	カラム３。	column1	column2	column3
-111	222	333	444	10							1	10	100
-1111	2222	3333	4444	100							10	100	1000
--------	Summary	null	null	20							0	0	1111

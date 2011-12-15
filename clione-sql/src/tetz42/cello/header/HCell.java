@@ -3,7 +3,6 @@ package tetz42.cello.header;
 import static tetz42.cello.CelloUtil.*;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashSet;
 
 import tetz42.cello.Context;
 import tetz42.cello.ICell;
@@ -12,19 +11,16 @@ import tetz42.cello.annotation.HeaderDef;
 
 public class HCell implements ICell {
 
-	private final Context context;
+	private final Context<?> context;
 	private final String name;
 	private final int depth;
-	
-	private final LinkedHashSet<String> defineCumapKeys;
-	private final LinkedHashSet<String> sortCumapKeys;
-	
+
 	private String title;
 	private int width;
 	private String style = "";
 	private boolean isConverted;
 	private String convertSchema;
-	
+
 	private int size;
 	private boolean isRemoved = false;
 	private boolean isSkipped = false;
@@ -39,7 +35,7 @@ public class HCell implements ICell {
 	 * @param def
 	 * @param depth
 	 */
-	HCell(Context context, Field field, int depth) {
+	HCell(Context<?> context, Field field, int depth) {
 		this.context = context;
 		this.realDepth = depth;
 		if (field == null) {
@@ -59,8 +55,6 @@ public class HCell implements ICell {
 			}
 		}
 		this.depth = depth;
-		this.defineCumapKeys = null;
-		this.sortCumapKeys = null;
 	}
 
 	/**
@@ -72,7 +66,7 @@ public class HCell implements ICell {
 	 *            - the key name of cell
 	 * @param depth
 	 */
-	HCell(Context context, EachHeaderDef def, String key, int depth) {
+	HCell(Context<?> context, EachHeaderDef def, String key, int depth) {
 		this.context = context;
 		this.name = key;
 		this.realDepth = depth;
@@ -87,8 +81,6 @@ public class HCell implements ICell {
 			this.convertSchema = def.convertSchema();
 		}
 		this.depth = depth;
-		this.defineCumapKeys = new LinkedHashSet<String>();
-		this.sortCumapKeys = new LinkedHashSet<String>();
 	}
 
 	public String getName() {

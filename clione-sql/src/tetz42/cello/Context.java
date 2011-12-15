@@ -12,20 +12,23 @@ import tetz42.cello.annotation.CellDef;
 import tetz42.cello.annotation.EachCellDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.annotation.HeaderDef;
+import tetz42.cello.contents.Row;
 import tetz42.cello.header.Header;
 
-public class Context {
+public class Context<T> {
 
 	private static final ICell emptyCell = new EmptyCell();
 
-	private final Header<?> header;
+	private final Header<T> header;
+	private final Row<T> rowDef;
 	private final Map<String, Map<String, String>> convertMap = new HashMap<String, Map<String, String>>();
 
 	public int depth;
 	public int[] displayHeaders;
 
-	public Context(Header<?> header) {
+	public Context(Class<T> clazz, Header<T> header) {
 		this.header = header;
+		this.rowDef = new Row<T>(clazz, this);
 	}
 
 	public void init() {
@@ -37,6 +40,10 @@ public class Context {
 
 	public Header<?> getHeader() {
 		return this.header;
+	}
+
+	public Row<T> getRowDef() {
+		return this.rowDef;
 	}
 
 	public void setDisplayHeaders(int... indexes) {

@@ -17,11 +17,12 @@ import tetz42.cello.header.Header;
 
 public class RowTest {
 
-	private Context context;
+	private Context<?> context;
 
 	public <T> Row<T> create(Class<T> clazz) {
 		Header<T> header = new Header<T>(clazz);
-		context = new Context(header);
+		Context<T> context = new Context<T>(clazz, header);
+		this.context = context;
 		return new Row<T>(clazz, context);
 	}
 

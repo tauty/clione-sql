@@ -12,26 +12,26 @@ import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HCell;
 import tetz42.util.exception.InvalidParameterException;
 
-public class CellUnitMap<T> {
+public class CellUnitMap<V> {
 
-	public static final <T> CellUnitMap<T> create(Class<T> clazz) {
-		return new CellUnitMap<T>(clazz);
+	public static final <V> CellUnitMap<V> create(Class<V> clazz) {
+		return new CellUnitMap<V>(clazz);
 	}
 
-	private final Class<T> clazz;
-	private final LinkedHashMap<String, T> valueMap = new LinkedHashMap<String, T>();
+	private final Class<V> clazz;
+	private final LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 
-	private Context context;
+	private Context<?> context;
 	private EachHeaderDef headerDef;
 	private EachCellDef cellDef;
 	private String[] keys;
 	private Row<?> row;
 
-	public CellUnitMap(Class<T> clazz) {
+	public CellUnitMap(Class<V> clazz) {
 		this.clazz = clazz;
 	}
 
-	void init(Context context, String[] keys, Row<?> row, EachHeaderDef hdef,
+	void init(Context<?> context, String[] keys, Row<?> row, EachHeaderDef hdef,
 			EachCellDef cellDef) {
 		this.context = context;
 		this.keys = keys;
@@ -40,7 +40,11 @@ public class CellUnitMap<T> {
 		this.cellDef = cellDef;
 	}
 
-	public T get(String key) {
+	public String[] getKeys() {
+		return this.keys;
+	}
+
+	public V get(String key) {
 		if (key == null)
 			throw new InvalidParameterException(this.getClass().getSimpleName()
 					+ "#get does not support null key.");
@@ -61,7 +65,7 @@ public class CellUnitMap<T> {
 		return valueMap.get(key);
 	}
 
-	public void set(String key, T value) {
+	public void set(String key, V value) {
 		boolean containsKey = valueMap.containsKey(key);
 		valueMap.put(key, value);
 
@@ -75,7 +79,7 @@ public class CellUnitMap<T> {
 		return valueMap.size();
 	}
 
-	public Class<T> getTemplate() {
+	public Class<V> getTemplate() {
 		return this.clazz;
 	}
 

@@ -40,13 +40,6 @@ public class TableManagerTest {
 		tm.tail().get().fooInt = 10000;
 		tm.tail().get().fooStr = "10000";
 
-		// TODO TableManager should be performed correctly even if the code block below is removed.
-		tm.tail().get().bar.bazzes.get("keyX");
-		tm.tail().get().bar.bazzes.get("keyY");
-		tm.tail().get().bars.get("key1").bazzes.get("key1-1");
-		tm.tail().get().bars.get("key1").bazzes.get("key1-2");
-		tm.tail().get().bars.get("key2").bazzes.get("key2-1");
-		tm.tail().get().bars.get("key2").bazzes.get("key2-2");
 
 		tm.newRow();
 		tm.row().get().fooInt = 101;
@@ -73,6 +66,73 @@ public class TableManagerTest {
 		tm.tail().get().bars.get("key1").barStr = "20001";
 
 		assertEqualsWithFile(tm.toString(), getClass(), "test-after");
+	}
+
+	@Test
+	public void pre_define() {
+		TableManager<Foo> tm = TableManager.create(Foo.class);
+		assertEqualsWithFile(tm.toString(), getClass(), "pre_define-bofore");
+
+		// define columns and its order of CellUnitMap Elements
+		tm.def().get().bars.get("key2").bazzes.get("key2-2");
+		tm.def().get().bars.get("key2").bazzes.get("key2-1");
+		tm.def().get().bars.get("key1").bazzes.get("key1-2");
+		tm.def().get().bars.get("key1").bazzes.get("key1-1");
+		tm.def().get().bars.get("key0").bazzes.get("key0-2");
+		tm.def().get().bars.get("key0").bazzes.get("key0-1");
+		tm.def().get().bar.bazzes.get("keyZ");
+		tm.def().get().bar.bazzes.get("keyY");
+		tm.def().get().bar.bazzes.get("keyX");
+
+		tm.newRow();
+		tm.row().get().fooInt = 100;
+		tm.row().get().bar.bazzes.get("keyX").bazInt = 100;
+		tm.row().get().bar.bazzes.get("keyX").bazStr = "100";
+		tm.row().get().bar.bazzes.get("keyY").bazInt = 1000;
+		tm.row().get().bar.bazzes.get("keyY").bazStr = "1000";
+
+		tm.row().get().bars.get("key1").barInt = 200;
+		tm.row().get().bars.get("key1").barStr = "200";
+		tm.row().get().bars.get("key1").bazzes.get("key1-1").bazInt = 300;
+		tm.row().get().bars.get("key1").bazzes.get("key1-1").bazStr = "300";
+		tm.row().get().bars.get("key1").bazzes.get("key1-2").bazInt = 400;
+		tm.row().get().bars.get("key1").bazzes.get("key1-2").bazStr = "400";
+
+		tm.row().get().bars.get("key2").barInt = 500;
+		tm.row().get().bars.get("key2").barStr = "500";
+		tm.row().get().bars.get("key2").bazzes.get("key2-1").bazInt = 600;
+		tm.row().get().bars.get("key2").bazzes.get("key2-1").bazStr = "600";
+		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 700;
+		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "700";
+
+		tm.tail().get().fooInt = 10000;
+		tm.tail().get().fooStr = "10000";
+
+		tm.newRow();
+		tm.row().get().fooInt = 101;
+		tm.row().get().bar.bazzes.get("keyX").bazInt = 101;
+		tm.row().get().bar.bazzes.get("keyX").bazStr = "101";
+		tm.row().get().bar.bazzes.get("keyY").bazInt = 1001;
+		tm.row().get().bar.bazzes.get("keyY").bazStr = "1001";
+
+		tm.row().get().bars.get("key1").barInt = 201;
+		tm.row().get().bars.get("key1").barStr = "201";
+		tm.row().get().bars.get("key1").bazzes.get("key1-1").bazInt = 301;
+		tm.row().get().bars.get("key1").bazzes.get("key1-1").bazStr = "301";
+		tm.row().get().bars.get("key1").bazzes.get("key1-2").bazInt = 401;
+		tm.row().get().bars.get("key1").bazzes.get("key1-2").bazStr = "401";
+
+		tm.row().get().bars.get("key2").barInt = 501;
+		tm.row().get().bars.get("key2").barStr = "501";
+		tm.row().get().bars.get("key2").bazzes.get("key2-1").bazInt = 601;
+		tm.row().get().bars.get("key2").bazzes.get("key2-1").bazStr = "601";
+		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 701;
+		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "701";
+
+		tm.tail().get().bars.get("key1").barInt = 20001;
+		tm.tail().get().bars.get("key1").barStr = "20001";
+
+		assertEqualsWithFile(tm.toString(), getClass(), "pre_define-after");
 	}
 }
 

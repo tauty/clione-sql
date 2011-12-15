@@ -10,14 +10,14 @@ import tetz42.cello.contents.Row;
 public class RowHolder<T> {
 
 	private final Class<T> clazz;
-	private final Context context;
+	private final Context<T> context;
 
 	private final List<Row<T>> rowList = new ArrayList<Row<T>>();
 	private final Map<String, Row<T>> rowMap = new HashMap<String, Row<T>>();
 
 	private int index = 0;
 
-	RowHolder(Class<T> clazz, Context context) {
+	RowHolder(Class<T> clazz, Context<T> context) {
 		this.clazz = clazz;
 		this.context = context;
 	}

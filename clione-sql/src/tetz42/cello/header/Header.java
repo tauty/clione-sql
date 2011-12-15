@@ -17,7 +17,7 @@ import tetz42.cello.contents.CellUnitMap;
 public class Header<T> implements IHeader {
 
 	private final RecursiveMap<List<HCell>> headerCellMap;
-	private final Context context;
+	private final Context<T> context;
 
 	private int depth;
 
@@ -31,12 +31,12 @@ public class Header<T> implements IHeader {
 
 	public Header(Class<T> clazz) {
 		headerCellMap = new RecursiveMap<List<HCell>>();
-		this.context = new Context(this);
+		this.context = new Context<T>(clazz, this);
 		cellSetting(clazz);
 		this.context.init();
 	}
 
-	public Context getContext() {
+	public Context<T> getContext() {
 		return this.context;
 	}
 
@@ -66,6 +66,11 @@ public class Header<T> implements IHeader {
 						depth + 1);
 			}
 		}
+	}
+
+	public Iterable<String> getCuMapKeys(CellUnitMap<?> cumap) {
+		RecursiveMap<List<HCell>> map = headerCellMap.get(cumap.getKeys());
+		return map.keySet();
 	}
 
 	private void genHCellRecursively(Object value, Field field,
