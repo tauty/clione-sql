@@ -16,13 +16,13 @@ import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HCell;
 import tetz42.util.exception.WrapException;
 
-public class Row<T> implements IRow{
+public class Row<T> implements IRow {
 
 	private final RecursiveMap<List<Cell<Object>>> cellMap;
-	private final Context context;
+	private final Context<T> context;
 	private final T value;
 
-	public Row(Class<T> clazz, Context context) {
+	public Row(Class<T> clazz, Context<T> context) {
 		this.cellMap = new RecursiveMap<List<Cell<Object>>>();
 		this.context = context;
 		this.value = newInstance(clazz);
@@ -123,12 +123,21 @@ public class Row<T> implements IRow{
 		if (isRemoved(cellMap))
 			return;
 
-//		if (cellMap.size() == 0) {
-//		list.add(getFromList(cellMap.getValue()));
+		// if (cellMap.size() == 0) {
+		// list.add(getFromList(cellMap.getValue()));
 		Cell<Object> cell = getFromList(cellMap.getValue());
-		if (isPrimitive(cell.get())) {
+		Object value = cell.get();
+		if (isPrimitive(value)) {
 			list.add(cell);
 		} else {
+			if (value instanceof CellUnitMap<?>) {
+				CellUnitMap<?> cumap = (CellUnitMap<?>) value;
+				for (String cuKey : this.context.getHeader()
+						.getCuMapKeys(cumap)) {
+					if (cuKey != null)
+						cumap.get(cuKey);
+				}
+			}
 			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
 					.entrySet()) {
 				each(e.getValue(), list);

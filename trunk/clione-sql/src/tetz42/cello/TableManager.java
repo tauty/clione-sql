@@ -15,7 +15,7 @@ public class TableManager<T> implements ITableManager {
 	}
 
 	private final Header<T> header;
-	private final Context context;
+	private final Context<T> context;
 	private final RowHolder<T> rowHolder;
 	private final RowHolder<T> tailHolder;
 
@@ -77,6 +77,10 @@ public class TableManager<T> implements ITableManager {
 	public void putConversion(String schema, String convertFrom,
 			String convertTo) {
 		this.context.putConversion(schema, convertFrom, convertTo);
+	}
+
+	public Row<T> def() {
+		return this.context.getRowDef();
 	}
 
 	@Override
