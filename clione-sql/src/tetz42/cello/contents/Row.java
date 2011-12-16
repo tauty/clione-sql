@@ -15,6 +15,7 @@ import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachCellDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HeaderCell;
+import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.WrapException;
 
 public class Row<T> implements IRow {
@@ -188,14 +189,22 @@ public class Row<T> implements IRow {
 								.get(fieldName);
 						Cell<Object> subCell = getFromList(subMap.getValue());
 						list.add((Cell<E>) subCell);
+					} else {
+						throw new InvalidParameterException(
+								"Unknown field/key name has specified. name="
+										+ join(map.keys(), "|") + "|"
+										+ fieldName);
 					}
 				} else if (map.containsKey(fieldName)) {
 					getByQuery(query, index + 1, map.get(fieldName), list);
 				} else {
-					// TODO consider about this case.
+					throw new InvalidParameterException(
+							"Unknown field/key name has specified. name="
+									+ join(map.keys(), "|") + "|" + fieldName);
 				}
 			}
 		}
 		return list;
 	}
+
 }

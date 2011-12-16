@@ -18,10 +18,16 @@ public class RowHolder<T> {
 	private final Map<String, Row<T>> rowMap = new HashMap<String, Row<T>>();
 
 	private int index = 0;
+	private boolean isRowSet;
 
 	RowHolder(Class<T> clazz, Context<T> context) {
+		this(clazz, context, false);
+	}
+
+	RowHolder(Class<T> clazz, Context<T> context, boolean isRowSet) {
 		this.clazz = clazz;
 		this.context = context;
+		this.isRowSet = isRowSet;
 	}
 
 	public Row<T> newRow() {
@@ -101,7 +107,8 @@ public class RowHolder<T> {
 		List<Cell<E>> list = new ArrayList<Cell<E>>();
 		for (String rowName : query.get(0)) {
 			if (rowName.equals(Query.CURRENT_ROW)) {
-				addMatchedCells(row(), query, list);
+				if (isRowSet)
+					addMatchedCells(row(), query, list);
 			} else if (rowName.equals(Query.ANY)) {
 				for (Row<T> row : rowList)
 					addMatchedCells(row, query, list);
@@ -112,7 +119,8 @@ public class RowHolder<T> {
 				if (i < rowList.size())
 					addMatchedCells(rowList.get(i), query, list);
 			} else {
-				// TODO consider about this case.
+				throw new InvalidParameterException(
+						"Unknown row name has specified. name=" + rowName);
 			}
 		}
 		return list;

@@ -161,4 +161,14 @@ public class CelloUtil {
 		return list.get(0);
 	}
 
+	public static String join(String[] args, String delimiter) {
+		StringBuilder sb = new StringBuilder();
+		for (String arg : args) {
+			if (sb.length() != 0)
+				sb.append(delimiter);
+			sb.append(arg);
+		}
+		return sb.toString();
+	}
+
 }
