@@ -124,21 +124,13 @@ public class Row<T> implements IRow {
 		if (isRemoved(cellMap))
 			return;
 
-		// if (cellMap.size() == 0) {
-		// list.add(getFromList(cellMap.getValue()));
 		Cell<Object> cell = getFromList(cellMap.getValue());
 		Object value = cell.get();
 		if (isPrimitive(value)) {
 			list.add(cell);
 		} else {
-			if (value instanceof CellUnitMap<?>) {
-				CellUnitMap<?> cumap = (CellUnitMap<?>) value;
-				for (String cuKey : this.context.getHeader()
-						.getCuMapKeys(cumap)) {
-					if (cuKey != null)
-						cumap.get(cuKey);
-				}
-			}
+			if (value instanceof CellUnitMap<?>)
+				((CellUnitMap<?>) cell.get()).setAllDefinedKeys();
 			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
 					.entrySet()) {
 				each(e.getValue(), list);
@@ -174,9 +166,12 @@ public class Row<T> implements IRow {
 	@SuppressWarnings("unchecked")
 	private <E> List<Cell<E>> getByQuery(Query query, int index,
 			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list) {
+		Cell<Object> cell = getFromList(map.getValue());
 		if (query.get(index) == null) {
-			list.add((Cell<E>) getFromList(map.getValue()));
+			list.add((Cell<E>) cell);
 		} else {
+			if (cell.get() instanceof CellUnitMap<?>)
+				((CellUnitMap<?>) cell.get()).setAllDefinedKeys();
 			for (String fieldName : query.get(index)) {
 				if (fieldName.equals(Query.ANY)) {
 					for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map

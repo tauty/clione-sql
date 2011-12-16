@@ -31,8 +31,8 @@ public class CellUnitMap<V> {
 		this.clazz = clazz;
 	}
 
-	void init(Context<?> context, String[] keys, Row<?> row, EachHeaderDef hdef,
-			EachCellDef cellDef) {
+	void init(Context<?> context, String[] keys, Row<?> row,
+			EachHeaderDef hdef, EachCellDef cellDef) {
 		this.context = context;
 		this.keys = keys;
 		this.row = row;
@@ -72,6 +72,13 @@ public class CellUnitMap<V> {
 		// value check
 		if (!containsKey) {
 			row.genCell(this, key, keys);
+		}
+	}
+
+	public void setAllDefinedKeys() {
+		for (String cuKey : this.context.getHeader().getCuMapKeys(this)) {
+			if (cuKey != null)
+				get(cuKey);
 		}
 	}
 
