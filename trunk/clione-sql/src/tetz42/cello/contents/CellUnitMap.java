@@ -9,7 +9,7 @@ import tetz42.cello.Context;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachCellDef;
 import tetz42.cello.annotation.EachHeaderDef;
-import tetz42.cello.header.HCell;
+import tetz42.cello.header.HeaderCell;
 import tetz42.util.exception.InvalidParameterException;
 
 public class CellUnitMap<V> {
@@ -50,7 +50,7 @@ public class CellUnitMap<V> {
 					+ "#get does not support null key.");
 
 		// definition check
-		RecursiveMap<List<HCell>> hcellMap = context.getHeader()
+		RecursiveMap<List<HeaderCell>> hcellMap = context.getHeader()
 				.getHeaderCellMap(keys);
 		if (!hcellMap.containsKey(key)) {
 			context.getHeader().defineHeader(this, key, hcellMap);

@@ -10,10 +10,11 @@ import java.util.Map.Entry;
 import tetz42.cello.Context;
 import tetz42.cello.ICell;
 import tetz42.cello.IRow;
+import tetz42.cello.Query;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachCellDef;
 import tetz42.cello.annotation.EachHeaderDef;
-import tetz42.cello.header.HCell;
+import tetz42.cello.header.HeaderCell;
 import tetz42.util.exception.WrapException;
 
 public class Row<T> implements IRow {
@@ -146,10 +147,51 @@ public class Row<T> implements IRow {
 	}
 
 	private boolean isRemoved(RecursiveMap<List<Cell<Object>>> cellMap) {
-		RecursiveMap<List<HCell>> hCellMap = this.context.getHeader()
+		RecursiveMap<List<HeaderCell>> hCellMap = this.context.getHeader()
 				.getHeaderCellMap(cellMap.keys());
-		HCell hCell = getFromList(hCellMap.getValue());
+		HeaderCell hCell = getFromList(hCellMap.getValue());
 		return hCell.isRemoved();
 	}
 
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, String query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<Cell<E>> getByQuery(String query) {
+		return getByQuery(Query.parse(query));
+	}
+
+	public <E> List<Cell<E>> getByQuery(Query query) {
+		return getByQuery(query, 1, this.cellMap, new ArrayList<Cell<E>>());
+	}
+
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, Query query) {
+		return getByQuery(query);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E> List<Cell<E>> getByQuery(Query query, int index,
+			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list) {
+		if (query.get(index) == null) {
+			list.add((Cell<E>) getFromList(map.getValue()));
+		} else {
+			for (String fieldName : query.get(index)) {
+				if (fieldName.equals(Query.ANY)) {
+					for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map
+							.entrySet()) {
+						if (e.getKey() != null) {
+							getByQuery(query, index + 1, e.getValue(), list);
+						}
+					}
+				} else if (map.containsKey(fieldName)) {
+					getByQuery(query, index + 1, map.get(fieldName), list);
+				} else {
+					// TODO consider about this case.
+				}
+			}
+		}
+		return list;
+	}
 }

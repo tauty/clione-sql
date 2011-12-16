@@ -10,18 +10,19 @@ import java.util.Map.Entry;
 import tetz42.cello.Context;
 import tetz42.cello.ICell;
 import tetz42.cello.IHeader;
+import tetz42.cello.Query;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.contents.CellUnitMap;
 
 public class Header<T> implements IHeader {
 
-	private final RecursiveMap<List<HCell>> headerCellMap;
+	private final RecursiveMap<List<HeaderCell>> headerCellMap;
 	private final Context<T> context;
 
 	private int depth;
 
-	public RecursiveMap<List<HCell>> getHeaderCellMap(String... keys) {
+	public RecursiveMap<List<HeaderCell>> getHeaderCellMap(String... keys) {
 		return headerCellMap.get(keys);
 	}
 
@@ -30,7 +31,7 @@ public class Header<T> implements IHeader {
 	}
 
 	public Header(Class<T> clazz) {
-		headerCellMap = new RecursiveMap<List<HCell>>();
+		headerCellMap = new RecursiveMap<List<HeaderCell>>();
 		this.context = new Context<T>(clazz, this);
 		cellSetting(clazz);
 		this.context.init();
@@ -45,16 +46,17 @@ public class Header<T> implements IHeader {
 	}
 
 	public void defineHeader(CellUnitMap<?> cumap, String key,
-			RecursiveMap<List<HCell>> hcellMap) {
+			RecursiveMap<List<HeaderCell>> hcellMap) {
 
-		HCell template = getFromList(hcellMap.getValue(ROOT));
+		HeaderCell template = getFromList(hcellMap.getValue(ROOT));
 		hcellMap = hcellMap.get(key);
 
 		// generate HCell
 		int depth = template.getRealDepth();
 		if (template.getDepth() == UNDEFINED)
 			depth++; // same condition when the template was generated
-		HCell cell = new HCell(context, cumap.getHeaderDef(), key, depth);
+		HeaderCell cell = new HeaderCell(context, cumap.getHeaderDef(), key,
+				depth);
 		depth = setCell(cell, hcellMap, depth);
 		Object value = newInstance(cumap.getTemplate());
 
@@ -69,20 +71,20 @@ public class Header<T> implements IHeader {
 	}
 
 	public Iterable<String> getCuMapKeys(CellUnitMap<?> cumap) {
-		RecursiveMap<List<HCell>> map = headerCellMap.get(cumap.getKeys());
+		RecursiveMap<List<HeaderCell>> map = headerCellMap.get(cumap.getKeys());
 		return map.keySet();
 	}
 
 	private void genHCellRecursively(Object value, Field field,
-			RecursiveMap<List<HCell>> hcellMap, int depth) {
+			RecursiveMap<List<HeaderCell>> hcellMap, int depth) {
 
 		// generate HCell
-		HCell cell = new HCell(context, field, depth);
+		HeaderCell cell = new HeaderCell(context, field, depth);
 		depth = setCell(cell, hcellMap, depth);
 
 		if (value instanceof CellUnitMap<?>) {
 			depth++;
-			HCell subCell = new HCell(context, field
+			HeaderCell subCell = new HeaderCell(context, field
 					.getAnnotation(EachHeaderDef.class), ROOT, depth);
 			hcellMap = hcellMap.get(ROOT);
 			depth = setCell(subCell, hcellMap, depth);
@@ -104,23 +106,23 @@ public class Header<T> implements IHeader {
 		}
 	}
 
-	private int setCell(HCell cell, RecursiveMap<List<HCell>> hcellMap,
-			int depth) {
+	private int setCell(HeaderCell cell,
+			RecursiveMap<List<HeaderCell>> hcellMap, int depth) {
 		if (cell.getDepth() == UNDEFINED)
 			depth--;
 
 		// add cell to hcellMap
-		List<HCell> list = getListOnMap(hcellMap);
+		List<HeaderCell> list = getListOnMap(hcellMap);
 		list.add(cell);
 		this.depth = max(this.depth, depth);
 		return depth;
 	}
 
-	public List<HCell> getList(String... keys) {
+	public List<HeaderCell> getList(String... keys) {
 		return headerCellMap.getValue(keys);
 	}
 
-	public HCell get(String... keys) {
+	public HeaderCell get(String... keys) {
 		return getFromList(getList(keys));
 	}
 
@@ -145,10 +147,10 @@ public class Header<T> implements IHeader {
 		return list;
 	}
 
-	private void each(int depth, RecursiveMap<List<HCell>> hcellMap,
+	private void each(int depth, RecursiveMap<List<HeaderCell>> hcellMap,
 			ArrayList<ICell> list) {
-		HCell hCell = getFromList(hcellMap.getValue());
-		if(hCell.isRemoved())
+		HeaderCell hCell = getFromList(hcellMap.getValue());
+		if (hCell.isRemoved())
 			return;
 
 		System.out.println("hCell#name = " + hCell.getName() + ", depth = "
@@ -174,7 +176,8 @@ public class Header<T> implements IHeader {
 			return;
 		}
 
-		for (Entry<String, RecursiveMap<List<HCell>>> e : hcellMap.entrySet()) {
+		for (Entry<String, RecursiveMap<List<HeaderCell>>> e : hcellMap
+				.entrySet()) {
 			if (e.getKey() == null
 					|| getFromList(e.getValue().getValue()).isRemoved())
 				continue;
@@ -186,14 +189,14 @@ public class Header<T> implements IHeader {
 		calcCellSize(this.headerCellMap);
 	}
 
-	private int calcCellSize(RecursiveMap<List<HCell>> hcellMap) {
+	private int calcCellSize(RecursiveMap<List<HeaderCell>> hcellMap) {
 		int size;
-		HCell hCell = getFromList(hcellMap.getValue());
+		HeaderCell hCell = getFromList(hcellMap.getValue());
 		if (hcellMap.size() == 0) {
 			size = 1;
 		} else {
 			size = 0;
-			for (Entry<String, RecursiveMap<List<HCell>>> e : hcellMap
+			for (Entry<String, RecursiveMap<List<HeaderCell>>> e : hcellMap
 					.entrySet()) {
 				if (e.getKey() == null
 						|| getFromList(e.getValue().getValue()).isRemoved())
@@ -206,4 +209,44 @@ public class Header<T> implements IHeader {
 		return size;
 	}
 
+	public void calcCellWidth() {
+		// TODO implementation
+	}
+
+	public <E> List<HeaderCell> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, String query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<HeaderCell> getByQuery(String query) {
+		return getByQuery(Query.parse(query));
+	}
+
+	public List<HeaderCell> getByQuery(Query query) {
+		return getByQuery(query, 0, this.headerCellMap,
+				new ArrayList<HeaderCell>());
+	}
+
+	private List<HeaderCell> getByQuery(Query query, int index,
+			RecursiveMap<List<HeaderCell>> map, List<HeaderCell> list) {
+		if (query.get(index) == null) {
+			list.add(getFromList(map.getValue()));
+		} else {
+			for (String fieldName : query.get(index)) {
+				if (fieldName.equals(Query.ANY)) {
+					for (Entry<String, RecursiveMap<List<HeaderCell>>> e : map
+							.entrySet()) {
+						if (e.getKey() != null) {
+							getByQuery(query, index + 1, e.getValue(), list);
+						}
+					}
+				} else if (map.containsKey(fieldName)) {
+					getByQuery(query, index + 1, map.get(fieldName), list);
+				} else {
+					// TODO consider about this case.
+				}
+			}
+		}
+		return list;
+	}
 }

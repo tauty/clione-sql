@@ -5,6 +5,7 @@ import static tetz42.cello.CelloUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import tetz42.cello.contents.Cell;
 import tetz42.cello.contents.Row;
 import tetz42.cello.header.Header;
 
@@ -83,8 +84,29 @@ public class TableManager<T> implements ITableManager {
 		return this.context.getRowDef();
 	}
 
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, String query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<Cell<E>> getByQuery(String query) {
+		return getByQuery(Query.parse(query));
+	}
+
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, Query query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<Cell<E>> getByQuery(Query query) {
+		List<Cell<E>> list = rowHolder.getByQuery(query);
+		List<Cell<E>> tailList = tailHolder.getByQuery(query);
+		list.addAll(tailList);
+		return list;
+	}
+
 	@Override
-	public IHeader header() {
+	public Header<T> header() {
 		return this.header;
 	}
 

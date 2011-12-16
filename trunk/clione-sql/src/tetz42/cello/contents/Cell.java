@@ -29,6 +29,23 @@ public class Cell<T> implements ICell {
 			this.style = cellDef.style();
 	}
 
+	@SuppressWarnings("unchecked")
+	public void add(T augend) {
+		if (augend == null)
+			return;
+		T value = get();
+		if (value instanceof Integer) {
+			int iValue = (Integer) value;
+			int iAugend = (Integer) augend;
+			set((T) new Integer(iValue + iAugend));
+		} else if (value instanceof String) {
+			set((T) ("" + value + augend));
+		} else {
+			throw new UnsupportedOperationException(value.getClass().getName()
+					+ " type does not support 'add' method.");
+		}
+	}
+
 	public void set(T value) {
 		setValue(this.receiver, this.field, value);
 	}

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tetz42.cello.contents.Cell;
 import tetz42.cello.contents.Row;
+import tetz42.util.exception.InvalidParameterException;
 
 public class RowHolder<T> {
 
@@ -44,16 +46,16 @@ public class RowHolder<T> {
 		return rowMap.get(key);
 	}
 
-	public Row<T> row(){
+	public Row<T> row() {
 		Row<T> row = getRow();
-		if(row == null)
+		if (row == null)
 			row = newRow();
 		return row;
 	}
 
-	public Row<T> row(String key){
+	public Row<T> row(String key) {
 		Row<T> row = getRow(key);
-		if(row == null)
+		if (row == null)
 			row = newRow(key);
 		return row;
 	}
@@ -76,5 +78,51 @@ public class RowHolder<T> {
 
 	List<Row<T>> getRowList() {
 		return this.rowList;
+	}
+
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, String query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<Cell<E>> getByQuery(String query) {
+		return getByQuery(Query.parse(query));
+	}
+
+	public <E> List<Cell<E>> getByQuery(
+			@SuppressWarnings("unused") Class<E> clazz, Query query) {
+		return getByQuery(query);
+	}
+
+	public <E> List<Cell<E>> getByQuery(Query query) {
+		if (query.get(0) == null)
+			throw new InvalidParameterException(
+					"Query must have 1 more elements");
+		List<Cell<E>> list = new ArrayList<Cell<E>>();
+		for (String rowName : query.get(0)) {
+			System.out.println("rowName:" + rowName);
+			if (rowName.equals(Query.CURRENT_ROW)) {
+				addMatchedCells(row(), query, list);
+			} else if (rowName.equals(Query.ANY)) {
+				for (Row<T> row : rowList)
+					addMatchedCells(row, query, list);
+			} else if (rowMap.containsKey(rowName)) {
+				addMatchedCells(rowMap.get(rowName), query, list);
+			} else if (Query.numPtn.matcher(rowName).matches()) {
+				int i = Integer.parseInt(rowName);
+				if (i < rowList.size())
+					addMatchedCells(rowList.get(i), query, list);
+			} else {
+				// TODO consider about this case.
+			}
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E> void addMatchedCells(Row<T> row, Query query, List<Cell<E>> list) {
+		for (Cell<Object> cell : row.getByQuery(query)) {
+			list.add((Cell<E>) cell);
+		}
 	}
 }
