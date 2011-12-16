@@ -23,7 +23,7 @@ public class TableManager<T> implements ITableManager {
 	private TableManager(Class<T> clazz) {
 		this.header = new Header<T>(clazz);
 		this.context = header.getContext();
-		this.rowHolder = new RowHolder<T>(clazz, context);
+		this.rowHolder = new RowHolder<T>(clazz, context, true);
 		this.tailHolder = new RowHolder<T>(clazz, context);
 	}
 

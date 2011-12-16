@@ -14,6 +14,7 @@ import tetz42.cello.Query;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.contents.CellUnitMap;
+import tetz42.util.exception.InvalidParameterException;
 
 public class Header<T> implements IHeader {
 
@@ -239,11 +240,18 @@ public class Header<T> implements IHeader {
 						RecursiveMap<List<HeaderCell>> subMap = map
 								.get(fieldName);
 						list.add(getFromList(subMap.getValue()));
+					} else {
+						throw new InvalidParameterException(
+								"Unknown field/key name has specified. name="
+										+ join(map.keys(), "|") + "|"
+										+ fieldName);
 					}
 				} else if (map.containsKey(fieldName)) {
 					getByQuery(query, index + 1, map.get(fieldName), list);
 				} else {
-					// TODO consider about this case.
+					throw new InvalidParameterException(
+							"Unknown field/key name has specified. name="
+									+ join(map.keys(), "|") + "|" + fieldName);
 				}
 			}
 		}
