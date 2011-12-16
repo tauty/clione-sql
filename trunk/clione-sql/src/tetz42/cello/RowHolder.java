@@ -100,7 +100,6 @@ public class RowHolder<T> {
 					"Query must have 1 more elements");
 		List<Cell<E>> list = new ArrayList<Cell<E>>();
 		for (String rowName : query.get(0)) {
-			System.out.println("rowName:" + rowName);
 			if (rowName.equals(Query.CURRENT_ROW)) {
 				addMatchedCells(row(), query, list);
 			} else if (rowName.equals(Query.ANY)) {

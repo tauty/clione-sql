@@ -13,6 +13,8 @@ public class Query {
 	public static final String ANY = "*";
 	// public static final String ANY_PATH = "**";
 	public static final String CURRENT_ROW = ".";
+	public static final String TERMINATE = "@";
+	public static final String ESCAPE = "'";
 
 	List<String[]> list = new ArrayList<String[]>();
 

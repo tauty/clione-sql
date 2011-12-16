@@ -137,13 +137,8 @@ public class Header<T> implements IHeader {
 
 	public List<ICell> each(int depth) {
 		calcCellSize();
-
 		ArrayList<ICell> list = new ArrayList<ICell>();
-		System.out.println("------------- start:" + depth + "---------------");
 		each(depth, this.headerCellMap, list);
-		System.out.println("--------------  end  ----------------");
-		System.out.println();
-
 		return list;
 	}
 
@@ -153,8 +148,6 @@ public class Header<T> implements IHeader {
 		if (hCell.isRemoved())
 			return;
 
-		System.out.println("hCell#name = " + hCell.getName() + ", depth = "
-				+ hCell.getDepth());
 		if (hCell.getDepth() == depth) {
 			list.add(hCell);
 			if (hcellMap.size() == 0) {
@@ -239,6 +232,13 @@ public class Header<T> implements IHeader {
 						if (e.getKey() != null) {
 							getByQuery(query, index + 1, e.getValue(), list);
 						}
+					}
+				} else if (fieldName.startsWith(Query.TERMINATE)) {
+					fieldName = fieldName.substring(1);
+					if (map.containsKey(fieldName)) {
+						RecursiveMap<List<HeaderCell>> subMap = map
+								.get(fieldName);
+						list.add(getFromList(subMap.getValue()));
 					}
 				} else if (map.containsKey(fieldName)) {
 					getByQuery(query, index + 1, map.get(fieldName), list);

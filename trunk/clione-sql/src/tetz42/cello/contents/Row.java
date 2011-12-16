@@ -172,13 +172,22 @@ public class Row<T> implements IRow {
 		} else {
 			if (cell.get() instanceof CellUnitMap<?>)
 				((CellUnitMap<?>) cell.get()).setAllDefinedKeys();
-			for (String fieldName : query.get(index)) {
+			String[] fieldNames = query.get(index);
+			for (String fieldName : fieldNames) {
 				if (fieldName.equals(Query.ANY)) {
 					for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map
 							.entrySet()) {
 						if (e.getKey() != null) {
 							getByQuery(query, index + 1, e.getValue(), list);
 						}
+					}
+				} else if (fieldName.startsWith(Query.TERMINATE)) {
+					fieldName = fieldName.substring(1);
+					if (map.containsKey(fieldName)) {
+						RecursiveMap<List<Cell<Object>>> subMap = map
+								.get(fieldName);
+						Cell<Object> subCell = getFromList(subMap.getValue());
+						list.add((Cell<E>) subCell);
 					}
 				} else if (map.containsKey(fieldName)) {
 					getByQuery(query, index + 1, map.get(fieldName), list);
