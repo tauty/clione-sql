@@ -140,6 +140,8 @@ public class Row<T> implements IRow {
 	}
 
 	private boolean isRemoved(RecursiveMap<List<Cell<Object>>> cellMap) {
+		if (!this.context.getHeader().containsHeaderCellMap(cellMap.keys()))
+			return true;
 		RecursiveMap<List<HeaderCell>> hCellMap = this.context.getHeader()
 				.getHeaderCellMap(cellMap.keys());
 		HeaderCell hCell = getFromList(hCellMap.getValue());

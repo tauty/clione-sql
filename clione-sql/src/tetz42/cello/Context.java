@@ -107,7 +107,7 @@ public class Context<T> {
 	}
 
 	public boolean isValid(Field f) {
-		return !isStatic(f) && !isHidden(f);
+		return !isStatic(f);
 	}
 
 	public boolean isHidden(Field f) {

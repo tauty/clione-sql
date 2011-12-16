@@ -27,6 +27,10 @@ public class Header<T> implements IHeader {
 		return headerCellMap.get(keys);
 	}
 
+	public boolean containsHeaderCellMap(String... keys) {
+		return headerCellMap.containsKey(keys);
+	}
+
 	public int getDepth() {
 		return depth;
 	}
@@ -63,7 +67,7 @@ public class Header<T> implements IHeader {
 
 		// generate field cell
 		for (Field f : cumap.getTemplate().getDeclaredFields()) {
-			if (context.isValid(f)) {
+			if (context.isValid(f) && !context.isHidden(f)) {
 				Object fieldValue = getOrNewValue(value, f);
 				genHCellRecursively(fieldValue, f, hcellMap.get(f.getName()),
 						depth + 1);
@@ -99,7 +103,7 @@ public class Header<T> implements IHeader {
 
 		// generate field cell
 		for (Field f : value.getClass().getDeclaredFields()) {
-			if (context.isValid(f)) {
+			if (context.isValid(f) && !context.isHidden(f)) {
 				Object fieldValue = getOrNewValue(value, f);
 				genHCellRecursively(fieldValue, f, hcellMap.get(f.getName()),
 						depth + 1);

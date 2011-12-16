@@ -70,6 +70,16 @@ public class RecursiveMap<T> extends LinkedHashMap<String, RecursiveMap<T>> {
 		return map;
 	}
 
+	public boolean containsKey(String... keys) {
+		RecursiveMap<T> map = this;
+		for (String key : keys) {
+			if (!map.containsKey(key))
+				return false;
+			map = map.get(key);
+		}
+		return true;
+	}
+
 	@Override
 	public RecursiveMap<T> get(Object key) {
 		return get(String.valueOf(key));
