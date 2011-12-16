@@ -7,7 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.FIELD })
+import tetz42.cello.ICell;
+
+@Target( { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HeaderDef {
 	String title();
@@ -16,7 +18,7 @@ public @interface HeaderDef {
 
 	int width() default UNDEFINED;
 
-	String style() default "";
+	String style() default ICell.HEADER_STYLE;
 
 	boolean convert() default false;
 

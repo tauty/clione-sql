@@ -72,7 +72,11 @@ public class HeaderCell implements ICell {
 		this.realDepth = depth;
 		if (def == null) {
 			depth = UNDEFINED;
-			realDepth--;
+			this.realDepth--;
+			this.title = this.name;
+			this.style = ICell.HEADER_STYLE;
+			this.isConverted = false;
+			this.convertSchema = "";
 		} else {
 			this.title = this.name;
 			this.width = def.width();
