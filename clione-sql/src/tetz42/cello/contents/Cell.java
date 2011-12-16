@@ -13,20 +13,38 @@ public class Cell<T> implements ICell {
 	private final Object receiver;
 	private final Field field;
 	private String style;
+	private boolean isConverted;
+	private String convertSchema;
 
 	Cell(Object receiver, Field field) {
 		this.receiver = receiver;
 		this.field = field;
 		CellDef cellDef = field.getAnnotation(CellDef.class);
-		if (cellDef != null)
+		if (cellDef != null) {
 			this.style = cellDef.style();
+			this.isConverted = cellDef.convert();
+			this.convertSchema = cellDef.convertSchema();
+		} else {
+			setDefaultValue();
+		}
 	}
 
 	public Cell(CellUnitMap<T> cumap, EachCellDef cellDef) {
 		this.receiver = cumap;
 		this.field = null;
-		if (cellDef != null)
+		if (cellDef != null) {
 			this.style = cellDef.style();
+			this.isConverted = cellDef.convert();
+			this.convertSchema = cellDef.convertSchema();
+		} else {
+			setDefaultValue();
+		}
+	}
+
+	private void setDefaultValue() {
+		this.style = ICell.CELL_STYLE;
+		this.isConverted = false;
+		this.convertSchema = "";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -41,8 +59,9 @@ public class Cell<T> implements ICell {
 		} else if (value instanceof String) {
 			set((T) ("" + value + augend));
 		} else {
-			throw new UnsupportedOperationException(value.getClass().getName()
-					+ " type does not support 'add' method.");
+			throw new UnsupportedOperationException("Cell<"
+					+ value.getClass().getName()
+					+ "> type does not support 'add' method.");
 		}
 	}
 
@@ -87,5 +106,21 @@ public class Cell<T> implements ICell {
 	@Override
 	public int getWidth() {
 		return UNDEFINED;
+	}
+
+	public void convert() {
+		this.isConverted = true;
+	}
+
+	public boolean isConverted() {
+		return isConverted;
+	}
+
+	public void setConvertSchema(String convertSchema) {
+		this.convertSchema = convertSchema;
+	}
+
+	public String getConvertSchema() {
+		return convertSchema;
 	}
 }
