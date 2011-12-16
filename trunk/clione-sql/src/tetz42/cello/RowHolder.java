@@ -119,8 +119,9 @@ public class RowHolder<T> {
 				if (i < rowList.size())
 					addMatchedCells(rowList.get(i), query, list);
 			} else {
-				throw new InvalidParameterException(
-						"Unknown row name has specified. name=" + rowName);
+				// TODO consider about this case.
+				// throw new InvalidParameterException(
+				// "Unknown row name has specified. name=" + rowName);
 			}
 		}
 		return list;
