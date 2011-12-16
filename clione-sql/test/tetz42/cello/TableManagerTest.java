@@ -202,11 +202,13 @@ public class TableManagerTest {
 		tm.tail().get().bars.get("key1").barStr = "20001";
 
 		// 1st
+		System.out.println("-------------------------------------------------");
 		assertThat(tm.row().get().bars.get("key1").bazzes.get("key1-1").bazInt,
 				is(301));
 		assertEqualsWithFile(tm.toString(), getClass(), "query-1st_no_query");
 
 		// 2nd - update some cells
+		System.out.println("-------------------------------------------------");
 		for (Cell<Integer> cell : tm.getByQuery(Integer.class,
 				"*|bars|*|bazzes|*|bazInt")) {
 			System.out.println(cell.get());
@@ -218,6 +220,7 @@ public class TableManagerTest {
 				"query-2nd_bazInt_Add1000");
 
 		// 3rd - remove some cells
+		System.out.println("-------------------------------------------------");
 		assertFalse(tm.header().get("bars", "key1", "bazzes", "key1-1",
 				"bazStr").isRemoved());
 		for (HeaderCell hcell : tm.header()
@@ -230,6 +233,17 @@ public class TableManagerTest {
 				.get("bars", "key1", "bazzes", "key1-1", "bazStr").isRemoved());
 		assertEqualsWithFile(tm.toString(), getClass(),
 				"query-3rd_bazStr_removed");
+
+		// 4th - update some cells with terminate query
+		System.out.println("-------------------------------------------------");
+		assertThat(tm.row().get().fooInt, is(101));
+		for (Cell<Integer> cell : tm.getByQuery(Integer.class,
+				"*|@fooInt,bars|*|@barInt,bazzes|*|bazInt")) {
+			cell.add(90000);
+		}
+		assertThat(tm.row().get().fooInt, is(90101));
+		assertEqualsWithFile(tm.toString(), getClass(),
+				"query-4th_someInt_Add10000");
 	}
 }
 
