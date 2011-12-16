@@ -1,0 +1,3 @@
+foo:int(Style:HEADER)	foo:String(Style:HEADER)	bar:Bar(Style:HEADER)	
+		bar:int(Style:HEADER)	bar:String(Style:HEADER)
+			
