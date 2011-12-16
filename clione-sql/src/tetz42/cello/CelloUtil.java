@@ -21,7 +21,7 @@ import tetz42.util.exception.WrapException;
 
 public class CelloUtil {
 
-	public static final int UNDEFINED = -1;
+	public static final int UNDEFINED = ICell.UNDEFINED;
 	public static final String ROOT = null;
 	public static final String CRLF = "\r\n";
 
