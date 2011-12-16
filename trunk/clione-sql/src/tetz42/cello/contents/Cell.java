@@ -29,7 +29,7 @@ public class Cell<T> implements ICell {
 		}
 	}
 
-	public Cell(CellUnitMap<T> cumap, EachCellDef cellDef) {
+	Cell(CellUnitMap<T> cumap, EachCellDef cellDef) {
 		this.receiver = cumap;
 		this.field = null;
 		if (cellDef != null) {
