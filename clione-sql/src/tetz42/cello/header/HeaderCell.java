@@ -9,7 +9,7 @@ import tetz42.cello.ICell;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.annotation.HeaderDef;
 
-public class HCell implements ICell {
+public class HeaderCell implements ICell {
 
 	private final Context<?> context;
 	private final String name;
@@ -35,7 +35,7 @@ public class HCell implements ICell {
 	 * @param def
 	 * @param depth
 	 */
-	HCell(Context<?> context, Field field, int depth) {
+	HeaderCell(Context<?> context, Field field, int depth) {
 		this.context = context;
 		this.realDepth = depth;
 		if (field == null) {
@@ -66,7 +66,7 @@ public class HCell implements ICell {
 	 *            - the key name of cell
 	 * @param depth
 	 */
-	HCell(Context<?> context, EachHeaderDef def, String key, int depth) {
+	HeaderCell(Context<?> context, EachHeaderDef def, String key, int depth) {
 		this.context = context;
 		this.name = key;
 		this.realDepth = depth;
