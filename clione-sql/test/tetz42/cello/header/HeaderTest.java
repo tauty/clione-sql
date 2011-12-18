@@ -6,10 +6,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import tetz42.cello.annotation.EachCellDef;
+import tetz42.cello.annotation.EachContentsDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.annotation.HeaderDef;
-import tetz42.cello.contents.CellUnitMap;
+import tetz42.cello.contents.CelloMap;
 
 public class HeaderTest {
 
@@ -105,8 +105,8 @@ class Foo {
 	@HeaderDef(title = "bar:Bar", width = 3)
 	Bar bar;
 
-	@EachCellDef
-	CellUnitMap<Bar> bars = CellUnitMap.create(Bar.class);
+	@EachContentsDef
+	CelloMap<Bar> bars = CelloMap.create(Bar.class);
 
 	int ignoredInt;
 
@@ -121,7 +121,7 @@ class Bar {
 	String barStr;
 
 	@EachHeaderDef(width = 6)
-	CellUnitMap<Baz> bazzes = CellUnitMap.create(Baz.class);
+	CelloMap<Baz> bazzes = CelloMap.create(Baz.class);
 
 	int ignoredInt;
 

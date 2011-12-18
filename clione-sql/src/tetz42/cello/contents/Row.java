@@ -12,7 +12,7 @@ import tetz42.cello.ICell;
 import tetz42.cello.IRow;
 import tetz42.cello.Query;
 import tetz42.cello.RecursiveMap;
-import tetz42.cello.annotation.EachCellDef;
+import tetz42.cello.annotation.EachContentsDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HeaderCell;
 import tetz42.util.exception.InvalidParameterException;
@@ -58,7 +58,7 @@ public class Row<T> implements IRow {
 			CelloMap<?> cumap = (CelloMap<?>) value;
 			cumap.init(context, cellMap.keys(), this, field
 					.getAnnotation(EachHeaderDef.class), field
-					.getAnnotation(EachCellDef.class));
+					.getAnnotation(EachContentsDef.class));
 			return;
 		}
 
