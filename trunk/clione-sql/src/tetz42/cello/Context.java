@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tetz42.cello.annotation.CellDef;
-import tetz42.cello.annotation.EachCellDef;
+import tetz42.cello.annotation.ContentsDef;
+import tetz42.cello.annotation.EachContentsDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.annotation.HeaderDef;
 import tetz42.cello.contents.Row;
@@ -112,9 +112,9 @@ public class Context<T> {
 
 	public boolean isHidden(Field f) {
 		return f.getAnnotation(HeaderDef.class) == null
-				&& f.getAnnotation(CellDef.class) == null
+				&& f.getAnnotation(ContentsDef.class) == null
 				&& f.getAnnotation(EachHeaderDef.class) == null
-				&& f.getAnnotation(EachCellDef.class) == null;
+				&& f.getAnnotation(EachContentsDef.class) == null;
 	}
 
 	public ICell getEmptyCell() {

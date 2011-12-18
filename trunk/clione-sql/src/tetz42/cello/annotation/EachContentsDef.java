@@ -9,7 +9,7 @@ import tetz42.cello.ICell;
 
 @Target( { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EachCellDef {
+public @interface EachContentsDef {
 	// String name() default "";
 
 	// int width() default UNDEFINED;

@@ -5,8 +5,8 @@ import static tetz42.cello.CelloUtil.*;
 import java.lang.reflect.Field;
 
 import tetz42.cello.ICell;
-import tetz42.cello.annotation.CellDef;
-import tetz42.cello.annotation.EachCellDef;
+import tetz42.cello.annotation.ContentsDef;
+import tetz42.cello.annotation.EachContentsDef;
 
 public class Cell<T> implements ICell {
 
@@ -19,7 +19,7 @@ public class Cell<T> implements ICell {
 	Cell(Object receiver, Field field) {
 		this.receiver = receiver;
 		this.field = field;
-		CellDef cellDef = field.getAnnotation(CellDef.class);
+		ContentsDef cellDef = field.getAnnotation(ContentsDef.class);
 		if (cellDef != null) {
 			this.style = cellDef.style();
 			this.isConverted = cellDef.convert();
@@ -29,7 +29,7 @@ public class Cell<T> implements ICell {
 		}
 	}
 
-	Cell(CelloMap<T> cumap, EachCellDef cellDef) {
+	Cell(CelloMap<T> cumap, EachContentsDef cellDef) {
 		this.receiver = cumap;
 		this.field = null;
 		if (cellDef != null) {

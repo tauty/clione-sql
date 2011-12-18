@@ -7,7 +7,7 @@ import java.util.List;
 
 import tetz42.cello.Context;
 import tetz42.cello.RecursiveMap;
-import tetz42.cello.annotation.EachCellDef;
+import tetz42.cello.annotation.EachContentsDef;
 import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HeaderCell;
 import tetz42.util.exception.InvalidParameterException;
@@ -23,7 +23,7 @@ public class CelloMap<V> {
 
 	private Context<?> context;
 	private EachHeaderDef headerDef;
-	private EachCellDef cellDef;
+	private EachContentsDef cellDef;
 	private String[] keys;
 	private Row<?> row;
 
@@ -32,7 +32,7 @@ public class CelloMap<V> {
 	}
 
 	void init(Context<?> context, String[] keys, Row<?> row,
-			EachHeaderDef hdef, EachCellDef cellDef) {
+			EachHeaderDef hdef, EachContentsDef cellDef) {
 		this.context = context;
 		this.keys = keys;
 		this.row = row;
@@ -94,7 +94,7 @@ public class CelloMap<V> {
 		return headerDef;
 	}
 
-	public EachCellDef getCellDef() {
+	public EachContentsDef getCellDef() {
 		return cellDef;
 	}
 

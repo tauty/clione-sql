@@ -14,8 +14,6 @@ import tetz42.cello.ICell;
 public @interface HeaderDef {
 	String title();
 
-	// String name() default "";
-
 	int width() default UNDEFINED;
 
 	String style() default ICell.HEADER_STYLE;
