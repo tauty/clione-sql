@@ -13,7 +13,7 @@ import tetz42.cello.IHeader;
 import tetz42.cello.Query;
 import tetz42.cello.RecursiveMap;
 import tetz42.cello.annotation.EachHeaderDef;
-import tetz42.cello.contents.CellUnitMap;
+import tetz42.cello.contents.CelloMap;
 import tetz42.util.exception.InvalidParameterException;
 
 public class Header<T> implements IHeader {
@@ -50,7 +50,7 @@ public class Header<T> implements IHeader {
 		genHCellRecursively(newInstance(clazz), null, headerCellMap, 0);
 	}
 
-	public void defineHeader(CellUnitMap<?> cumap, String key,
+	public void defineHeader(CelloMap<?> cumap, String key,
 			RecursiveMap<List<HeaderCell>> hcellMap) {
 
 		HeaderCell template = getFromList(hcellMap.getValue(ROOT));
@@ -75,7 +75,7 @@ public class Header<T> implements IHeader {
 		}
 	}
 
-	public Iterable<String> getCuMapKeys(CellUnitMap<?> cumap) {
+	public Iterable<String> getCuMapKeys(CelloMap<?> cumap) {
 		RecursiveMap<List<HeaderCell>> map = headerCellMap.get(cumap.getKeys());
 		return map.keySet();
 	}
@@ -87,14 +87,14 @@ public class Header<T> implements IHeader {
 		HeaderCell cell = new HeaderCell(context, field, depth);
 		depth = setCell(cell, hcellMap, depth);
 
-		if (value instanceof CellUnitMap<?>) {
+		if (value instanceof CelloMap<?>) {
 			depth++;
 			HeaderCell subCell = new HeaderCell(context, field
 					.getAnnotation(EachHeaderDef.class), ROOT, depth);
 			hcellMap = hcellMap.get(ROOT);
 			depth = setCell(subCell, hcellMap, depth);
 
-			CellUnitMap<?> cuMap = (CellUnitMap<?>) value;
+			CelloMap<?> cuMap = (CelloMap<?>) value;
 			value = newInstance(cuMap.getTemplate());
 		}
 

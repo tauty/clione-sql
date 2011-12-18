@@ -12,10 +12,10 @@ import tetz42.cello.annotation.EachHeaderDef;
 import tetz42.cello.header.HeaderCell;
 import tetz42.util.exception.InvalidParameterException;
 
-public class CellUnitMap<V> {
+public class CelloMap<V> {
 
-	public static final <V> CellUnitMap<V> create(Class<V> clazz) {
-		return new CellUnitMap<V>(clazz);
+	public static final <V> CelloMap<V> create(Class<V> clazz) {
+		return new CelloMap<V>(clazz);
 	}
 
 	private final Class<V> clazz;
@@ -27,7 +27,7 @@ public class CellUnitMap<V> {
 	private String[] keys;
 	private Row<?> row;
 
-	public CellUnitMap(Class<V> clazz) {
+	public CelloMap(Class<V> clazz) {
 		this.clazz = clazz;
 	}
 

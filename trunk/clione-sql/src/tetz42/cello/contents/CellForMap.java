@@ -4,9 +4,9 @@ package tetz42.cello.contents;
 public class CellForMap<T> extends Cell<T> {
 
 	private final String key;
-	private final CellUnitMap<T> cumap;
+	private final CelloMap<T> cumap;
 
-	CellForMap(CellUnitMap<T> cumap, String key) {
+	CellForMap(CelloMap<T> cumap, String key) {
 		super(cumap, cumap.getCellDef());
 		this.cumap = cumap;
 		this.key = key;

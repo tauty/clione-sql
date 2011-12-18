@@ -54,8 +54,8 @@ public class Row<T> implements IRow {
 		list.add(cell);
 
 		Object value = cell.get();
-		if (value instanceof CellUnitMap<?>) {
-			CellUnitMap<?> cumap = (CellUnitMap<?>) value;
+		if (value instanceof CelloMap<?>) {
+			CelloMap<?> cumap = (CelloMap<?>) value;
 			cumap.init(context, cellMap.keys(), this, field
 					.getAnnotation(EachHeaderDef.class), field
 					.getAnnotation(EachCellDef.class));
@@ -74,13 +74,13 @@ public class Row<T> implements IRow {
 	}
 
 	@SuppressWarnings("unchecked")
-	void genCell(CellUnitMap<?> cumap, String key, String... ownKeys) {
+	void genCell(CelloMap<?> cumap, String key, String... ownKeys) {
 		RecursiveMap<List<Cell<Object>>> cellMap = this.cellMap.get(ownKeys);
 		cellMap = cellMap.get(key);
 
 		// generate cell
 		List<Cell<Object>> list = getListOnMap(cellMap);
-		Cell<Object> cell = new CellForMap<Object>((CellUnitMap<Object>) cumap,
+		Cell<Object> cell = new CellForMap<Object>((CelloMap<Object>) cumap,
 				key);
 		list.add(cell);
 
@@ -130,8 +130,8 @@ public class Row<T> implements IRow {
 		if (isPrimitive(value)) {
 			list.add(cell);
 		} else {
-			if (value instanceof CellUnitMap<?>)
-				((CellUnitMap<?>) cell.get()).setAllDefinedKeys();
+			if (value instanceof CelloMap<?>)
+				((CelloMap<?>) cell.get()).setAllDefinedKeys();
 			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
 					.entrySet()) {
 				each(e.getValue(), list);
@@ -173,8 +173,8 @@ public class Row<T> implements IRow {
 		if (query.get(index) == null) {
 			list.add((Cell<E>) cell);
 		} else {
-			if (cell.get() instanceof CellUnitMap<?>)
-				((CellUnitMap<?>) cell.get()).setAllDefinedKeys();
+			if (cell.get() instanceof CelloMap<?>)
+				((CelloMap<?>) cell.get()).setAllDefinedKeys();
 			String[] fieldNames = query.get(index);
 			for (String fieldName : fieldNames) {
 				if (fieldName.equals(Query.ANY)) {
