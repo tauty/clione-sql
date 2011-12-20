@@ -6,12 +6,13 @@ import static tetz42.test.Auty.*;
 
 import org.junit.Test;
 
-import tetz42.cello.annotation.EachContentsDef;
-import tetz42.cello.annotation.EachHeaderDef;
-import tetz42.cello.annotation.HeaderDef;
-import tetz42.cello.contents.Cell;
-import tetz42.cello.contents.CelloMap;
-import tetz42.cello.header.HeaderCell;
+import tetz42.cellom.TableManager;
+import tetz42.cellom.annotation.EachBody;
+import tetz42.cellom.annotation.EachHeader;
+import tetz42.cellom.annotation.Header;
+import tetz42.cellom.contents.Cell;
+import tetz42.cellom.contents.CelloMap;
+import tetz42.cellom.header.HeaderCell;
 
 public class TableManagerTest {
 
@@ -249,16 +250,16 @@ public class TableManagerTest {
 
 class Foo {
 
-	@HeaderDef(title = "foo:int", width = 1)
+	@Header(title = "foo:int", width = 1)
 	int fooInt;
 
-	@HeaderDef(title = "foo:String", width = 2)
+	@Header(title = "foo:String", width = 2)
 	String fooStr;
 
-	@HeaderDef(title = "bar:Bar", width = 3)
+	@Header(title = "bar:Bar", width = 3)
 	Bar bar;
 
-	@EachContentsDef
+	@EachBody
 	CelloMap<Bar> bars = CelloMap.create(Bar.class);
 
 	int ignoredInt;
@@ -267,13 +268,13 @@ class Foo {
 }
 
 class Bar {
-	@HeaderDef(title = "bar:int", width = 4)
+	@Header(title = "bar:int", width = 4)
 	int barInt;
 
-	@HeaderDef(title = "bar:String", width = 5)
+	@Header(title = "bar:String", width = 5)
 	String barStr;
 
-	@EachHeaderDef(width = 6)
+	@EachHeader(width = 6)
 	CelloMap<Baz> bazzes = CelloMap.create(Baz.class);
 
 	int ignoredInt;
@@ -282,10 +283,10 @@ class Bar {
 }
 
 class Baz {
-	@HeaderDef(title = "baz:int", width = 7)
+	@Header(title = "baz:int", width = 7)
 	int bazInt;
 
-	@HeaderDef(title = "baz:String", width = 8)
+	@Header(title = "baz:String", width = 8)
 	String bazStr;
 
 	int ignoredInt;

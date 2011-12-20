@@ -1,25 +1,26 @@
 package tetz42.cello.header;
 
-import static tetz42.test.Auty.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static tetz42.test.Auty.*;
 
 import org.junit.Test;
 
-import tetz42.cello.annotation.EachContentsDef;
-import tetz42.cello.annotation.EachHeaderDef;
-import tetz42.cello.annotation.HeaderDef;
-import tetz42.cello.contents.CelloMap;
+import tetz42.cellom.annotation.EachBody;
+import tetz42.cellom.annotation.EachHeader;
+import tetz42.cellom.annotation.Header;
+import tetz42.cellom.contents.CelloMap;
+import tetz42.cellom.header.HeaderManager;
 
 public class HeaderTest {
 
-	public static <T> Header<T> create(Class<T> clazz) {
-		return new Header<T>(clazz);
+	public static <T> HeaderManager<T> create(Class<T> clazz) {
+		return new HeaderManager<T>(clazz);
 	}
 
 	@Test
 	public void test() throws Exception {
-		Header<Foo> header = create(Foo.class);
+		HeaderManager<Foo> header = create(Foo.class);
 		assertThat(header.get("fooInt").getDepth(), is(1));
 		assertThat(header.get("fooInt").getTitle(), is("foo:int"));
 		assertThat(header.get("fooInt").getName(), is("fooInt"));
@@ -47,7 +48,7 @@ public class HeaderTest {
 
 	@Test
 	public void calcCellSize() throws Exception {
-		Header<Foo> header = create(Foo.class);
+		HeaderManager<Foo> header = create(Foo.class);
 		header.calcCellSize();
 
 		assertThat(header.get("fooInt").getDepth(), is(1));
@@ -86,7 +87,7 @@ public class HeaderTest {
 
 	@Test
 	public void each() throws Exception {
-		Header<Foo> header = create(Foo.class);
+		HeaderManager<Foo> header = create(Foo.class);
 		assertThat(header.getDepth(), is(3));
 		assertEqualsWithFile(header.each(1), getClass(), "each1");
 		assertEqualsWithFile(header.each(2), getClass(), "each2");
@@ -96,16 +97,16 @@ public class HeaderTest {
 
 class Foo {
 
-	@HeaderDef(title = "foo:int", width = 1)
+	@Header(title = "foo:int", width = 1)
 	int fooInt;
 
-	@HeaderDef(title = "foo:String", width = 2)
+	@Header(title = "foo:String", width = 2)
 	String fooStr;
 
-	@HeaderDef(title = "bar:Bar", width = 3)
+	@Header(title = "bar:Bar", width = 3)
 	Bar bar;
 
-	@EachContentsDef
+	@EachBody
 	CelloMap<Bar> bars = CelloMap.create(Bar.class);
 
 	int ignoredInt;
@@ -114,13 +115,13 @@ class Foo {
 }
 
 class Bar {
-	@HeaderDef(title = "bar:int", width = 4)
+	@Header(title = "bar:int", width = 4)
 	int barInt;
 
-	@HeaderDef(title = "bar:String", width = 5)
+	@Header(title = "bar:String", width = 5)
 	String barStr;
 
-	@EachHeaderDef(width = 6)
+	@EachHeader(width = 6)
 	CelloMap<Baz> bazzes = CelloMap.create(Baz.class);
 
 	int ignoredInt;
@@ -129,10 +130,10 @@ class Bar {
 }
 
 class Baz {
-	@HeaderDef(title = "baz:int", width = 7)
+	@Header(title = "baz:int", width = 7)
 	int bazInt;
 
-	@HeaderDef(title = "baz:String", width = 8)
+	@Header(title = "baz:String", width = 8)
 	String bazStr;
 
 	int ignoredInt;

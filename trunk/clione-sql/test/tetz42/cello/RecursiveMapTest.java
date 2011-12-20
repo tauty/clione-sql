@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import tetz42.cellom.RecursiveMap;
+
 public class RecursiveMapTest {
 
 	@Test
