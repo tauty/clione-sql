@@ -10,8 +10,8 @@ import tetz42.cellom.TableManager;
 import tetz42.cellom.annotation.EachBody;
 import tetz42.cellom.annotation.EachHeader;
 import tetz42.cellom.annotation.Header;
-import tetz42.cellom.contents.Cell;
-import tetz42.cellom.contents.CelloMap;
+import tetz42.cellom.body.Cell;
+import tetz42.cellom.body.CelloMap;
 import tetz42.cellom.header.HeaderCell;
 
 public class TableManagerTest {

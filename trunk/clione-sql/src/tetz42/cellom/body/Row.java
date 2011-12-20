@@ -1,4 +1,4 @@
-package tetz42.cellom.contents;
+package tetz42.cellom.body;
 
 import static tetz42.cellom.CelloUtil.*;
 
@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import tetz42.cellom.annotation.EachBody;
-import tetz42.cellom.annotation.EachHeader;
-import tetz42.cellom.header.HeaderCell;
 import tetz42.cellom.Context;
 import tetz42.cellom.ICell;
 import tetz42.cellom.IRow;
 import tetz42.cellom.Query;
 import tetz42.cellom.RecursiveMap;
+import tetz42.cellom.annotation.EachBody;
+import tetz42.cellom.annotation.EachHeader;
+import tetz42.cellom.header.HeaderCell;
 import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.WrapException;
 
@@ -57,9 +57,9 @@ public class Row<T> implements IRow {
 		Object value = cell.get();
 		if (value instanceof CelloMap<?>) {
 			CelloMap<?> cumap = (CelloMap<?>) value;
-			cumap.init(context, cellMap.keys(), this, field
-					.getAnnotation(EachHeader.class), field
-					.getAnnotation(EachBody.class));
+			cumap.init(context, cellMap.keys(), this,
+					field.getAnnotation(EachHeader.class),
+					field.getAnnotation(EachBody.class));
 			return;
 		}
 
@@ -174,11 +174,11 @@ public class Row<T> implements IRow {
 		if (query.get(index) == null) {
 			list.add((Cell<E>) cell);
 		} else {
-			if (cell.get() instanceof CelloMap<?>)
-				((CelloMap<?>) cell.get()).setAllDefinedKeys();
 			String[] fieldNames = query.get(index);
 			for (String fieldName : fieldNames) {
 				if (fieldName.equals(Query.ANY)) {
+					if (cell.get() instanceof CelloMap<?>)
+						((CelloMap<?>) cell.get()).setAllDefinedKeys();
 					for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map
 							.entrySet()) {
 						if (e.getKey() != null) {
@@ -187,6 +187,8 @@ public class Row<T> implements IRow {
 					}
 				} else if (fieldName.startsWith(Query.TERMINATE)) {
 					fieldName = fieldName.substring(1);
+					if (cell.get() instanceof CelloMap<?>)
+						((CelloMap<?>) cell.get()).get(fieldName);
 					if (map.containsKey(fieldName)) {
 						RecursiveMap<List<Cell<Object>>> subMap = map
 								.get(fieldName);
@@ -199,6 +201,8 @@ public class Row<T> implements IRow {
 										+ fieldName);
 					}
 				} else if (map.containsKey(fieldName)) {
+					if (cell.get() instanceof CelloMap<?>)
+						((CelloMap<?>) cell.get()).get(fieldName);
 					getByQuery(query, index + 1, map.get(fieldName), list);
 				} else {
 					throw new InvalidParameterException(

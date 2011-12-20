@@ -7,16 +7,15 @@ import java.lang.annotation.Target;
 
 import tetz42.cellom.ICell;
 
-@Target( { ElementType.FIELD })
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EachBody {
-	// String name() default "";
-
-	// int width() default UNDEFINED;
-
+	
 	String style() default ICell.BODY_STYLE;
 
 	boolean convert() default false;
 
 	String convertSchema() default "";
+
+	boolean fusion() default false;
 }

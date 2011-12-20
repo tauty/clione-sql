@@ -5,8 +5,8 @@ import static tetz42.cellom.CelloUtil.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import tetz42.cellom.contents.Cell;
-import tetz42.cellom.contents.Row;
+import tetz42.cellom.body.Cell;
+import tetz42.cellom.body.Row;
 import tetz42.cellom.header.HeaderManager;
 
 public class TableManager<T> implements ITableManager {
