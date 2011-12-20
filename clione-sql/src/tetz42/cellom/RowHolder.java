@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tetz42.cellom.contents.Cell;
-import tetz42.cellom.contents.Row;
+import tetz42.cellom.body.Cell;
+import tetz42.cellom.body.Row;
 import tetz42.util.exception.InvalidParameterException;
 
 public class RowHolder<T> {

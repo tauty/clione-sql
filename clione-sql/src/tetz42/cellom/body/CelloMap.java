@@ -1,4 +1,4 @@
-package tetz42.cellom.contents;
+package tetz42.cellom.body;
 
 import static tetz42.cellom.CelloUtil.*;
 

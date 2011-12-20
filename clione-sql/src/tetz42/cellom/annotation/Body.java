@@ -16,4 +16,6 @@ public @interface Body {
 	boolean convert() default false;
 
 	String convertSchema() default "";
+	
+	boolean fusion() default false;
 }

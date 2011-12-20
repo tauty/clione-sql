@@ -1,4 +1,4 @@
-package tetz42.cellom.contents;
+package tetz42.cellom.body;
 
 
 public class CellForMap<T> extends Cell<T> {

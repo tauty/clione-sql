@@ -12,7 +12,7 @@ import tetz42.cellom.annotation.Body;
 import tetz42.cellom.annotation.EachBody;
 import tetz42.cellom.annotation.EachHeader;
 import tetz42.cellom.annotation.Header;
-import tetz42.cellom.contents.Row;
+import tetz42.cellom.body.Row;
 import tetz42.cellom.header.HeaderManager;
 
 public class Context<T> {
