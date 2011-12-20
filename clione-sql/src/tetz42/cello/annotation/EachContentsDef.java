@@ -14,7 +14,7 @@ public @interface EachContentsDef {
 
 	// int width() default UNDEFINED;
 
-	String style() default ICell.CELL_STYLE;
+	String style() default ICell.BODY_STYLE;
 
 	boolean convert() default false;
 

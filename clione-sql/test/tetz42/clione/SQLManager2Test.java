@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.junit.After;
@@ -36,7 +35,6 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ParameterNotFoundException;
 import tetz42.clione.exception.SQLFileNotFoundException;
-import tetz42.clione.util.ResultMap;
 
 public class SQLManager2Test {
 
@@ -195,17 +193,30 @@ public class SQLManager2Test {
 		assertThat(exec.getParams().size(), is(0));
 	}
 
-	@Test(expected = SQLException.class)
-	public void genSql_have_no_default_value() throws IOException, SQLException {
-		sqlManager(con).useFile(getClass(), "NoDefault.sql").find();
-	}
+	// No exception is thrown when no default value found since parser has
+	// changed.
+	// @Test(expected = SQLRuntimeException.class)
+	// public void genSql_have_no_default_value() throws Exception {
+	// try {
+	// sqlManager(con).useFile(getClass(), "NoDefault.sql").find();
+	// fail();
+	// } catch (Exception e) {
+	// assertEqualsWithFile(e.getMessage(), getClass(),
+	// "genSql_have_no_default_value", 1);
+	// throw e;
+	// }
+	// }
 
-	public void genSql_have_no_default_value2() throws IOException,
-			SQLException {
-		List<ResultMap> list = sqlManager(con).useFile(getClass(), "NoDefault2.sql").findAll();
-		System.out.println(dumper(list).superSafe());
-		assertEqualsWithFile(list, getClass(), "genSql_have_no_default_value2");
-	}
+	// No exception is thrown when no default value found since parser has
+	// changed.
+	// @Test
+	// public void genSql_have_no_default_value2() throws IOException,
+	// SQLException {
+	// List<ResultMap> list = sqlManager(con).useFile(getClass(),
+	// "NoDefault2.sql").findAll();
+	// System.out.println(dumper(list).superSafe());
+	// assertEqualsWithFile(list, getClass(), "genSql_have_no_default_value2");
+	// }
 
 	@Test
 	public void find_by_1_param() throws IOException, SQLException {
@@ -228,6 +239,31 @@ public class SQLManager2Test {
 				"find_by_emptyStr_asNull_sql");
 	}
 
+	@Test
+	public void find_by_emptyStr_asNull2() throws IOException, SQLException {
+		SQLManager man = sqlManager(con).appendNegativeValues("");
+		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
+				Sample.class, params("age", 34).$("name_part", ""));
+
+		assertEqualsWithFile(sample, getClass(), "find_by_emptyStr_asNull");
+		assertEqualsWithFile(man.getSql(), getClass(),
+				"find_by_emptyStr_asNull_sql");
+	}
+
+	@Test
+	public void find_by_emptyStr_asNull3() throws IOException, SQLException {
+		SQLManager man = sqlManager(con).appendNegativeValues("");
+		Cond cond = new Cond();
+		cond.age = 34;
+		cond.name_part = "";
+		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
+				Sample.class, cond);
+
+		assertEqualsWithFile(man.getSql(), getClass(),
+				"find_by_emptyStr_asNull_sql");
+		assertEqualsWithFile(sample, getClass(), "find_by_emptyStr_asNull");
+	}
+
 }
 
 @SuppressWarnings("unused")
@@ -235,4 +271,9 @@ class Sample {
 	private int id;
 	private String name;
 	private int age;
+}
+
+class Cond {
+	int age;
+	String name_part;
 }

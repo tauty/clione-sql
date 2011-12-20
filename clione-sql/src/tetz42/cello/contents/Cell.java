@@ -42,7 +42,7 @@ public class Cell<T> implements ICell {
 	}
 
 	private void setDefaultValue() {
-		this.style = ICell.CELL_STYLE;
+		this.style = ICell.BODY_STYLE;
 		this.isConverted = false;
 		this.convertSchema = "";
 	}

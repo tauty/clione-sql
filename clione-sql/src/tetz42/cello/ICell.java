@@ -5,7 +5,7 @@ public interface ICell {
 	int UNDEFINED = -1;
 
 	String HEADER_STYLE = "HEADER";
-	String CELL_STYLE = "CELL";
+	String BODY_STYLE = "BODY";
 
 	String getValue();
 

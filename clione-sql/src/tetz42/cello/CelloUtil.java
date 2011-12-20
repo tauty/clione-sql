@@ -28,11 +28,7 @@ public class CelloUtil {
 	protected static final Set<String> primitiveSet;
 	static {
 		HashSet<String> set = new HashSet<String>();
-		set.add(Object.class.getName());
-		set.add(Class.class.getName());
 		set.add(Boolean.class.getName());
-		set.add(Character.class.getName());
-		set.add(Number.class.getName());
 		set.add(Byte.class.getName());
 		set.add(Short.class.getName());
 		set.add(Integer.class.getName());
@@ -43,7 +39,9 @@ public class CelloUtil {
 		set.add(BigDecimal.class.getName());
 		set.add(AtomicInteger.class.getName());
 		set.add(AtomicLong.class.getName());
+		set.add(Number.class.getName());
 		set.add(String.class.getName());
+		set.add(Object.class.getName());
 		primitiveSet = Collections.unmodifiableSet(set);
 	}
 
@@ -121,6 +119,9 @@ public class CelloUtil {
 
 	public static <T> T newInstance(Class<T> clazz) {
 		try {
+			T obj = newPrimitive(clazz);
+			if(obj != null)
+				return obj;
 			Constructor<T> constructor = clazz.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			return constructor.newInstance();
@@ -130,6 +131,30 @@ public class CelloUtil {
 		} catch (Exception e) {
 			throw new WrapException(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T newPrimitive(Class<T> clazz) {
+		if (clazz == Boolean.class)
+			return (T) Boolean.FALSE;
+		else if (clazz == Byte.class)
+			return (T) new Byte((byte) 0);
+		else if (clazz == Short.class)
+			return (T) new Short((short) 0);
+		else if (clazz == Integer.class)
+			return (T) new Integer(0);
+		else if (clazz == Long.class)
+			return (T) new Long(0);
+		else if (clazz == Float.class)
+			return (T) new Float(0);
+		else if (clazz == Double.class)
+			return (T) new Double(0);
+		else if (clazz == BigInteger.class)
+			return (T) BigInteger.ZERO;
+		else if (clazz == BigDecimal.class)
+			return (T) BigDecimal.ZERO;
+		else
+			return null;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -12,3 +12,4 @@ SELECT
 [31, %H%]
 --- resource ---
 SQL file path:tetz42/clione/sql/SQLExecutorTest/WrongSelect.sql
+Table 'test.person' doesn't exist

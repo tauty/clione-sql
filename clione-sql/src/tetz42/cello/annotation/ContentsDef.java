@@ -11,7 +11,7 @@ import tetz42.cello.ICell;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ContentsDef {
 
-	String style() default ICell.CELL_STYLE;
+	String style() default ICell.BODY_STYLE;
 
 	boolean convert() default false;
 

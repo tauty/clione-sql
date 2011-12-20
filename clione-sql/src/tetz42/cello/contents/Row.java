@@ -23,6 +23,7 @@ public class Row<T> implements IRow {
 	private final RecursiveMap<List<Cell<Object>>> cellMap;
 	private final Context<T> context;
 	private final T value;
+	private boolean isRemoved = false;
 
 	public Row(Class<T> clazz, Context<T> context) {
 		this.cellMap = new RecursiveMap<List<Cell<Object>>>();
@@ -122,7 +123,7 @@ public class Row<T> implements IRow {
 	}
 
 	private void each(RecursiveMap<List<Cell<Object>>> cellMap, List<ICell> list) {
-		if (isRemoved(cellMap))
+		if (isRemovedCell(cellMap))
 			return;
 
 		Cell<Object> cell = getFromList(cellMap.getValue());
@@ -139,7 +140,7 @@ public class Row<T> implements IRow {
 		}
 	}
 
-	private boolean isRemoved(RecursiveMap<List<Cell<Object>>> cellMap) {
+	private boolean isRemovedCell(RecursiveMap<List<Cell<Object>>> cellMap) {
 		if (!this.context.getHeader().containsHeaderCellMap(cellMap.keys()))
 			return true;
 		RecursiveMap<List<HeaderCell>> hCellMap = this.context.getHeader()
@@ -207,6 +208,14 @@ public class Row<T> implements IRow {
 			}
 		}
 		return list;
+	}
+
+	public void remove() {
+		this.isRemoved = true;
+	}
+
+	public boolean isRemoved() {
+		return isRemoved;
 	}
 
 }
