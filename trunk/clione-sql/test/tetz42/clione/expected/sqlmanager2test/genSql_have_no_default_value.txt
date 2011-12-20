@@ -1,0 +1,15 @@
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND EFG IN (null)' at line 7
+--- sql ---
+SELECT
+    *
+FROM
+    EMPLOYEES
+WHERE
+	ABC IN 
+	AND EFG IN (?)
+
+--- params ---
+[null]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager2Test/NoDefault.sql
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND EFG IN (null)' at line 7

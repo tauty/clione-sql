@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import tetz42.clione.SQLManagerTest.Tameshi;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLExecutorTest {
 
@@ -111,7 +112,7 @@ public class SQLExecutorTest {
 		assertNull(person);
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void findAll_wrong_by_dto_param() throws Exception {
 		final SQLExecutor exe = sqlManager().useFile(getClass(),
 				"WrongSelect.sql");
@@ -123,7 +124,7 @@ public class SQLExecutorTest {
 		});
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void find_wrong_by_dto_param() throws Exception {
 		assertSQLException("find_wrong_by_dto_param", new Proc() {
 			@Override
@@ -134,7 +135,7 @@ public class SQLExecutorTest {
 		});
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void findmapAll_wrong_by_dto_param() throws Exception {
 		final SQLExecutor exe = sqlManager().useFile(getClass(),
 				"WrongSelect.sql");
@@ -146,7 +147,7 @@ public class SQLExecutorTest {
 		});
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void findmap_wrong_by_dto_param() throws Exception {
 		assertSQLException("findmap_wrong_by_dto_param", new Proc() {
 			@Override
@@ -187,7 +188,7 @@ public class SQLExecutorTest {
 			proc.proc();
 			fail();
 		} catch (Exception e) {
-			assertEqualsWithFile(e.getMessage(), getClass(), fileName, 1);
+			assertEqualsWithFile(e.getMessage(), getClass(), fileName, 1, 15);
 			throw e;
 		}
 	}

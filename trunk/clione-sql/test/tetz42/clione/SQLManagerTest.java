@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.exception.SQLRuntimeException;
 import tetz42.util.exception.WrapException;
 
 public class SQLManagerTest {
@@ -138,7 +139,7 @@ public class SQLManagerTest {
 		assertEqualsWithFile(list, getClass(), "findAll_by_no_param");
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void findAll_using_wrongSQL() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useFile(getClass(),
 				"WrongSelect.sql");
@@ -181,7 +182,7 @@ public class SQLManagerTest {
 		assertEqualsWithFile(list, getClass(), "findAllmap_by_no_param");
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void findAllmap_using_wrongSQL() throws IOException, SQLException {
 		SQLExecutor man = sqlManager(con).useFile(getClass(),
 				"WrongSelect.sql");

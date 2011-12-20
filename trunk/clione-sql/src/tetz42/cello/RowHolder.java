@@ -18,16 +18,16 @@ public class RowHolder<T> {
 	private final Map<String, Row<T>> rowMap = new HashMap<String, Row<T>>();
 
 	private int index = 0;
-	private boolean isRowSet;
+	private boolean isBody;
 
 	RowHolder(Class<T> clazz, Context<T> context) {
 		this(clazz, context, false);
 	}
 
-	RowHolder(Class<T> clazz, Context<T> context, boolean isRowSet) {
+	RowHolder(Class<T> clazz, Context<T> context, boolean isBody) {
 		this.clazz = clazz;
 		this.context = context;
-		this.isRowSet = isRowSet;
+		this.isBody = isBody;
 	}
 
 	public Row<T> newRow() {
@@ -82,7 +82,7 @@ public class RowHolder<T> {
 		return rowList.size();
 	}
 
-	List<Row<T>> getRowList() {
+	public List<Row<T>> getRowList() {
 		return this.rowList;
 	}
 
@@ -107,7 +107,7 @@ public class RowHolder<T> {
 		List<Cell<E>> list = new ArrayList<Cell<E>>();
 		for (String rowName : query.get(0)) {
 			if (rowName.equals(Query.CURRENT_ROW)) {
-				if (isRowSet)
+				if (isBody)
 					addMatchedCells(row(), query, list);
 			} else if (rowName.equals(Query.ANY)) {
 				for (Row<T> row : rowList)
@@ -132,5 +132,28 @@ public class RowHolder<T> {
 		for (Cell<Object> cell : row.getByQuery(query)) {
 			list.add((Cell<E>) cell);
 		}
+	}
+
+	public void clear() {
+		rowMap.clear();
+		rowList.clear();
+	}
+
+	public Row<T> remove(String key) {
+		Row<T> row = rowMap.remove(key);
+		rowList.remove(row);
+		return row;
+	}
+
+	public void addRow(Row<T> row) {
+		rowList.add(row);
+		index = rowList.size() - 1;
+	}
+
+	public void addRows(List<Row<T>> rows) {
+		for (Row<T> row : rows) {
+			rowList.add(row);
+		}
+		index = rowList.size() - 1;
 	}
 }
