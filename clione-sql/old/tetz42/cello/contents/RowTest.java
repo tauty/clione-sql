@@ -13,8 +13,8 @@ import tetz42.cellom.ICell;
 import tetz42.cellom.annotation.EachBody;
 import tetz42.cellom.annotation.EachHeader;
 import tetz42.cellom.annotation.Header;
-import tetz42.cellom.contents.CelloMap;
-import tetz42.cellom.contents.Row;
+import tetz42.cellom.body.CelloMap;
+import tetz42.cellom.body.Row;
 import tetz42.cellom.header.HeaderManager;
 
 public class RowTest {
