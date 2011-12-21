@@ -152,6 +152,11 @@ public class Context<T> {
 		public int getWidth() {
 			return 0;
 		}
+
+		@Override
+		public boolean isWindowFrozen() {
+			return false;
+		}
 	}
 
 }

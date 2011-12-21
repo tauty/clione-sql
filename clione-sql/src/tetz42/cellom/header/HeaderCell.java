@@ -27,6 +27,7 @@ public class HeaderCell implements ICell {
 	private int x = 1;
 	private int y = 1;
 	private int realDepth;
+	private boolean isWindowFrozen = false;
 
 	/**
 	 * For Header Element
@@ -202,4 +203,12 @@ public class HeaderCell implements ICell {
 		return realDepth;
 	}
 
+	public void freezeWindow() {
+		this.isWindowFrozen  = true;
+	}
+
+	@Override
+	public boolean isWindowFrozen() {
+		return isWindowFrozen;
+	}
 }
