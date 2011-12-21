@@ -57,9 +57,9 @@ public class Row<T> implements IRow {
 		Object value = cell.get();
 		if (value instanceof CelloMap<?>) {
 			CelloMap<?> cumap = (CelloMap<?>) value;
-			cumap.init(context, cellMap.keys(), this,
-					field.getAnnotation(EachHeader.class),
-					field.getAnnotation(EachBody.class));
+			cumap.init(context, cellMap.keys(), this, field
+					.getAnnotation(EachHeader.class), field
+					.getAnnotation(EachBody.class));
 			return;
 		}
 
@@ -168,6 +168,7 @@ public class Row<T> implements IRow {
 	}
 
 	@SuppressWarnings("unchecked")
+	// TODO refactoring
 	private <E> List<Cell<E>> getByQuery(Query query, int index,
 			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list) {
 		Cell<Object> cell = getFromList(map.getValue());
@@ -199,6 +200,22 @@ public class Row<T> implements IRow {
 								"Unknown field/key name has specified. name="
 										+ join(map.keys(), "|") + "|"
 										+ fieldName);
+					}
+				} else if (Query.numPtn.matcher(fieldName).matches()) {
+					if (cell.get() instanceof CelloMap<?>)
+						((CelloMap<?>) cell.get()).setAllDefinedKeys();
+					int specified = Integer.parseInt(fieldName);
+					int i = 0;
+					RecursiveMap<List<HeaderCell>> headerCellMap = context.getHeader().getHeaderCellMap(map.keys());
+					for(String key:headerCellMap.keySet()) {
+						if(key != null) {
+							if (i == specified) {
+								getByQuery(query, index + 1, map.get(key), list);
+								break;
+							} else {
+								i++;
+							}
+						}
 					}
 				} else if (map.containsKey(fieldName)) {
 					if (cell.get() instanceof CelloMap<?>)

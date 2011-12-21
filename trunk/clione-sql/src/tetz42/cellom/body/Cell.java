@@ -15,6 +15,7 @@ public class Cell<T> implements ICell {
 	private String style;
 	private boolean isConverted;
 	private String convertSchema;
+	private boolean isWindowFrozen = false;
 
 	Cell(Object receiver, Field field) {
 		this.receiver = receiver;
@@ -122,5 +123,14 @@ public class Cell<T> implements ICell {
 
 	public String getConvertSchema() {
 		return convertSchema;
+	}
+
+	public void freezeWindow() {
+		this.isWindowFrozen = true;
+	}
+
+	@Override
+	public boolean isWindowFrozen() {
+		return isWindowFrozen;
 	}
 }

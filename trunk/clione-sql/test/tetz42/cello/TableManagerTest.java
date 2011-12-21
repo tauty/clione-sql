@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static tetz42.test.Auty.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import tetz42.cellom.TableManager;
@@ -245,6 +247,14 @@ public class TableManagerTest {
 		assertThat(tm.row().get().fooInt, is(90101));
 		assertEqualsWithFile(tm.toString(), getClass(),
 				"query-4th_someInt_Add10000");
+
+		// 5th - get by number query
+		System.out.println("-------------------------------------------------");
+		assertThat(tm.row().get().bars.get("key2").bazzes.get("key2-1").bazInt,
+				is(91601));
+		List<Cell<Integer>> list = tm.getByQuery(".|bars|0|bazzes|1|bazInt");
+		assertThat(list.size(), is(1));
+		assertThat(list.get(0).get(), is(91601));
 	}
 }
 

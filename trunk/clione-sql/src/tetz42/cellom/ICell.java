@@ -18,4 +18,6 @@ public interface ICell {
 	int getY();
 
 	boolean isSkipped();
+
+	boolean isWindowFrozen();
 }
