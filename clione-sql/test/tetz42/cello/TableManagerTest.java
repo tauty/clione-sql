@@ -252,7 +252,7 @@ public class TableManagerTest {
 		System.out.println("-------------------------------------------------");
 		assertThat(tm.row().get().bars.get("key2").bazzes.get("key2-1").bazInt,
 				is(91601));
-		List<Cell<Integer>> list = tm.getByQuery(".|bars|0|bazzes|1|bazInt");
+		List<Cell<Integer>> list = tm.getByQuery(".|bars|[0]|bazzes|[1]|bazInt");
 		assertThat(list.size(), is(1));
 		assertThat(list.get(0).get(), is(91601));
 	}

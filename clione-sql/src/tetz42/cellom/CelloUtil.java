@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,7 +121,7 @@ public class CelloUtil {
 	public static <T> T newInstance(Class<T> clazz) {
 		try {
 			T obj = newPrimitive(clazz);
-			if(obj != null)
+			if (obj != null)
 				return obj;
 			Constructor<T> constructor = clazz.getDeclaredConstructor();
 			constructor.setAccessible(true);
@@ -196,4 +197,17 @@ public class CelloUtil {
 		return sb.toString();
 	}
 
+	public static <T> T getKeyByPosition(LinkedHashMap<T, ?> map, int pos) {
+		int i = 0;
+		for (T key : map.keySet()) {
+			if (key != null) {
+				if (i == pos) {
+					return key;
+				} else {
+					i++;
+				}
+			}
+		}
+		return null;
+	}
 }
