@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class Query {
 
-	public static final Pattern numPtn = Pattern.compile("[0-9]+");
+	public static final Pattern numPtn = Pattern.compile("\\[([0-9]+)\\]");
 
 	public static final String PATH_SEPARATOR = "\\|";
 	public static final String FIELD_SEPARATOR = ",";
@@ -32,7 +32,7 @@ public class Query {
 	}
 
 	public String[] get(int index) {
-		if (index >= list.size())
+		if (index < 0 || list.size() <= index)
 			return null;
 		return list.get(index);
 	}

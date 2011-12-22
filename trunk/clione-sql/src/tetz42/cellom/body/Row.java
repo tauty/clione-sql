@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 import tetz42.cellom.Context;
 import tetz42.cellom.ICell;
@@ -167,68 +168,78 @@ public class Row<T> implements IRow {
 		return getByQuery(query);
 	}
 
-	@SuppressWarnings("unchecked")
-	// TODO refactoring
 	private <E> List<Cell<E>> getByQuery(Query query, int index,
 			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list) {
 		Cell<Object> cell = getFromList(map.getValue());
 		if (query.get(index) == null) {
-			list.add((Cell<E>) cell);
+			addToList(list, cell);
 		} else {
 			String[] fieldNames = query.get(index);
 			for (String fieldName : fieldNames) {
-				if (fieldName.equals(Query.ANY)) {
-					if (cell.get() instanceof CelloMap<?>)
-						((CelloMap<?>) cell.get()).setAllDefinedKeys();
-					for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map
-							.entrySet()) {
-						if (e.getKey() != null) {
-							getByQuery(query, index + 1, e.getValue(), list);
-						}
-					}
-				} else if (fieldName.startsWith(Query.TERMINATE)) {
-					fieldName = fieldName.substring(1);
-					if (cell.get() instanceof CelloMap<?>)
-						((CelloMap<?>) cell.get()).get(fieldName);
-					if (map.containsKey(fieldName)) {
-						RecursiveMap<List<Cell<Object>>> subMap = map
-								.get(fieldName);
-						Cell<Object> subCell = getFromList(subMap.getValue());
-						list.add((Cell<E>) subCell);
-					} else {
-						throw new InvalidParameterException(
-								"Unknown field/key name has specified. name="
-										+ join(map.keys(), "|") + "|"
-										+ fieldName);
-					}
-				} else if (Query.numPtn.matcher(fieldName).matches()) {
-					if (cell.get() instanceof CelloMap<?>)
-						((CelloMap<?>) cell.get()).setAllDefinedKeys();
-					int specified = Integer.parseInt(fieldName);
-					int i = 0;
-					RecursiveMap<List<HeaderCell>> headerCellMap = context.getHeader().getHeaderCellMap(map.keys());
-					for(String key:headerCellMap.keySet()) {
-						if(key != null) {
-							if (i == specified) {
-								getByQuery(query, index + 1, map.get(key), list);
-								break;
-							} else {
-								i++;
-							}
-						}
-					}
-				} else if (map.containsKey(fieldName)) {
-					if (cell.get() instanceof CelloMap<?>)
-						((CelloMap<?>) cell.get()).get(fieldName);
-					getByQuery(query, index + 1, map.get(fieldName), list);
-				} else {
-					throw new InvalidParameterException(
-							"Unknown field/key name has specified. name="
-									+ join(map.keys(), "|") + "|" + fieldName);
-				}
+				doField(query, index, map, list, fieldName, cell);
 			}
 		}
 		return list;
+	}
+
+	private <E> void doField(Query query, int index,
+			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list,
+			String fieldName, Cell<Object> cell) {
+		if (fieldName.equals(Query.ANY)) {
+			if (cell.get() instanceof CelloMap<?>)
+				((CelloMap<?>) cell.get()).setAllDefinedKeys();
+			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : map
+					.entrySet()) {
+				if (e.getKey() != null) {
+					getByQuery(query, index + 1, e.getValue(), list);
+				}
+			}
+		} else if (fieldName.startsWith(Query.TERMINATE)) {
+			fieldName = fieldName.substring(1);
+			if (cell.get() instanceof CelloMap<?>)
+				((CelloMap<?>) cell.get()).get(fieldName);
+			if (map.containsKey(fieldName)) {
+				Cell<Object> subCell = getFromList(map.get(fieldName)
+						.getValue());
+				addToList(list, subCell);
+			} else {
+				throw genE(map.keys(), fieldName);
+			}
+		} else {
+			Matcher m = Query.numPtn.matcher(fieldName);
+			if (m.matches()) {
+				if (cell.get() instanceof CelloMap<?>)
+					((CelloMap<?>) cell.get()).setAllDefinedKeys();
+				getByQuery(query, index + 1, map.get(indexToKey(context
+						.getHeader().getHeaderCellMap(map.keys()), Integer
+						.parseInt(m.group(1)))), list);
+			} else if (map.containsKey(fieldName)
+					|| cell.get() instanceof CelloMap<?>) {
+				if (cell.get() instanceof CelloMap<?>)
+					((CelloMap<?>) cell.get()).get(fieldName);
+				getByQuery(query, index + 1, map.get(fieldName), list);
+			} else {
+				throw genE(map.keys(), fieldName);
+			}
+		}
+	}
+
+	private String indexToKey(RecursiveMap<?> map, int position) {
+		String key = getKeyByPosition(map, position);
+		if (key == null)
+			throw genE(map.keys(), "[" + position + "]");
+		return key;
+	}
+
+	private InvalidParameterException genE(String[] keys, String fieldName) {
+		return new InvalidParameterException(
+				"Unknown field name, key name or index has specified. name="
+						+ join(keys, "|") + "|" + fieldName);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E> void addToList(List<Cell<E>> list, Cell<Object> cell) {
+		list.add((Cell<E>) cell);
 	}
 
 	public void remove() {
