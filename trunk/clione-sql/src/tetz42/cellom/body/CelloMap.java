@@ -2,6 +2,7 @@ package tetz42.cellom.body;
 
 import static tetz42.cellom.CelloUtil.*;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -73,6 +74,15 @@ public class CelloMap<V> {
 		if (!containsKey) {
 			row.genCell(this, key, keys);
 		}
+	}
+	
+	public Iterable<String> getFaithKeys(){
+		List<String> keys = new ArrayList<String>();
+		for (String cuKey : this.context.getHeader().getCuMapKeys(this)) {
+			if (cuKey != null)
+				keys.add(cuKey);
+		}
+		return keys;
 	}
 
 	public void setAllDefinedKeys() {
