@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import tetz42.cellom.Context;
@@ -58,9 +59,9 @@ public class Row<T> implements IRow {
 		Object value = cell.get();
 		if (value instanceof CelloMap<?>) {
 			CelloMap<?> cumap = (CelloMap<?>) value;
-			cumap.init(context, cellMap.keys(), this, field
-					.getAnnotation(EachHeader.class), field
-					.getAnnotation(EachBody.class));
+			cumap.init(context, cellMap.keys(), this,
+					field.getAnnotation(EachHeader.class),
+					field.getAnnotation(EachBody.class));
 			return;
 		}
 
@@ -87,15 +88,6 @@ public class Row<T> implements IRow {
 		list.add(cell);
 
 		Object value = cell.get();
-
-		// TODO too difficult. fix someday.
-		// if (value instanceof CellUnitMap<?>) {
-		// CellUnitMap<?> cumap = (CellUnitMap<?>) value;
-		// cumap.init(context, cellMap.keys(), this, field
-		// .getAnnotation(EachHeaderDef.class), field
-		// .getAnnotation(EachCellDef.class));
-		// return;
-		// }
 
 		if (isPrimitive(value))
 			return;
@@ -132,12 +124,23 @@ public class Row<T> implements IRow {
 		if (isPrimitive(value)) {
 			list.add(cell);
 		} else {
-			if (value instanceof CelloMap<?>)
-				((CelloMap<?>) cell.get()).setAllDefinedKeys();
-			for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
-					.entrySet()) {
-				each(e.getValue(), list);
+			Iterable<String> keys;
+			if (value instanceof CelloMap<?>) {
+				CelloMap<?> cmap = ((CelloMap<?>) cell.get());
+				cmap.setAllDefinedKeys();
+				keys = cmap.getFaithKeys();
+			} else {
+				keys = cellMap.keySet();
 			}
+			for (String key : keys) {
+				each(cellMap.get(key), list);
+			}
+			// if (value instanceof CelloMap<?>)
+			// ((CelloMap<?>) cell.get()).setAllDefinedKeys();
+			// for (Entry<String, RecursiveMap<List<Cell<Object>>>> e : cellMap
+			// .entrySet()) {
+			// each(e.getValue(), list);
+			// }
 		}
 	}
 
