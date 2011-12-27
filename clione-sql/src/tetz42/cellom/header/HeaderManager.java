@@ -53,7 +53,7 @@ public class HeaderManager<T> implements IHeader {
 	public void defineHeader(CelloMap<?> cumap, String key,
 			RecursiveMap<List<HeaderCell>> hcellMap) {
 
-		HeaderCell template = getFromList(hcellMap.getValue(ROOT));
+		HeaderCell template = head(hcellMap.getValue(ROOT));
 		hcellMap = hcellMap.get(key);
 
 		// generate HCell
@@ -128,11 +128,11 @@ public class HeaderManager<T> implements IHeader {
 	}
 
 	public HeaderCell get(String... keys) {
-		return getFromList(getList(keys));
+		return head(getList(keys));
 	}
 
 	@Override
-	public Iterable<Iterable<ICell>> each() {
+	public List<Iterable<ICell>> each() {
 		List<Iterable<ICell>> result = new ArrayList<Iterable<ICell>>();
 		for (int depth : context.displayHeaders) {
 			result.add(each(depth));
@@ -142,6 +142,7 @@ public class HeaderManager<T> implements IHeader {
 
 	public List<ICell> each(int depth) {
 		calcCellSize();
+		calcCellWidth();
 		ArrayList<ICell> list = new ArrayList<ICell>();
 		each(depth, this.headerCellMap, list);
 		return list;
@@ -149,7 +150,7 @@ public class HeaderManager<T> implements IHeader {
 
 	private void each(int depth, RecursiveMap<List<HeaderCell>> hcellMap,
 			ArrayList<ICell> list) {
-		HeaderCell hCell = getFromList(hcellMap.getValue());
+		HeaderCell hCell = head(hcellMap.getValue());
 		if (hCell.isRemoved())
 			return;
 
@@ -176,20 +177,19 @@ public class HeaderManager<T> implements IHeader {
 
 		for (Entry<String, RecursiveMap<List<HeaderCell>>> e : hcellMap
 				.entrySet()) {
-			if (e.getKey() == null
-					|| getFromList(e.getValue().getValue()).isRemoved())
+			if (e.getKey() == null || head(e.getValue().getValue()).isRemoved())
 				continue;
 			each(depth, e.getValue(), list);
 		}
 	}
 
-	public void calcCellSize() {
+	void calcCellSize() {
 		calcCellSize(this.headerCellMap);
 	}
 
 	private int calcCellSize(RecursiveMap<List<HeaderCell>> hcellMap) {
 		int size;
-		HeaderCell hCell = getFromList(hcellMap.getValue());
+		HeaderCell hCell = head(hcellMap.getValue());
 		if (hcellMap.size() == 0) {
 			size = 1;
 		} else {
@@ -197,7 +197,7 @@ public class HeaderManager<T> implements IHeader {
 			for (Entry<String, RecursiveMap<List<HeaderCell>>> e : hcellMap
 					.entrySet()) {
 				if (e.getKey() == null
-						|| getFromList(e.getValue().getValue()).isRemoved())
+						|| head(e.getValue().getValue()).isRemoved())
 					continue;
 				size += calcCellSize(e.getValue());
 			}
@@ -207,8 +207,27 @@ public class HeaderManager<T> implements IHeader {
 		return size;
 	}
 
-	public void calcCellWidth() {
-		// TODO implementation
+	void calcCellWidth() {
+		calcCellWidth(this.headerCellMap);
+	}
+
+	private int calcCellWidth(RecursiveMap<List<HeaderCell>> hcellMap) {
+		int width;
+		HeaderCell hCell = head(hcellMap.getValue());
+		if (hCell.getWidth() == UNDEFINED && hcellMap.size() != 0) {
+			width = 0;
+			for (Entry<String, RecursiveMap<List<HeaderCell>>> e : hcellMap
+					.entrySet()) {
+				if (e.getKey() == null
+						|| head(e.getValue().getValue()).isRemoved())
+					continue;
+				int subWidth = calcCellWidth(e.getValue());
+				if (subWidth != UNDEFINED)
+					width += subWidth;
+			}
+			hCell.setWidth(width == 0 ? UNDEFINED : width);
+		}
+		return hCell.getWidth();
 	}
 
 	public <E> List<HeaderCell> getByQuery(
@@ -228,7 +247,7 @@ public class HeaderManager<T> implements IHeader {
 	private List<HeaderCell> getByQuery(Query query, int index,
 			RecursiveMap<List<HeaderCell>> map, List<HeaderCell> list) {
 		if (query.get(index) == null) {
-			list.add(getFromList(map.getValue()));
+			list.add(head(map.getValue()));
 		} else {
 			for (String fieldName : query.get(index)) {
 				if (fieldName.equals(Query.ANY)) {
@@ -243,7 +262,7 @@ public class HeaderManager<T> implements IHeader {
 					if (map.containsKey(fieldName)) {
 						RecursiveMap<List<HeaderCell>> subMap = map
 								.get(fieldName);
-						list.add(getFromList(subMap.getValue()));
+						list.add(head(subMap.getValue()));
 					} else {
 						throw new InvalidParameterException(
 								"Unknown field/key name has specified. name="
