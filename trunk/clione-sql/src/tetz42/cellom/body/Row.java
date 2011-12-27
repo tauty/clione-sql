@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import tetz42.cellom.Context;
@@ -119,7 +118,7 @@ public class Row<T> implements IRow {
 		if (isRemovedCell(cellMap))
 			return;
 
-		Cell<Object> cell = getFromList(cellMap.getValue());
+		Cell<Object> cell = head(cellMap.getValue());
 		Object value = cell.get();
 		if (isPrimitive(value)) {
 			list.add(cell);
@@ -149,7 +148,7 @@ public class Row<T> implements IRow {
 			return true;
 		RecursiveMap<List<HeaderCell>> hCellMap = this.context.getHeader()
 				.getHeaderCellMap(cellMap.keys());
-		HeaderCell hCell = getFromList(hCellMap.getValue());
+		HeaderCell hCell = head(hCellMap.getValue());
 		return hCell.isRemoved();
 	}
 
@@ -173,7 +172,7 @@ public class Row<T> implements IRow {
 
 	private <E> List<Cell<E>> getByQuery(Query query, int index,
 			RecursiveMap<List<Cell<Object>>> map, List<Cell<E>> list) {
-		Cell<Object> cell = getFromList(map.getValue());
+		Cell<Object> cell = head(map.getValue());
 		if (query.get(index) == null) {
 			addToList(list, cell);
 		} else {
@@ -202,7 +201,7 @@ public class Row<T> implements IRow {
 			if (cell.get() instanceof CelloMap<?>)
 				((CelloMap<?>) cell.get()).get(fieldName);
 			if (map.containsKey(fieldName)) {
-				Cell<Object> subCell = getFromList(map.get(fieldName)
+				Cell<Object> subCell = head(map.get(fieldName)
 						.getValue());
 				addToList(list, subCell);
 			} else {

@@ -41,12 +41,14 @@ public class HeaderCell implements ICell {
 		this.realDepth = depth;
 		if (field == null) {
 			this.name = ROOT;
+			this.width = UNDEFINED;
 		} else {
 			Header def = field.getAnnotation(Header.class);
 			this.name = field.getName();
 			if (def == null) {
 				depth = UNDEFINED;
-				realDepth--;
+				this.realDepth--;
+				this.width = UNDEFINED;
 			} else {
 				this.title = def.title();
 				this.width = def.width();
@@ -73,6 +75,7 @@ public class HeaderCell implements ICell {
 		this.realDepth = depth;
 		if (def == null) {
 			depth = UNDEFINED;
+			this.width = UNDEFINED;
 			this.realDepth--;
 			this.title = this.name;
 			this.style = ICell.HEADER_STYLE;

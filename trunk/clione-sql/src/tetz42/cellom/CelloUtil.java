@@ -78,6 +78,10 @@ public class CelloUtil {
 		return false;
 	}
 
+	public static boolean isNotEmpty(Object o) {
+		return !isEmpty(o);
+	}
+
 	public static boolean isStatic(Field f) {
 		return Modifier.isStatic(f.getModifiers());
 	}
@@ -181,7 +185,7 @@ public class CelloUtil {
 		return hcellMap.getValue();
 	}
 
-	public static <T> T getFromList(List<T> list) {
+	public static <T> T head(List<T> list) {
 		if (list.size() == 0)
 			return null;
 		return list.get(0);

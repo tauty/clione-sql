@@ -49,7 +49,7 @@ public class HeaderTest {
 	@Test
 	public void calcCellSize() throws Exception {
 		HeaderManager<Foo> header = create(Foo.class);
-		header.calcCellSize();
+//		header.calcCellSize();
 
 		assertThat(header.get("fooInt").getDepth(), is(1));
 		assertThat(header.get("fooInt").getTitle(), is("foo:int"));

@@ -138,6 +138,14 @@ public class TableManager<T> implements ITableManager {
 		}
 	}
 
+	@Override
+	public Iterable<Iterable<ICell>> tableList() {
+		List<Iterable<ICell>> list = header().each();
+		for(IRow row : eachRow())
+			list.add(row.each());
+		return list;
+	}
+
 	public Row<T> def() {
 		return this.context.getRowDef();
 	}
@@ -149,6 +157,10 @@ public class TableManager<T> implements ITableManager {
 	public void putConversion(String schema, String convertFrom,
 			String convertTo) {
 		this.context.putConversion(schema, convertFrom, convertTo);
+	}
+
+	public void setDisplayHeaders(int... indexes) {
+		this.context.setDisplayHeaders(indexes);
 	}
 
 	@Override
@@ -173,5 +185,4 @@ public class TableManager<T> implements ITableManager {
 		}
 		sb.deleteCharAt(sb.length() - 1).append(CRLF);
 	}
-
 }
