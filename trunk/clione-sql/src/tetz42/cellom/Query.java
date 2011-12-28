@@ -16,6 +16,9 @@ public class Query {
 	public static final String TERMINATE = "@";
 	public static final String ESCAPE = "'";
 
+	public static final Pattern escPtn = Pattern.compile(ESCAPE + "(([^"
+			+ ESCAPE + "]|" + ESCAPE + ESCAPE + ")*)" + ESCAPE);
+
 	List<String[]> list = new ArrayList<String[]>();
 
 	public static Query parse(String src) {
@@ -35,6 +38,15 @@ public class Query {
 		if (index < 0 || list.size() <= index)
 			return null;
 		return list.get(index);
+	}
+
+	public static String encode(String src) {
+
+		return src;
+	}
+
+	public static String decode(String src) {
+		return src;
 	}
 
 }
