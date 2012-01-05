@@ -1,5 +1,6 @@
 package tetz42.cellom;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -9,6 +10,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,10 @@ public class CelloUtil {
 	public static final int UNDEFINED = ICell.UNDEFINED;
 	public static final String ROOT = null;
 	public static final String CRLF = "\r\n";
+
+	// TODO change below maps to soft reference maps.
+	private static final HashMap<ClazzWrapper, Field[]> fieldCache = newMap();
+	private static final HashMap<FieldWrapper, Map<ClazzWrapper, Annotation>> annotationCache = newMap();
 
 	protected static final Set<String> primitiveSet;
 	static {
@@ -44,6 +50,52 @@ public class CelloUtil {
 		set.add(String.class.getName());
 		set.add(Object.class.getName());
 		primitiveSet = Collections.unmodifiableSet(set);
+	}
+
+	public static <K, V> HashMap<K, V> newMap() {
+		return new HashMap<K, V>();
+	}
+
+	// TODO better algorithm with cache.
+	public static Field getField(Class<?> clazz, String name) {
+		for (Field f : getFields(clazz)) {
+			if (f.getName().equals(name))
+				return f;
+		}
+		return null;
+	}
+
+	public static Field[] getFields(Class<?> clazz) {
+		ClazzWrapper key = new ClazzWrapper(clazz);
+		Field[] fields = fieldCache.get(key);
+		if (fields == null) {
+			synchronized (fieldCache) {
+				fields = clazz.getDeclaredFields();
+				fieldCache.put(key, fields);
+			}
+		}
+		return fields;
+	}
+
+	public static <A extends Annotation> A getAnnotation(Field field,
+			Class<A> annoType) {
+		FieldWrapper key = new FieldWrapper(field);
+		Map<ClazzWrapper, Annotation> annoMap = annotationCache.get(key);
+		if (annoMap == null) {
+			synchronized (annotationCache) {
+				annoMap = newMap();
+				annotationCache.put(key, annoMap);
+			}
+		}
+		ClazzWrapper annoKey = new ClazzWrapper(annoType);
+		Annotation annotation = annoMap.get(annoKey);
+		if (!annoMap.containsKey(annoKey)) {
+			synchronized (annoMap) {
+				annotation = field.getAnnotation(annoType);
+				annoMap.put(annoKey, annotation);
+			}
+		}
+		return annoType.cast(annotation);
 	}
 
 	public static boolean isPrimitive(Class<?> clazz) {
@@ -98,11 +150,12 @@ public class CelloUtil {
 	}
 
 	public static Field getField(Object receiver, String fieldName) {
-		try {
-			return receiver.getClass().getDeclaredField(fieldName);
-		} catch (Exception e) {
-			throw new WrapException(e);
-		}
+		Field f = getField(receiver.getClass(), fieldName);
+		if (f == null)
+			// TODO better exception
+			throw new RuntimeException("Unknown field specified. Class:"
+					+ receiver.getClass().getName() + ", Field:" + fieldName);
+		return f;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -213,5 +266,51 @@ public class CelloUtil {
 			}
 		}
 		return null;
+	}
+
+	private static class ClazzWrapper {
+		private final Class<?> clazz;
+
+		ClazzWrapper(Class<?> clazz) {
+			this.clazz = clazz;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof ClazzWrapper) {
+				ClazzWrapper dst = (ClazzWrapper) obj;
+				return this.clazz == dst.clazz;
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.clazz.getName().hashCode();
+		}
+	}
+
+	private static class FieldWrapper {
+		private final Field field;
+
+		FieldWrapper(Field field) {
+			this.field = field;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof FieldWrapper) {
+				FieldWrapper dst = (FieldWrapper) obj;
+				return this.field.equals(dst.field);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			String fieldFullName = this.field.getDeclaringClass().getName()
+					+ "#" + this.field.getName();
+			return fieldFullName.hashCode();
+		}
 	}
 }

@@ -58,9 +58,9 @@ public class Row<T> implements IRow {
 		Object value = cell.get();
 		if (value instanceof CelloMap<?>) {
 			CelloMap<?> cumap = (CelloMap<?>) value;
-			cumap.init(context, cellMap.keys(), this,
-					field.getAnnotation(EachHeader.class),
-					field.getAnnotation(EachBody.class));
+			cumap.init(context, cellMap.keys(), this, field
+					.getAnnotation(EachHeader.class), field
+					.getAnnotation(EachBody.class));
 			return;
 		}
 
@@ -68,7 +68,7 @@ public class Row<T> implements IRow {
 			return;
 
 		// generate field cell
-		for (Field f : value.getClass().getDeclaredFields()) {
+		for (Field f : getFields(value.getClass())) {
 			if (context.isValid(f)) {
 				genCellRecursively(value, f, cellMap.get(f.getName()));
 			}
@@ -92,7 +92,7 @@ public class Row<T> implements IRow {
 			return;
 
 		// generate field cell
-		for (Field f : value.getClass().getDeclaredFields()) {
+		for (Field f : getFields(value.getClass())) {
 			if (context.isValid(f)) {
 				genCellRecursively(value, f, cellMap.get(f.getName()));
 			}
@@ -201,8 +201,7 @@ public class Row<T> implements IRow {
 			if (cell.get() instanceof CelloMap<?>)
 				((CelloMap<?>) cell.get()).get(fieldName);
 			if (map.containsKey(fieldName)) {
-				Cell<Object> subCell = head(map.get(fieldName)
-						.getValue());
+				Cell<Object> subCell = head(map.get(fieldName).getValue());
 				addToList(list, subCell);
 			} else {
 				throw genE(map.keys(), fieldName);

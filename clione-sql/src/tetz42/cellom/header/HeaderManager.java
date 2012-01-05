@@ -66,7 +66,7 @@ public class HeaderManager<T> implements IHeader {
 		Object value = newInstance(cumap.getTemplate());
 
 		// generate field cell
-		for (Field f : cumap.getTemplate().getDeclaredFields()) {
+		for (Field f : getFields(cumap.getTemplate())) {
 			if (context.isValid(f) && !context.isHidden(f)) {
 				Object fieldValue = getOrNewValue(value, f);
 				genHCellRecursively(fieldValue, f, hcellMap.get(f.getName()),
@@ -102,7 +102,7 @@ public class HeaderManager<T> implements IHeader {
 			return;
 
 		// generate field cell
-		for (Field f : value.getClass().getDeclaredFields()) {
+		for (Field f : getFields(value.getClass())) {
 			if (context.isValid(f) && !context.isHidden(f)) {
 				Object fieldValue = getOrNewValue(value, f);
 				genHCellRecursively(fieldValue, f, hcellMap.get(f.getName()),
