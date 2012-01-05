@@ -74,7 +74,7 @@ public class Context<T> {
 
 	public List<Field> validFields(Class<?> clazz) {
 		ArrayList<Field> list = new ArrayList<Field>();
-		for (Field f : clazz.getDeclaredFields()) {
+		for (Field f : getFields(clazz)) {
 			if (isValid(f))
 				list.add(f);
 		}
