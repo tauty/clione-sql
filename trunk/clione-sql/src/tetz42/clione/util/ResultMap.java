@@ -11,7 +11,8 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	private static final long serialVersionUID = 8871788701353775458L;
 
 	public String getString(String key) {
-		return String.valueOf(get(key));
+		Object value = get(key);
+		return value == null ? null : String.valueOf(value);
 	}
 
 	public Integer getInt(String key) {
