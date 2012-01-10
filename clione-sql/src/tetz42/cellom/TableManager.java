@@ -3,6 +3,8 @@ package tetz42.cellom;
 import static tetz42.cellom.CelloUtil.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import tetz42.cellom.body.Cell;
@@ -161,6 +163,11 @@ public class TableManager<T> implements ITableManager {
 
 	public void setDisplayHeaders(int... indexes) {
 		this.context.setDisplayHeaders(indexes);
+	}
+
+	public void sortBody(Comparator<Row<T>> comp) {
+		appendAllTmpsToBody();
+		Collections.sort(body().getRowList(), comp);
 	}
 
 	@Override
