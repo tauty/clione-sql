@@ -44,8 +44,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 700;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "700";
 
-		tm.tail().get().fooInt = 10000;
-		tm.tail().get().fooStr = "10000";
+		tm.hooter().get().fooInt = 10000;
+		tm.hooter().get().fooStr = "10000";
 
 		tm.newRow();
 		tm.row().get().fooInt = 101;
@@ -68,8 +68,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 701;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "701";
 
-		tm.tail().get().bars.get("key1").barInt = 20001;
-		tm.tail().get().bars.get("key1").barStr = "20001";
+		tm.hooter().get().bars.get("key1").barInt = 20001;
+		tm.hooter().get().bars.get("key1").barStr = "20001";
 
 		assertEqualsWithFile(tm.toString(), getClass(), "test-after");
 	}
@@ -111,8 +111,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 700;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "700";
 
-		tm.tail().get().fooInt = 10000;
-		tm.tail().get().fooStr = "10000";
+		tm.hooter().get().fooInt = 10000;
+		tm.hooter().get().fooStr = "10000";
 
 		tm.newRow();
 		tm.row().get().fooInt = 101;
@@ -135,8 +135,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 701;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "701";
 
-		tm.tail().get().bars.get("key1").barInt = 20001;
-		tm.tail().get().bars.get("key1").barStr = "20001";
+		tm.hooter().get().bars.get("key1").barInt = 20001;
+		tm.hooter().get().bars.get("key1").barStr = "20001";
 
 		assertEqualsWithFile(tm.toString(), getClass(), "pre_define-after");
 	}
@@ -177,8 +177,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 700;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "700";
 
-		tm.tail().get().fooInt = 10000;
-		tm.tail().get().fooStr = "10000";
+		tm.hooter().get().fooInt = 10000;
+		tm.hooter().get().fooStr = "10000";
 
 		tm.newRow();
 		tm.row().get().fooInt = 101;
@@ -201,8 +201,8 @@ public class TableManagerTest {
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazInt = 701;
 		tm.row().get().bars.get("key2").bazzes.get("key2-2").bazStr = "701";
 
-		tm.tail().get().bars.get("key1").barInt = 20001;
-		tm.tail().get().bars.get("key1").barStr = "20001";
+		tm.hooter().get().bars.get("key1").barInt = 20001;
+		tm.hooter().get().bars.get("key1").barStr = "20001";
 
 		// 1st
 		System.out.println("-------------------------------------------------");

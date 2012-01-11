@@ -21,14 +21,14 @@ public class TableManager<T> implements ITableManager {
 	private final Context<T> context;
 	private final RowHolder<T> rowHolder;
 	private final RowHolder<T> tmpHolder;
-	private final RowHolder<T> tailHolder;
+	private final RowHolder<T> hooterHolder;
 
 	private TableManager(Class<T> clazz) {
 		this.header = new HeaderManager<T>(clazz);
 		this.context = header.getContext();
 		this.rowHolder = new RowHolder<T>(clazz, context, true);
 		this.tmpHolder = new RowHolder<T>(clazz, context);
-		this.tailHolder = new RowHolder<T>(clazz, context);
+		this.hooterHolder = new RowHolder<T>(clazz, context);
 	}
 
 	public RowHolder<T> body() {
@@ -39,8 +39,8 @@ public class TableManager<T> implements ITableManager {
 		return this.tmpHolder;
 	}
 
-	public RowHolder<T> tails() {
-		return this.tailHolder;
+	public RowHolder<T> hooters() {
+		return this.hooterHolder;
 	}
 
 	public Row<T> newRow() {
@@ -75,12 +75,12 @@ public class TableManager<T> implements ITableManager {
 		return tmps().row(key);
 	}
 
-	public Row<T> tail() {
-		return tails().row();
+	public Row<T> hooter() {
+		return hooters().row();
 	}
 
-	public Row<T> tail(String key) {
-		return tails().row(key);
+	public Row<T> hooter(String key) {
+		return hooters().row(key);
 	}
 
 	public void setCurrentRowAs(String key) {
@@ -113,7 +113,7 @@ public class TableManager<T> implements ITableManager {
 	public <E> List<Cell<E>> getByQuery(Query query) {
 		List<Cell<E>> list = rowHolder.getByQuery(query);
 		List<Cell<E>> tmpList = tmpHolder.getByQuery(query);
-		List<Cell<E>> tailList = tailHolder.getByQuery(query);
+		List<Cell<E>> tailList = hooterHolder.getByQuery(query);
 		list.addAll(tmpList);
 		list.addAll(tailList);
 		return list;
@@ -129,7 +129,7 @@ public class TableManager<T> implements ITableManager {
 		List<IRow> resultRows = new ArrayList<IRow>();
 		addToRows(resultRows, rowHolder.getRowList());
 		addToRows(resultRows, tmpHolder.getRowList());
-		addToRows(resultRows, tailHolder.getRowList());
+		addToRows(resultRows, hooterHolder.getRowList());
 		return resultRows;
 	}
 
