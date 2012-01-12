@@ -48,7 +48,7 @@ import java.util.Map;
  * @version 1.0
  * @author tetz
  */
-public class PerformanceMeter {
+public class StopWatch {
 
 	public static enum OutputTiming {
 		ALL, END, SHOW
@@ -60,17 +60,17 @@ public class PerformanceMeter {
 	private static OutputTiming oc = null;
 
 	public void test() {
-		PerformanceMeter.init(System.out, OutputTiming.ALL);
+		StopWatch.init(System.out, OutputTiming.ALL);
 
-		PerformanceMeter.start("test");
+		StopWatch.start("test");
 		// do process
-		PerformanceMeter.start("inside-test");
+		StopWatch.start("inside-test");
 		// do process
-		PerformanceMeter.end("inside-end");
+		StopWatch.end("inside-end");
 		// do process
-		PerformanceMeter.end("test");
+		StopWatch.end("test");
 
-		PerformanceMeter.show();
+		StopWatch.show();
 	}
 
 	public static void init(OutputStream os, OutputTiming o) {
@@ -130,19 +130,22 @@ public class PerformanceMeter {
 	}
 
 	private static class Unit {
-		long sum_msec = 0;
+		long start_time = Long.MIN_VALUE;
+		long sum_nano_secs = 0;
 		int time = 0;
+		
+		
 
-		Unit add(long msec) {
-			sum_msec += msec;
+		Unit add(long nano_sec) {
+			sum_nano_secs += nano_sec;
 			time++;
 			return this;
 		}
 
 		@Override
 		public String toString() {
-			double ave = sum_msec / time;
-			return new StringBuilder().append("(").append(sum_msec)
+			double ave = sum_nano_secs / time;
+			return new StringBuilder().append("(").append(sum_nano_secs)
 					.append("[nano secs], ").append(time)
 					.append("time, average:").append(ave)
 					.append("[nano secs])").append(CRLF).toString();
