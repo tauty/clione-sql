@@ -53,7 +53,30 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 	@Override
 	public Iterator<E> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		class CurHolder {
+			PureList<E> current;
+		}
+		final CurHolder holder = new CurHolder();
+		holder.current = this;
+		return new Iterator<E>() {
+
+			@Override
+			public boolean hasNext() {
+				return holder.current.hasNext();
+			}
+
+			@Override
+			public E next() {
+				E value = holder.current.head();
+				holder.current = holder.current.tail();
+				return value;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException(
+						"PureList is immutable.");
+			}
+		};
 	}
 }
