@@ -18,8 +18,8 @@ package tetz42.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class provides timer function easy to use.
@@ -54,13 +54,18 @@ public class StopWatch {
 		ALL, END, SHOW
 	}
 
-	public static final String CRLF = System.getProperty("line.separator");
+	private static final String APP_NAME = "[StopWatch]";
+	private static final String CRLF = System.getProperty("line.separator");
+	private static final String DEFAULT_KEY = "no-specified-key";
 
-	private static OutputStream out = null;
-	private static OutputTiming oc = null;
+	private static volatile OutputStream out = null;
+	private static volatile OutputTiming oc = null;
+
+	static {
+	}
 
 	public void test() {
-		StopWatch.init(System.out, OutputTiming.ALL);
+		StopWatch.init(System.out);
 
 		StopWatch.start("test");
 		// do process
@@ -73,70 +78,163 @@ public class StopWatch {
 		StopWatch.show();
 	}
 
+	public static void init(OutputStream os) {
+		init(os, OutputTiming.ALL);
+	}
+
 	public static void init(OutputStream os, OutputTiming o) {
 		out = os;
 		oc = o;
 	}
 
-	private static Map<String, Long> startMap = new HashMap<String, Long>();
-	private static Map<String, Unit> resultMap = new LinkedHashMap<String, Unit>();
+	private static final ThreadLocal<Map<String, Interval>> intervalMapLocal = new ThreadLocal<Map<String, Interval>>() {
 
-	/**
-	 * Starts the stop watch.
-	 * 
-	 * @param key
-	 *            - key for mapping 'start' and 'end'
-	 */
-	public static void start(String key) {
-		startMap.put(key, System.nanoTime());
+		@Override
+		protected Map<String, Interval> initialValue() {
+			return new ReadyMap();
+		}
+	};
+
+	@SuppressWarnings("serial")
+	private static final Map<String, Interval> intervalMapGlobal = new ConcurrentReadyMap<Interval>() {
+
+		@Override
+		protected Interval newValue(String key) {
+			return new Interval(key);
+		}
+	};
+
+	@SuppressWarnings("serial")
+	private static final Map<String, Summary> summaryMap = new ConcurrentReadyMap<Summary>() {
+
+		@Override
+		protected Summary newValue(String key) {
+			return new Summary(key);
+		}
+	};
+
+	public static Interval startLocal(String key) {
+		return isInvalid() ? null : intervalMapLocal.get().get(key).start();
 	}
 
-	/**
-	 * Ends the stop watch.
-	 * 
-	 * @param key
-	 *            - key for mapping 'start' and 'end'
-	 */
-	public static void end(String key) {
-		Unit unit = resultMap.get(key);
-		if (unit == null)
-			resultMap.put(key, unit = new Unit());
-		long elapsed = System.nanoTime() - startMap.remove(key);
-		unit.add(elapsed);
-		if (out != null && oc != null && oc != OutputTiming.SHOW) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("[Performance meter] ").append(key).append(": ")
-					.append(elapsed).append("[nano secs]");
-			println(sb);
-		}
+	public static Interval endLocal(String key) {
+		return isInvalid() ? null : intervalMapLocal.get().get(key).end();
+	}
+
+	public static Interval startLocal() {
+		return startLocal(DEFAULT_KEY);
+	}
+
+	public static Interval endLocal() {
+		return endLocal(DEFAULT_KEY);
+	}
+
+	public static Interval startGlobal(String key) {
+		return isInvalid() ? null : intervalMapGlobal.get(key).start();
+	}
+
+	public static Interval endGlobal(String key) {
+		return isInvalid() ? null : intervalMapGlobal.get(key).end();
+	}
+
+	public static Interval startGlobal() {
+		return startGlobal(DEFAULT_KEY);
+	}
+
+	public static Interval endGlobal() {
+		return endGlobal(DEFAULT_KEY);
+	}
+
+	public static Interval start(String key) {
+		return startLocal(key);
+	}
+
+	public static Interval end(String key) {
+		return endLocal(key);
+	}
+
+	public static Interval start() {
+		return start(DEFAULT_KEY);
+	}
+
+	public static Interval end() {
+		return end(DEFAULT_KEY);
+	}
+
+	private static boolean isInvalid() {
+		return !isOutputOK(OutputTiming.ALL);
+	}
+
+	private static boolean isOutputOK(OutputTiming timing) {
+		return out != null && oc != null
+				&& (oc == OutputTiming.ALL || oc == timing);
 	}
 
 	private static void println(StringBuilder sb) {
 		try {
-			out.write(sb.append(CRLF).toString().getBytes());
+			out.write((APP_NAME + sb.append(CRLF)).getBytes());
+		} catch (IOException ignore) {
+		}
+	}
+
+	private static void println(String s) {
+		try {
+			out.write((APP_NAME + s + CRLF).getBytes());
 		} catch (IOException ignore) {
 		}
 	}
 
 	public static void show() {
-		if (out != null && oc != null && oc != OutputTiming.END) {
-			StringBuilder sb = new StringBuilder("[Performance meter] Results:")
-					.append(CRLF);
-			for (Map.Entry<String, Unit> e : resultMap.entrySet()) {
-				sb.append(e.getKey()).append(e.getValue());
+		if (isOutputOK(OutputTiming.SHOW)) {
+			StringBuilder sb = new StringBuilder("[Result]").append(CRLF);
+			for (Map.Entry<String, Summary> e : summaryMap.entrySet()) {
+				sb.append("\t").append(e.getValue()).append(CRLF);
 			}
 			println(sb);
 		}
 	}
 
-	private static class Unit {
+	public static class Interval {
 		long start_time = Long.MIN_VALUE;
+		final String key;
+
+		private Interval(String key) {
+			this.key = key;
+		}
+
+		public Interval start() {
+			if (this.start_time != Long.MIN_VALUE) {
+				println("[WARNING] start() is called without calling end().");
+			}
+			this.start_time = System.nanoTime();
+			return this;
+		}
+
+		public Interval end() {
+			if (this.start_time == Long.MIN_VALUE) {
+				println("[WARNING] end() is called without calling start().");
+			}
+			long elapsed = System.nanoTime() - this.start_time;
+			this.start_time = Long.MIN_VALUE;
+			summaryMap.get(key).add(elapsed);
+			if (isOutputOK(OutputTiming.END)) {
+				println("[" + key + "] Elapsed time is " + elapsed
+						+ "(nano secs).");
+			}
+			return this;
+		}
+	}
+
+	private static class Summary {
+		final String key;
 		long sum_nano_secs = 0;
 		int time = 0;
-		
-		
 
-		Unit add(long nano_sec) {
+		public Summary(String key) {
+			this.key = key;
+		}
+
+		Summary add(long nano_sec) {
 			sum_nano_secs += nano_sec;
 			time++;
 			return this;
@@ -145,10 +243,42 @@ public class StopWatch {
 		@Override
 		public String toString() {
 			double ave = sum_nano_secs / time;
-			return new StringBuilder().append("(").append(sum_nano_secs)
-					.append("[nano secs], ").append(time)
-					.append("time, average:").append(ave)
-					.append("[nano secs])").append(CRLF).toString();
+			return new StringBuilder("[Summary] ").append(key).append(" - ")
+					.append(sum_nano_secs).append("(nano secs), ").append(time)
+					.append("time, average:").append(ave).append("(nano secs)")
+					.append(CRLF).toString();
 		}
+	}
+
+	@SuppressWarnings("serial")
+	private static class ReadyMap extends HashMap<String, Interval> {
+
+		@Override
+		public Interval get(Object key) {
+			Interval interval = super.get(key);
+			String skey = String.valueOf(key);
+			if (interval == null)
+				this.put(skey, interval = new Interval(skey));
+			return interval;
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private abstract static class ConcurrentReadyMap<V> extends
+			ConcurrentHashMap<String, V> {
+
+		@Override
+		public V get(Object key) {
+			V interval = super.get(key);
+			if (interval == null) {
+				String skey = String.valueOf(key);
+				V putted = putIfAbsent(skey, interval = newValue(skey));
+				if (putted != null)
+					interval = putted;
+			}
+			return interval;
+		}
+
+		protected abstract V newValue(String key);
 	}
 }
