@@ -17,8 +17,8 @@ public class PureList<E> implements Iterable<E>, Serializable {
 	 */
 	private static final long serialVersionUID = -6009911785500721458L;
 
-	private final E head;
-	private final PureList<E> tail;
+	public final E head;
+	public final PureList<E> tail;
 
 	private PureList(E head, PureList<E> tail) {
 		this.head = head;
@@ -37,14 +37,6 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 	public static <T> PureList<T> cons(T head, PureList<T> tail) {
 		return new PureList<T>(head, tail);
-	}
-
-	public E head() {
-		return head;
-	}
-
-	public PureList<E> tail() {
-		return tail;
 	}
 
 	public boolean hasNext() {
@@ -67,8 +59,8 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 			@Override
 			public E next() {
-				E value = holder.current.head();
-				holder.current = holder.current.tail();
+				E value = holder.current.head;
+				holder.current = holder.current.tail;
 				return value;
 			}
 
