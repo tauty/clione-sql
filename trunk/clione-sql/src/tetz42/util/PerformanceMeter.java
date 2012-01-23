@@ -229,10 +229,10 @@ public class PerformanceMeter {
 		@Override
 		public String toString() {
 			double ave = sum_nano_secs / time;
-			return new StringBuilder(key).append(" - ").append(
+			return new StringBuilder("[").append(key).append("]: ").append(
 					(double) sum_nano_secs / 1000000)
 					.append("(ms), performed ").append(time).append(
-							" times, average:").append(ave / 1000000).append(
+							" times, average ").append(ave / 1000000).append(
 							"(ms)").toString();
 		}
 	}
