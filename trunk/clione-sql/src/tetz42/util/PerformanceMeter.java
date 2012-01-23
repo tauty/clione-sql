@@ -48,7 +48,7 @@ public class PerformanceMeter {
 			ResourceBundle bundle = ResourceBundle
 					.getBundle("performance_meter");
 			if ("true".equals(bundle.getString("valid").toLowerCase())) {
-				PerformanceMeter.init(System.out);
+				PerformanceMeter.init(System.out, OutputTiming.ALL);
 			}
 		} catch (MissingResourceException ignore) {
 		}
