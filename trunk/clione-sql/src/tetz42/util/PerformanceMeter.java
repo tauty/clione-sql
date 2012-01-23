@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 tetsuo.ohta[at]gmail.com
+ * Copyright 2012 tetsuo.ohta[at]gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,28 +24,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This class provides timer function easy to use.
+ * This class provides easy way to measurement performance.
  * <p>
- *
- * [sample]<br>
- * StopWatch sw = new StopWatch();<br>
- * sw.start("key1");<br>
- * &emsp;&emsp; :<br>
- * sw.start("key2");<br>
- * &emsp;&emsp; :<br>
- * sw.end("key1");<br>
- * &emsp;&emsp; :<br>
- * sw.start("key1");<br>
- * &emsp;&emsp; :<br>
- * sw.end("key1");<br>
- * sw.end("key2");<br>
- * <br>
- * System.out.println(sw);<br>
- * <br>
- * - result<br>
- * key1(140msec, 2time, average:70.0msec)<br>
- * key2(100msec, 1time, average:100.0msec)<br>
- * Summary:150msec<br>
  *
  * @version 1.0
  * @author tetz
