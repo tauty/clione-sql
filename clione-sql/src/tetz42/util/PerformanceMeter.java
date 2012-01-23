@@ -38,7 +38,7 @@ public class PerformanceMeter {
 
 	private static final String APP_NAME = "[PerformanceMeter]";
 	private static final String CRLF = System.getProperty("line.separator");
-	private static final String DEFAULT_KEY = "no-specified-key";
+	private static final String DEFAULT_KEY = "****";
 
 	private static volatile OutputStream out = null;
 	private static volatile OutputTiming oc = null;

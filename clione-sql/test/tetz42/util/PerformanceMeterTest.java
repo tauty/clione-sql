@@ -13,9 +13,9 @@ public class PerformanceMeterTest {
 
 		PerformanceMeter.start("test");
 		for (int i = 0; i < 10; i++) {
-			PerformanceMeter.start("inside_test");
+			PerformanceMeter.start();
 			Thread.sleep(10);
-			PerformanceMeter.end("inside_test");
+			PerformanceMeter.end();
 		}
 		PerformanceMeter.end("test");
 
