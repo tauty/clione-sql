@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class provides timer function easy to use.
  * <p>
- * 
+ *
  * [sample]<br>
  * StopWatch sw = new StopWatch();<br>
  * sw.start("key1");<br>
@@ -44,17 +46,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * key1(140msec, 2time, average:70.0msec)<br>
  * key2(100msec, 1time, average:100.0msec)<br>
  * Summary:150msec<br>
- * 
+ *
  * @version 1.0
  * @author tetz
  */
-public class StopWatch {
+public class PerformanceMeter {
 
 	public static enum OutputTiming {
 		ALL, END, SHOW
 	}
 
-	private static final String APP_NAME = "[StopWatch]";
+	private static final String APP_NAME = "[PerformanceMeter]";
 	private static final String CRLF = System.getProperty("line.separator");
 	private static final String DEFAULT_KEY = "no-specified-key";
 
@@ -62,20 +64,14 @@ public class StopWatch {
 	private static volatile OutputTiming oc = null;
 
 	static {
-	}
-
-	public void test() {
-		StopWatch.init(System.out);
-
-		StopWatch.start("test");
-		// do process
-		StopWatch.start("inside-test");
-		// do process
-		StopWatch.end("inside-end");
-		// do process
-		StopWatch.end("test");
-
-		StopWatch.show();
+		try {
+			ResourceBundle bundle = ResourceBundle
+					.getBundle("performance_meter");
+			if ("true".equals(bundle.getString("valid").toLowerCase())) {
+				PerformanceMeter.init(System.out);
+			}
+		} catch (MissingResourceException ignore) {
+		}
 	}
 
 	public static void init(OutputStream os) {
@@ -186,7 +182,7 @@ public class StopWatch {
 
 	public static void show() {
 		if (isOutputOK(OutputTiming.SHOW)) {
-			StringBuilder sb = new StringBuilder("[Result]").append(CRLF);
+			StringBuilder sb = new StringBuilder("[Summary]").append(CRLF);
 			for (Map.Entry<String, Summary> e : summaryMap.entrySet()) {
 				sb.append("\t").append(e.getValue()).append(CRLF);
 			}
@@ -196,6 +192,7 @@ public class StopWatch {
 
 	public static class Interval {
 		long start_time = Long.MIN_VALUE;
+		long start_memory = Long.MIN_VALUE;
 		final String key;
 
 		private Interval(String key) {
@@ -207,6 +204,7 @@ public class StopWatch {
 				println("[WARNING] start() is called without calling end().");
 			}
 			this.start_time = System.nanoTime();
+			this.start_memory = usedMemory();
 			return this;
 		}
 
@@ -218,10 +216,18 @@ public class StopWatch {
 			this.start_time = Long.MIN_VALUE;
 			summaryMap.get(key).add(elapsed);
 			if (isOutputOK(OutputTiming.END)) {
-				println("[" + key + "] Elapsed time is " + elapsed
-						+ "(nano secs).");
+				println("[" + key + "] Elapsed time is "
+						+ ((double) elapsed / 1000000)
+						+ "(ms), Used memory is "
+						+ ((double) (usedMemory() - start_memory) / 1000)
+						+ "(KB).");
 			}
 			return this;
+		}
+
+		private long usedMemory() {
+			return Runtime.getRuntime().totalMemory()
+					- Runtime.getRuntime().freeMemory();
 		}
 	}
 
@@ -243,10 +249,11 @@ public class StopWatch {
 		@Override
 		public String toString() {
 			double ave = sum_nano_secs / time;
-			return new StringBuilder("[Summary] ").append(key).append(" - ")
-					.append(sum_nano_secs).append("(nano secs), ").append(time)
-					.append("time, average:").append(ave).append("(nano secs)")
-					.append(CRLF).toString();
+			return new StringBuilder(key).append(" - ").append(
+					(double) sum_nano_secs / 1000000)
+					.append("(ms), performed ").append(time).append(
+							" times, average:").append(ave / 1000000).append(
+							"(ms)").toString();
 		}
 	}
 
