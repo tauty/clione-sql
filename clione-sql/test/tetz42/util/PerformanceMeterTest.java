@@ -1,5 +1,8 @@
 package tetz42.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 public class PerformanceMeterTest {
@@ -22,4 +25,17 @@ public class PerformanceMeterTest {
 		PerformanceMeter.show();
 	}
 
+	@Test
+	public void testMemory() throws Exception {
+		List<Integer> list = new ArrayList<Integer>();
+		// List<Integer> list = new LinkedList<Integer>();
+
+		PerformanceMeter.start("testMemory");
+		for (int i = 0; i < 10000; i++) {
+			list.add(i);
+		}
+		PerformanceMeter.end("testMemory");
+
+		PerformanceMeter.show();
+	}
 }
