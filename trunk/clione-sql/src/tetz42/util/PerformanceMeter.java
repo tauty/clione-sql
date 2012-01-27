@@ -181,7 +181,8 @@ public class PerformanceMeter {
 
 		public Interval start() {
 			if (this.start_time != Long.MIN_VALUE) {
-				println("[WARNING] start() is called without calling end().");
+				println("[WARNING] start() is called without calling end(). key = "
+						+ this.key);
 			}
 			this.start_time = System.nanoTime();
 			this.start_memory = usedMemory();
@@ -190,7 +191,8 @@ public class PerformanceMeter {
 
 		public Interval end() {
 			if (this.start_time == Long.MIN_VALUE) {
-				println("[WARNING] end() is called without calling start().");
+				println("[WARNING] end() is called without calling start(). key = "
+						+ this.key);
 			}
 			long elapsed = System.nanoTime() - this.start_time;
 			this.start_time = Long.MIN_VALUE;
