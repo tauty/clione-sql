@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 /**
  * This class provides easy way to measurement performance.
@@ -36,8 +35,6 @@ public class PerformanceMeter {
 	private static final String APP_NAME = "[PerformanceMeter]";
 	private static final String CRLF = System.getProperty("line.separator");
 	private static final String DEFAULT_KEY = "****";
-
-	private static Logger logger;
 
 	private static volatile OutputStream out = null;
 
