@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * This class provides easy way to measurement performance.
@@ -32,23 +33,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PerformanceMeter {
 
-	public static enum OutputTiming {
-		ALL, END, SHOW
-	}
-
 	private static final String APP_NAME = "[PerformanceMeter]";
 	private static final String CRLF = System.getProperty("line.separator");
 	private static final String DEFAULT_KEY = "****";
 
+	private static Logger logger;
+
 	private static volatile OutputStream out = null;
-	private static volatile OutputTiming oc = null;
 
 	static {
 		try {
 			ResourceBundle bundle = ResourceBundle
 					.getBundle("performance_meter");
 			if ("true".equals(bundle.getString("valid").toLowerCase())) {
-				init(System.out, OutputTiming.ALL);
+				init(System.out);
 			}
 		} catch (MissingResourceException ignore) {
 		}
@@ -65,12 +63,7 @@ public class PerformanceMeter {
 	private static final ConcurrentSummaryMap summaryMap = new ConcurrentSummaryMap();
 
 	public static void init(OutputStream os) {
-		init(os, OutputTiming.ALL);
-	}
-
-	public static void init(OutputStream os, OutputTiming o) {
 		out = os;
-		oc = o;
 	}
 
 	public static StopWatch get() {
@@ -134,7 +127,7 @@ public class PerformanceMeter {
 	}
 
 	public static void show() {
-		if (isOutputOK(OutputTiming.SHOW)) {
+		if (isOutputOK()) {
 			StringBuilder sb = new StringBuilder("[Summary]").append(CRLF);
 			for (Map.Entry<String, Summary> e : summaryMap.entrySet()) {
 				sb.append("\t").append(e.getValue()).append(CRLF);
@@ -144,12 +137,11 @@ public class PerformanceMeter {
 	}
 
 	private static boolean isInvalid() {
-		return !isOutputOK(OutputTiming.ALL);
+		return !isOutputOK();
 	}
 
-	private static boolean isOutputOK(OutputTiming timing) {
-		return out != null && oc != null
-				&& (oc == OutputTiming.ALL || oc == timing);
+	private static boolean isOutputOK() {
+		return out != null;
 	}
 
 	private static void println(StringBuilder sb) {
@@ -187,16 +179,6 @@ public class PerformanceMeter {
 			start(true);
 		}
 
-		private void start(boolean isQuiet) {
-			if (this.start_time != Long.MIN_VALUE) {
-				if (!isQuiet)
-					println("[WARNING] start() is called without calling end(). key = "
-							+ this.key);
-			}
-			this.start_time = System.nanoTime();
-			this.start_memory = usedMemory();
-		}
-
 		public void stop() {
 			terminate(false, false);
 		}
@@ -213,6 +195,16 @@ public class PerformanceMeter {
 			terminate(false, true);
 		}
 
+		private void start(boolean isQuiet) {
+			if (this.start_time != Long.MIN_VALUE) {
+				if (!isQuiet)
+					println("[WARNING] start() is called without calling end(). key = "
+							+ this.key);
+			}
+			this.start_time = System.nanoTime();
+			this.start_memory = usedMemory();
+		}
+
 		private void terminate(boolean isQuiet, boolean isOutputRequired) {
 			if (this.start_time == Long.MIN_VALUE) {
 				if (!isQuiet)
@@ -222,7 +214,7 @@ public class PerformanceMeter {
 			long elapsed = System.nanoTime() - this.start_time;
 			this.start_time = Long.MIN_VALUE;
 			summaryMap.get(key).add(elapsed);
-			if (isOutputRequired && isOutputOK(OutputTiming.END)) {
+			if (isOutputRequired && isOutputOK()) {
 				println("[" + key + "] Elapsed time is "
 						+ ((double) elapsed / 1000000)
 						+ "(ms), Used memory is "
