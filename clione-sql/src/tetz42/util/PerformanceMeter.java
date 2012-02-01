@@ -48,11 +48,21 @@ public class PerformanceMeter {
 			ResourceBundle bundle = ResourceBundle
 					.getBundle("performance_meter");
 			if ("true".equals(bundle.getString("valid").toLowerCase())) {
-				PerformanceMeter.init(System.out, OutputTiming.ALL);
+				init(System.out, OutputTiming.ALL);
 			}
 		} catch (MissingResourceException ignore) {
 		}
 	}
+
+	private static final ThreadLocal<StopWatchMap> intervalMapLocal = new ThreadLocal<StopWatchMap>() {
+
+		@Override
+		protected StopWatchMap initialValue() {
+			return new StopWatchMap();
+		}
+	};
+
+	private static final ConcurrentSummaryMap summaryMap = new ConcurrentSummaryMap();
 
 	public static void init(OutputStream os) {
 		init(os, OutputTiming.ALL);
@@ -63,78 +73,74 @@ public class PerformanceMeter {
 		oc = o;
 	}
 
-	private static final ThreadLocal<Map<String, Interval>> intervalMapLocal = new ThreadLocal<Map<String, Interval>>() {
+	public static StopWatch get() {
+		return registAndGet(DEFAULT_KEY);
+	}
 
-		@Override
-		protected Map<String, Interval> initialValue() {
-			return new ReadyMap();
+	public static StopWatch get(String key) {
+		return isInvalid() ? NULL_WATCH : new StopWatch(key);
+	}
+
+	public static StopWatch registAndGet(String key) {
+		return isInvalid() ? NULL_WATCH : intervalMapLocal.get().get(key);
+	}
+
+	public static void start(String key) {
+		registAndGet(key).start();
+	}
+
+	public static void start() {
+		start(DEFAULT_KEY);
+	}
+
+	public static void startQuiet(String key) {
+		registAndGet(key).startQuiet();
+	}
+
+	public static void startQuiet() {
+		startQuiet(DEFAULT_KEY);
+	}
+
+	public static void end(String key) {
+		registAndGet(key).end();
+	}
+
+	public static void end() {
+		end(DEFAULT_KEY);
+	}
+
+	public static void endQuiet(String key) {
+		registAndGet(key).endQuiet();
+	}
+
+	public static void endQuiet() {
+		endQuiet(DEFAULT_KEY);
+	}
+
+	public static void stop(String key) {
+		registAndGet(key).stop();
+	}
+
+	public static void stop() {
+		stop(DEFAULT_KEY);
+	}
+
+	public static void stopQuiet(String key) {
+		registAndGet(key).stopQuiet();
+	}
+
+	public static void stopQuiet() {
+		stopQuiet(DEFAULT_KEY);
+	}
+
+	public static void show() {
+		if (isOutputOK(OutputTiming.SHOW)) {
+			StringBuilder sb = new StringBuilder("[Summary]").append(CRLF);
+			for (Map.Entry<String, Summary> e : summaryMap.entrySet()) {
+				sb.append("\t").append(e.getValue()).append(CRLF);
+			}
+			println(sb);
 		}
-	};
-
-	@SuppressWarnings("serial")
-	private static final Map<String, Interval> intervalMapGlobal = new ConcurrentReadyMap<Interval>() {
-
-		@Override
-		protected Interval newValue(String key) {
-			return new Interval(key);
-		}
-	};
-
-	@SuppressWarnings("serial")
-	private static final Map<String, Summary> summaryMap = new ConcurrentReadyMap<Summary>() {
-
-		@Override
-		protected Summary newValue(String key) {
-			return new Summary(key);
-		}
-	};
-
-	public static Interval startLocal(String key) {
-		return isInvalid() ? null : intervalMapLocal.get().get(key).start();
-	}
-
-	public static Interval endLocal(String key) {
-		return isInvalid() ? null : intervalMapLocal.get().get(key).end();
-	}
-
-	public static Interval startLocal() {
-		return startLocal(DEFAULT_KEY);
-	}
-
-	public static Interval endLocal() {
-		return endLocal(DEFAULT_KEY);
-	}
-
-	public static Interval startGlobal(String key) {
-		return isInvalid() ? null : intervalMapGlobal.get(key).start();
-	}
-
-	public static Interval endGlobal(String key) {
-		return isInvalid() ? null : intervalMapGlobal.get(key).end();
-	}
-
-	public static Interval startGlobal() {
-		return startGlobal(DEFAULT_KEY);
-	}
-
-	public static Interval endGlobal() {
-		return endGlobal(DEFAULT_KEY);
-	}
-
-	public static Interval start(String key) {
-		return startLocal(key);
-	}
-
-	public static Interval end(String key) {
-		return endLocal(key);
-	}
-
-	public static Interval start() {
-		return start(DEFAULT_KEY);
-	}
-
-	public static Interval end() {
-		return end(DEFAULT_KEY);
 	}
 
 	private static boolean isInvalid() {
@@ -160,51 +166,69 @@ public class PerformanceMeter {
 		}
 	}
 
-	public static void show() {
-		if (isOutputOK(OutputTiming.SHOW)) {
-			StringBuilder sb = new StringBuilder("[Summary]").append(CRLF);
-			for (Map.Entry<String, Summary> e : summaryMap.entrySet()) {
-				sb.append("\t").append(e.getValue()).append(CRLF);
-			}
-			println(sb);
-		}
-	}
-
-	public static class Interval {
+	public static class StopWatch {
 		long start_time = Long.MIN_VALUE;
 		long start_memory = Long.MIN_VALUE;
 		final String key;
 
-		private Interval(String key) {
+		private StopWatch(String key) {
 			this.key = key;
 		}
 
-		public Interval start() {
+		public String getKey() {
+			return key;
+		}
+
+		public void start() {
+			start(false);
+		}
+
+		public void startQuiet() {
+			start(true);
+		}
+
+		private void start(boolean isQuiet) {
 			if (this.start_time != Long.MIN_VALUE) {
-				println("[WARNING] start() is called without calling end(). key = "
-						+ this.key);
+				if (!isQuiet)
+					println("[WARNING] start() is called without calling end(). key = "
+							+ this.key);
 			}
 			this.start_time = System.nanoTime();
 			this.start_memory = usedMemory();
-			return this;
 		}
 
-		public Interval end() {
+		public void stop() {
+			terminate(false, false);
+		}
+
+		public void stopQuiet() {
+			terminate(true, false);
+		}
+
+		public void end() {
+			terminate(false, true);
+		}
+
+		public void endQuiet() {
+			terminate(false, true);
+		}
+
+		private void terminate(boolean isQuiet, boolean isOutputRequired) {
 			if (this.start_time == Long.MIN_VALUE) {
-				println("[WARNING] end() is called without calling start(). key = "
-						+ this.key);
+				if (!isQuiet)
+					println("[WARNING] end() is called without calling start(). key = "
+							+ this.key);
 			}
 			long elapsed = System.nanoTime() - this.start_time;
 			this.start_time = Long.MIN_VALUE;
 			summaryMap.get(key).add(elapsed);
-			if (isOutputOK(OutputTiming.END)) {
+			if (isOutputRequired && isOutputOK(OutputTiming.END)) {
 				println("[" + key + "] Elapsed time is "
 						+ ((double) elapsed / 1000000)
 						+ "(ms), Used memory is "
 						+ ((double) (usedMemory() - start_memory) / 1000)
 						+ "(KB).");
 			}
-			return this;
 		}
 
 		private long usedMemory() {
@@ -213,7 +237,34 @@ public class PerformanceMeter {
 		}
 	}
 
-	private static class Summary {
+	private static final StopWatch NULL_WATCH = new StopWatch(DEFAULT_KEY) {
+
+		@Override
+		public void end() {
+		}
+
+		@Override
+		public void endQuiet() {
+		}
+
+		@Override
+		public void start() {
+		}
+
+		@Override
+		public void startQuiet() {
+		}
+
+		@Override
+		public void stop() {
+		}
+
+		@Override
+		public void stopQuiet() {
+		}
+	};
+
+	public static class Summary {
 		final String key;
 		long sum_nano_secs = 0;
 		int time = 0;
@@ -240,34 +291,33 @@ public class PerformanceMeter {
 	}
 
 	@SuppressWarnings("serial")
-	private static class ReadyMap extends HashMap<String, Interval> {
+	private static class StopWatchMap extends HashMap<String, StopWatch> {
 
 		@Override
-		public Interval get(Object key) {
-			Interval interval = super.get(key);
+		public StopWatch get(Object key) {
+			StopWatch interval = super.get(key);
 			String skey = String.valueOf(key);
 			if (interval == null)
-				this.put(skey, interval = new Interval(skey));
+				this.put(skey, interval = new StopWatch(skey));
 			return interval;
 		}
 	}
 
 	@SuppressWarnings("serial")
-	private abstract static class ConcurrentReadyMap<V> extends
-			ConcurrentHashMap<String, V> {
+	private static class ConcurrentSummaryMap extends
+			ConcurrentHashMap<String, Summary> {
 
 		@Override
-		public V get(Object key) {
-			V interval = super.get(key);
+		public Summary get(Object key) {
+			Summary interval = super.get(key);
 			if (interval == null) {
 				String skey = String.valueOf(key);
-				V putted = putIfAbsent(skey, interval = newValue(skey));
+				Summary putted = putIfAbsent(skey, interval = new Summary(skey));
 				if (putted != null)
 					interval = putted;
 			}
 			return interval;
 		}
 
-		protected abstract V newValue(String key);
 	}
 }
