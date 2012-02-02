@@ -284,11 +284,12 @@ public class PerformanceMeter {
 
 		@Override
 		public StopWatch get(Object key) {
-			StopWatch interval = super.get(key);
-			String skey = String.valueOf(key);
-			if (interval == null)
-				this.put(skey, interval = new StopWatch(skey));
-			return interval;
+			StopWatch sw = super.get(key);
+			if (sw == null) {
+				String skey = String.valueOf(key);
+				put(skey, sw = new StopWatch(skey));
+			}
+			return sw;
 		}
 	}
 
@@ -298,15 +299,14 @@ public class PerformanceMeter {
 
 		@Override
 		public Summary get(Object key) {
-			Summary interval = super.get(key);
-			if (interval == null) {
+			Summary summary = super.get(key);
+			if (summary == null) {
 				String skey = String.valueOf(key);
-				Summary putted = putIfAbsent(skey, interval = new Summary(skey));
+				Summary putted = putIfAbsent(skey, summary = new Summary(skey));
 				if (putted != null)
-					interval = putted;
+					summary = putted;
 			}
-			return interval;
+			return summary;
 		}
-
 	}
 }
