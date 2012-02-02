@@ -64,7 +64,7 @@ public class PerformanceMeter {
 	}
 
 	public static StopWatch get() {
-		return registAndGet(DEFAULT_KEY);
+		return get(DEFAULT_KEY);
 	}
 
 	public static StopWatch get(String key) {
