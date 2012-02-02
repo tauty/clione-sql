@@ -75,20 +75,20 @@ public class PerformanceMeter {
 		return isInvalid() ? NULL_WATCH : intervalMapLocal.get().get(key);
 	}
 
-	public static void start(String key) {
-		registAndGet(key).start();
+	public static StopWatch start(String key) {
+		return registAndGet(key).start();
 	}
 
-	public static void start() {
-		start(DEFAULT_KEY);
+	public static StopWatch start() {
+		return start(DEFAULT_KEY);
 	}
 
-	public static void startQuiet(String key) {
-		registAndGet(key).startQuiet();
+	public static StopWatch startQuiet(String key) {
+		return registAndGet(key).startQuiet();
 	}
 
-	public static void startQuiet() {
-		startQuiet(DEFAULT_KEY);
+	public static StopWatch startQuiet() {
+		return startQuiet(DEFAULT_KEY);
 	}
 
 	public static void end(String key) {
@@ -168,12 +168,12 @@ public class PerformanceMeter {
 			return key;
 		}
 
-		public void start() {
-			start(false);
+		public StopWatch start() {
+			return start(false);
 		}
 
-		public void startQuiet() {
-			start(true);
+		public StopWatch startQuiet() {
+			return start(true);
 		}
 
 		public void stop() {
@@ -192,7 +192,7 @@ public class PerformanceMeter {
 			terminate(false, true);
 		}
 
-		private void start(boolean isQuiet) {
+		private StopWatch start(boolean isQuiet) {
 			if (this.start_time != Long.MIN_VALUE) {
 				if (!isQuiet)
 					println("[WARNING] start() is called without calling end(). key = "
@@ -200,6 +200,7 @@ public class PerformanceMeter {
 			}
 			this.start_time = System.nanoTime();
 			this.start_memory = usedMemory();
+			return this;
 		}
 
 		private void terminate(boolean isQuiet, boolean isOutputRequired) {
@@ -237,11 +238,13 @@ public class PerformanceMeter {
 		}
 
 		@Override
-		public void start() {
+		public StopWatch start() {
+			return this;
 		}
 
 		@Override
-		public void startQuiet() {
+		public StopWatch startQuiet() {
+			return this;
 		}
 
 		@Override
@@ -262,7 +265,7 @@ public class PerformanceMeter {
 			this.key = key;
 		}
 
-		Summary add(long nano_sec) {
+		synchronized Summary add(long nano_sec) {
 			sum_nano_secs += nano_sec;
 			time++;
 			return this;
