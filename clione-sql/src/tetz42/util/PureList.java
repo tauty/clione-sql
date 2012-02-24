@@ -45,10 +45,10 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 	@Override
 	public Iterator<E> iterator() {
-		class CurHolder {
-			PureList<E> current;
+		class CurHolder<T> {
+			PureList<T> current;
 		}
-		final CurHolder holder = new CurHolder();
+		final CurHolder<E> holder = new CurHolder<E>();
 		holder.current = this;
 		return new Iterator<E>() {
 

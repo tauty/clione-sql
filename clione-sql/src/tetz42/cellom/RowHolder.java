@@ -63,6 +63,10 @@ public class RowHolder<T> {
 		Row<T> row = getRow(key);
 		if (row == null)
 			row = newRow(key);
+		else {
+			// set current row as  the key indicated
+			index = rowList.indexOf(row);
+		}
 		return row;
 	}
 
