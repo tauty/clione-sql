@@ -1,4 +1,4 @@
-package tetz42.cello;
+package tetz42.cellom;
 
 import static tetz42.test.Auty.*;
 import static org.hamcrest.CoreMatchers.*;

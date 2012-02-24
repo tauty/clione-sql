@@ -71,10 +71,6 @@ public class PerformanceMeter {
 		return isInvalid() ? NULL_WATCH : new StopWatch(key);
 	}
 
-	public static StopWatch registAndGet(String key) {
-		return isInvalid() ? NULL_WATCH : intervalMapLocal.get().get(key);
-	}
-
 	public static StopWatch start(String key) {
 		return registAndGet(key).start();
 	}
@@ -131,6 +127,10 @@ public class PerformanceMeter {
 			}
 			println(sb);
 		}
+	}
+
+	private static StopWatch registAndGet(String key) {
+		return isInvalid() ? NULL_WATCH : intervalMapLocal.get().get(key);
 	}
 
 	private static boolean isInvalid() {
