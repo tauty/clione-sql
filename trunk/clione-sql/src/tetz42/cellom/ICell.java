@@ -7,7 +7,9 @@ public interface ICell {
 	String HEADER_STYLE = "HEADER";
 	String BODY_STYLE = "BODY";
 
-	String getValue();
+	Object getValue();
+
+	String getString();
 
 	String getStyle();
 
