@@ -85,7 +85,12 @@ public class Cell<T> implements ICell {
 	}
 
 	@Override
-	public String getValue() {
+	public Object getValue() {
+		return get();
+	}
+
+	@Override
+	public String getString() {
 		return String.valueOf(get());
 	}
 

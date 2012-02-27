@@ -154,7 +154,12 @@ public class HeaderCell implements ICell {
 	}
 
 	@Override
-	public String getValue() {
+	public Object getValue() {
+		return getString();
+	}
+
+	@Override
+	public String getString() {
 		String title = this.getTitle();
 		if (isEmpty(title))
 			title = this.getName();

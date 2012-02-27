@@ -96,6 +96,15 @@ public class TableManager<T> implements ITableManager {
 		body().addRow(tmps().remove(key));
 	}
 
+	public void moveTmpToBody(String key) {
+		moveTmpToBody(key, key);
+	}
+
+	public void moveTmpToBody(String key, String newKey) {
+		appendTmpToBody(key);
+		body().setCurrentRowAs(newKey);
+	}
+
 	public <E> List<Cell<E>> getByQuery(
 			@SuppressWarnings("unused") Class<E> clazz, String query) {
 		return getByQuery(query);
@@ -143,7 +152,7 @@ public class TableManager<T> implements ITableManager {
 	@Override
 	public Iterable<Iterable<ICell>> tableList() {
 		List<Iterable<ICell>> list = header().each();
-		for(IRow row : eachRow())
+		for (IRow row : eachRow())
 			list.add(row.each());
 		return list;
 	}

@@ -1,12 +1,15 @@
 package tetz42.cellom;
 
+import static tetz42.util.Pair.*;
+import static tetz42.util.Util.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import tetz42.cellom.body.Cell;
 import tetz42.cellom.body.Row;
+import tetz42.util.Pair;
 import tetz42.util.exception.InvalidParameterException;
 
 public class RowHolder<T> {
@@ -14,8 +17,8 @@ public class RowHolder<T> {
 	private final Class<T> clazz;
 	private final Context<T> context;
 
-	private final List<Row<T>> rowList = new ArrayList<Row<T>>();
-	private final Map<String, Row<T>> rowMap = new HashMap<String, Row<T>>();
+	private final List<Row<T>> rowList = newArrayList();
+	private final HashMap<String, Pair<Row<T>, Integer>> rowMap = newHashMap();
 
 	private int index = 0;
 	private boolean isBody;
@@ -42,14 +45,19 @@ public class RowHolder<T> {
 		return getRow(key);
 	}
 
-	public Row<T> getRow() {
-		if (index >= rowList.size())
+	public Row<T> getRow(int i) {
+		if (i >= rowList.size())
 			return null;
-		return rowList.get(index);
+		return rowList.get(i);
+	}
+
+	public Row<T> getRow() {
+		return getRow(index);
 	}
 
 	public Row<T> getRow(String key) {
-		return rowMap.get(key);
+		Pair<Row<T>, Integer> pair = rowMap.get(key);
+		return pair == null ? null : pair.getFirst();
 	}
 
 	public Row<T> row() {
@@ -60,18 +68,19 @@ public class RowHolder<T> {
 	}
 
 	public Row<T> row(String key) {
-		Row<T> row = getRow(key);
-		if (row == null)
-			row = newRow(key);
-		else {
-			// set current row as  the key indicated
-			index = rowList.indexOf(row);
-		}
-		return row;
+		Pair<Row<T>, Integer> pair = rowMap.get(key);
+		if (pair == null)
+			return newRow(key);
+
+		// set current row as the key indicated
+		if(getRow(pair.getSecond()) == pair.getFirst())
+			return pair.getFirst();
+		this.index = rowList.indexOf(pair.getFirst());
+		return pair.getFirst();
 	}
 
 	public void setCurrentRowAs(String key) {
-		rowMap.put(key, getRow());
+		rowMap.put(key, pair(getRow(), index));
 	}
 
 	public int getCurrentIndex() {
@@ -110,14 +119,13 @@ public class RowHolder<T> {
 					"Query must have 1 more elements");
 		List<Cell<E>> list = new ArrayList<Cell<E>>();
 		for (String rowName : query.get(0)) {
-			if (rowName.equals(Query.CURRENT_ROW)) {
-				if (isBody)
-					addMatchedCells(row(), query, list);
+			if (rowName.equals(Query.CURRENT_ROW) && isBody) {
+				addMatchedCells(row(), query, list);
 			} else if (rowName.equals(Query.ANY)) {
 				for (Row<T> row : rowList)
 					addMatchedCells(row, query, list);
 			} else if (rowMap.containsKey(rowName)) {
-				addMatchedCells(rowMap.get(rowName), query, list);
+				addMatchedCells(getRow(rowName), query, list);
 			} else if (Query.numPtn.matcher(rowName).matches()) {
 				int i = Integer.parseInt(rowName);
 				if (i < rowList.size())
@@ -143,10 +151,15 @@ public class RowHolder<T> {
 		rowList.clear();
 	}
 
-	public Row<T> remove(String key) {
-		Row<T> row = rowMap.remove(key);
-		rowList.remove(row);
-		return row;
+	Row<T> remove(String key) {
+		Pair<Row<T>, Integer> pair = rowMap.remove(key);
+		if (pair == null)
+			return null;
+		if (getRow(pair.getSecond()) == pair.getFirst())
+			rowList.remove(pair.getSecond());
+		else
+			rowList.remove(pair.getFirst());
+		return pair.getFirst();
 	}
 
 	public void addRow(Row<T> row) {

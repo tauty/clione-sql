@@ -134,7 +134,7 @@ public class Context<T> {
 		}
 
 		@Override
-		public String getValue() {
+		public Object getValue() {
 			return null;
 		}
 
@@ -156,6 +156,11 @@ public class Context<T> {
 		@Override
 		public boolean isWindowFrozen() {
 			return false;
+		}
+
+		@Override
+		public String getString() {
+			return null;
 		}
 	}
 

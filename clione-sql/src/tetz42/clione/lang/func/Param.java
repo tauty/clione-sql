@@ -1,15 +1,16 @@
 package tetz42.clione.lang.func;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.clione.util.Pair.*;
+import static tetz42.util.Pair.*;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import tetz42.clione.lang.Instruction;
-import tetz42.clione.util.Pair;
 import tetz42.clione.util.ParamMap;
+import tetz42.util.Pair;
 
 public class Param extends ClioneFunction {
 
