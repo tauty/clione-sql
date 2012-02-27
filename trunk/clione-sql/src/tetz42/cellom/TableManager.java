@@ -3,8 +3,10 @@ package tetz42.cellom;
 import static tetz42.cellom.CelloUtil.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import tetz42.cellom.body.Cell;
@@ -200,5 +202,49 @@ public class TableManager<T> implements ITableManager {
 			sb.append("\t");
 		}
 		sb.deleteCharAt(sb.length() - 1).append(CRLF);
+	}
+
+	@Override
+	public Iterable<Row<T>> each() {
+		return new Iterable<Row<T>>(){
+
+			@Override
+			public Iterator<Row<T>> iterator() {
+				return new Iterator<Row<T>>() {
+
+					@SuppressWarnings("unchecked")
+					Iterator<RowHolder<T>> holdersIte = Arrays.asList(rowHolder,
+							tmpHolder, hooterHolder).iterator();
+					Iterator<Row<T>> rowIte;
+
+					private Iterator<Row<T>> rowIterator() {
+						while (rowIte == null || !rowIte.hasNext()) {
+							if (holdersIte.hasNext())
+								rowIte = holdersIte.next().getRowList().iterator();
+							else
+								return null;
+						}
+						return rowIte;
+					}
+
+					@Override
+					public boolean hasNext() {
+						Iterator<Row<T>> ite = rowIterator();
+						return ite == null ? false : ite.hasNext();
+					}
+
+					@Override
+					public Row<T> next() {
+						Iterator<Row<T>> ite = rowIterator();
+						return ite == null ? null : ite.next();
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException("'remove' is not supported.");
+					}
+				};
+			}
+		};
 	}
 }
