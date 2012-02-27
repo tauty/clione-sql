@@ -6,5 +6,7 @@ public interface ITableManager {
 
 	Iterable<IRow> eachRow();
 
+	Iterable<? extends IRow> each();
+
 	Iterable<Iterable<ICell>> tableList();
 }

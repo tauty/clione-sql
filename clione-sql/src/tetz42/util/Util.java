@@ -13,4 +13,11 @@ public class Util {
 		return new ArrayList<E>();
 	}
 
+	public static boolean isContains(Object key, Object... values) {
+		for (Object value : values) {
+			if (key.equals(value))
+				return true;
+		}
+		return false;
+	}
 }
