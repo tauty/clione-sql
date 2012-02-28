@@ -28,7 +28,7 @@ public class CelloUtil {
 	public static final String ROOT = null;
 	public static final String CRLF = "\r\n";
 
-	// TODO change below maps to soft reference maps.
+	// TODO change below maps to soft reference CuncurrentHashMap.
 	private static final HashMap<ClazzWrapper, Field[]> fieldCache = newMap();
 	private static final HashMap<FieldWrapper, Map<ClazzWrapper, Annotation>> annotationCache = newMap();
 
