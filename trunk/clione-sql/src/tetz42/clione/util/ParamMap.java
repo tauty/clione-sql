@@ -110,6 +110,7 @@ public class ParamMap extends HashMap<String, Object> {
 		if (isPrimitive(obj) || isEachable(obj))
 			this.put(key, obj);
 		else {
+			this.put(key, obj);
 			ParamMap subMap;
 			if (obj instanceof Map<?, ?>)
 				subMap = new ParamMap().map((Map<?, ?>) obj);
