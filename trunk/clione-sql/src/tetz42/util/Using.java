@@ -72,55 +72,65 @@ public abstract class Using<T> {
 			// SQL close process
 			SQLRuntimeException sre = null;
 			if (t != null) {
-				for (Connection con : cons) {
-					try {
-						con.rollback();
-					} catch (Throwable e) {
-						sre = sre != null ? sre : new SQLRuntimeException(
-								"Connection rollback Error.", e);
+				if (cons != null) {
+					for (Connection con : cons) {
+						try {
+							con.rollback();
+						} catch (Throwable e) {
+							sre = sre != null ? sre : new SQLRuntimeException(
+									"Connection rollback Error.", e);
+						}
 					}
 				}
 			}
 			resourceClosingException = sre;
 			sre = null;
-			for (ResultSet rs : rsets) {
-				try {
-					rs.close();
-				} catch (Throwable e) {
-					sre = sre != null ? sre : new SQLRuntimeException(
-							"ResultSet close Error.", e);
+			if (rsets != null) {
+				for (ResultSet rs : rsets) {
+					try {
+						rs.close();
+					} catch (Throwable e) {
+						sre = sre != null ? sre : new SQLRuntimeException(
+								"ResultSet close Error.", e);
+					}
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, sre);
 			sre = null;
-			for (Statement stmt : stmts) {
-				try {
-					stmt.close();
-				} catch (Throwable e) {
-					sre = sre != null ? sre : new SQLRuntimeException(
-							"Statement close Error.", e);
+			if (stmts != null) {
+				for (Statement stmt : stmts) {
+					try {
+						stmt.close();
+					} catch (Throwable e) {
+						sre = sre != null ? sre : new SQLRuntimeException(
+								"Statement close Error.", e);
+					}
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, sre);
 			sre = null;
-			for (Connection con : cons) {
-				try {
-					con.close();
-				} catch (Throwable e) {
-					sre = sre != null ? sre : new SQLRuntimeException(
-							"Connection close Error.", e);
+			if (cons != null) {
+				for (Connection con : cons) {
+					try {
+						con.close();
+					} catch (Throwable e) {
+						sre = sre != null ? sre : new SQLRuntimeException(
+								"Connection close Error.", e);
+					}
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, sre);
 
 			// IO close process
 			IORuntimeException ire = null;
-			for (Closeable io : ioes) {
-				try {
-					io.close();
-				} catch (Throwable e) {
-					ire = ire != null ? ire : new IORuntimeException(
-							"IO close error.", e);
+			if (ioes != null) {
+				for (Closeable io : ioes) {
+					try {
+						io.close();
+					} catch (Throwable e) {
+						ire = ire != null ? ire : new IORuntimeException(
+								"IO close error.", e);
+					}
 				}
 			}
 			resourceClosingException = coalsce(resourceClosingException, ire);
@@ -134,6 +144,9 @@ public abstract class Using<T> {
 					coalsce(t, resourceClosingException);
 				}
 			}
+
+			// normal end or the exception thrown by execute throws if it is
+			// available
 		}
 	}
 

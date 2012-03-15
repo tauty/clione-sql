@@ -15,16 +15,19 @@
  */
 package tetz42.clione.util;
 
+import static tetz42.util.ReflectionUtil.*;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParamMap extends HashMap<String, Object> {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6103186429868779178L;
 
@@ -51,8 +54,8 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public ParamMap $nv(String key, Object value, Object... negatives) {
-		for(Object negative : negatives) {
-			if(negative == null || negative.equals(value))
+		for (Object negative : negatives) {
+			if (negative == null || negative.equals(value))
 				return this;
 		}
 		return this.$(key, value);
@@ -75,8 +78,8 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public ParamMap map(Map<?, ?> map) {
-		for (Map.Entry<?, ?> e : map.entrySet()) {
-			this.put(String.valueOf(e.getKey()), e.getValue());
+		for (Entry<?, ?> e : map.entrySet()) {
+			setValue(String.valueOf(e.getKey()), e.getValue());
 		}
 		return this;
 	}
@@ -90,7 +93,7 @@ public class ParamMap extends HashMap<String, Object> {
 						continue;
 					boolean backup = f.isAccessible();
 					f.setAccessible(true);
-					this.put(f.getName(), f.get(bean));
+					setValue(f.getName(), f.get(bean));
 					f.setAccessible(backup);
 				} catch (IllegalArgumentException e) {
 					// ignore the exception
@@ -101,6 +104,21 @@ public class ParamMap extends HashMap<String, Object> {
 			clazz = clazz.getSuperclass();
 		}
 		return this;
+	}
+
+	private void setValue(String key, Object obj) {
+		if (isPrimitive(obj) || isEachable(obj))
+			this.put(key, obj);
+		else {
+			ParamMap subMap;
+			if (obj instanceof Map<?, ?>)
+				subMap = new ParamMap().map((Map<?, ?>) obj);
+			else
+				subMap = new ParamMap().bean(obj);
+			for (Entry<?, ?> e : subMap.entrySet()) {
+				this.put(key + "." + e.getKey(), e.getValue());
+			}
+		}
 	}
 
 	private String convKey(Object key) {

@@ -81,7 +81,7 @@ public class SQLManager {
 	private Object[] negativeValues = null;
 
 	public SQLManager() {
-		this.con = null;
+		this(null);
 	}
 
 	public SQLManager(Connection con) {
