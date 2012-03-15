@@ -52,6 +52,7 @@ public class Param extends ClioneFunction {
 			return pair(list, isTrue);
 		} else if (val instanceof Collection<?>) {
 			Collection<?> col = (Collection<?>) val;
+			// TODO maybe it must call 'isAllNegative' instead.
 			return pair(col, !isNegative(col));
 		} else
 			return pair(Arrays.asList(val), true);

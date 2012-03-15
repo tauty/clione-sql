@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +61,23 @@ public class ReflectionUtil {
 		if (obj == null)
 			return true;
 		return isPrimitive(obj.getClass());
+	}
+
+	public static boolean isEachable(Object obj) {
+		if (obj == null)
+			return false;
+		return isEachable(obj.getClass());
+	}
+
+	public static boolean isEachable(Class<?> clazz) {
+		if(clazz.isArray())
+			return true;
+		for(Class<?> c : clazz.getInterfaces()) {
+			// TODO consider if it should be 'Iterable' instead.
+			if(c == Collection.class)
+				return true;
+		}
+		return false;
 	}
 
 	public static boolean isStatic(Field f) {
@@ -207,9 +225,12 @@ public class ReflectionUtil {
 			Function<V> newInstance) {
 		V value = map.get(key);
 		if (value == null) {
-			V putted = map.putIfAbsent(key, value = newInstance.apply());
-			if (putted != null)
-				value = putted;
+			value = newInstance.apply();
+			if (value != null) {
+				V putted = map.putIfAbsent(key, value);
+				if (putted != null)
+					value = putted;
+			}
 		}
 		return value;
 	}

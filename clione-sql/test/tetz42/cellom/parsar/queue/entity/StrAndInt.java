@@ -1,8 +1,14 @@
-package tetz42.cellom.parsar.queue.annotation;
+package tetz42.cellom.parsar.queue.entity;
+
+import tetz42.cellom.parsar.queue.annotation.QueueCell;
 
 public class StrAndInt {
 
 	public static String TEST_STR = "123456789043212143211234567890123456789012345678901234567890";
+
+	int intNull;
+
+	String strNull;
 
 	@QueueCell(order = 10, size = 10)
 	String str10;
@@ -21,10 +27,10 @@ public class StrAndInt {
 		String str4;
 
 		@QueueCell(order = 2, size = 2)
-		String int2;
+		int int2;
 
 		@QueueCell(order = 3, size = 4)
-		String int4;
+		int int4;
 	}
 
 }
