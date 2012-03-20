@@ -69,10 +69,9 @@ public class CsvParsar {
 			protected List<T> execute() throws Exception {
 				ArrayList<T> list = new ArrayList<T>();
 				while (status != Status.DATA_END) {
-					T t = parseTask(clazz);
+					list.add(parseTask(clazz));
 					if (status == Status.PARSING)
 						skipTask();
-					list.add(t);
 				}
 				return list;
 			}
@@ -86,9 +85,10 @@ public class CsvParsar {
 				ArrayList<Result<T>> list = new ArrayList<Result<T>>();
 				while (status != Status.DATA_END) {
 					T t = parseTask(clazz);
+					RecordType type = recordType();
 					if (status == Status.PARSING)
 						skipTask();
-					list.add(new Result<T>(t, recordNo, recordStatus()));
+					list.add(new Result<T>(t, recordNo, type));
 				}
 				return list;
 			}
@@ -105,7 +105,7 @@ public class CsvParsar {
 	}
 
 	public <T> Result<T> parseToResult(final Class<T> clazz) {
-		return new Result<T>(parse(clazz), recordNo, recordStatus());
+		return new Result<T>(parse(clazz), recordNo, recordType());
 	}
 
 	public CsvParsar skip() {
@@ -136,7 +136,7 @@ public class CsvParsar {
 		return this;
 	}
 
-	private RecordType recordStatus() {
+	private RecordType recordType() {
 		if (status == Status.PARSING)
 			return RecordType.LONG_RECORD;
 		else if (isShortRecord())
