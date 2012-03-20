@@ -11,7 +11,7 @@ import tetz42.util.RegexpTokenizer;
 
 public class HereDoc {
 
-	private static Pattern ptn = Pattern.compile("^<<([^<>]+)>>(\r\n|\r|\n)",
+	private static Pattern ptn = Pattern.compile("^<<([^<>]+)>>(\r\n|\r|\n)?",
 			Pattern.MULTILINE);
 
 	public static Map<String, String> get(InputStream in) {
@@ -26,7 +26,8 @@ public class HereDoc {
 		while (mh.find()) {
 			String key = mh.matcher().group(1);
 			mh.updateTokenPosition();
-			Pattern endPtn = Pattern.compile("<</" + key + ">>");
+			Pattern endPtn = Pattern.compile("(\r\n|\r|\n)?<</" + key + ">>",
+					Pattern.MULTILINE);
 			mh.bind("END", endPtn);
 			if (!mh.find("END"))
 				throw new ClioneFormatException("The tag, <<" + key
