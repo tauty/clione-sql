@@ -34,12 +34,14 @@ public class CsvParsar {
 	}
 
 	public static class Result<T> {
-		private Result(T data, RecordType type) {
+		private Result(T data, int recordNo, RecordType type) {
 			this.data = data;
+			this.recordNo = recordNo;
 			this.type = type;
 		}
 
 		public final T data;
+		public final int recordNo;
 		public final RecordType type;
 	}
 
@@ -67,10 +69,10 @@ public class CsvParsar {
 			protected List<T> execute() throws Exception {
 				ArrayList<T> list = new ArrayList<T>();
 				while (status != Status.DATA_END) {
-					list.add(parseTask(clazz));
-					if (status == Status.PARSING) {
+					T t = parseTask(clazz);
+					if (status == Status.PARSING)
 						skipTask();
-					}
+					list.add(t);
 				}
 				return list;
 			}
@@ -83,9 +85,10 @@ public class CsvParsar {
 			protected List<Result<T>> execute() throws Exception {
 				ArrayList<Result<T>> list = new ArrayList<Result<T>>();
 				while (status != Status.DATA_END) {
-					list.add(new Result<T>(parseTask(clazz), recordStatus()));
+					T t = parseTask(clazz);
 					if (status == Status.PARSING)
 						skipTask();
+					list.add(new Result<T>(t, recordNo, recordStatus()));
 				}
 				return list;
 			}
@@ -102,7 +105,7 @@ public class CsvParsar {
 	}
 
 	public <T> Result<T> parseToResult(final Class<T> clazz) {
-		return new Result<T>(parse(clazz), recordStatus());
+		return new Result<T>(parse(clazz), recordNo, recordStatus());
 	}
 
 	public CsvParsar skip() {
