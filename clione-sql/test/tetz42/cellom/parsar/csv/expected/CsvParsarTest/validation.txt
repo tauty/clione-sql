@@ -1,0 +1,113 @@
+ArrayList[
+	Result{
+		data = ValidationTest{
+			tako = "tako"
+			takoLeg = 9
+			ika = "ika"
+			ikaLeg = 11
+			namako = "namako"
+			namakoLeg = 1
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 1
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = ValidationTest{
+			tako = "tako"
+			takoLeg = 9
+			ika = "ika"
+			ikaLeg = 11
+			namako = null
+			namakoLeg = 0
+			test = null
+			aaa = null
+		}
+		recordNo = 2
+		type = SHORT_RECORD
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Sea Cucumber"
+				type = LENGTH_TOO_SHORT
+			}
+			FailureInfo{
+				name = "Sea Cucumber Leg"
+				type = REQUIRED
+			}
+		]
+	}
+	Result{
+		data = ValidationTest{
+			tako = "tako"
+			takoLeg = 0
+			ika = "ika"
+			ikaLeg = 11
+			namako = null
+			namakoLeg = 1
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 3
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Octopus Leg"
+				type = LENGTH_TOO_LONG
+			}
+			FailureInfo{
+				name = "Sea Cucumber"
+				type = FORMAT_NOT_ALPHABETIC
+			}
+		]
+	}
+	Result{
+		data = ValidationTest{
+			tako = ""
+			takoLeg = 0
+			ika = ""
+			ikaLeg = 0
+			namako = ""
+			namakoLeg = 0
+			test = ""
+			aaa = ""
+		}
+		recordNo = 4
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Octopus Leg"
+				type = REQUIRED
+			}
+			FailureInfo{
+				name = "Squid Leg"
+				type = REQUIRED
+			}
+			FailureInfo{
+				name = "Sea Cucumber Leg"
+				type = REQUIRED
+			}
+		]
+	}
+	Result{
+		data = ValidationTest{
+			tako = "tako"
+			takoLeg = 9
+			ika = "ika"
+			ikaLeg = 11
+			namako = "namako"
+			namakoLeg = 1
+			test = null
+			aaa = "ああ"あああ"ああ"あああ"ああ"あああ"ああ"あああ"ああ"あああ"
+		}
+		recordNo = 5
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Test"
+				type = LENGTH_TOO_LONG
+			}
+		]
+	}
+]
