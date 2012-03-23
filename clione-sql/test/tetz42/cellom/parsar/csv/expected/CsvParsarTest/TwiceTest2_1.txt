@@ -1,0 +1,15 @@
+Result{
+	data = InitialTest{
+		tako = "tako"
+		takoLeg = 9
+		ika = "ika"
+		ikaLeg = 11
+		namako = "namako"
+		namakoLeg = 1
+		test = "最初のテスト２"
+		aaa = "あああああ"
+	}
+	recordNo = 1
+	type = LONG_RECORD
+	failureInfoList = null
+}
