@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import tetz42.cellom.parsar.csv.CsvParsar.Result;
 import tetz42.cellom.parsar.csv.entity.InitialTest;
+import tetz42.cellom.parsar.csv.entity.SameOrderBeanTest;
 import tetz42.cellom.parsar.csv.entity.SameOrderTest;
 import tetz42.cellom.parsar.csv.entity.ValidationTest;
 import tetz42.clione.parsar.HereDoc;
@@ -141,6 +142,15 @@ public class CsvParsarTest {
 		List<Result<SameOrderTest>> list = parsar
 				.parseToResultAll(SameOrderTest.class);
 		assertEqualsWithFile(list, getClass(), "sameOrder");
+	}
+
+	@Test
+	public void sameOrderBean() {
+		InputStream in = toIn("SameOrderBean");
+		CsvParsar parsar = new CsvParsar(in);
+		List<Result<SameOrderBeanTest>> list = parsar
+				.parseToResultAll(SameOrderBeanTest.class);
+		assertEqualsWithFile(list, getClass(), "sameOrderBean");
 	}
 
 }
