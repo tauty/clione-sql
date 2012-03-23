@@ -17,11 +17,14 @@ import javax.activation.UnsupportedDataTypeException;
 
 import tetz42.cellom.parsar.csv.annotation.CsvCell;
 import tetz42.util.Using;
+import tetz42.validation.FailureInfo;
+import tetz42.validation.Validator;
 
 public class CsvParsar {
 
 	private final IStreamToken token;
 	private final InputStream in;
+	private final Validator validator = new Validator();
 
 	public enum Status {
 		PARSING, RECORD_END, DATA_END
@@ -34,15 +37,18 @@ public class CsvParsar {
 	}
 
 	public static class Result<T> {
-		private Result(T data, int recordNo, RecordType type) {
+		private Result(T data, int recordNo, RecordType type,
+				List<FailureInfo> failureInfoList) {
 			this.data = data;
 			this.recordNo = recordNo;
 			this.type = type;
+			this.failureInfoList = failureInfoList;
 		}
 
 		public final T data;
 		public final int recordNo;
 		public final RecordType type;
+		public final List<FailureInfo> failureInfoList;
 	}
 
 	private boolean isShortRecord;
@@ -88,7 +94,8 @@ public class CsvParsar {
 					RecordType type = recordType();
 					if (status == Status.PARSING)
 						skipTask();
-					list.add(new Result<T>(t, recordNo, type));
+					list.add(new Result<T>(t, recordNo, type, validator
+							.nextFailureList()));
 				}
 				return list;
 			}
@@ -105,7 +112,8 @@ public class CsvParsar {
 	}
 
 	public <T> Result<T> parseToResult(final Class<T> clazz) {
-		return new Result<T>(parse(clazz), recordNo, recordType());
+		return new Result<T>(parse(clazz), recordNo, recordType(), validator
+				.nextFailureList());
 	}
 
 	public CsvParsar skip() {
@@ -145,37 +153,55 @@ public class CsvParsar {
 			return RecordType.NORMAL;
 	}
 
+	private static List<Field> filter(List<Field> fList) {
+		ArrayList<Field> list = new ArrayList<Field>();
+		for (Field f : fList) {
+			if (getAnnotation(f, CsvCell.class) != null)
+				list.add(f);
+		}
+		return list;
+	}
+
 	private <T> T parseTask(Class<T> clazz) throws IOException {
 		isShortRecord = false;
-		List<Field> fList = avoidDuplication(getAllFields(clazz));
+		List<Field> fList = filter(avoidDuplication(getAllFields(clazz)));
 		Collections.sort(fList, new Comparator<Field>() {
 			@Override
 			public int compare(Field f1, Field f2) {
 				CsvCell c1 = getAnnotation(f1, CsvCell.class);
 				CsvCell c2 = getAnnotation(f2, CsvCell.class);
-				if (c1 == null && c2 == null)
-					return 0;
-				else if (c1 == null || c2 == null)
-					return c1 == null ? 1 : -1; // null last
 				return c1.order() - c2.order();
 			}
 		});
 		T res = newInstance(clazz);
+		int preOrder = -1;
+		String value = null;
 		Iterator<Field> ite = fList.iterator();
 		while (ite.hasNext()) {
 			Field f = ite.next();
 			CsvCell c = getAnnotation(f, CsvCell.class);
-			if (c == null)
-				break;
+			if (isShortRecord) {
+				if (c.order() == preOrder) {
+					isShortRecord = false;
+				} else {
+					validator.isValueOK(f, null);
+					continue;
+				}
+			}
 			if (isPrimitive(f.getType())) {
-				setStringValue(res, f, token.nextCell());
+				// TODO Same orderNo specification should be implemented for
+				// 'else' case below too.
+				if (c.order() != preOrder)
+					value = token.nextCell();
+				if (validator.isValueOK(f, value))
+					setStringValue(res, f, value);
+				preOrder = c.order();
 			} else {
 				setValue(res, f, parseTask(f.getType()));
 			}
 			if ((status == Status.RECORD_END || status == Status.DATA_END)
 					&& ite.hasNext()) {
 				isShortRecord = true;
-				break;
 			}
 		}
 		return res;

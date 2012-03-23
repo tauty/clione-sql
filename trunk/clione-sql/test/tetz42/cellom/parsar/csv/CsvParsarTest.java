@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import tetz42.cellom.parsar.csv.CsvParsar.Result;
 import tetz42.cellom.parsar.csv.entity.InitialTest;
+import tetz42.cellom.parsar.csv.entity.SameOrderTest;
+import tetz42.cellom.parsar.csv.entity.ValidationTest;
 import tetz42.clione.parsar.HereDoc;
 
 public class CsvParsarTest {
@@ -60,7 +62,8 @@ public class CsvParsarTest {
 	public void shortTest() {
 		InputStream in = toIn("ShortTest");
 		CsvParsar parsar = new CsvParsar(in);
-		List<Result<InitialTest>> list = parsar.parseToResultAll(InitialTest.class);
+		List<Result<InitialTest>> list = parsar
+				.parseToResultAll(InitialTest.class);
 		assertEqualsWithFile(list, getClass(), "shortTest");
 	}
 
@@ -68,7 +71,8 @@ public class CsvParsarTest {
 	public void longTest() {
 		InputStream in = toIn("LongTest");
 		CsvParsar parsar = new CsvParsar(in);
-		List<Result<InitialTest>> list = parsar.parseToResultAll(InitialTest.class);
+		List<Result<InitialTest>> list = parsar
+				.parseToResultAll(InitialTest.class);
 		assertEqualsWithFile(list, getClass(), "longTest");
 	}
 
@@ -76,7 +80,8 @@ public class CsvParsarTest {
 	public void quoteTest() {
 		InputStream in = toIn("QuoteTest");
 		CsvParsar parsar = new CsvParsar(in);
-		List<Result<InitialTest>> list = parsar.parseToResultAll(InitialTest.class);
+		List<Result<InitialTest>> list = parsar
+				.parseToResultAll(InitialTest.class);
 		assertEqualsWithFile(list, getClass(), "quoteTest");
 	}
 
@@ -115,8 +120,27 @@ public class CsvParsarTest {
 	public void manyTest() {
 		InputStream in = toIn("ManyTest");
 		CsvParsar parsar = new CsvParsar(in);
-		List<Result<InitialTest>> list = parsar.parseToResultAll(InitialTest.class);
+		List<Result<InitialTest>> list = parsar
+				.parseToResultAll(InitialTest.class);
 		assertEqualsWithFile(list, getClass(), "manyTest");
+	}
+
+	@Test
+	public void validation() {
+		InputStream in = toIn("Validation");
+		CsvParsar parsar = new CsvParsar(in);
+		List<Result<ValidationTest>> list = parsar
+				.parseToResultAll(ValidationTest.class);
+		assertEqualsWithFile(list, getClass(), "validation");
+	}
+
+	@Test
+	public void sameOrder() {
+		InputStream in = toIn("SameOrder");
+		CsvParsar parsar = new CsvParsar(in);
+		List<Result<SameOrderTest>> list = parsar
+				.parseToResultAll(SameOrderTest.class);
+		assertEqualsWithFile(list, getClass(), "sameOrder");
 	}
 
 }

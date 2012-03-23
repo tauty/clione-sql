@@ -70,11 +70,25 @@ public class ReflectionUtil {
 	}
 
 	public static boolean isEachable(Class<?> clazz) {
-		if(clazz.isArray())
+		if (clazz.isArray())
 			return true;
-		for(Class<?> c : clazz.getInterfaces()) {
+		for (Class<?> c : clazz.getInterfaces()) {
 			// TODO consider if it should be 'Iterable' instead.
-			if(c == Collection.class)
+			if (c == Collection.class)
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean classOf(Class<?> child, Class<?> parent) {
+		Class<?> clazz = child;
+		do {
+			if (clazz == parent)
+				return true;
+			clazz = clazz.getSuperclass();
+		} while (clazz != null);
+		for (Class<?> c : child.getInterfaces()) {
+			if (c == parent)
 				return true;
 		}
 		return false;
@@ -106,31 +120,37 @@ public class ReflectionUtil {
 
 	}
 
+	// TODO revise
 	public static Object str2primitive(Class<?> clazz, String sValue) {
-		if (clazz == String.class)
+		if (clazz == String.class) {
 			return sValue;
-		else if (clazz == Integer.class || clazz == int.class)
+		} else if (clazz == Integer.class || clazz == int.class) {
+			if (isEmpty(sValue))
+				return clazz.isPrimitive() ? 0 : null;
 			return Integer.parseInt(sValue);
-		else if (clazz == Boolean.class || clazz == boolean.class)
-			return Boolean.parseBoolean(sValue);
-		else if (clazz == Byte.class || clazz == byte.class)
-			return Byte.parseByte(sValue);
-		else if (clazz == Short.class || clazz == short.class)
-			return Short.parseShort(sValue);
-		else if (clazz == Long.class || clazz == long.class)
+		} else if (clazz == Long.class || clazz == long.class) {
+			if (isEmpty(sValue))
+				return clazz.isPrimitive() ? (long) 0 : null;
 			return Long.parseLong(sValue);
-		else if (clazz == Float.class || clazz == float.class)
+		} else if (clazz == Boolean.class || clazz == boolean.class) {
+			return Boolean.parseBoolean(sValue);
+		} else if (clazz == Byte.class || clazz == byte.class) {
+			return Byte.parseByte(sValue);
+		} else if (clazz == Short.class || clazz == short.class) {
+			return Short.parseShort(sValue);
+		} else if (clazz == Float.class || clazz == float.class) {
 			return Float.parseFloat(sValue);
-		else if (clazz == Double.class || clazz == double.class)
+		} else if (clazz == Double.class || clazz == double.class) {
 			return Double.parseDouble(sValue);
-		else if (clazz == BigInteger.class)
+		} else if (clazz == BigInteger.class) {
 			// TODO is it OK?
 			return BigInteger.valueOf(Long.parseLong(sValue));
-		else if (clazz == BigDecimal.class)
+		} else if (clazz == BigDecimal.class) {
 			// TODO is it OK?
 			return BigDecimal.valueOf(Double.parseDouble(sValue));
-		else
+		} else {
 			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
