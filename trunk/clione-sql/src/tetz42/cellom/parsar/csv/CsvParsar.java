@@ -190,14 +190,20 @@ public class CsvParsar {
 				}
 			}
 			if (isPrimitive(f.getType())) {
-				// TODO Same orderNo specification should be implemented for
-				// 'else' case below too.
 				if (c.order() != preOrder)
 					value = token.nextCell();
 				if (validator.isValueOK(f, value))
 					setStringValue(res, f, value);
 				preOrder = c.order();
 			} else {
+				// TODO below same order implementation is temporary.
+				// consider about recursive bean case.
+				if (c.order() != preOrder) {
+					token.mark();
+					preOrder = c.order();
+				}else {
+					token.reset();
+				}
 				setValue(res, f, parseTask(f.getType()));
 			}
 			if ((status == Status.RECORD_END || status == Status.DATA_END)
@@ -221,7 +227,8 @@ public class CsvParsar {
 			if (isw.current() == '"') {
 				isw.moveNext();
 				boolean quoteEnded = false;
-				while (isw.search((byte) '"') == '"' || isw.status != StreamStatus.ENDED) {
+				while (isw.search((byte) '"') == '"'
+						|| isw.status != StreamStatus.ENDED) {
 					if (isw.moveNext() != '"') {
 						quoteEnded = true;
 						break;
@@ -251,17 +258,24 @@ public class CsvParsar {
 			}
 			return isw.flush();
 		}
+
+		void mark() {
+			isw.mark();
+		}
+
+		void reset() throws IOException {
+			isw.reset();
+		}
 	}
 
 	enum StreamStatus {
 		READING, ENDED
 	}
 
+	// TODO consider about InputStream is 0;
 	private static class IStreamWrapper {
 
-		private int pos = 0;
-		private int length;
-		private byte[] buf = new byte[0xFF];
+		private static final int MARK_LIMIT = 0xFFF;
 
 		private final ByteArrayOutputStream baos = new ByteArrayOutputStream(
 				0xFF);
@@ -269,20 +283,25 @@ public class CsvParsar {
 		private final String charsetName;
 		StreamStatus status = StreamStatus.READING;
 
+		byte current;
+
 		IStreamWrapper(InputStream in, String charsetName) throws IOException {
 			this.in = new BufferedInputStream(in);
+
 			this.charsetName = charsetName;
-			read();
+			this.current = (byte) this.in.read();
 		}
 
-//		byte tameshiNext() throws IOException {
-//			int i = in.read();
-//			if(i == -1)
-//				status = StreamStatus.ENDED;
-//		}
+		void mark() {
+			this.in.mark(MARK_LIMIT);
+		}
+
+		void reset() throws IOException {
+			this.in.reset();
+		}
 
 		byte current() {
-			return status == StreamStatus.ENDED ? 0 : buf[pos];
+			return status == StreamStatus.ENDED ? 0 : current;
 		}
 
 		byte next() throws IOException {
@@ -291,9 +310,12 @@ public class CsvParsar {
 		}
 
 		byte moveNext() throws IOException {
-			if ((++pos) < length)
-				return buf[pos];
-			read();
+			if (status == StreamStatus.ENDED)
+				throw new UnsupportedOperationException("already ended!");
+			int i = in.read();
+			if (i == -1)
+				status = StreamStatus.ENDED;
+			current = (byte) i;
 			return current();
 		}
 
@@ -318,13 +340,6 @@ public class CsvParsar {
 
 		void clear() {
 			baos.reset();
-		}
-
-		private void read() throws IOException {
-			length = in.read(buf);
-			if (length == -1)
-				this.status = StreamStatus.ENDED;
-			pos = 0;
 		}
 
 	}
