@@ -2,6 +2,7 @@ package tetz42.cellom.parsar.csv;
 
 import static tetz42.util.ReflectionUtil.*;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -219,12 +220,15 @@ public class CsvParsar {
 			status = Status.PARSING;
 			if (isw.current() == '"') {
 				isw.moveNext();
-				while (isw.search((byte) '"') == '"') {
-					if (isw.moveNext() != '"')
+				boolean quoteEnded = false;
+				while (isw.search((byte) '"') == '"' || isw.status != StreamStatus.ENDED) {
+					if (isw.moveNext() != '"') {
+						quoteEnded = true;
 						break;
+					}
 					isw.next(); // '""' -> '"'
 				}
-				if (isw.status == StreamStatus.ENDED)
+				if (!quoteEnded)
 					throw new UnsupportedDataTypeException(
 							"double quote unmatch!");
 			} else {
@@ -261,15 +265,21 @@ public class CsvParsar {
 
 		private final ByteArrayOutputStream baos = new ByteArrayOutputStream(
 				0xFF);
-		private final InputStream in;
+		private final BufferedInputStream in;
 		private final String charsetName;
 		StreamStatus status = StreamStatus.READING;
 
 		IStreamWrapper(InputStream in, String charsetName) throws IOException {
-			this.in = in;
+			this.in = new BufferedInputStream(in);
 			this.charsetName = charsetName;
 			read();
 		}
+
+//		byte tameshiNext() throws IOException {
+//			int i = in.read();
+//			if(i == -1)
+//				status = StreamStatus.ENDED;
+//		}
 
 		byte current() {
 			return status == StreamStatus.ENDED ? 0 : buf[pos];
