@@ -117,13 +117,8 @@ public class CsvParsar {
 				.nextFailureList());
 	}
 
-	public CsvParsar skip() {
-		return new Using<CsvParsar>(in) {
-			@Override
-			protected CsvParsar execute() throws Exception {
-				return skipTask();
-			}
-		}.invoke();
+	public CsvParsar skip() throws IOException {
+		return skipTask();
 	}
 
 	public Status getStatus() {
@@ -141,7 +136,7 @@ public class CsvParsar {
 	private CsvParsar skipTask() throws IOException {
 		do {
 			token.nextCell();
-		} while (status != Status.RECORD_END && status != Status.DATA_END);
+		} while (status == Status.PARSING);
 		return this;
 	}
 
@@ -201,7 +196,7 @@ public class CsvParsar {
 				if (c.order() != preOrder) {
 					token.mark();
 					preOrder = c.order();
-				}else {
+				} else {
 					token.reset();
 				}
 				setValue(res, f, parseTask(f.getType()));
@@ -264,6 +259,10 @@ public class CsvParsar {
 		}
 
 		void reset() throws IOException {
+			if (status == Status.RECORD_END || status == Status.DATA_END) {
+				status = Status.PARSING;
+				recordNo--;
+			}
 			isw.reset();
 		}
 	}
@@ -297,6 +296,7 @@ public class CsvParsar {
 		}
 
 		void reset() throws IOException {
+			status = StreamStatus.READING;
 			this.in.reset();
 		}
 
