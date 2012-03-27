@@ -191,14 +191,6 @@ public class CsvParsar {
 					setStringValue(res, f, value);
 				preOrder = c.order();
 			} else {
-				// TODO below same order implementation is temporary.
-				// consider about recursive bean case.
-				if (c.order() != preOrder) {
-					token.mark();
-					preOrder = c.order();
-				} else {
-					token.reset();
-				}
 				setValue(res, f, parseTask(f.getType()));
 			}
 			if ((status == Status.RECORD_END || status == Status.DATA_END)
@@ -253,18 +245,6 @@ public class CsvParsar {
 			}
 			return isw.flush();
 		}
-
-		void mark() {
-			isw.mark();
-		}
-
-		void reset() throws IOException {
-			if (status == Status.RECORD_END || status == Status.DATA_END) {
-				status = Status.PARSING;
-				recordNo--;
-			}
-			isw.reset();
-		}
 	}
 
 	enum StreamStatus {
@@ -273,8 +253,6 @@ public class CsvParsar {
 
 	// TODO consider about InputStream is 0;
 	private static class IStreamWrapper {
-
-		private static final int MARK_LIMIT = 0xFFF;
 
 		private final ByteArrayOutputStream baos = new ByteArrayOutputStream(
 				0xFF);
@@ -289,15 +267,6 @@ public class CsvParsar {
 
 			this.charsetName = charsetName;
 			this.current = (byte) this.in.read();
-		}
-
-		void mark() {
-			this.in.mark(MARK_LIMIT);
-		}
-
-		void reset() throws IOException {
-			status = StreamStatus.READING;
-			this.in.reset();
 		}
 
 		byte current() {
