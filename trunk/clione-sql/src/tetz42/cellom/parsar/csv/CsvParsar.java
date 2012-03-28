@@ -6,7 +6,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +13,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.activation.UnsupportedDataTypeException;
-
 import tetz42.cellom.parsar.csv.annotation.CsvCell;
-import tetz42.util.Using;
+import tetz42.util.exception.IORuntimeException;
+import tetz42.util.exception.UnknownFormatException;
 import tetz42.validation.FailureInfo;
 import tetz42.validation.Validator;
 
@@ -62,54 +60,34 @@ public class CsvParsar {
 
 	public CsvParsar(InputStream istream, final String charsetName) {
 		this.in = istream;
-		this.token = new Using<IStreamToken>(in) {
-			@Override
-			protected IStreamToken execute() throws Exception {
-				return new IStreamToken(in, charsetName);
-			}
-		}.invoke();
+		this.token = new IStreamToken(in, charsetName);
 	}
 
 	public <T> List<T> parseAll(final Class<T> clazz) {
-		return new Using<List<T>>(in) {
-			@Override
-			protected List<T> execute() throws Exception {
-				ArrayList<T> list = new ArrayList<T>();
-				while (status != Status.DATA_END) {
-					list.add(parseTask(clazz));
-					if (status == Status.PARSING)
-						skipTask();
-				}
-				return list;
-			}
-		}.invoke();
+		ArrayList<T> list = new ArrayList<T>();
+		while (status != Status.DATA_END) {
+			list.add(parseTask(clazz));
+			if (status == Status.PARSING)
+				skipTask();
+		}
+		return list;
 	}
 
 	public <T> List<Result<T>> parseToResultAll(final Class<T> clazz) {
-		return new Using<List<Result<T>>>(in) {
-			@Override
-			protected List<Result<T>> execute() throws Exception {
-				ArrayList<Result<T>> list = new ArrayList<Result<T>>();
-				while (status != Status.DATA_END) {
-					T t = parseTask(clazz);
-					RecordType type = recordType();
-					if (status == Status.PARSING)
-						skipTask();
-					list.add(new Result<T>(t, recordNo, type, validator
-							.nextFailureList()));
-				}
-				return list;
-			}
-		}.invoke();
+		ArrayList<Result<T>> list = new ArrayList<Result<T>>();
+		while (status != Status.DATA_END) {
+			T t = parseTask(clazz);
+			RecordType type = recordType();
+			if (status == Status.PARSING)
+				skipTask();
+			list.add(new Result<T>(t, recordNo, type, validator
+					.nextFailureList()));
+		}
+		return list;
 	}
 
 	public <T> T parse(final Class<T> clazz) {
-		return new Using<T>(in) {
-			@Override
-			protected T execute() throws Exception {
-				return parseTask(clazz);
-			}
-		}.invoke();
+		return parseTask(clazz);
 	}
 
 	public <T> Result<T> parseToResult(final Class<T> clazz) {
@@ -133,7 +111,11 @@ public class CsvParsar {
 		return recordNo;
 	}
 
-	private CsvParsar skipTask() throws IOException {
+	public void close() {
+		token.close();
+	}
+
+	private CsvParsar skipTask() {
 		do {
 			token.nextCell();
 		} while (status == Status.PARSING);
@@ -158,7 +140,7 @@ public class CsvParsar {
 		return list;
 	}
 
-	private <T> T parseTask(Class<T> clazz) throws IOException {
+	private <T> T parseTask(Class<T> clazz) {
 		isShortRecord = false;
 		List<Field> fList = filter(avoidDuplication(getAllFields(clazz)));
 		Collections.sort(fList, new Comparator<Field>() {
@@ -205,11 +187,11 @@ public class CsvParsar {
 
 		private final IStreamWrapper isw;
 
-		IStreamToken(InputStream in, String charasetName) throws IOException {
+		IStreamToken(InputStream in, String charasetName) {
 			this.isw = new IStreamWrapper(in, charasetName);
 		}
 
-		String nextCell() throws IOException {
+		String nextCell() {
 			status = Status.PARSING;
 			if (isw.current() == '"') {
 				isw.moveNext();
@@ -223,8 +205,7 @@ public class CsvParsar {
 					isw.next(); // '""' -> '"'
 				}
 				if (!quoteEnded)
-					throw new UnsupportedDataTypeException(
-							"double quote unmatch!");
+					throw new UnknownFormatException("double quote unmatch!");
 			} else {
 				isw.search((byte) ',', (byte) '\r');
 			}
@@ -241,9 +222,13 @@ public class CsvParsar {
 				status = Status.DATA_END;
 				recordNo++;
 			} else {
-				throw new UnsupportedDataTypeException("Unknown format!");
+				throw new UnknownFormatException("Unknown format!");
 			}
 			return isw.flush();
+		}
+
+		void close() {
+			isw.quietClose();
 		}
 	}
 
@@ -251,7 +236,6 @@ public class CsvParsar {
 		READING, ENDED
 	}
 
-	// TODO consider about InputStream is 0;
 	private static class IStreamWrapper {
 
 		private final ByteArrayOutputStream baos = new ByteArrayOutputStream(
@@ -262,33 +246,50 @@ public class CsvParsar {
 
 		byte current;
 
-		IStreamWrapper(InputStream in, String charsetName) throws IOException {
+		IStreamWrapper(InputStream in, String charsetName) {
 			this.in = new BufferedInputStream(in);
-
 			this.charsetName = charsetName;
-			this.current = (byte) this.in.read();
+			read();
+		}
+
+		private byte read() {
+			try {
+				int i = in.read();
+				if (i == -1) {
+					status = StreamStatus.ENDED;
+					current = 0;
+					quietClose();
+				} else {
+					current = (byte) i;
+				}
+				return current;
+			} catch (IOException e) {
+				quietClose();
+				throw new IORuntimeException(e);
+			}
+		}
+
+		void quietClose() {
+			try {
+				in.close();
+			} catch (IOException ignore) {
+			}
 		}
 
 		byte current() {
 			return status == StreamStatus.ENDED ? 0 : current;
 		}
 
-		byte next() throws IOException {
+		byte next() {
 			baos.write(current());
 			return moveNext();
 		}
 
-		byte moveNext() throws IOException {
-			if (status == StreamStatus.ENDED)
-				throw new UnsupportedOperationException("already ended!");
-			int i = in.read();
-			if (i == -1)
-				status = StreamStatus.ENDED;
-			current = (byte) i;
-			return current();
+		byte moveNext() {
+			return read();
 		}
 
-		byte search(byte... bz) throws IOException {
+		byte search(byte... bz) {
 			byte res = 0;
 			while (this.status != StreamStatus.ENDED) {
 				res = current();
@@ -301,8 +302,14 @@ public class CsvParsar {
 			return res;
 		}
 
-		String flush() throws UnsupportedEncodingException {
-			String res = new String(baos.toByteArray(), charsetName);
+		String flush() {
+			String res;
+			try {
+				res = new String(baos.toByteArray(), charsetName);
+			} catch (IOException e) {
+				quietClose();
+				throw new IORuntimeException(e);
+			}
 			clear();
 			return res;
 		}
