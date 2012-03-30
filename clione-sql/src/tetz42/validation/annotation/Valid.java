@@ -32,6 +32,7 @@ public @interface Valid {
 	// long minByteLength() default Long.MIN_VALUE;
 
 	Format format() default Format.ANY;
+
 	// String match() default "";
 	// String unmatch() default "";
 
@@ -41,4 +42,8 @@ public @interface Valid {
 	// long min() default Long.MIN_VALUE;
 	// double maxDouble() default Double.NaN;
 	// double minDouble() default Double.NaN;
+
+	String atLeastOne() default "";
+
+	String[] isIn() default {};
 }

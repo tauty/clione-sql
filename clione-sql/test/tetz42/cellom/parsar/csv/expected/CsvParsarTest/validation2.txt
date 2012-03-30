@@ -1,0 +1,135 @@
+ArrayList[
+	Result{
+		data = ValidationTest2{
+			tako = "tako"
+			takoLeg = 0
+			ika = "ika"
+			ikaLeg = 10
+			namako = "namako"
+			namakoLeg = 0
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 1
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = ValidationTest2{
+			tako = "octopus"
+			takoLeg = 9
+			ika = "squid"
+			ikaLeg = 11
+			namako = "sea cucumber"
+			namakoLeg = 0
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 2
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = ValidationTest2{
+			tako = "TAKO"
+			takoLeg = 8
+			ika = "IKA"
+			ikaLeg = 12
+			namako = "NAMAKO"
+			namakoLeg = 2
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 3
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = ValidationTest2{
+			tako = null
+			takoLeg = 0
+			ika = null
+			ikaLeg = 0
+			namako = null
+			namakoLeg = 0
+			test = "最初のテスト２"
+			aaa = "ああ"あああ"
+		}
+		recordNo = 4
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Octopus"
+				type = NOT_IN_VALUES
+				additionalInfo = "tako, octopus, TAKO"
+			}
+			FailureInfo{
+				name = "Squid"
+				type = NOT_IN_VALUES
+				additionalInfo = "ika, squid, IKA"
+			}
+			FailureInfo{
+				name = "Sea Cucumber"
+				type = NOT_IN_VALUES
+				additionalInfo = "namako, sea cucumber, NAMAKO"
+			}
+			FailureInfo{
+				name = "Octopus Leg, Squid Leg, Sea Cucumber Leg"
+				type = REQUIRED_AT_LEAST_ONE
+				additionalInfo = null
+			}
+		]
+	}
+	Result{
+		data = ValidationTest2{
+			tako = ""
+			takoLeg = 0
+			ika = ""
+			ikaLeg = 0
+			namako = ""
+			namakoLeg = 0
+			test = ""
+			aaa = ""
+		}
+		recordNo = 5
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Octopus Leg, Squid Leg, Sea Cucumber Leg"
+				type = REQUIRED_AT_LEAST_ONE
+				additionalInfo = null
+			}
+		]
+	}
+	Result{
+		data = ValidationTest2{
+			tako = null
+			takoLeg = 1
+			ika = "ika"
+			ikaLeg = 0
+			namako = null
+			namakoLeg = 0
+			test = null
+			aaa = "ああ"あああ"ああ"あああ"ああ"あああ"ああ"あああ"ああ"あああ"
+		}
+		recordNo = 6
+		type = NORMAL
+		failureInfoList = ArrayList[
+			FailureInfo{
+				name = "Octopus"
+				type = NOT_IN_VALUES
+				additionalInfo = "tako, octopus, TAKO"
+			}
+			FailureInfo{
+				name = "Sea Cucumber"
+				type = NOT_IN_VALUES
+				additionalInfo = "namako, sea cucumber, NAMAKO"
+			}
+			FailureInfo{
+				name = "Test"
+				type = LENGTH_TOO_LONG
+				additionalInfo = "20"
+			}
+		]
+	}
+]
