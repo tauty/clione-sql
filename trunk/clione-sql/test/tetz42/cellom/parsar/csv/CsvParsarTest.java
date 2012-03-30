@@ -15,6 +15,7 @@ import tetz42.cellom.parsar.csv.CsvParsar.Result;
 import tetz42.cellom.parsar.csv.entity.InitialTest;
 import tetz42.cellom.parsar.csv.entity.SameOrderTest;
 import tetz42.cellom.parsar.csv.entity.ValidationTest;
+import tetz42.cellom.parsar.csv.entity.ValidationTest2;
 import tetz42.clione.parsar.HereDoc;
 
 public class CsvParsarTest {
@@ -135,6 +136,15 @@ public class CsvParsarTest {
 	}
 
 	@Test
+	public void validation2() {
+		InputStream in = toIn("Validation2");
+		CsvParsar parsar = new CsvParsar(in);
+		List<Result<ValidationTest2>> list = parsar
+				.parseToResultAll(ValidationTest2.class);
+		assertEqualsWithFile(list, getClass(), "validation2");
+	}
+
+	@Test
 	public void sameOrder() {
 		InputStream in = toIn("SameOrder");
 		CsvParsar parsar = new CsvParsar(in);
@@ -143,14 +153,14 @@ public class CsvParsarTest {
 		assertEqualsWithFile(list, getClass(), "sameOrder");
 	}
 
-// Same Order Bean case is not required.
-//	@Test
-//	public void sameOrderBean() {
-//		InputStream in = toIn("SameOrderBean");
-//		CsvParsar parsar = new CsvParsar(in);
-//		List<Result<SameOrderBeanTest>> list = parsar
-//				.parseToResultAll(SameOrderBeanTest.class);
-//		assertEqualsWithFile(list, getClass(), "sameOrderBean");
-//	}
+	// Same Order Bean case is not required.
+	// @Test
+	// public void sameOrderBean() {
+	// InputStream in = toIn("SameOrderBean");
+	// CsvParsar parsar = new CsvParsar(in);
+	// List<Result<SameOrderBeanTest>> list = parsar
+	// .parseToResultAll(SameOrderBeanTest.class);
+	// assertEqualsWithFile(list, getClass(), "sameOrderBean");
+	// }
 
 }

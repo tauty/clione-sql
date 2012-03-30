@@ -41,6 +41,16 @@ tako,9,ika,11,namako,1,最初のテスト２２２２２２２２２２２２２
 
 <</Validation>>
 
+<<Validation2>>
+tako,,ika,10,namako,,最初のテスト２,"ああ""あああ"
+octopus,9,squid,11,sea cucumber,0,最初のテスト２,"ああ""あああ"
+TAKO,8,IKA,12,NAMAKO,2,最初のテスト２,"ああ""あああ"
+aaaa,,bbb,,cccccc,,最初のテスト２,"ああ""あああ"
+,,,,,,,
+ika,1,ika,,konama,,最初のテスト２２２２２２２２２２２２２２２２２２,"ああ""あああ""ああ""あああ""ああ""あああ""ああ""あああ""ああ""あああ"
+
+<</Validation2>>
+
 <<SameOrder>>
 "tako""","8","ika""","10","namako""","0","最初の
 テスト""１",あああああ

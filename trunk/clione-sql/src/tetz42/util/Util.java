@@ -1,7 +1,10 @@
 package tetz42.util;
 
+import static tetz42.util.Const.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
@@ -76,5 +79,47 @@ public class Util {
 				return obj;
 		}
 		return null;
+	}
+
+	public static String mkString(Object... objs) {
+		return mkStringBy("", objs);
+	}
+
+	public static String mkStringByComma(Object... objs) {
+		return mkStringBy(", ", objs);
+	}
+
+	public static String mkStringByCRLF(Object... objs) {
+		return mkStringBy(CRLF, objs);
+	}
+
+	public static String mkStringBy(String delimiter, Object... objs) {
+		if (objs == null || objs.length == 0)
+			return "";
+		StringBuilder sb = new StringBuilder().append(objs[0]);
+		for (int i = 1; i < objs.length; i++)
+			sb.append(delimiter).append(objs[i]);
+		return sb.toString();
+	}
+
+	public static String mkString(List<?> objs) {
+		return mkStringBy("", objs);
+	}
+
+	public static String mkStringByComma(List<?> objs) {
+		return mkStringBy(", ", objs);
+	}
+
+	public static String mkStringByCRLF(List<?> objs) {
+		return mkStringBy(CRLF, objs);
+	}
+
+	public static String mkStringBy(String delimiter, List<?> objs) {
+		if (objs == null || objs.size() == 0)
+			return "";
+		StringBuilder sb = new StringBuilder().append(objs.get(0));
+		for (int i = 1; i < objs.size(); i++)
+			sb.append(delimiter).append(objs.get(i));
+		return sb.toString();
 	}
 }
