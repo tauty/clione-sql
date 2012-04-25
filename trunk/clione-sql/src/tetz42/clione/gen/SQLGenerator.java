@@ -69,7 +69,8 @@ public class SQLGenerator {
 			return this.sql = inst.replacement;
 		} finally {
 			popResourceInfo();
-			clearNegative();
+			if (isAllPoped())
+				clearNegative();
 		}
 	}
 }
