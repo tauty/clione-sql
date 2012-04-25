@@ -78,6 +78,10 @@ public class ContextUtil {
 		return resourceInfoes.get().pop().toString();
 	}
 
+	public static boolean isAllPoped() {
+		return resourceInfoes.get().isEmpty();
+	}
+
 	public static void addNegative(Object... negatives) {
 		if (negatives == null)
 			return;

@@ -21,12 +21,15 @@ public class ClioneUtil {
 	public static <T> List<T> join(List<T>... dests) {
 		List<T> list = new ArrayList<T>();
 		for (List<T> dest : dests) {
+			if (dest == null)
+				continue;
 			list.addAll(dest);
 		}
 		return list;
 	}
 
-	public static <T> Object[] join(T[]... dests) {
+	@SuppressWarnings("unchecked")
+	public static <T> T[] join(T[]... dests) {
 		ArrayList<T> list = new ArrayList<T>();
 		for (T[] dest : dests) {
 			if (dest == null)
@@ -34,7 +37,7 @@ public class ClioneUtil {
 			for (T e : dest)
 				list.add(e);
 		}
-		return list.toArray();
+		return (T[])list.toArray();
 	}
 
 	public static <T> T nvl(T... objs) {
