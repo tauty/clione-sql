@@ -85,23 +85,15 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public ParamMap bean(Object bean) {
-		Class<?> clazz = bean.getClass();
-		while (clazz != null && clazz != Object.class) {
-			for (Field f : clazz.getDeclaredFields()) {
-				try {
-					if (this.containsKey(f.getName()))
-						continue;
-					boolean backup = f.isAccessible();
-					f.setAccessible(true);
-					setValue(f.getName(), f.get(bean));
-					f.setAccessible(backup);
-				} catch (IllegalArgumentException e) {
-					// ignore the exception
-				} catch (IllegalAccessException e) {
-					// ignore the exception
-				}
+		for(Field f:getFields(bean.getClass())) {
+			try {
+				f.setAccessible(true);
+				setValue(f.getName(), f.get(bean));
+			} catch (IllegalArgumentException e) {
+				// ignore the exception
+			} catch (IllegalAccessException e) {
+				// ignore the exception
 			}
-			clazz = clazz.getSuperclass();
 		}
 		return this;
 	}

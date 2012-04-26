@@ -100,10 +100,9 @@ public class ReflectionUtil {
 
 	public static void setValue(Object receiver, Field field, Object value) {
 		try {
-			boolean accessible = field.isAccessible();
-			field.setAccessible(true);
+			if(!field.isAccessible())
+				field.setAccessible(true);
 			field.set(receiver, value);
-			field.setAccessible(accessible);
 		} catch (IllegalArgumentException e) {
 			throw new InvalidParameterException(e);
 		} catch (IllegalAccessException e) {
@@ -117,7 +116,6 @@ public class ReflectionUtil {
 		if (value != null) {
 			setValue(receiver, field, value);
 		}
-
 	}
 
 	// TODO revise
@@ -156,11 +154,9 @@ public class ReflectionUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T getValue(Object receiver, Field field) {
 		try {
-			boolean accessible = field.isAccessible();
-			field.setAccessible(true);
-			Object res = field.get(receiver);
-			field.setAccessible(accessible);
-			return (T) res;
+			if(!field.isAccessible())
+				field.setAccessible(true);
+			return (T) field.get(receiver);
 		} catch (IllegalArgumentException e) {
 			throw new InvalidParameterException(e);
 		} catch (IllegalAccessException e) {
@@ -180,8 +176,13 @@ public class ReflectionUtil {
 			throw new InvalidParameterException("The class, " + clazz.getName()
 					+ ", must have default constructor.", e);
 		} catch (Exception e) {
-			throw new WrapException(e);
+			throw new WrapException(clazz.getSimpleName()
+					+ " might have security problem.", e);
 		}
+	}
+
+	public static List<Field> getFields(Class<?> clazz){
+		return avoidDuplication(getAllFields(clazz));
 	}
 
 	public static List<Field> avoidDuplication(List<Field> fList) {

@@ -1,0 +1,3 @@
+tako(Style:HEADER)	ika(Style:HEADER)	namako(Style:HEADER)	test(Style:HEADER)					
+			tako(Style:HEADER)	ika(Style:HEADER)	namako(Style:HEADER)	tori(Style:HEADER)	uma(Style:HEADER)	ushi(Style:HEADER)
+(Style:BODY)	squid(Style:BODY)	(Style:BODY)	(Style:BODY)	squid(Style:BODY)	(Style:BODY)	bird(Style:BODY)	hose(Style:BODY)	cow(Style:BODY)

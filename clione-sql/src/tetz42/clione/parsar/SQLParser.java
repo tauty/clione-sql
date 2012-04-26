@@ -17,6 +17,7 @@ package tetz42.clione.parsar;
 
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -91,7 +92,7 @@ public class SQLParser {
 			byte[] bs = IOUtil.loadFromStream(in);
 			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
 		} catch (UnsupportedEncodingException e) {
-			throw new WrapException(joinByCrlf(e.getMessage(),
+			throw new WrapException(mkStringByCRLF(e.getMessage(),
 					"The setting of 'clione.properties' might be wrong. ",
 					"The key name = 'SQLFILE_ENCODING'"), e);
 		}
@@ -122,7 +123,7 @@ public class SQLParser {
 		LineInfo info = new LineInfo(1);
 		parseFunc(flatList, rt, info);
 		if (!rt.isEnd())
-			throw new ClioneFormatException(joinByCrlf(
+			throw new ClioneFormatException(mkStringByCRLF(
 					"SQL Format Error: too much ')'", getResourceInfo()));
 		return flatList;
 	}
@@ -136,7 +137,7 @@ public class SQLParser {
 			String div = rt.getDelim();
 			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
-				throw new ClioneFormatException(joinByCrlf(
+				throw new ClioneFormatException(mkStringByCRLF(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
 			} else if (div.equals("--")) {
 				doLineComment(rt, info);
@@ -236,7 +237,7 @@ public class SQLParser {
 				// in case CRLF is detected
 				info.addLineNo();
 		}
-		throw new ClioneFormatException(joinByCrlf(
+		throw new ClioneFormatException(mkStringByCRLF(
 				"SQL Format Error: too much '/*'", getResourceInfo()));
 	}
 
@@ -276,7 +277,7 @@ public class SQLParser {
 		info.push();
 		parseFunc(flatList, rt, info);
 		if (rt.isEnd() && !")".equals(rt.matcher().group()))
-			throw new ClioneFormatException(joinByCrlf(
+			throw new ClioneFormatException(mkStringByCRLF(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();
 		info.addPlaceHolder(new ParenthesisPlaceHolder(parseIndent(flatList)));
@@ -286,8 +287,9 @@ public class SQLParser {
 	private void doString(RegexpTokenizer rt, LineInfo info, final String type) {
 		info.nodeSb.append(type);
 		if (!rt.find(type))
-			throw new ClioneFormatException(joinByCrlf("SQL Format Error: ["
-					+ type + "] unmatched!", getResourceInfo()));
+			throw new ClioneFormatException(mkStringByCRLF(
+					"SQL Format Error: [" + type + "] unmatched!",
+					getResourceInfo()));
 		String literal = rt.nextTokenDelim();
 		info.nodeSb.append(literal);
 		Matcher m = crlfPth.matcher(literal);

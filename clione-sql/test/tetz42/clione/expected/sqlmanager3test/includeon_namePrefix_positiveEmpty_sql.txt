@@ -1,0 +1,25 @@
+--- sql ---
+select
+	*
+from (
+	select
+		sub.*,
+		ROWNUM num
+	from
+		(
+select
+	*
+from
+	employees
+where
+	address like ?
+) sub
+)
+where
+	name like ?
+	and 2 <= num and num <= 3
+
+--- params ---
+[%, %]
+--- resource ---
+SQL file path:tetz42/clione/sql/SQLManager3Test/Include.sql

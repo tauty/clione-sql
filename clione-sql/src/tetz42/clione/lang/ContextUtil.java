@@ -1,6 +1,6 @@
 package tetz42.clione.lang;
 
-import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,7 +64,7 @@ public class ContextUtil {
 	}
 
 	public static String getResourceInfo() {
-		return joinByCrlf(resourceInfoes.get().toArray());
+		return mkStringByCRLF(resourceInfoes.get().toArray());
 	}
 
 	public static String getResourcePath() {
@@ -137,7 +137,7 @@ public class ContextUtil {
 				pos = pos > 0 ? pos : 0;
 				aPath = aPath.substring(0, pos);
 			} else {
-				throw new SQLFileNotFoundException(joinByCrlf(
+				throw new SQLFileNotFoundException(mkStringByCRLF(
 						"Can not resolve the path below:", absolutePath
 								+ relativePath));
 			}

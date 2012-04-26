@@ -1,0 +1,73 @@
+ArrayList[
+	Result{
+		data = SameOrderTest{
+			tako = "tako""
+			tako2 = "tako""
+			takoLeg = 8
+			takoLeg2 = 8
+			ika = "ika""
+			ika2 = "ika""
+			ikaLeg = 10
+			ikaLeg2 = 10
+			namako = "namako""
+			namako2 = "namako""
+			namakoLeg = 0
+			namakoLeg2 = 0
+			test = "最初の
+テスト"１"
+			test2 = "最初の
+テスト"１"
+			aaa = "あああああ"
+			aaa2 = "あああああ"
+		}
+		recordNo = 1
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = SameOrderTest{
+			tako = "tako"
+			tako2 = "tako"
+			takoLeg = 9
+			takoLeg2 = 9
+			ika = "ika"
+			ika2 = "ika"
+			ikaLeg = 11
+			ikaLeg2 = 11
+			namako = "namako"
+			namako2 = "namako"
+			namakoLeg = 1
+			namakoLeg2 = 1
+			test = "最初のテスト２"
+			test2 = "最初のテスト２"
+			aaa = "ああ"あああ"
+			aaa2 = "ああ"あああ"
+		}
+		recordNo = 2
+		type = NORMAL
+		failureInfoList = null
+	}
+	Result{
+		data = SameOrderTest{
+			tako = "tako"
+			tako2 = "tako"
+			takoLeg = 10
+			takoLeg2 = 10
+			ika = "ika"
+			ika2 = "ika"
+			ikaLeg = 12
+			ikaLeg2 = 12
+			namako = "namako"
+			namako2 = "namako"
+			namakoLeg = 2
+			namakoLeg2 = 2
+			test = "最初のテスト３"
+			test2 = "最初のテスト３"
+			aaa = "あ,あ,あ,あ,あ"
+			aaa2 = "あ,あ,あ,あ,あ"
+		}
+		recordNo = 3
+		type = NORMAL
+		failureInfoList = null
+	}
+]

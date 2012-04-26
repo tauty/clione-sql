@@ -36,8 +36,8 @@ import org.junit.Test;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.exception.InvalidParameterException;
 import tetz42.util.exception.SQLRuntimeException;
-import tetz42.util.exception.WrapException;
 
 public class SQLManagerTest {
 
@@ -311,7 +311,7 @@ public class SQLManagerTest {
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
 	}
 
-	@Test(expected = WrapException.class)
+	@Test(expected = InvalidParameterException.class)
 	public void cannot_create_instance() throws IOException, SQLException {
 		sqlManager(con).useFile(getClass(), "Select.sql").find(
 				NoDefaultConstructor.class);

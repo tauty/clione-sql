@@ -1,0 +1,3 @@
+tako(Style:HEADER)	ika(Style:HEADER)	namako(Style:HEADER)
+		
+(Style:BODY)	squid(Style:BODY)	(Style:BODY)

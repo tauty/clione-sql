@@ -2,6 +2,7 @@ package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,13 +35,12 @@ public class SQLExecutor {
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 
-	public SQLExecutor negativeValues(Object... negativeValues) {
-		this.sqlGenerator.negativeValues(negativeValues);
-		return this;
+	public SQLExecutor emptyAsNegative() {
+		return asNegative("");
 	}
 
-	public SQLExecutor appendNegativeValues(Object... negativeValues) {
-		this.sqlGenerator.appendNegativeValues(negativeValues);
+	public SQLExecutor asNegative(Object... negativeValues) {
+		this.sqlGenerator.asNegative(negativeValues);
 		return this;
 	}
 
@@ -64,7 +64,8 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
+			throw new SQLException(
+					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			closeStatement();
 		}
@@ -88,7 +89,8 @@ public class SQLExecutor {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
+			throw new SQLException(
+					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -111,7 +113,8 @@ public class SQLExecutor {
 			}
 			return null;
 		} catch (SQLException e) {
-			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
+			throw new SQLException(
+					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -136,7 +139,8 @@ public class SQLExecutor {
 			}
 			return list;
 		} catch (SQLException e) {
-			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
+			throw new SQLException(
+					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}
@@ -173,7 +177,8 @@ public class SQLExecutor {
 			stmt = this.genStmt(paramMap);
 			return stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(joinByCrlf(e.getMessage(), getSQLInfo()), e);
+			throw new SQLException(
+					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
 		} finally {
 			this.closeStatement();
 		}

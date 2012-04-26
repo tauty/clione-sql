@@ -26,8 +26,8 @@ import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.lang.func.StrLiteral;
-import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.ParamMap;
+import tetz42.util.Util;
 
 public class LineNode extends Node {
 
@@ -127,7 +127,7 @@ public class LineNode extends Node {
 	private Instruction removeDelimiters(Instruction result,
 			LineNode firstNode, LineNode firstMergedNode, LineNode lastNode,
 			LineNode lastMergedNode) {
-		if(firstNode == null || firstMergedNode == null)
+		if (firstNode == null || firstMergedNode == null)
 			return result;
 		if (firstNode != firstMergedNode && !firstNode.isFirstDelim()
 				&& firstMergedNode.isFirstDelim()) {
@@ -172,12 +172,12 @@ public class LineNode extends Node {
 				ClioneFunction cf = holder.getFunction();
 				if (cf instanceof SQLLiteral || cf instanceof StrLiteral) {
 					Matcher m2 = firstDelimPtn.matcher(cf.getLiteral());
-					return m2.find() && !ClioneUtil.isEmpty(m2.group(2));
+					return m2.find() && !Util.isEmpty(m2.group(2));
 				}
 				return false;
 			}
 		}
-		return !ClioneUtil.isEmpty(delim);
+		return !Util.isEmpty(delim);
 	}
 
 	private static final Pattern lastDelimPtn = Pattern
@@ -195,11 +195,11 @@ public class LineNode extends Node {
 				ClioneFunction cf = holder.getFunction();
 				if (cf instanceof SQLLiteral || cf instanceof StrLiteral) {
 					Matcher m2 = lastDelimPtn.matcher(cf.getLiteral());
-					return m2.find() && ClioneUtil.isEmpty(m.group(1));
+					return m2.find() && Util.isEmpty(m.group(1));
 				}
 				return false;
 			}
 		}
-		return !ClioneUtil.isEmpty(delim);
+		return !Util.isEmpty(delim);
 	}
 }
