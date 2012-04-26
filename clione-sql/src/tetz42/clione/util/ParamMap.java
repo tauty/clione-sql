@@ -99,15 +99,14 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	private void setValue(String key, Object obj) {
-		if (isPrimitive(obj) || isEachable(obj))
-			this.put(key, obj);
-		else {
-			this.put(key, obj);
+		this.put(key, obj);
+		if (!isPrimitive(obj) && !isEachable(obj)) {
 			ParamMap subMap;
-			if (obj instanceof Map<?, ?>)
+			if (obj instanceof Map<?, ?>) {
 				subMap = new ParamMap().map((Map<?, ?>) obj);
-			else
+			}else {
 				subMap = new ParamMap().bean(obj);
+			}
 			for (Entry<?, ?> e : subMap.entrySet()) {
 				this.put(key + "." + e.getKey(), e.getValue());
 			}
