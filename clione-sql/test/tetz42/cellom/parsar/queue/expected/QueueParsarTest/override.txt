@@ -1,9 +1,0 @@
-SubStrAndInt{
-	cls424 = null
-	intNull = 0
-	strNull = null
-	str10 = "1234567890"
-	str30 = "123456789012345678901234567890"
-	int10 = 1234567890
-	cls424 = null
-}
