@@ -50,6 +50,7 @@ public class ReflectionUtil {
 		set.add(Number.class.getName());
 		set.add(String.class.getName());
 		set.add(Object.class.getName());
+		set.add(Class.class.getName());
 		primitiveSet = Collections.unmodifiableSet(set);
 	}
 
