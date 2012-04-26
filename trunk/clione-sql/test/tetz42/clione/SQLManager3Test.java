@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tetz42.clione.SQLManagerTest.Employee;
+import tetz42.clione.util.ResultMap;
 
 public class SQLManager3Test {
 
@@ -158,4 +159,62 @@ public class SQLManager3Test {
 		assertEqualsWithFile(list, getClass(), "useSQL");
 	}
 
+	@Test
+	public void include_no_param() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
+				.findAll();
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"include_no_param_sql");
+		assertEqualsWithFile(list, getClass(), "include_no_param");
+	}
+
+	@Test
+	public void include_namePrefix_positiveEmpty() throws IOException,
+			SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
+				.findAll(params("namePrefix", ""));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"include_namePrefix_positiveEmpty_sql");
+		assertEqualsWithFile(list, getClass(),
+				"include_namePrefix_positiveEmpty");
+	}
+
+	@Test
+	public void include_namePrefix_negativeEmpty() throws IOException,
+			SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
+				.emptyAsNegative().findAll(params("namePrefix", ""));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"include_namePrefix_negativeEmpty_sql");
+		assertEqualsWithFile(list, getClass(),
+				"include_namePrefix_negativeEmpty");
+	}
+
+	@Test
+	public void includeon_namePrefix_positiveEmpty() throws IOException,
+			SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
+				.findAll(paramsOn("isEmp").$("namePrefix", ""));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"includeon_namePrefix_positiveEmpty_sql");
+		assertEqualsWithFile(list, getClass(),
+				"includeon_namePrefix_positiveEmpty");
+	}
+
+	@Test
+	public void includeon_namePrefix_negativeEmpty() throws IOException,
+			SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
+				.emptyAsNegative().findAll(
+						paramsOn("isEmp").$("namePrefix", ""));
+		assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
+				"includeon_namePrefix_negativeEmpty_sql");
+		assertEqualsWithFile(list, getClass(),
+				"includeon_namePrefix_negativeEmpty");
+	}
 }

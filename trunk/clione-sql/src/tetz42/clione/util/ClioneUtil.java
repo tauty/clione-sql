@@ -1,11 +1,12 @@
 package tetz42.clione.util;
 
+import static tetz42.util.Util.*;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -18,100 +19,12 @@ public class ClioneUtil {
 
 	public static final String CRLF = Const.CRLF;
 
-	public static <T> List<T> join(List<T>... dests) {
-		List<T> list = new ArrayList<T>();
-		for (List<T> dest : dests) {
-			if (dest == null)
-				continue;
-			list.addAll(dest);
-		}
-		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T[] join(T[]... dests) {
-		ArrayList<T> list = new ArrayList<T>();
-		for (T[] dest : dests) {
-			if (dest == null)
-				continue;
-			for (T e : dest)
-				list.add(e);
-		}
-		return (T[])list.toArray();
-	}
-
-	public static <T> T nvl(T... objs) {
-		for (T obj : objs) {
-			if (obj != null)
-				return obj;
-		}
-		return null;
-	}
-
 	public static boolean isAllSpace(String s) {
 		for (byte b : s.getBytes()) {
 			if (b != ' ' && b != '\t')
 				return false;
 		}
 		return true;
-	}
-
-	public static boolean isAllEmpty(String... strs) {
-		for (String s : strs) {
-			if (isNotEmpty(s))
-				return false;
-		}
-		return true;
-	}
-
-	public static boolean isAllNotEmpty(String... strs) {
-		for (String s : strs) {
-			if (isEmpty(s))
-				return false;
-		}
-		return true;
-	}
-
-	public static boolean isEmpty(String s) {
-		return s == null ? true : s.length() == 0 ? true : false;
-	}
-
-	public static boolean isEmpty(Object o) {
-		return o == null ? true : isEmpty(String.valueOf(o));
-	}
-
-	public static boolean isNotEmpty(String s) {
-		return !isEmpty(s);
-	}
-
-	public static boolean isNotEmpty(Object o) {
-		return !isEmpty(o);
-	}
-
-	public static String joinByCrlf(Object... objs) {
-		if (objs == null || objs.length == 0)
-			return "";
-		StringBuilder sb = new StringBuilder().append(objs[0]);
-		for (int i = 1; i < objs.length; i++)
-			sb.append(CRLF).append(objs[i]);
-		return sb.toString();
-	}
-
-	public static <T> String concat(T... vals) {
-		StringBuilder sb = new StringBuilder();
-		for (T val : vals)
-			sb.append(val);
-		return sb.toString();
-	}
-
-	public static <T> boolean isContain(T src, T... dests) {
-		if (src == null)
-			return false;
-		for (T dst : dests) {
-			if (src.equals(dst))
-				return true;
-		}
-		return false;
 	}
 
 	public static String nextStr(String src, int pos, int length) {
@@ -126,14 +39,36 @@ public class ClioneUtil {
 
 	public static String genSQLInfo(String sql, List<Object> params,
 			String resourceInfo) {
-		return joinByCrlf("--- sql ---", sql, "--- params ---", params,
+		return mkStringByCRLF("--- sql ---", sql, "--- params ---", params,
 				"--- resource ---", resourceInfo);
+	}
+
+	// TODO better solution.
+	public static boolean isSQLType(Class<?> clazz) {
+		return clazz == String.class || clazz == Boolean.class
+				|| clazz == Boolean.TYPE || clazz == Short.class
+				|| clazz == Short.TYPE || clazz == Integer.class
+				|| clazz == Integer.TYPE || clazz == Long.class
+				|| clazz == Long.TYPE || clazz == Float.class
+				|| clazz == Float.TYPE || clazz == Double.class
+				|| clazz == Double.TYPE || clazz == BigDecimal.class
+				|| clazz == Date.class || clazz == java.sql.Date.class
+				|| (clazz.isArray() && clazz.getComponentType() == Byte.TYPE);
 	}
 
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
 			throws SQLException {
+		try {
+			return getSQLData(f.getType(), rs, columnIndex);
+		} catch (UnsupportedTypeException e) {
+			throw new UnsupportedTypeException(e.getMessage() + " Field name:"
+					+ f.toGenericString() + ", Class name:"
+					+ f.getDeclaringClass().getName());
+		}
+	}
 
-		Class<?> clazz = f.getType();
+	public static Object getSQLData(Class<?> clazz, ResultSet rs,
+			int columnIndex) throws SQLException {
 
 		// String
 		if (clazz == String.class) {
@@ -221,8 +156,7 @@ public class ClioneUtil {
 		}
 
 		throw new UnsupportedTypeException("The type(" + clazz.getName()
-				+ ") is not supported. Field name:" + f.toGenericString()
-				+ ", Class name:" + f.getDeclaringClass().getName());
+				+ ") is not supported.");
 	}
 
 	private static final Pattern ptn = Pattern.compile("([%_#\\[％＿])");

@@ -10,6 +10,18 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	 */
 	private static final long serialVersionUID = 8871788701353775458L;
 
+	@Override
+	public Object get(Object key) {
+		if (key instanceof String)
+			return super.get(((String) key).toLowerCase());
+		return super.get(key);
+	}
+
+	@Override
+	public Object put(String key, Object value) {
+		return super.put(key == null ? key : key.toLowerCase(), value);
+	}
+
 	public String getString(String key) {
 		Object value = get(key);
 		return value == null ? null : String.valueOf(value);

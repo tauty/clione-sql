@@ -16,7 +16,7 @@
 package tetz42.clione.gen;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.util.List;
 import java.util.Map;
@@ -40,13 +40,8 @@ public class SQLGenerator {
 		this.negativeValues = negativeValues;
 	}
 
-	public SQLGenerator negativeValues(Object... negativeValues) {
-		this.negativeValues = negativeValues;
-		return this;
-	}
-
-	public SQLGenerator appendNegativeValues(Object... negativeValues) {
-		this.negativeValues = join(this.negativeValues, negativeValues);
+	public SQLGenerator asNegative(Object... negativeValues) {
+		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
 	}
 

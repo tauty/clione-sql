@@ -1,6 +1,8 @@
 package tetz42.clione;
 
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.ReflectionUtil.*;
+import static tetz42.util.Util.*;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSetMetaData;
@@ -11,7 +13,6 @@ import java.util.Map;
 
 import tetz42.clione.util.ResultMap;
 import tetz42.util.exception.SQLRuntimeException;
-import tetz42.util.exception.WrapException;
 
 public class SQLIterator<T> implements Iterable<T> {
 
@@ -23,7 +24,7 @@ public class SQLIterator<T> implements Iterable<T> {
 	private final Class<T> clazz;
 	private final SQLExecutor executor;
 	private final ResultSetMetaData md;
-	private final HashMap<String, FSet> fieldMap;
+	private final HashMap<String, Field> fieldMap;
 
 	public SQLIterator(SQLExecutor executor, Class<T> clazz,
 			Map<String, Object> paramMap) {
@@ -34,20 +35,13 @@ public class SQLIterator<T> implements Iterable<T> {
 			executor.rs = executor.stmt.executeQuery();
 			this.md = executor.rs.getMetaData();
 		} catch (SQLException e) {
-			throw new SQLRuntimeException(joinByCrlf(e.getMessage(),
+			throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
 					executor.getSQLInfo()), e);
 		}
-		Class<?> entityClass = clazz;
-		fieldMap = new HashMap<String, FSet>();
-		while (entityClass != null && entityClass != Object.class) {
-			Field[] fields = entityClass.getDeclaredFields();
-			for (Field field : fields) {
-				if (fieldMap.containsKey(field.getName()))
-					continue;
-				fieldMap.put(field.getName(), new FSet(field, field
-						.isAccessible()));
-			}
-			entityClass = entityClass.getSuperclass();
+
+		fieldMap = new HashMap<String, Field>();
+		for (Field field : getFields(clazz)) {
+			fieldMap.put(field.getName(), field);
 		}
 	}
 
@@ -60,8 +54,8 @@ public class SQLIterator<T> implements Iterable<T> {
 				try {
 					return executor.rs.next();
 				} catch (SQLException e) {
-					throw new SQLRuntimeException(joinByCrlf(e.getMessage(),
-							executor.getSQLInfo()), e);
+					throw new SQLRuntimeException(mkStringByCRLF(
+							e.getMessage(), executor.getSQLInfo()), e);
 				}
 			}
 
@@ -71,35 +65,22 @@ public class SQLIterator<T> implements Iterable<T> {
 				if (clazz == ResultMap.class)
 					return nextMap();
 				try {
-					// TODO implement correctly
-					if (clazz == String.class)
-						return (T) executor.rs.getString(1);
-					if (clazz == Integer.class)
-						return (T) new Integer(executor.rs.getInt(1));
-
-					T instance = clazz.newInstance();
+					if (isSQLType(clazz))
+						return (T) getSQLData(clazz, executor.rs, 1);
+					T instance = newInstance(clazz);
 					for (int i = 1; i <= md.getColumnCount(); i++) {
-						FSet fset = fieldMap.get(md.getColumnLabel(i));
-						if (fset == null)
-							fset = fieldMap.get(conv(md.getColumnLabel(i)));
-						if (fset == null)
+						Field field = fieldMap.get(md.getColumnLabel(i));
+						if (field == null)
+							field = fieldMap.get(conv(md.getColumnLabel(i)));
+						if (field == null)
 							continue;
-						fset.f.setAccessible(true);
-						fset.f
-								.set(instance, getSQLData(fset.f, executor.rs,
-										i));
-						fset.f.setAccessible(fset.b);
+						setValue(instance, field, getSQLData(field,
+								executor.rs, i));
 					}
 					return instance;
 				} catch (SQLException e) {
-					throw new SQLRuntimeException(joinByCrlf(e.getMessage(),
-							executor.getSQLInfo()), e);
-				} catch (InstantiationException e) {
-					throw new WrapException(clazz.getSimpleName()
-							+ " must have default constructor.", e);
-				} catch (IllegalAccessException e) {
-					throw new WrapException(clazz.getSimpleName()
-							+ " have security problem.", e);
+					throw new SQLRuntimeException(mkStringByCRLF(
+							e.getMessage(), executor.getSQLInfo()), e);
 				}
 			}
 
@@ -120,8 +101,8 @@ public class SQLIterator<T> implements Iterable<T> {
 			}
 			return (T) map;
 		} catch (SQLException e) {
-			throw new SQLRuntimeException(joinByCrlf(e.getMessage(), executor
-					.getSQLInfo()), e);
+			throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
+					executor.getSQLInfo()), e);
 		}
 	}
 
@@ -137,15 +118,5 @@ public class SQLIterator<T> implements Iterable<T> {
 				sb.append(s.substring(0, 1).toUpperCase() + s.substring(1));
 		}
 		return sb.toString();
-	}
-
-	private static class FSet {
-		Field f;
-		boolean b;
-
-		private FSet(Field f, boolean b) {
-			this.f = f;
-			this.b = b;
-		}
 	}
 }

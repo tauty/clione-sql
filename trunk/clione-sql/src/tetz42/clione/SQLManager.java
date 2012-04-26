@@ -17,6 +17,7 @@ package tetz42.clione;
 
 import static tetz42.clione.loader.LoaderUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -57,6 +58,13 @@ public class SQLManager {
 		return params().$(key, value);
 	}
 
+	/**
+	 *
+	 * @param <T> note: This is not used, but required for avoiding warning.
+	 * @param key
+	 * @param values
+	 * @return
+	 */
 	public static <T> ParamMap params(String key, T... values) {
 		return params().$(key, values);
 	}
@@ -88,13 +96,12 @@ public class SQLManager {
 		this.con = con;
 	}
 
-	public SQLManager negativeValues(Object... negativeValues) {
-		this.negativeValues = negativeValues;
-		return this;
+	public SQLManager emptyAsNegative() {
+		return asNegative("");
 	}
 
-	public SQLManager appendNegativeValues(Object... negativeValues) {
-		this.negativeValues = join(this.negativeValues, negativeValues);
+	public SQLManager asNegative(Object... negativeValues) {
+		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
 	}
 

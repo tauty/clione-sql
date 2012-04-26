@@ -2,6 +2,7 @@ package tetz42.clione.lang;
 
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +106,7 @@ public class Extention extends ClioneFunction {
 				} else {
 					condition = getNextInstruction();
 					if (condition == null)
-						throw new ClioneFormatException(joinByCrlf("%"
+						throw new ClioneFormatException(mkStringByCRLF("%"
 								+ getFuncName()
 								+ " must have next parameter like below:", "%"
 								+ getFuncName() + " PARAM1 or %"
@@ -129,7 +130,7 @@ public class Extention extends ClioneFunction {
 						if (!Extention.class.isInstance(cf))
 							return false;
 						Extention ext = (Extention) cf;
-						if (!isContain(ext.func, "elseif", "else", "ELSEIF",
+						if (!contains(ext.func, "elseif", "else", "ELSEIF",
 								"ELSE")) {
 							return false;
 						}
@@ -152,7 +153,7 @@ public class Extention extends ClioneFunction {
 				ParamMap paramMap = getParamMap();
 				if (ExtendedParamMap.class.isInstance(paramMap)) {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
-					if (isContain(extMap.getCaller(), "if", "elseif")) {
+					if (contains(extMap.getCaller(), "if", "elseif")) {
 						extMap.caller(null);
 						return getFunction("if").perform();
 					}
@@ -167,7 +168,7 @@ public class Extention extends ClioneFunction {
 				ParamMap paramMap = getParamMap();
 				if (ExtendedParamMap.class.isInstance(paramMap)) {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
-					if (isContain(extMap.getCaller(), "if", "elseif")) {
+					if (contains(extMap.getCaller(), "if", "elseif")) {
 						return getNextInstruction();
 					}
 				}
@@ -227,14 +228,14 @@ public class Extention extends ClioneFunction {
 				String path = inst.replacement;
 				inst.merge();
 				if (path == null)
-					throw new ClioneFormatException(joinByCrlf(
+					throw new ClioneFormatException(mkStringByCRLF(
 							"The parameter of %" + getFuncName()
 									+ " must be String literal.",
 							getResourceInfo()));
 				if (path.startsWith(".")) {
 					String res = getResourcePath();
 					if (res == null) {
-						throw new SQLFileNotFoundException(joinByCrlf(
+						throw new SQLFileNotFoundException(mkStringByCRLF(
 								"The relative path,'" + res
 										+ "' , can not found.",
 								getResourceInfo()));

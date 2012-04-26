@@ -21,16 +21,8 @@ public class Util {
 		return new ArrayList<E>();
 	}
 
-	public static boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-
 	public static boolean isEmpty(Object o) {
-		return o == null ? true : isEmpty(String.valueOf(o));
-	}
-
-	public static boolean isNotEmpty(String s) {
-		return !isEmpty(s);
+		return o == null || "".equals(o);
 	}
 
 	public static boolean isNotEmpty(Object o) {
@@ -57,9 +49,47 @@ public class Util {
 		return !containsEmpty(objs);
 	}
 
-	public static boolean contains(Object key, Object... values) {
+	public static <T> List<T> combine(List<T>... dests) {
+		List<T> list = new ArrayList<T>();
+		for (List<T> dest : dests) {
+			if (dest == null)
+				continue;
+			list.addAll(dest);
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] combine(T[]... dests) {
+		ArrayList<T> list = new ArrayList<T>();
+		for (T[] dest : dests) {
+			if (dest == null)
+				continue;
+			for (T e : dest)
+				list.add(e);
+		}
+		return (T[]) list.toArray();
+	}
+
+	public static boolean isEquals(Object... vals) {
+		if (vals.length == 0)
+			return true;
+		Object src = vals[0];
+		for (int i = 1; i < vals.length; i++) {
+			if (src == null) {
+				if (vals[i] != null)
+					return false;
+			} else {
+				if (!src.equals(vals[i]))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean contains(Object src, Object... values) {
 		for (Object value : values) {
-			if (key.equals(value))
+			if (isEquals(src, value))
 				return true;
 		}
 		return false;

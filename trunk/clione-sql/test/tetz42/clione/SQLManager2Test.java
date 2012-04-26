@@ -230,7 +230,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void find_by_emptyStr_asNull() throws IOException, SQLException {
-		SQLManager man = sqlManager(con).negativeValues("");
+		SQLManager man = sqlManager(con).asNegative("");
 		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
 				Sample.class, params("age", 34).$("name_part", ""));
 
@@ -241,7 +241,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void find_by_emptyStr_asNull2() throws IOException, SQLException {
-		SQLManager man = sqlManager(con).appendNegativeValues("");
+		SQLManager man = sqlManager(con).emptyAsNegative();
 		Sample sample = man.useFile(SQLManagerTest.class, "Select.sql").find(
 				Sample.class, params("age", 34).$("name_part", ""));
 
@@ -252,7 +252,7 @@ public class SQLManager2Test {
 
 	@Test
 	public void find_by_emptyStr_asNull3() throws IOException, SQLException {
-		SQLManager man = sqlManager(con).appendNegativeValues("");
+		SQLManager man = sqlManager(con).asNegative("");
 		Cond cond = new Cond();
 		cond.age = 34;
 		cond.name_part = "";
