@@ -19,6 +19,7 @@ import static tetz42.clione.loader.LoaderUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.util.Util.*;
 
+import java.io.Closeable;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,8 +30,9 @@ import java.util.List;
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
+import tetz42.util.exception.SQLRuntimeException;
 
-public class SQLManager {
+public class SQLManager implements Closeable{
 
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
@@ -139,7 +141,7 @@ public class SQLManager {
 		return this.executedParams;
 	}
 
-	public void closeStatement() throws SQLException {
+	public void closeStatement() {
 		ArrayList<SQLExecutor> list = new ArrayList<SQLExecutor>(
 				processingExecutorSet);
 		for (SQLExecutor executor : list)
@@ -182,10 +184,20 @@ public class SQLManager {
 		return con;
 	}
 
-	public void closeConnection() throws SQLException {
+	public void closeConnection() {
 		closeStatement();
 		Connection con = con();
-		if (con != null)
-			con.close();
+		if (con != null) {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				throw new SQLRuntimeException(e);
+			}
+		}
+	}
+
+	@Override
+	public void close() {
+		closeConnection();
 	}
 }
