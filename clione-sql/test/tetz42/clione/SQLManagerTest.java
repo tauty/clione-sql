@@ -224,7 +224,7 @@ public class SQLManagerTest {
 		assertEqualsWithFile(list, getClass(), "update_by_no_param");
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = SQLRuntimeException.class)
 	public void update_using_wrongSQL() throws IOException, SQLException {
 		setThreadConnection(con);
 		sqlManager().useFile(getClass(), "WrongUpdate.sql").update();

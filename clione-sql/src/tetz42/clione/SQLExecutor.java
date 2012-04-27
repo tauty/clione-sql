@@ -2,8 +2,8 @@ package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.Util.*;
 
+import java.io.Closeable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,8 +14,10 @@ import java.util.Map;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.Using;
+import tetz42.util.exception.SQLRuntimeException;
 
-public class SQLExecutor {
+public class SQLExecutor implements Closeable {
 
 	private final SQLManager manager;
 	private final int hashValue;
@@ -44,7 +46,7 @@ public class SQLExecutor {
 		return this;
 	}
 
-	public Map<String, Object> find() throws SQLException {
+	public Map<String, Object> find() {
 		return this.find((Map<String, Object>) null);
 	}
 
@@ -53,147 +55,154 @@ public class SQLExecutor {
 		return hashValue;
 	}
 
-	public ResultMap find(Object paramObj) throws SQLException {
+	public ResultMap find(Object paramObj) {
 		return this.find(params(paramObj));
 	}
 
-	public ResultMap find(Map<String, Object> paramMap) throws SQLException {
-		try {
-			for (ResultMap map : each(ResultMap.class, paramMap)) {
-				return map;
+	public ResultMap find(final Map<String, Object> paramMap) {
+		return new Using<ResultMap>(this) {
+
+			@Override
+			protected ResultMap execute() {
+				for (ResultMap map : each(ResultMap.class, paramMap)) {
+					return map;
+				}
+				return null;
 			}
-			return null;
-		} catch (SQLException e) {
-			throw new SQLException(
-					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
-		} finally {
-			closeStatement();
-		}
+		}.invoke();
 	}
 
-	public List<ResultMap> findAll() throws SQLException {
+	public List<ResultMap> findAll() {
 		return this.findAll((Map<String, Object>) null);
 	}
 
-	public List<ResultMap> findAll(Object paramObj) throws SQLException {
+	public List<ResultMap> findAll(Object paramObj) {
 		return this.findAll(params(paramObj));
 	}
 
-	public List<ResultMap> findAll(Map<String, Object> paramMap)
-			throws SQLException {
+	public List<ResultMap> findAll(final Map<String, Object> paramMap) {
+		return new Using<List<ResultMap>>(this) {
 
-		try {
-			ArrayList<ResultMap> list = new ArrayList<ResultMap>();
-			for (ResultMap map : each(ResultMap.class, paramMap)) {
-				list.add(map);
+			@Override
+			protected List<ResultMap> execute() {
+				ArrayList<ResultMap> list = new ArrayList<ResultMap>();
+				for (ResultMap map : each(ResultMap.class, paramMap)) {
+					list.add(map);
+				}
+				return list;
 			}
-			return list;
-		} catch (SQLException e) {
-			throw new SQLException(
-					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
-		} finally {
-			this.closeStatement();
-		}
+		}.invoke();
 	}
 
-	public <T> T find(Class<T> entityClass) throws SQLException {
+	public <T> T find(Class<T> entityClass) {
 		return this.find(entityClass, (Map<String, Object>) null);
 	}
 
-	public <T> T find(Class<T> entityClass, Object paramObj)
-			throws SQLException {
+	public <T> T find(Class<T> entityClass, Object paramObj) {
 		return this.find(entityClass, params(paramObj));
 	}
 
-	public <T> T find(Class<T> entityClass, Map<String, Object> paramMap)
-			throws SQLException {
-		try {
-			for (T entity : each(entityClass, paramMap)) {
-				return entity;
+	public <T> T find(final Class<T> entityClass,
+			final Map<String, Object> paramMap) {
+		return new Using<T>(this) {
+
+			@Override
+			protected T execute() {
+				for (T entity : each(entityClass, paramMap)) {
+					return entity;
+				}
+				return null;
 			}
-			return null;
-		} catch (SQLException e) {
-			throw new SQLException(
-					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
-		} finally {
-			this.closeStatement();
-		}
+		}.invoke();
 	}
 
-	public <T> List<T> findAll(Class<T> entityClass) throws SQLException {
+	public <T> List<T> findAll(Class<T> entityClass) {
 		return this.findAll(entityClass, null);
 	}
 
-	public <T> List<T> findAll(Class<T> entityClass, Object paramObj)
-			throws SQLException {
+	public <T> List<T> findAll(Class<T> entityClass, Object paramObj) {
 		return this.findAll(entityClass, params(paramObj));
 	}
 
-	public <T> List<T> findAll(Class<T> entityClass,
-			Map<String, Object> paramMap) throws SQLException {
+	public <T> List<T> findAll(final Class<T> entityClass,
+			final Map<String, Object> paramMap) {
+		return new Using<List<T>>(this) {
 
-		try {
-			ArrayList<T> list = new ArrayList<T>();
-			for (T entity : each(entityClass, paramMap)) {
-				list.add(entity);
+			@Override
+			protected List<T> execute() {
+				ArrayList<T> list = new ArrayList<T>();
+				for (T entity : each(entityClass, paramMap)) {
+					list.add(entity);
+				}
+				return list;
 			}
-			return list;
-		} catch (SQLException e) {
-			throw new SQLException(
-					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
-		} finally {
-			this.closeStatement();
-		}
+		}.invoke();
 	}
 
-	public <T> SQLIterator<T> each(Class<T> entityClass) throws SQLException {
-		return SQLIterator.genIterator(this, entityClass, null);
+	public <T> SQLIterator<T> each(Class<T> entityClass) {
+		return each(entityClass, null);
 	}
 
-	public SQLIterator<ResultMap> each(Map<String, Object> paramMap)
-			throws SQLException {
-		return SQLIterator.genIterator(this, ResultMap.class, paramMap);
+	public SQLIterator<ResultMap> each(Map<String, Object> paramMap) {
+		return each(ResultMap.class, paramMap);
 	}
 
-	public SQLIterator<ResultMap> each() throws SQLException {
-		return SQLIterator.genIterator(this, ResultMap.class, null);
+	public SQLIterator<ResultMap> each() {
+		return each(ResultMap.class, null);
 	}
 
 	public <T> SQLIterator<T> each(Class<T> entityClass,
-			Map<String, Object> paramMap) throws SQLException {
-		return SQLIterator.genIterator(this, entityClass, paramMap);
+			Map<String, Object> paramMap) {
+		try {
+			return SQLIterator.genIterator(this, entityClass, paramMap);
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(getSQLInfo(), e);
+		}
 	}
 
-	public int update() throws SQLException {
+	public int update() {
 		return this.update((Map<String, Object>) null);
 	}
 
-	public int update(Object paramObj) throws SQLException {
+	public int update(Object paramObj) {
 		return this.update(params(paramObj));
 	}
 
-	public int update(Map<String, Object> paramMap) throws SQLException {
+	public int update(final Map<String, Object> paramMap) {
+		return new Using<Integer>(this) {
+
+			@Override
+			protected Integer execute() {
+				try {
+					stmt = genStmt(paramMap);
+					return stmt.executeUpdate();
+				} catch (SQLException e) {
+					throw new SQLRuntimeException(getSQLInfo(), e);
+				}
+			}
+		}.invoke();
+	}
+
+	public void closeStatement() {
 		try {
-			stmt = this.genStmt(paramMap);
-			return stmt.executeUpdate();
+			if (rs != null) {
+				rs.close();
+				rs = null;
+			}
+			if (stmt != null) {
+				stmt.close();
+				stmt = null;
+			}
 		} catch (SQLException e) {
-			throw new SQLException(
-					mkStringByCRLF(e.getMessage(), getSQLInfo()), e);
+			throw new SQLRuntimeException(e);
 		} finally {
-			this.closeStatement();
+			manager.removeExecutor(this);
 		}
 	}
 
-	public void closeStatement() throws SQLException {
-		if (rs != null) {
-			rs.close();
-			rs = null;
-		}
-		if (stmt != null) {
-			stmt.close();
-			stmt = null;
-		}
-		manager.removeExecutor(this);
+	@Override
+	public void close() {
+		closeStatement();
 	}
 
 	public String getSQLInfo() {
