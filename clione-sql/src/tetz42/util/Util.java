@@ -49,6 +49,7 @@ public class Util {
 		return !containsEmpty(objs);
 	}
 
+	@SuppressWarnings({"unchecked", "varargs"})
 	public static <T> List<T> combine(List<T>... dests) {
 		List<T> list = new ArrayList<T>();
 		for (List<T> dest : dests) {
@@ -95,6 +96,7 @@ public class Util {
 		return false;
 	}
 
+	@SuppressWarnings({"unchecked", "varargs"})
 	public static <T> T nvl(T... objs) {
 		for (T obj : objs) {
 			if (obj != null)
@@ -103,6 +105,7 @@ public class Util {
 		return null;
 	}
 
+	@SuppressWarnings({"unchecked", "varargs"})
 	public static <T> T evl(T... objs) {
 		for (T obj : objs) {
 			if (isNotEmpty(obj))

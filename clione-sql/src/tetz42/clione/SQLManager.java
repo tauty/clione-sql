@@ -67,6 +67,7 @@ public class SQLManager implements Closeable{
 	 * @param values
 	 * @return
 	 */
+	@SuppressWarnings({"unchecked", "varargs"})
 	public static <T> ParamMap params(String key, T... values) {
 		return params().$(key, values);
 	}
