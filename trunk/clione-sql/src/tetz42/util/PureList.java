@@ -25,10 +25,12 @@ public class PureList<E> implements Iterable<E>, Serializable {
 		this.tail = tail;
 	}
 
+	@SuppressWarnings({"unchecked", "varargs"})
 	public static <T> PureList<T> genList(T... es) {
 		return genList(0, es);
 	}
 
+	@SuppressWarnings({"unchecked", "varargs"})
 	private static <T> PureList<T> genList(int index, T... es) {
 		if (es.length >= index)
 			return null;

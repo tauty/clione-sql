@@ -64,7 +64,7 @@ public class ContextUtil {
 	}
 
 	public static String getResourceInfo() {
-		return mkStringByCRLF(resourceInfoes.get().toArray());
+		return mkStringByCRLF(resourceInfoes.get());
 	}
 
 	public static String getResourcePath() {

@@ -14,6 +14,7 @@ import java.util.Map;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ResultMap;
+import tetz42.util.Pair;
 import tetz42.util.Using;
 import tetz42.util.exception.SQLRuntimeException;
 
@@ -209,14 +210,6 @@ public class SQLExecutor implements Closeable {
 		return genSQLInfo(getSql(), getParams(), getResourceInfo());
 	}
 
-	public String getSql() {
-		return this.sqlGenerator.sql;
-	}
-
-	public List<Object> getParams() {
-		return this.sqlGenerator.params;
-	}
-
 	public String getResourceInfo() {
 		return this.resourceInfo;
 	}
@@ -224,11 +217,30 @@ public class SQLExecutor implements Closeable {
 	public String genSql() {
 		return genSql(null);
 	}
+	
+	public Pair<String, List<Object>> genSqlAndParams(){
+		return genSqlAndParams(null);
+	}
+
+	public Pair<String, List<Object>> genSqlAndParams(Map<String, Object> paramMap){
+		Pair<String, List<Object>> pair = new Pair<String, List<Object>>();
+		pair.setFirst(genSql(paramMap));
+		pair.setSecond(sqlGenerator.params);
+		return pair;
+	}
 
 	public String genSql(Map<String, Object> paramMap) {
 		String sql = sqlGenerator.genSql(paramMap, sqlNode);
 		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
 		return sql;
+	}
+
+	public String getSql() {
+		return this.sqlGenerator.sql;
+	}
+
+	public List<Object> getParams() {
+		return this.sqlGenerator.params;
 	}
 
 	PreparedStatement genStmt(Map<String, Object> paramMap) throws SQLException {

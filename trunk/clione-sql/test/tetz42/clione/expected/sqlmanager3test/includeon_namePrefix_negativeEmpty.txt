@@ -1,18 +1,20 @@
-ArrayList[
-	ResultMap{
-		"address": "yawara@urasawa.com"
-		"id": "1"
-		"name": "猪熊柔"
-		"num": 2
-		"shain_no": "100001"
-		"shozoku_bu_ka": "柔道部女子課"
-	}
-	ResultMap{
-		"address": "asashoryu@docomo.com"
-		"id": "2"
-		"name": "朝青龍"
-		"num": 3
-		"shain_no": "100002"
-		"shozoku_bu_ka": "相撲部モンゴル課"
-	}
-]
+Pair{
+	first = "select
+	*
+from (
+	select
+		sub.*,
+		ROWNUM num
+	from
+		(
+select
+	*
+from
+	employees
+) sub
+)
+where
+	2 <= num and num <= 3
+"
+	second = ArrayList[ ]
+}

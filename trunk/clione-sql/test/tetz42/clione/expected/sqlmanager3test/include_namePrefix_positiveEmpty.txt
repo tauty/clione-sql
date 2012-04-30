@@ -1,14 +1,27 @@
-ArrayList[
-	ResultMap{
-		"age": 34
-		"id": 1
-		"name": "Takako Kawada"
-		"num": 2
-	}
-	ResultMap{
-		"age": 2
-		"id": 2
-		"name": "Tao Kawada"
-		"num": 3
-	}
-]
+Pair{
+	first = "select
+	*
+from (
+	select
+		sub.*,
+		ROWNUM num
+	from
+		(
+
+			select
+				*
+			from
+				PEOPLE
+			where
+				name like ?
+		) sub
+)
+where
+	name like ?
+	and 2 <= num and num <= 3
+"
+	second = ArrayList[
+		"%"
+		"%"
+	]
+}
