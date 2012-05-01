@@ -30,6 +30,7 @@ public class ContextUtil {
 		m.put(STANDARD_RDBMS, new Dialect());
 		m.put("oracle", new OracleDialect());
 		m.put("mysql", new MysqlDialect());
+		m.put("postgressql", new Dialect());
 		m.put("sqlite", new Dialect());
 		m.put("db2", new Db2Dialect());
 		m.put("sqlserver", new SqlserverDialect());
