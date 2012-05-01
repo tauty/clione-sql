@@ -56,8 +56,8 @@ public class SQLExecutor implements Closeable {
 		return hashValue;
 	}
 
-	public ResultMap find(Object paramObj) {
-		return this.find(params(paramObj));
+	public ResultMap find(Object obj) {
+		return this.find(params(obj));
 	}
 
 	public ResultMap find(final Map<String, Object> paramMap) {
@@ -144,12 +144,20 @@ public class SQLExecutor implements Closeable {
 		return each(entityClass, null);
 	}
 
+	public <T> SQLIterator<T> each(Class<T> entityClass, Object obj) {
+		return each(entityClass, params(obj));
+	}
+
 	public SQLIterator<ResultMap> each(Map<String, Object> paramMap) {
 		return each(ResultMap.class, paramMap);
 	}
 
 	public SQLIterator<ResultMap> each() {
 		return each(ResultMap.class, null);
+	}
+
+	public SQLIterator<ResultMap> each(Object obj) {
+		return each(ResultMap.class, params(obj));
 	}
 
 	public <T> SQLIterator<T> each(Class<T> entityClass,
@@ -217,15 +225,20 @@ public class SQLExecutor implements Closeable {
 	public String genSql() {
 		return genSql(null);
 	}
-	
-	public Pair<String, List<Object>> genSqlAndParams(){
+
+	public Pair<String, List<Object>> genSqlAndParams() {
 		return genSqlAndParams(null);
 	}
 
-	public Pair<String, List<Object>> genSqlAndParams(Map<String, Object> paramMap){
+	public Pair<String, List<Object>> genSqlAndParams(Object obj) {
+		return genSqlAndParams(params(obj));
+	}
+
+	public Pair<String, List<Object>> genSqlAndParams(
+			Map<String, Object> paramMap) {
 		Pair<String, List<Object>> pair = new Pair<String, List<Object>>();
 		pair.setFirst(genSql(paramMap));
-		pair.setSecond(sqlGenerator.params);
+		pair.setSecond(getParams());
 		return pair;
 	}
 

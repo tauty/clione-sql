@@ -4,10 +4,24 @@ import static tetz42.util.Const.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
+
+	public static final <E> ArrayList<E> newArrayList() {
+		return new ArrayList<E>();
+	}
+
+	public static final <E> LinkedList<E> newLinkedList() {
+		return new LinkedList<E>();
+	}
+
+	public static final <E> HashSet<E> newHashSet() {
+		return new HashSet<E>();
+	}
 
 	public static final <K, V> HashMap<K, V> newHashMap() {
 		return new HashMap<K, V>();
@@ -15,10 +29,6 @@ public class Util {
 
 	public static final <K, V> ConcurrentHashMap<K, V> newConcurrentMap() {
 		return new ConcurrentHashMap<K, V>();
-	}
-
-	public static final <E> ArrayList<E> newArrayList() {
-		return new ArrayList<E>();
 	}
 
 	public static boolean isEmpty(Object o) {

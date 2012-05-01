@@ -17,7 +17,6 @@ public abstract class ExtFunction {
 		protected List<Extention> initialValue() {
 			return new ArrayList<Extention>();
 		}
-
 	};
 	private static ThreadLocal<List<ParamMap>> curParamMap = new ThreadLocal<List<ParamMap>>() {
 
