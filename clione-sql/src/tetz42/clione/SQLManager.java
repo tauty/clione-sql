@@ -22,6 +22,7 @@ import static tetz42.util.Util.*;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.exception.SQLRuntimeException;
 
-public class SQLManager implements Closeable{
+public class SQLManager implements Closeable {
 
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
@@ -61,13 +62,14 @@ public class SQLManager implements Closeable{
 	}
 
 	/**
-	 *
-	 * @param <T> note: This is not used, but required for avoiding warning.
+	 * 
+	 * @param <T>
+	 *            note: This is not used, but required for avoiding warning.
 	 * @param key
 	 * @param values
 	 * @return
 	 */
-	@SuppressWarnings({"unchecked", "varargs"})
+	@SuppressWarnings({ "unchecked", "varargs" })
 	public static <T> ParamMap params(String key, T... values) {
 		return params().$(key, values);
 	}
@@ -85,6 +87,7 @@ public class SQLManager implements Closeable{
 	}
 
 	private final Connection con;
+	private final String productName;
 	private HashSet<SQLExecutor> processingExecutorSet = new HashSet<SQLExecutor>();
 	private String resourceInfo;
 	private String executedSql;
@@ -96,7 +99,21 @@ public class SQLManager implements Closeable{
 	}
 
 	public SQLManager(Connection con) {
-		this.con = con;
+		if (con != null)
+			this.con = con;
+		else
+			this.con = getThreadConnection();
+		if (this.con != null) {
+			try {
+				DatabaseMetaData metaData = con.getMetaData();
+				String name = metaData.getDatabaseProductName();
+				productName = name == null ? name : name.toLowerCase();
+			} catch (SQLException e) {
+				throw new SQLRuntimeException(e);
+			}
+		} else {
+			productName = null;
+		}
 	}
 
 	public SQLManager emptyAsNegative() {
@@ -106,24 +123,6 @@ public class SQLManager implements Closeable{
 	public SQLManager asNegative(Object... negativeValues) {
 		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
-	}
-
-	Object[] getNegativeValues() {
-		return negativeValues;
-	}
-
-	void putExecutor(SQLExecutor executor) {
-		this.processingExecutorSet.add(executor);
-	}
-
-	void removeExecutor(SQLExecutor executor) {
-		this.processingExecutorSet.remove(executor);
-	}
-
-	void setInfo(String resourceInfo, String sql, List<Object> params) {
-		this.resourceInfo = resourceInfo;
-		this.executedSql = sql;
-		this.executedParams = params;
 	}
 
 	public String getSQLInfo() {
@@ -158,14 +157,15 @@ public class SQLManager implements Closeable{
 
 	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
 		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByClass(clazz,
-				sqlFile));
+				sqlFile, productName));
 		// TODO better solution.
 		this.resourceInfo = sqlExecutor.resourceInfo;
 		return sqlExecutor;
 	}
 
 	public SQLExecutor useFile(String sqlPath) {
-		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath));
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath,
+				productName));
 		// TODO better solution.
 		this.resourceInfo = sqlExecutor.resourceInfo;
 		return sqlExecutor;
@@ -181,7 +181,7 @@ public class SQLManager implements Closeable{
 	public Connection con() {
 		Connection con = this.con != null ? this.con : tcon.get();
 		if (con == null)
-			throw new ConnectionNotFoundException("No connection is available!");
+			throw new ConnectionNotFoundException("No connection!");
 		return con;
 	}
 
@@ -200,5 +200,27 @@ public class SQLManager implements Closeable{
 	@Override
 	public void close() {
 		closeConnection();
+	}
+
+	Object[] getNegativeValues() {
+		return negativeValues;
+	}
+
+	void putExecutor(SQLExecutor executor) {
+		this.processingExecutorSet.add(executor);
+	}
+
+	void removeExecutor(SQLExecutor executor) {
+		this.processingExecutorSet.remove(executor);
+	}
+
+	void setInfo(String resourceInfo, String sql, List<Object> params) {
+		this.resourceInfo = resourceInfo;
+		this.executedSql = sql;
+		this.executedParams = params;
+	}
+
+	String getProductName() {
+		return productName;
 	}
 }

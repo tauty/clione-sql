@@ -30,18 +30,30 @@ public class LoaderUtil {
 	private static final ConcurrentHashMap<String, NodeHolder> cacheByPath = new ConcurrentHashMap<String, NodeHolder>();
 	private static final ConcurrentHashMap<String, NodeHolder> cacheBySQL = new ConcurrentHashMap<String, NodeHolder>();
 
-	public static SQLNode getNodeByPath(String sqlPath) {
+	public static SQLNode getNodeByPath(String sqlPath, String productName) {
 		if (sqlPath == null)
 			throw new NullPointerException("The sql path must not be null.");
-		NodeHolder nh = cacheByPath.get(sqlPath);
-		if (isCacheInvalid(nh)) {
-			nh = createNodeHolder(sqlPath);
-		}
+		NodeHolder nh = getNodeHolder(sqlPath + "-" + productName);
+		if(nh == null)
+			nh = getNodeHolder(sqlPath);
+		
 		return nh.sqlNode;
 	}
+	
+	private static NodeHolder getNodeHolder(String sqlPath){
+		final String resourceInfo = sqlPathPrefix + sqlPath;
+		NodeHolder nh = cacheByPath.get(sqlPath);
+		if (isCacheInvalid(nh))
+			nh = createNodeHolder(sqlPath);
+		if(nh == null)
+			throw new SQLFileNotFoundException("SQL File not found. " + CRLF
+					+ resourceInfo);
+		return nh;
+	}
 
-	public static SQLNode getNodeByClass(Class<?> clazz, String sqlFileName) {
-		return getNodeByPath(getSQLPath(clazz, sqlFileName));
+	public static SQLNode getNodeByClass(Class<?> clazz, String sqlFileName,
+			String productName) {
+		return getNodeByPath(getSQLPath(clazz, sqlFileName), productName);
 	}
 
 	public static String getSQLPath(Class<?> clazz, String sqlFileName) {
@@ -83,8 +95,7 @@ public class LoaderUtil {
 		final InputStream in = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(sqlPath);
 		if (in == null)
-			throw new SQLFileNotFoundException("SQL File not found. " + CRLF
-					+ resourceInfo);
+			return null;
 		return new IOWrapper<NodeHolder>(in) {
 
 			@Override
