@@ -31,23 +31,24 @@ public class LoaderUtil {
 	private static final ConcurrentHashMap<String, NodeHolder> cacheBySQL = new ConcurrentHashMap<String, NodeHolder>();
 
 	public static SQLNode getNodeByPath(String sqlPath, String productName) {
+		final String resourceInfo = sqlPathPrefix + sqlPath;
 		if (sqlPath == null)
 			throw new NullPointerException("The sql path must not be null.");
-		NodeHolder nh = getNodeHolder(sqlPath + "-" + productName);
+		NodeHolder nh = null;
+		if(productName != null)
+			nh = getNodeHolder(sqlPath + "-" + productName);
 		if(nh == null)
 			nh = getNodeHolder(sqlPath);
-		
-		return nh.sqlNode;
-	}
-	
-	private static NodeHolder getNodeHolder(String sqlPath){
-		final String resourceInfo = sqlPathPrefix + sqlPath;
-		NodeHolder nh = cacheByPath.get(sqlPath);
-		if (isCacheInvalid(nh))
-			nh = createNodeHolder(sqlPath);
 		if(nh == null)
 			throw new SQLFileNotFoundException("SQL File not found. " + CRLF
 					+ resourceInfo);
+		return nh.sqlNode;
+	}
+
+	private static NodeHolder getNodeHolder(String sqlPath){
+		NodeHolder nh = cacheByPath.get(sqlPath);
+		if (isCacheInvalid(nh))
+			nh = createNodeHolder(sqlPath);
 		return nh;
 	}
 

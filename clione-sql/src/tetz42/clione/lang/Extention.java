@@ -242,7 +242,7 @@ public class Extention extends ClioneFunction {
 					}
 					path = fusionPath(res, path);
 				}
-				SQLNode sqlNode = LoaderUtil.getNodeByPath(path);
+				SQLNode sqlNode = LoaderUtil.getNodeByPath(path, getProductName());
 				SQLGenerator generator = new SQLGenerator();
 				ParamMap paramMap = new ParamMap();
 				if (inst.map != null)

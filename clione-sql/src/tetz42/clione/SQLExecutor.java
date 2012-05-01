@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.gen.SQLGenerator;
+import tetz42.clione.lang.ContextUtil;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Pair;
@@ -24,6 +25,7 @@ public class SQLExecutor implements Closeable {
 	private final int hashValue;
 	final SQLGenerator sqlGenerator;
 	String resourceInfo = null;
+	private final String productName;
 
 	final SQLNode sqlNode;
 
@@ -36,6 +38,7 @@ public class SQLExecutor implements Closeable {
 		this.resourceInfo = sqlNode.resourceInfo;
 		this.sqlGenerator = new SQLGenerator(manager.getNegativeValues());
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
+		this.productName = manager.getProductName();
 	}
 
 	public SQLExecutor emptyAsNegative() {
@@ -214,16 +217,32 @@ public class SQLExecutor implements Closeable {
 		closeStatement();
 	}
 
+	public String genSql() {
+		return genSql(null);
+	}
+
+	public String genSql(Map<String, Object> paramMap) {
+		ContextUtil.setProductName(this.productName);
+		String sql = sqlGenerator.genSql(paramMap, sqlNode);
+		ContextUtil.clear();
+		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
+		return sql;
+	}
+
+	public String getSql() {
+		return this.sqlGenerator.sql;
+	}
+
+	public List<Object> getParams() {
+		return this.sqlGenerator.params;
+	}
+
 	public String getSQLInfo() {
 		return genSQLInfo(getSql(), getParams(), getResourceInfo());
 	}
 
 	public String getResourceInfo() {
 		return this.resourceInfo;
-	}
-
-	public String genSql() {
-		return genSql(null);
 	}
 
 	public Pair<String, List<Object>> genSqlAndParams() {
@@ -240,20 +259,6 @@ public class SQLExecutor implements Closeable {
 		pair.setFirst(genSql(paramMap));
 		pair.setSecond(getParams());
 		return pair;
-	}
-
-	public String genSql(Map<String, Object> paramMap) {
-		String sql = sqlGenerator.genSql(paramMap, sqlNode);
-		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
-		return sql;
-	}
-
-	public String getSql() {
-		return this.sqlGenerator.sql;
-	}
-
-	public List<Object> getParams() {
-		return this.sqlGenerator.params;
 	}
 
 	PreparedStatement genStmt(Map<String, Object> paramMap) throws SQLException {

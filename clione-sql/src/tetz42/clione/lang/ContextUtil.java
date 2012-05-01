@@ -30,6 +30,7 @@ public class ContextUtil {
 
 	}
 
+
 	private static ThreadLocal<LinkedList<ResInfoHolder>> resourceInfoes = new ThreadLocal<LinkedList<ResInfoHolder>>() {
 
 		@Override
@@ -145,5 +146,18 @@ public class ContextUtil {
 		aPath = isEmpty(aPath) ? "" : aPath + "/";
 
 		return aPath + rPath;
+	}
+
+	// TODO implementation
+	public static String getProductName() {
+		return null;
+	}
+
+	// TODO implementation
+	public static void setProductName(String productName) {
+	}
+
+	// TODO implementation
+	public static void clear() {
 	}
 }
