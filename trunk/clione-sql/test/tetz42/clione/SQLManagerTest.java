@@ -68,8 +68,9 @@ public class SQLManagerTest {
 	@Test
 	public void con() throws IOException, SQLException {
 		// Null Instance Connection
+		SQLManager manager = sqlManager();
 		try {
-			sqlManager();
+			assertThat(manager.con(), is(this.con));
 			fail();
 		} catch (ConnectionNotFoundException e) {
 		}
@@ -80,7 +81,7 @@ public class SQLManagerTest {
 		assertThat(getThreadConnection(), is(this.con));
 
 		// Null Instance Connection
-		SQLManager manager = sqlManager();
+		manager = sqlManager();
 		assertThat(manager.con(), is(this.con));
 		assertThat(getThreadConnection(), is(this.con));
 

@@ -62,7 +62,7 @@ public class SQLManager implements Closeable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param <T>
 	 *            note: This is not used, but required for avoiding warning.
 	 * @param key
@@ -105,7 +105,7 @@ public class SQLManager implements Closeable {
 			this.con = getThreadConnection();
 		if (this.con != null) {
 			try {
-				DatabaseMetaData metaData = con.getMetaData();
+				DatabaseMetaData metaData = this.con.getMetaData();
 				String name = metaData.getDatabaseProductName();
 				productName = name == null ? name : name.toLowerCase();
 			} catch (SQLException e) {

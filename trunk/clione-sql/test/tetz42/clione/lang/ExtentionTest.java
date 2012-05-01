@@ -167,9 +167,10 @@ public class ExtentionTest {
 
 	@Test
 	public void delnull_list() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%del_negative PARAM");
-		Instruction instruction = cf.perform(params("PARAM",
-				Arrays.asList("tako", null, "ika", null, "namako")));
+		ClioneFunction cf = ClioneFuncFactory.get()
+				.parse("%del_negative PARAM");
+		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
+				"tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
 	}
 
@@ -292,7 +293,7 @@ public class ExtentionTest {
 	@Test
 	public void include_rpath() {
 		SQLNode sqlNode = LoaderUtil.getNodeByClass(getClass(),
-				"IncludeRpath.sql");
+				"IncludeRpath.sql", ContextUtil.getProductName());
 		String sql = new SQLGenerator().genSql(params(), sqlNode);
 		assertEqualsWithFile(sql, getClass(), "include_rpath");
 	}
