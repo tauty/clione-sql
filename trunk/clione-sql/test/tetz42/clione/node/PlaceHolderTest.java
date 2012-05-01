@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import tetz42.clione.lang.ContextUtil;
 import tetz42.clione.lang.Instruction;
 
 public class PlaceHolderTest {
@@ -69,6 +70,9 @@ public class PlaceHolderTest {
 		for (int i = 0; i < 3333; i++) {
 			list.add("value" + i);
 		}
+		
+		// oracle
+		ContextUtil.setProductName("oracle");
 		Instruction inst = holder.perform(params("AAA", list));
 		assertEqualsWithFile(inst, getClass(), "param_over1000");
 	}

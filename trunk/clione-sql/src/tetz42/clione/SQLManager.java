@@ -99,10 +99,7 @@ public class SQLManager implements Closeable {
 	}
 
 	public SQLManager(Connection con) {
-		if (con != null)
-			this.con = con;
-		else
-			this.con = getThreadConnection();
+		this.con = con != null ? con : getThreadConnection();
 		if (this.con != null) {
 			try {
 				DatabaseMetaData metaData = this.con.getMetaData();
@@ -179,10 +176,9 @@ public class SQLManager implements Closeable {
 	}
 
 	public Connection con() {
-		Connection con = this.con != null ? this.con : tcon.get();
-		if (con == null)
+		if (this.con == null)
 			throw new ConnectionNotFoundException("No connection!");
-		return con;
+		return this.con;
 	}
 
 	public void closeConnection() {

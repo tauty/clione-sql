@@ -14,9 +14,36 @@ public class ClioneUtilTest {
 	public void testEscapeBySharp() {
 		assertThat(escapeBySharp("tako"), is("tako"));
 		assertThat(escapeBySharp("tako100%"), is("tako100#%"));
-		assertThat(escapeBySharp("%_#[％＿"), is("#%#_###[#％#＿"));
+		// oracle
+		setProductName("oracle");
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_##[#％#＿"));
 		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
-				is("#%#_###[#％#＿"));
+				is("#%#_##[#％#＿"));
+		// db2
+		setProductName("db2");
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_##[#％#＿"));
+		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
+				is("#%#_##[#％#＿"));
+		// SQLServer
+		setProductName("sqlserver");
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_###[％＿"));
+		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
+				is("#%#_###[％＿"));
+		// mysql
+		setProductName("mysql");
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_##[％＿"));
+		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
+				is("#%#_##[％＿"));
+		// sqlite
+		setProductName("sqlite");
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_##[％＿"));
+		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
+				is("#%#_##[％＿"));
+		// unknown
+		setProductName(null);
+		assertThat(escapeBySharp("%_#[％＿"), is("#%#_##[％＿"));
+		assertThat(escapeBySharp(new StringBuilder().append("%_#[％＿")),
+				is("#%#_##[％＿"));
 	}
 
 	@Test

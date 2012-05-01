@@ -16,7 +16,6 @@
 package tetz42.clione.gen;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.Util.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,24 +29,9 @@ public class SQLGenerator {
 	public String sql;
 	public List<Object> params;
 	public boolean isSqlOutputed = false;
-	private Object[] negativeValues;
-
-	public SQLGenerator() {
-		this(null);
-	}
-
-	public SQLGenerator(Object[] negativeValues) {
-		this.negativeValues = negativeValues;
-	}
-
-	public SQLGenerator asNegative(Object... negativeValues) {
-		this.negativeValues = combine(this.negativeValues, negativeValues);
-		return this;
-	}
 
 	public String genSql(Map<String, Object> map, SQLNode sqlNode) {
 		pushResouceInfo(sqlNode.resourceInfo);
-		addNegative(negativeValues);
 		try {
 			ParamMap paramMap;
 			if (map == null)
@@ -64,8 +48,6 @@ public class SQLGenerator {
 			return this.sql = inst.replacement;
 		} finally {
 			popResourceInfo();
-			if (isAllPoped())
-				clearNegative();
 		}
 	}
 }

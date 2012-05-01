@@ -1,7 +1,9 @@
 package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
+import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.util.Util.*;
 
 import java.io.Closeable;
 import java.sql.PreparedStatement;
@@ -12,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.gen.SQLGenerator;
-import tetz42.clione.lang.ContextUtil;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Pair;
@@ -26,6 +27,7 @@ public class SQLExecutor implements Closeable {
 	final SQLGenerator sqlGenerator;
 	String resourceInfo = null;
 	private final String productName;
+	private Object[] negativeValues;
 
 	final SQLNode sqlNode;
 
@@ -36,9 +38,10 @@ public class SQLExecutor implements Closeable {
 		this.manager = manager;
 		this.sqlNode = sqlNode;
 		this.resourceInfo = sqlNode.resourceInfo;
-		this.sqlGenerator = new SQLGenerator(manager.getNegativeValues());
+		this.sqlGenerator = new SQLGenerator();
 		this.hashValue = (int) (Math.random() * Integer.MAX_VALUE);
 		this.productName = manager.getProductName();
+		this.negativeValues = manager.getNegativeValues();
 	}
 
 	public SQLExecutor emptyAsNegative() {
@@ -46,7 +49,7 @@ public class SQLExecutor implements Closeable {
 	}
 
 	public SQLExecutor asNegative(Object... negativeValues) {
-		this.sqlGenerator.asNegative(negativeValues);
+		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
 	}
 
@@ -222,11 +225,15 @@ public class SQLExecutor implements Closeable {
 	}
 
 	public String genSql(Map<String, Object> paramMap) {
-		ContextUtil.setProductName(this.productName);
-		String sql = sqlGenerator.genSql(paramMap, sqlNode);
-		ContextUtil.clear();
-		manager.setInfo(resourceInfo, sql, sqlGenerator.params);
-		return sql;
+		setProductName(this.productName);
+		addNegative(negativeValues);
+		try {
+			String sql = sqlGenerator.genSql(paramMap, sqlNode);
+			manager.setInfo(resourceInfo, sql, sqlGenerator.params);
+			return sql;
+		} finally {
+			clear();
+		}
 	}
 
 	public String getSql() {

@@ -4,13 +4,12 @@ import static tetz42.clione.lang.LangUtil.*;
 
 import java.util.ArrayList;
 
+import tetz42.clione.lang.ContextUtil;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.ParamMap;
 
 public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
-
-	private static final int IN_MAX = 1000;
 
 	private final INode node;
 	private final String operator;
@@ -37,7 +36,9 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			nodeInst.addReplacement(" " + operator + " ");
 			return nodeInst.useValueInBack().merge(inst);
 		}
-
+		
+		final int IN_MAX = ContextUtil.getDialect().inLimit();
+		
 		if (inst.params.size() <= IN_MAX)
 			return build(nodeInst, inst);
 
