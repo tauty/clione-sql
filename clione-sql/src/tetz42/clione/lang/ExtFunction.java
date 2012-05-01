@@ -2,7 +2,6 @@ package tetz42.clione.lang;
 
 import static tetz42.clione.lang.ContextUtil.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import tetz42.clione.exception.ClioneFormatException;
@@ -11,29 +10,14 @@ import tetz42.clione.util.ParamMap;
 
 public abstract class ExtFunction {
 
-	private static ThreadLocal<List<Extention>> curExtention = new ThreadLocal<List<Extention>>() {
-
-		@Override
-		protected List<Extention> initialValue() {
-			return new ArrayList<Extention>();
-		}
-	};
-	private static ThreadLocal<List<ParamMap>> curParamMap = new ThreadLocal<List<ParamMap>>() {
-
-		@Override
-		protected List<ParamMap> initialValue() {
-			return new ArrayList<ParamMap>();
-		}
-	};
-
 	static void push(Extention extention, ParamMap paramMap) {
-		curExtention.get().add(extention);
-		curParamMap.get().add(paramMap);
+		getCurExtensions().add(extention);
+		getCurParamMaps().add(paramMap);
 	}
 
 	static void pop() {
-		pop(curExtention.get());
-		pop(curParamMap.get());
+		pop(getCurExtensions());
+		pop(getCurParamMaps());
 	}
 
 	private static void pop(List<?> list) {
@@ -41,12 +25,12 @@ public abstract class ExtFunction {
 	}
 
 	private static Extention getLatestCf() {
-		List<Extention> list = curExtention.get();
+		List<Extention> list = getCurExtensions();
 		return list.get(list.size() - 1);
 	}
 
 	private static ParamMap getLatestMap() {
-		List<ParamMap> list = curParamMap.get();
+		List<ParamMap> list = getCurParamMaps();
 		return list.get(list.size() - 1);
 	}
 

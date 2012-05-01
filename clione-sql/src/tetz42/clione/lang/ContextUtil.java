@@ -2,14 +2,40 @@ package tetz42.clione.lang;
 
 import static tetz42.util.Util.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import tetz42.clione.exception.SQLFileNotFoundException;
+import tetz42.clione.lang.dialect.Db2Dialect;
+import tetz42.clione.lang.dialect.Dialect;
+import tetz42.clione.lang.dialect.MysqlDialect;
+import tetz42.clione.lang.dialect.OracleDialect;
+import tetz42.clione.lang.dialect.SqlserverDialect;
 import tetz42.clione.loader.LoaderUtil;
+import tetz42.clione.util.ParamMap;
 
 public class ContextUtil {
-
+	
+	private static final Map<String, Dialect> map;
+	private static final String STANDARD_RDBMS = "";
+	
+	static {
+		Map<String, Dialect> m = new HashMap<String, Dialect>();
+		m.put(STANDARD_RDBMS, new Dialect());
+		m.put("oracle", new OracleDialect());
+		m.put("mysql", new MysqlDialect());
+		m.put("sqlite", new Dialect());
+		m.put("db2", new Db2Dialect());
+		m.put("sqlserver", new SqlserverDialect());
+		map = Collections.unmodifiableMap(m);
+	}
+	
 	private static class ResInfoHolder {
 		String resourceInfo;
 		int beginLineNo = 0;
@@ -27,28 +53,35 @@ public class ContextUtil {
 			return resourceInfo + ", line number:" + beginLineNo
 					+ (endLineNo == beginLineNo ? "" : "-" + endLineNo);
 		}
-
 	}
 
+	private static class Context {
+		String productName;
+		LinkedList<ResInfoHolder> resourceInfoes = new LinkedList<ContextUtil.ResInfoHolder>();
+		HashSet<Object> negativeValues = new HashSet<Object>();
+		List<Extention> curExtentions = new ArrayList<Extention>();
+		List<ParamMap> curParamMaps = new ArrayList<ParamMap>();
+	}
+	
+	private static final ThreadLocal<Context> tcontext = new ThreadLocal<ContextUtil.Context>();
 
-	private static ThreadLocal<LinkedList<ResInfoHolder>> resourceInfoes = new ThreadLocal<LinkedList<ResInfoHolder>>() {
+	private static Context getContext() {
+		Context context = tcontext.get();
+		if (context == null)
+			tcontext.set(context = new Context());
+		return context;
+	}
 
-		@Override
-		protected LinkedList<ResInfoHolder> initialValue() {
-			return new LinkedList<ResInfoHolder>();
-		}
-	};
+	public static List<Extention> getCurExtensions(){
+		return getContext().curExtentions;
+	}
 
-	private static ThreadLocal<HashSet<Object>> negativeValues = new ThreadLocal<HashSet<Object>>() {
-
-		@Override
-		protected HashSet<Object> initialValue() {
-			return new HashSet<Object>();
-		}
-	};
+	public static List<ParamMap> getCurParamMaps(){
+		return getContext().curParamMaps;
+	}
 
 	public static void pushResouceInfo(String resourceInfo) {
-		resourceInfoes.get().push(new ResInfoHolder(resourceInfo));
+		getContext().resourceInfoes.push(new ResInfoHolder(resourceInfo));
 	}
 
 	public static void setBeginLineNo(int lineNo) {
@@ -61,11 +94,11 @@ public class ContextUtil {
 	}
 
 	private static ResInfoHolder getLatest() {
-		return resourceInfoes.get().getFirst();
+		return getContext().resourceInfoes.getFirst();
 	}
 
 	public static String getResourceInfo() {
-		return mkStringByCRLF(resourceInfoes.get());
+		return mkStringByCRLF(getContext().resourceInfoes);
 	}
 
 	public static String getResourcePath() {
@@ -76,11 +109,11 @@ public class ContextUtil {
 	}
 
 	public static String popResourceInfo() {
-		return resourceInfoes.get().pop().toString();
+		return getContext().resourceInfoes.pop().toString();
 	}
 
 	public static boolean isAllPoped() {
-		return resourceInfoes.get().isEmpty();
+		return getContext().resourceInfoes.isEmpty();
 	}
 
 	public static void addNegative(Object... negatives) {
@@ -88,7 +121,7 @@ public class ContextUtil {
 			return;
 		for (Object negative : negatives)
 			if (negative != null)
-				negativeValues.get().add(negative);
+				getContext().negativeValues.add(negative);
 	}
 
 	public static boolean isNegative(Object obj) {
@@ -96,7 +129,7 @@ public class ContextUtil {
 			return true;
 		if (Boolean.FALSE.equals(obj))
 			return true;
-		if (negativeValues.get().contains(obj))
+		if (getContext().negativeValues.contains(obj))
 			return true;
 		return false;
 	}
@@ -116,7 +149,7 @@ public class ContextUtil {
 	}
 
 	public static void clearNegative() {
-		negativeValues.get().clear();
+		getContext().negativeValues.clear();
 	}
 
 	public static String fusionPath(String absolutePath, String relativePath) {
@@ -148,16 +181,31 @@ public class ContextUtil {
 		return aPath + rPath;
 	}
 
-	// TODO implementation
 	public static String getProductName() {
-		return null;
+		return getContext().productName;
 	}
 
-	// TODO implementation
 	public static void setProductName(String productName) {
+		getContext().productName =  productName;
 	}
 
-	// TODO implementation
+	public static Dialect getDialect(){
+		Dialect dialect = map.get(getContext().productName);
+		if(dialect == null)
+			dialect = map.get(STANDARD_RDBMS);
+		return dialect;
+	}
+	
+	public static String escapeBySharp(String src) {
+		Pattern ptn = Pattern.compile("([#" + getDialect().needLikeEscape() + "])");
+		return src == null ? null : ptn.matcher(src).replaceAll("#$1");
+	}
+
+	public static String escapeBySharp(Object obj) {
+		return obj == null ? null : escapeBySharp(String.valueOf(obj));
+	}
+
 	public static void clear() {
+		tcontext.set(null);
 	}
 }
