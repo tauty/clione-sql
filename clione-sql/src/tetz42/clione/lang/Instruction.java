@@ -158,4 +158,8 @@ public class Instruction {
 		}
 		return sb.toString();
 	}
+
+	public Instruction toInstruction() {
+		return this;
+	}
 }

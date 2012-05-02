@@ -11,6 +11,7 @@ import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.DefaultParam;
 import tetz42.clione.lang.func.LineCond;
 import tetz42.clione.lang.func.LineParam;
+import tetz42.clione.lang.func.NumLiteral;
 import tetz42.clione.lang.func.Param;
 import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.lang.func.RequireParam;
@@ -23,6 +24,8 @@ public class ClioneFuncFactory {
 	private static final Pattern funcPtn = Pattern
 			.compile("[,\\s]*([$@&?%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
 	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
+	private static final Pattern numPtn = Pattern
+			.compile("-?[0-9]+(\\.[0-9]+)?");
 
 	public static ClioneFuncFactory get() {
 		return new ClioneFuncFactory();
@@ -172,8 +175,11 @@ public class ClioneFuncFactory {
 	private ClioneFunction gen(String func, String not, String key) {
 		if (isAllEmpty(func, not, key))
 			return null;
-		if (isEmpty(func))
+		if (isEmpty(func)) {
+			if (numPtn.matcher(key).matches())
+				return new NumLiteral(key, isNotEmpty(not));
 			return new Param(key, isNotEmpty(not));
+		}
 		if (isNotEmpty(func)) {
 			if (func.equals("$"))
 				return new LineParam(key, isNotEmpty(not));
