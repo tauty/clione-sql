@@ -3,8 +3,10 @@ package tetz42.clione.lang;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.util.Util.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +176,9 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
+		putFunction("equals", new CompFunction(0));
+		putFunction("greaterThan", new CompFunction(1));
+		putFunction("lessThan", new CompFunction(-1));
 		putFunction("and", new ExtFunction() {
 
 			@Override
@@ -241,7 +246,8 @@ public class Extention extends ClioneFunction {
 					}
 					path = fusionPath(res, path);
 				}
-				SQLNode sqlNode = LoaderUtil.getNodeByPath(path, getProductName());
+				SQLNode sqlNode = LoaderUtil.getNodeByPath(path,
+						getProductName());
 				SQLGenerator generator = new SQLGenerator();
 				ParamMap paramMap = new ParamMap();
 				if (inst.map != null)
@@ -354,4 +360,68 @@ public class Extention extends ClioneFunction {
 		}
 	}
 
+	private static class CompFunction extends ExtFunction {
+
+		private final int result;
+
+		private CompFunction(int result) {
+			this.result = result;
+		}
+
+		@Override
+		protected Instruction perform(Instruction instruction) {
+			Comparator<String> comp = new MyComp();
+			ArrayList<String> list = new ArrayList<String>();
+			Instruction inst = instruction;
+			while (inst != null) {
+				if (inst instanceof NumInstruction) {
+					comp = new MyComp() {
+						@Override
+						protected int compareTask(String s1, String s2) {
+							return new BigDecimal(s1).compareTo(new BigDecimal(
+									s2));
+						}
+					};
+				}
+				if (inst.params == null || inst.params.isEmpty())
+					list.add(inst.replacement);
+				else {
+					Object obj = inst.params.get(0);
+					list.add(obj == null ? null : "" + obj);
+				}
+				inst = inst.next;
+			}
+			for (int i = 0; i < (list.size() - 1); i++) {
+				if (!isOK(comp.compare(list.get(i), list.get(i + 1))))
+					return instruction.merge().status(false);
+			}
+			return instruction.merge().status(true);
+		}
+
+		private boolean isOK(int res) {
+			if (result == 0)
+				return res == 0;
+			else if (result > 0)
+				return res > 0;
+			else
+				return res < 0;
+		}
+
+		private static class MyComp implements Comparator<String> {
+			@Override
+			public int compare(String s1, String s2) {
+				if (s1 == null && s2 == null)
+					return 0;
+				else if (s1 == null)
+					return -1;
+				else if (s2 == null)
+					return 1;
+				return compareTask(s1, s2);
+			}
+
+			protected int compareTask(String s1, String s2) {
+				return s1.compareTo(s2);
+			}
+		}
+	}
 }

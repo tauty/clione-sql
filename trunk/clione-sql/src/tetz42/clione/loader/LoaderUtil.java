@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
 import tetz42.clione.exception.SQLFileNotFoundException;
-import tetz42.clione.io.IOWrapper;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
 import tetz42.clione.setting.Config;
+import tetz42.util.Using;
 
 public class LoaderUtil {
 
@@ -97,7 +97,7 @@ public class LoaderUtil {
 				.getResourceAsStream(sqlPath);
 		if (in == null)
 			return null;
-		return new IOWrapper<NodeHolder>(in) {
+		return new Using<NodeHolder>(in) {
 
 			@Override
 			protected NodeHolder execute() throws IOException {

@@ -13,9 +13,8 @@ public class StrLiteral extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction inst = new Instruction();
-		inst.replacement = str;
-		return inst.next(getNextInstruction(paramMap));
+		return new Instruction().replacement(str).next(
+				getNextInstruction(paramMap));
 	}
 
 	@Override

@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import tetz42.util.Using;
+
 public class IOUtil {
 
 	public static byte[] loadFromStream(final InputStream in) {
 
-		return new IOWrapper<byte[]>(in) {
+		return new Using<byte[]>(in) {
 
 			@Override
 			protected byte[] execute() throws IOException {
@@ -31,7 +33,7 @@ public class IOUtil {
 					}
 					list.add(b);
 				}
-				if(list.size() == 0)
+				if (list.size() == 0)
 					return new byte[0];
 				byte[] b_all = new byte[SIZE * (list.size() - 1)
 						+ list.get(list.size() - 1).length];
@@ -50,7 +52,7 @@ public class IOUtil {
 		if (in == null)
 			return null;
 
-		return new IOWrapper<Properties>(in) {
+		return new Using<Properties>(in) {
 
 			@Override
 			protected Properties execute() throws IOException {
