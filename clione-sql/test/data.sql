@@ -2,6 +2,7 @@
 drop table employees;
 drop table aaa;
 drop table people;
+drop table blobtest;
  */
 
 CREATE TABLE employees
@@ -34,6 +35,13 @@ CREATE TABLE people
 /
 ALTER TABLE people
     ADD(CONSTRAINT PK_PEOPLE PRIMARY KEY (ID) USING INDEX)
+/
+CREATE TABLE blobtest
+(
+    id              INT(3) NOT NULL,
+    data            MEDIUMBLOB,
+    primary key(id)
+)
 /
 insert into employees values(0,100000,'柔道部男子課','泰山天伍','tengo@judo.com');
 insert into employees values(1,100001,'柔道部女子課','猪熊柔','yawara@urasawa.com');

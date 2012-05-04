@@ -1,10 +1,10 @@
 package tetz42.clione.setting;
 
-import java.lang.reflect.Field;
+import static tetz42.util.Util.*;
+
 import java.util.Properties;
 
-import tetz42.clione.io.IOUtil;
-import tetz42.util.exception.WrapException;
+import tetz42.util.IOUtil;
 
 public class Config {
 
@@ -27,33 +27,38 @@ public class Config {
 		config = null;
 	}
 
-	public String SQLFILE_ENCODING = "utf-8";
-	public boolean IS_DEVELOPMENT_MODE = false;
-	public int SQLFILE_CACHETIME = 0;
-	public int TAB_SIZE = 4;
+	private Properties prop;
+
+	public final String SQLFILE_ENCODING = getStr("SQLFILE_ENCODING", "utf-8");
+	public final boolean IS_DEVELOPMENT_MODE = getBool("IS_DEVELOPMENT_MODE",
+			false);
+	public final int SQLFILE_CACHETIME = getNum("SQLFILE_CACHETIME", 0);
+	public final int TAB_SIZE = getNum("TAB_SIZE", 4);
 
 	private Config() {
-		Properties prop = IOUtil.getProperties("clione.properties");
-		prop = prop != null ? prop : new Properties();
-		for (Field f : getClass().getFields()) {
-			if (prop.getProperty(f.getName()) != null) {
-				try {
-					if (f.getType() == String.class)
-						f.set(this, prop.getProperty(f.getName()));
-					else if (f.getType() == Integer.class
-							|| f.getType() == Integer.TYPE)
-						f.set(this, Integer.parseInt(prop.getProperty(f
-								.getName())));
-					else if (f.getType() == Boolean.class
-							|| f.getType() == Boolean.TYPE)
-						f.set(this, !prop.getProperty(f.getName()).equals(
-								"false"));
-				} catch (IllegalArgumentException e) {
-					throw new WrapException(e);
-				} catch (IllegalAccessException e) {
-					throw new WrapException(e);
-				}
-			}
-		}
+		prop = null;
 	}
+
+	private Properties prop() {
+		if (prop == null) {
+			prop = IOUtil.getProperties("clione.properties");
+			prop = prop != null ? prop : new Properties();
+		}
+		return prop;
+	}
+
+	private String getStr(String key, String defaultValue) {
+		return nvl(prop().getProperty(key), defaultValue);
+	}
+
+	private boolean getBool(String key, boolean defaultValue) {
+		String s = prop().getProperty(key);
+		return s != null ? "true".equals(s) : defaultValue;
+	}
+
+	private int getNum(String key, int defaultValue) {
+		String s = prop().getProperty(key);
+		return s != null ? Integer.parseInt(s) : defaultValue;
+	}
+
 }

@@ -34,14 +34,16 @@ public class LoaderUtil {
 		final String resourceInfo = sqlPathPrefix + sqlPath;
 		if (sqlPath == null)
 			throw new NullPointerException("The sql path must not be null.");
-		NodeHolder nh = null;
+		NodeHolder nh = null, pnh = null;
 		if(productName != null)
-			nh = getNodeHolder(sqlPath + "-" + productName);
+			nh = pnh = getNodeHolder(sqlPath + "-" + productName);
 		if(nh == null)
 			nh = getNodeHolder(sqlPath);
 		if(nh == null)
 			throw new SQLFileNotFoundException("SQL File not found. " + CRLF
 					+ resourceInfo);
+		if(productName != null && pnh == null)
+			cacheByPath.put(sqlPath + "-" + productName, nh);
 		return nh.sqlNode;
 	}
 

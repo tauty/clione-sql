@@ -2,6 +2,7 @@ package tetz42.clione.util;
 
 import static tetz42.util.Util.*;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -11,8 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 import tetz42.clione.exception.UnsupportedTypeException;
-import tetz42.clione.io.IOUtil;
 import tetz42.util.Const;
+import tetz42.util.IOUtil;
+import tetz42.util.ReflectionUtil;
 
 public class ClioneUtil {
 
@@ -52,7 +54,8 @@ public class ClioneUtil {
 				|| clazz == Float.TYPE || clazz == Double.class
 				|| clazz == Double.TYPE || clazz == BigDecimal.class
 				|| clazz == Date.class || clazz == java.sql.Date.class
-				|| (clazz.isArray() && clazz.getComponentType() == Byte.TYPE);
+				|| (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
+				|| clazz == InputStream.class;
 	}
 
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
@@ -152,6 +155,11 @@ public class ClioneUtil {
 			if (rs.getObject(columnIndex) == null)
 				return null;
 			return IOUtil.loadFromStream(rs.getBinaryStream(columnIndex));
+		}
+
+		// input stream
+		if (clazz == InputStream.class) {
+			return rs.getBinaryStream(columnIndex);
 		}
 
 		throw new UnsupportedTypeException("The type(" + clazz.getName()

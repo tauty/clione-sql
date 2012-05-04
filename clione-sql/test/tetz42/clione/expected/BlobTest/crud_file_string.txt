@@ -1,0 +1,40 @@
+
+<<remove_last>>
+select
+		*
+	from
+		aaa a
+	where
+		a.id = /* $id */'1' and
+		a.name like /* %L '%', $name, '%' */'%yama%' and
+		a.job /* $job */= 'programmer'
+<</remove_last>>
+
+<<union>>
+select /* &first */
+		*
+	from
+		aaa a
+	where
+		a.id = /* $id */'1' and
+		a.name like /* %L '%', $name, '%' */'%yama%' and
+		a.job /* $job */= 'programmer'
+union
+select /* &second */
+		*
+	from
+		aaa a
+	where
+		a.id = /* $id */'1' and
+		a.name like /* %L '%', $name, '%' */'%yama%' and
+		a.job /* $job */= 'programmer'
+union all
+select /* &third */
+		*
+	from
+		aaa a
+	where
+		a.id = /* $id */'1' and
+		a.name like /* %L '%', $name, '%' */'%yama%' and
+		a.job /* $job */= 'programmer'
+<</union>>

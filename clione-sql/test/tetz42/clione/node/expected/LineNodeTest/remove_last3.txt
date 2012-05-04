@@ -1,0 +1,7 @@
+select
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' and
+		a.job  IN ( ?, ?, ?)

@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.io.IOUtil;
 import tetz42.clione.node.ConditionPlaceHolder;
 import tetz42.clione.node.EmptyLineNode;
 import tetz42.clione.node.INode;
@@ -24,6 +23,7 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.setting.Config;
+import tetz42.util.IOUtil;
 import tetz42.util.ObjDumper4j;
 import tetz42.util.RegexpTokenizer;
 import tetz42.util.exception.WrapException;

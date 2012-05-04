@@ -177,7 +177,7 @@ public class LineNode extends Node {
 				return false;
 			}
 		}
-		return !Util.isEmpty(delim);
+		return Util.isNotEmpty(delim);
 	}
 
 	private static final Pattern lastDelimPtn = Pattern
@@ -191,7 +191,7 @@ public class LineNode extends Node {
 
 		if (holders.size() != 0) {
 			IPlaceHolder holder = holders.get(holders.size() - 1);
-			if (holder.getPosition() >= m.start(2)) {
+			if (holder.getPosition() >= m.start(3)) {
 				ClioneFunction cf = holder.getFunction();
 				if (cf instanceof SQLLiteral || cf instanceof StrLiteral) {
 					Matcher m2 = lastDelimPtn.matcher(cf.getLiteral());
@@ -200,6 +200,6 @@ public class LineNode extends Node {
 				return false;
 			}
 		}
-		return !Util.isEmpty(delim);
+		return Util.isNotEmpty(delim);
 	}
 }
