@@ -6,13 +6,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.clione.io.IOUtil;
+import tetz42.util.IOUtil;
 import tetz42.util.RegexpTokenizer;
 
 public class HereDoc {
 
 	private static Pattern ptn = Pattern.compile("^<<([^<>]+)>>(\r\n|\r|\n)?",
 			Pattern.MULTILINE);
+
+	public static Map<String, String> get(Class<?> clazz) {
+		return get(clazz.getResourceAsStream(clazz.getSimpleName() + ".txt"));
+	}
 
 	public static Map<String, String> get(InputStream in) {
 		byte[] bs = IOUtil.loadFromStream(in);

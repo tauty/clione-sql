@@ -85,7 +85,7 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public ParamMap bean(Object bean) {
-		for(Field f:getFields(bean.getClass())) {
+		for (Field f : getFields(bean.getClass())) {
 			try {
 				f.setAccessible(true);
 				setValue(f.getName(), f.get(bean));
@@ -104,7 +104,7 @@ public class ParamMap extends HashMap<String, Object> {
 			ParamMap subMap;
 			if (obj instanceof Map<?, ?>) {
 				subMap = new ParamMap().map((Map<?, ?>) obj);
-			}else {
+			} else {
 				subMap = new ParamMap().bean(obj);
 			}
 			for (Entry<?, ?> e : subMap.entrySet()) {

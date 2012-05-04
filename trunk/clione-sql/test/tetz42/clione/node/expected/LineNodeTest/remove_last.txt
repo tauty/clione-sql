@@ -1,0 +1,6 @@
+select
+		*
+	from
+		aaa a
+	where
+		a.id = ? 

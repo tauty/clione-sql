@@ -1,0 +1,13 @@
+select 
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' 
+union all
+select 
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' 

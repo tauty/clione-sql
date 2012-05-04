@@ -1,0 +1,15 @@
+select 
+		*
+	from
+		aaa a
+	where
+		a.id = ? and
+		a.name like ? ESCAPE '#' 
+union
+select 
+		*
+	from
+		aaa a
+	where
+		a.id = ? and
+		a.name like ? ESCAPE '#' 

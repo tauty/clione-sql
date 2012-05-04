@@ -1,0 +1,23 @@
+select 
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' and
+		a.job  IN ( ?, ?, ?)
+union
+select 
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' and
+		a.job  IN ( ?, ?, ?)
+union all
+select 
+		*
+	from
+		aaa a
+	where
+		a.name like ? ESCAPE '#' and
+		a.job  IN ( ?, ?, ?)
