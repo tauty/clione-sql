@@ -1,4 +1,4 @@
-package tetz42.clione.parsar;
+package tetz42.util;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.util.IOUtil;
-import tetz42.util.RegexpTokenizer;
 
 public class HereDoc {
 
@@ -18,10 +16,16 @@ public class HereDoc {
 		return get(clazz.getResourceAsStream(clazz.getSimpleName() + ".txt"));
 	}
 
+	public static Map<String, String> get(Class<?> clazz, String encoding) {
+		return get(clazz.getResourceAsStream(clazz.getSimpleName() + ".txt"), encoding);
+	}
+
 	public static Map<String, String> get(InputStream in) {
-		byte[] bs = IOUtil.loadFromStream(in);
-		String s = new String(bs);
-		return parse(s);
+		return parse(IOUtil.toString(in));
+	}
+
+	public static Map<String, String> get(InputStream in, String encoding) {
+		return parse(IOUtil.toString(in, encoding));
 	}
 
 	private static Map<String, String> parse(String s) {

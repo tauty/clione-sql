@@ -89,7 +89,7 @@ public class SQLParser {
 
 	public SQLNode parse(InputStream in) {
 		try {
-			byte[] bs = IOUtil.loadFromStream(in);
+			byte[] bs = IOUtil.toByteArray(in);
 			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(mkStringByCRLF(e.getMessage(),

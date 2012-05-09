@@ -7,24 +7,27 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import tetz42.clione.setting.Config;
 import tetz42.util.exception.WrapException;
 
 public class IOUtil {
 
-	public static String toString(final InputStream in) {
+	public static String toString(final InputStream in, String encoding) {
 		try {
-			return new String(loadFromStream(in), Config.get().SQLFILE_ENCODING);
+			return new String(toByteArray(in), encoding);
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(e);
 		}
 	}
 
-	public static byte[] loadFromStream(final InputStream in) {
-		return copy(in, new ByteArrayOutputStream(0xFFFF)).toByteArray();
+	public static String toString(final InputStream in) {
+		return toString(in, "utf-8");
 	}
 
-	public static <T extends OutputStream> T copy(final InputStream in,
+	public static byte[] toByteArray(final InputStream in) {
+		return in2out(in, new ByteArrayOutputStream(0xFFFF)).toByteArray();
+	}
+
+	public static <T extends OutputStream> T in2out(final InputStream in,
 			final T out) {
 		return new Using<T>(in, out) {
 

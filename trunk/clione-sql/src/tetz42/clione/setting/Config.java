@@ -14,8 +14,7 @@ public class Config {
 		Config local = config;
 		if (local == null) {
 			synchronized (Config.class) {
-				local = config;
-				if (local == null) {
+				if (config == null) {
 					config = local = new Config();
 				}
 			}

@@ -154,7 +154,7 @@ public class ClioneUtil {
 		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE) {
 			if (rs.getObject(columnIndex) == null)
 				return null;
-			return IOUtil.loadFromStream(rs.getBinaryStream(columnIndex));
+			return IOUtil.toByteArray(rs.getBinaryStream(columnIndex));
 		}
 
 		// input stream

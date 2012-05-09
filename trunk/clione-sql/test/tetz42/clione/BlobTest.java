@@ -21,7 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.node.LineNodeTest;
-import tetz42.clione.parsar.HereDoc;
+import tetz42.clione.setting.Config;
+import tetz42.util.HereDoc;
 import tetz42.util.IOUtil;
 
 public class BlobTest {
@@ -57,10 +58,8 @@ public class BlobTest {
 		// insert
 		int count = sqlManager
 				.useSQL("insert into blobtest (id, data) values (/* id */, /* data */)")
-				.update(params("id", 1).$(
-						"data",
-						LineNodeTest.class
-								.getResourceAsStream("LineNodeTest.txt")));
+				.update(params("id", 1)
+					.$("data", LineNodeTest.class.getResourceAsStream("LineNodeTest.txt")));
 		assertThat(count, is(1));
 
 		// type not specified(byte array)
@@ -78,7 +77,8 @@ public class BlobTest {
 		// ResultSet and Statement.
 		InputStream in = sqlManager.useSQL("select data from blobtest").find(
 				InputStream.class);
-		assertEqualsWithFile(IOUtil.toString(in), getClass(),
+		assertEqualsWithFile(
+				IOUtil.toString(in, Config.get().SQLFILE_ENCODING), getClass(),
 				"crud_file_string");
 	}
 
