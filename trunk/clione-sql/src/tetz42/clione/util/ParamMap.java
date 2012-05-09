@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.setting.Config;
+
 public class ParamMap extends HashMap<String, Object> {
 
 	/**
@@ -69,7 +71,7 @@ public class ParamMap extends HashMap<String, Object> {
 
 	public ParamMap object(Object obj) {
 		if (obj == null)
-			return null;
+			return this;
 		else if (obj instanceof Map<?, ?>)
 			map((Map<?, ?>) obj);
 		else
@@ -78,36 +80,43 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	public ParamMap map(Map<?, ?> map) {
+		return map(map, 0);
+	}
+
+	private ParamMap map(Map<?, ?> map, int depth) {
 		for (Entry<?, ?> e : map.entrySet()) {
-			setValue(String.valueOf(e.getKey()), e.getValue());
+			setValue(String.valueOf(e.getKey()), e.getValue(), depth);
 		}
 		return this;
 	}
 
 	public ParamMap bean(Object bean) {
+		return bean(bean, 0);
+	}
+
+	public ParamMap bean(Object bean, int depth) {
 		for (Field f : getFields(bean.getClass())) {
-			try {
-				f.setAccessible(true);
-				setValue(f.getName(), f.get(bean));
-			} catch (IllegalArgumentException e) {
-				// ignore the exception
-			} catch (IllegalAccessException e) {
-				// ignore the exception
-			}
+			f.setAccessible(true);
+			setValue(f.getName(), getValue(bean, f), depth);
 		}
 		return this;
 	}
 
-	private void setValue(String key, Object obj) {
+	private void setValue(String key, Object obj, int depth) {
+		if (!isSupported(key))
+			return;
 		this.put(key, obj);
-		if (!isPrimitive(obj) && !isEachable(obj)) {
+		if (!isSingle(obj) && !isEachable(obj)
+				&& depth < Config.get().ENTITY_DEPTH_LIMIT) {
 			ParamMap subMap;
 			if (obj instanceof Map<?, ?>) {
-				subMap = new ParamMap().map((Map<?, ?>) obj);
+				subMap = new ParamMap().map((Map<?, ?>) obj, depth + 1);
 			} else {
-				subMap = new ParamMap().bean(obj);
+				subMap = new ParamMap().bean(obj, depth + 1);
 			}
-			for (Entry<?, ?> e : subMap.entrySet()) {
+			for (Entry<String, Object> e : subMap.entrySet()) {
+				if (!isSupported(e.getKey()))
+					continue;
 				this.put(key + "." + e.getKey(), e.getValue());
 			}
 		}
@@ -130,5 +139,9 @@ public class ParamMap extends HashMap<String, Object> {
 		if (symM.matches())
 			key = key.substring(keyM.group(1).length());
 		return key;
+	}
+
+	private boolean isSupported(String key) {
+		return key.indexOf('$') == -1;
 	}
 }
