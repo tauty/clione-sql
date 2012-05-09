@@ -34,6 +34,7 @@ public class Config {
 			false);
 	public final int SQLFILE_CACHETIME = getNum("SQLFILE_CACHETIME", 0);
 	public final int TAB_SIZE = getNum("TAB_SIZE", 4);
+	public final int ENTITY_DEPTH_LIMIT = getNum("ENTITY_DEPTH_LIMIT", 8);;
 
 	private Config() {
 		prop = null;

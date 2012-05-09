@@ -58,7 +58,7 @@ public class ReflectionUtil {
 		return primitiveSet.contains(clazz.getName());
 	}
 
-	public static boolean isPrimitive(Object obj) {
+	public static boolean isSingle(Object obj) {
 		if (obj == null)
 			return true;
 		return isPrimitive(obj.getClass());
