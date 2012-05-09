@@ -179,6 +179,9 @@ public class Extention extends ClioneFunction {
 		putFunction("equals", new CompFunction(0));
 		putFunction("greaterThan", new CompFunction(1));
 		putFunction("lessThan", new CompFunction(-1));
+		putFunction("eq", getFunction("equals"));
+		putFunction("gt", getFunction("greaterThan"));
+		putFunction("lt", getFunction("lessThan"));
 		putFunction("and", new ExtFunction() {
 
 			@Override

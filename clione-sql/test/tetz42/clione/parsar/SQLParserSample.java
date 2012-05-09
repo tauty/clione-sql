@@ -23,6 +23,7 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.setting.Config;
+import tetz42.util.HereDoc;
 import tetz42.util.IOUtil;
 import tetz42.util.ObjDumper4j;
 import tetz42.util.RegexpTokenizer;
@@ -104,7 +105,7 @@ public class SQLParserSample {
 
 	public SQLNode parse(InputStream in) {
 		try {
-			byte[] bs = IOUtil.loadFromStream(in);
+			byte[] bs = IOUtil.toByteArray(in);
 			return parse(new String(bs, Config.get().SQLFILE_ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(mkStringByCRLF(e.getMessage(),
