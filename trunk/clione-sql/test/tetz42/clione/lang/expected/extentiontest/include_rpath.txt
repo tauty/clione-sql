@@ -1,0 +1,13 @@
+SELECT
+        *
+    FROM
+    	people
+    WHERE
+        (
+        	name in (select 'John' from dual)
+        	OR name in (SELECT
+        *
+    FROM
+        people
+)
+        )

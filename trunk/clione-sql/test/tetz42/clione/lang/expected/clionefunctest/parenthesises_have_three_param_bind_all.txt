@@ -1,0 +1,37 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = null
+	status = true
+	isNumber = false
+	params = ArrayList[
+		"tako"
+	]
+	next = Instruction{
+		isNodeDisposed = false
+		doNothing = false
+		useValueInBack = false
+		replacement = null
+		status = true
+		isNumber = false
+		params = ArrayList[
+			"ika"
+		]
+		next = Instruction{
+			isNodeDisposed = false
+			doNothing = false
+			useValueInBack = false
+			replacement = null
+			status = true
+			isNumber = false
+			params = ArrayList[
+				"namako"
+			]
+			next = null
+			map = null
+		}
+		map = null
+	}
+	map = null
+}

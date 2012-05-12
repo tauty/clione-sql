@@ -1,0 +1,13 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "ID  =  ?"
+	status = true
+	isNumber = false
+	params = ArrayList[
+		"value"
+	]
+	next = null
+	map = null
+}
