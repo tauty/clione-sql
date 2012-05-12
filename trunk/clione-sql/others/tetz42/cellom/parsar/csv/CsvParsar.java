@@ -166,7 +166,7 @@ public class CsvParsar {
 					continue;
 				}
 			}
-			if (isPrimitive(f.getType())) {
+			if (isSingle(f.getType())) {
 				if (c.order() != preOrder)
 					value = token.nextCell();
 				if (validator.isValueOK(f, value))

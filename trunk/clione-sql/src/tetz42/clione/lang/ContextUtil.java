@@ -21,10 +21,10 @@ import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
 
 public class ContextUtil {
-	
+
 	private static final Map<String, Dialect> map;
 	private static final String STANDARD_RDBMS = "";
-	
+
 	static {
 		Map<String, Dialect> m = new HashMap<String, Dialect>();
 		m.put(STANDARD_RDBMS, new Dialect());
@@ -36,7 +36,7 @@ public class ContextUtil {
 		m.put("sqlserver", new SqlserverDialect());
 		map = Collections.unmodifiableMap(m);
 	}
-	
+
 	private static class ResInfoHolder {
 		String resourceInfo;
 		int beginLineNo = 0;
@@ -63,7 +63,7 @@ public class ContextUtil {
 		List<Extention> curExtentions = new ArrayList<Extention>();
 		List<ParamMap> curParamMaps = new ArrayList<ParamMap>();
 	}
-	
+
 	private static final ThreadLocal<Context> tcontext = new ThreadLocal<ContextUtil.Context>();
 
 	private static Context getContext() {
@@ -73,11 +73,11 @@ public class ContextUtil {
 		return context;
 	}
 
-	public static List<Extention> getCurExtensions(){
+	public static List<Extention> getCurExtensions() {
 		return getContext().curExtentions;
 	}
 
-	public static List<ParamMap> getCurParamMaps(){
+	public static List<ParamMap> getCurParamMaps() {
 		return getContext().curParamMaps;
 	}
 
@@ -126,13 +126,9 @@ public class ContextUtil {
 	}
 
 	public static boolean isNegative(Object obj) {
-		if (obj == null)
+		if (obj == null || Boolean.FALSE.equals(obj))
 			return true;
-		if (Boolean.FALSE.equals(obj))
-			return true;
-		if (getContext().negativeValues.contains(obj))
-			return true;
-		return false;
+		return getContext().negativeValues.contains(obj);
 	}
 
 	public static boolean isAllNegative(Object... objs) {
@@ -187,18 +183,19 @@ public class ContextUtil {
 	}
 
 	public static void setProductName(String productName) {
-		getContext().productName =  productName;
+		getContext().productName = productName;
 	}
 
-	public static Dialect getDialect(){
+	public static Dialect getDialect() {
 		Dialect dialect = map.get(getContext().productName);
-		if(dialect == null)
+		if (dialect == null)
 			dialect = map.get(STANDARD_RDBMS);
 		return dialect;
 	}
-	
+
 	public static String escapeBySharp(String src) {
-		Pattern ptn = Pattern.compile("([#" + getDialect().needLikeEscape() + "])");
+		Pattern ptn = Pattern.compile("([#" + getDialect().needLikeEscape()
+				+ "])");
 		return src == null ? null : ptn.matcher(src).replaceAll("#$1");
 	}
 

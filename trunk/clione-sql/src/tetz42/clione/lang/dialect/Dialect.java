@@ -1,9 +1,13 @@
 package tetz42.clione.lang.dialect;
 
+import java.util.regex.Pattern;
+
 public class Dialect {
 	
-	public String needLikeEscape(){
-		return "%_";
+	private static final Pattern basicEscapePtn = Pattern.compile("[#%_]");
+	
+	public Pattern needLikeEscape(){
+		return basicEscapePtn;
 	}
 	
 	public int inLimit(){

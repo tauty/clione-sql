@@ -2,7 +2,6 @@ package tetz42.clione.lang.func;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
-import tetz42.clione.lang.NumInstruction;
 import tetz42.clione.util.ParamMap;
 
 public class NumLiteral extends ClioneFunction {
@@ -27,7 +26,7 @@ public class NumLiteral extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		return new NumInstruction().replacement(key);
+		return new Instruction().asNumber().replacement(key);
 	}
 
 }

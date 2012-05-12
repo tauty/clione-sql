@@ -1,7 +1,6 @@
 package tetz42.clione.lang.func;
 
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.Pair.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.Collection;
 
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.Pair;
+import tetz42.util.ReflectionUtil;
 
 public class Param extends ClioneFunction {
 
@@ -28,17 +27,13 @@ public class Param extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Pair<? extends Collection<?>, Boolean> pair = convToCol(paramMap
-				.get(key));
-		Instruction inst = new Instruction().status(pair.getSecond()
-				^ isNegative);
-		inst.params.addAll(pair.getFirst());
+		Instruction inst = convToCol(paramMap.get(key));
 		return inst.next(getNextInstruction(paramMap));
 	}
 
-	private Pair<? extends Collection<?>, Boolean> convToCol(Object val) {
+	private Instruction convToCol(Object val) {
 		if (isNegative(val)) {
-			return pair(Arrays.asList(val), false);
+			return genInstruction(Arrays.asList(val), false);
 		} else if (val.getClass().isArray()) {
 			ArrayList<Object> list = new ArrayList<Object>();
 			int length = Array.getLength(val);
@@ -49,13 +44,26 @@ public class Param extends ClioneFunction {
 					isTrue = true;
 				list.add(e);
 			}
-			return pair(list, isTrue);
+			return genInstruction(list, isTrue);
 		} else if (val instanceof Collection<?>) {
 			Collection<?> col = (Collection<?>) val;
-			// TODO maybe it must call 'isAllNegative' instead.
-			return pair(col, !isNegative(col));
+			return genInstruction(col, !isAllNegative(col));
 		} else
-			return pair(Arrays.asList(val), true);
+			return genInstruction(Arrays.asList(val), true);
+	}
+
+	private Instruction genInstruction(Iterable<?> vals, boolean status) {
+		Collection<Object> params = new ArrayList<Object>();
+		boolean isNum = true;
+		for (Object val : vals) {
+			if (!ReflectionUtil.isNumber(val))
+				isNum = false;
+			params.add(val);
+		}
+		Instruction inst = new Instruction().number(isNum);
+		inst.params.addAll(params);
+		inst.status(status ^ isNegative);
+		return inst;
 	}
 
 	@Override
