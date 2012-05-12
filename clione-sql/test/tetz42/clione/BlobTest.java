@@ -5,9 +5,6 @@ import static org.junit.Assert.*;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.test.Auty.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,7 +19,6 @@ import org.junit.Test;
 
 import tetz42.clione.node.LineNodeTest;
 import tetz42.clione.setting.Config;
-import tetz42.util.HereDoc;
 import tetz42.util.IOUtil;
 
 public class BlobTest {

@@ -90,7 +90,7 @@ public class QueueParsar {
 			QueueCell q = getAnnotation(f, QueueCell.class);
 			if (q == null)
 				break;
-			if (isPrimitive(f.getType())) {
+			if (isSingle(f.getType())) {
 				String s = token.next(q.size());
 				if (s == null)
 					return null;

@@ -26,13 +26,10 @@ public class ReflectionUtil {
 	private static final ConcurrentHashMap<ClazzWrapper, Field[]> fieldCache = newConcurrentMap();
 	private static final ConcurrentHashMap<FieldWrapper, ConcurrentHashMap<ClazzWrapper, Annotation>> annotationCache = newConcurrentMap();
 
+	protected static final Set<String> numSet;
 	protected static final Set<String> primitiveSet;
 	static {
 		HashSet<String> set = new HashSet<String>();
-		set.add(boolean.class.getName());
-		set.add(Boolean.class.getName());
-		set.add(byte.class.getName());
-		set.add(Byte.class.getName());
 		set.add(short.class.getName());
 		set.add(Short.class.getName());
 		set.add(int.class.getName());
@@ -48,20 +45,38 @@ public class ReflectionUtil {
 		set.add(AtomicInteger.class.getName());
 		set.add(AtomicLong.class.getName());
 		set.add(Number.class.getName());
+		numSet = Collections.unmodifiableSet(set);
+		
+		set = new HashSet<String>();
+		set.addAll(numSet);
+		set.add(boolean.class.getName());
+		set.add(Boolean.class.getName());
+		set.add(byte.class.getName());
+		set.add(Byte.class.getName());
 		set.add(String.class.getName());
 		set.add(Object.class.getName());
 		set.add(Class.class.getName());
 		primitiveSet = Collections.unmodifiableSet(set);
 	}
 
-	public static boolean isPrimitive(Class<?> clazz) {
+	public static boolean isNumber(Class<?> clazz) {
+		return numSet.contains(clazz.getName());
+	}
+	
+	public static boolean isNumber(Object obj) {
+		if (obj == null)
+			return false;
+		return isNumber(obj.getClass());
+	}
+	
+	public static boolean isSingle(Class<?> clazz) {
 		return primitiveSet.contains(clazz.getName());
 	}
 
 	public static boolean isSingle(Object obj) {
 		if (obj == null)
 			return true;
-		return isPrimitive(obj.getClass());
+		return isSingle(obj.getClass());
 	}
 
 	public static boolean isEachable(Object obj) {

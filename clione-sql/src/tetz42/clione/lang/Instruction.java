@@ -26,6 +26,16 @@ public class Instruction {
 	public Instruction next = null;
 	public ParamMap map = null;
 	public boolean status = false;
+	public boolean isNumber = false;
+	
+	public Instruction number(boolean isNumber){
+		this.isNumber = isNumber;
+		return this;
+	}
+	
+	public Instruction asNumber(){
+		return number(true);
+	}
 
 	public Instruction nodeDispose() {
 		return this.nodeDispose(true);
@@ -128,6 +138,8 @@ public class Instruction {
 			doNothing = another.doNothing;
 		if (useValueInBack) // false win
 			useValueInBack = another.useValueInBack;
+		if (isNumber) // false win
+			isNumber = another.isNumber;
 		if (replacement != null || another.replacement != null) {
 			String repOne = this.getReplacement();
 			String repAno = another.getReplacement();

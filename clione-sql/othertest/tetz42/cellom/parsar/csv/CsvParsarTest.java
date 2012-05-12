@@ -16,7 +16,7 @@ import tetz42.cellom.parsar.csv.entity.InitialTest;
 import tetz42.cellom.parsar.csv.entity.SameOrderTest;
 import tetz42.cellom.parsar.csv.entity.ValidationTest;
 import tetz42.cellom.parsar.csv.entity.ValidationTest2;
-import tetz42.clione.parsar.HereDoc;
+import tetz42.util.HereDoc;
 
 public class CsvParsarTest {
 

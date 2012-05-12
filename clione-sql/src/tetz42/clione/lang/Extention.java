@@ -6,12 +6,12 @@ import static tetz42.util.Util.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.exception.ImpossibleToCompareException;
 import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.lang.func.ClioneFunction;
@@ -176,12 +176,19 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
-		putFunction("equals", new CompFunction(0));
-		putFunction("greaterThan", new CompFunction(1));
-		putFunction("lessThan", new CompFunction(-1));
+		
+		// compare
+		putFunction("equals", new CompFunction(Type.EQ));
+		putFunction("greaterThan", new CompFunction(Type.GT));
+		putFunction("greaterEqual", new CompFunction(Type.GE));
+		putFunction("lessThan", new CompFunction(Type.LT));
+		putFunction("lessEqual", new CompFunction(Type.LE));
 		putFunction("eq", getFunction("equals"));
 		putFunction("gt", getFunction("greaterThan"));
+		putFunction("ge", getFunction("greaterEqual"));
 		putFunction("lt", getFunction("lessThan"));
+		putFunction("le", getFunction("lessEqual"));
+		
 		putFunction("and", new ExtFunction() {
 
 			@Override
@@ -281,8 +288,8 @@ public class Extention extends ClioneFunction {
 				Instruction retInst = new Instruction();
 				SQLGenerator sqlGenerator = new SQLGenerator();
 				retInst.replacement = sqlGenerator.genSql(getParamMap(),
-						LoaderUtil.getNodeBySQL(String.valueOf(inst.params
-								.get(0)),
+						LoaderUtil.getNodeBySQL(
+								String.valueOf(inst.params.get(0)),
 								"[WARN] Java String passed as parameter!!"));
 				if (sqlGenerator.params != null
 						&& sqlGenerator.params.size() != 0) {
@@ -363,68 +370,89 @@ public class Extention extends ClioneFunction {
 		}
 	}
 
+	private enum Type {
+		EQ, GT, GE, LT, LE
+	}
+
 	private static class CompFunction extends ExtFunction {
 
-		private final int result;
+		private final Type type;
 
-		private CompFunction(int result) {
-			this.result = result;
+		private CompFunction(Type type) {
+			this.type = type;
 		}
 
 		@Override
 		protected Instruction perform(Instruction instruction) {
-			Comparator<String> comp = new MyComp();
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<Object> list = new ArrayList<Object>();
 			Instruction inst = instruction;
 			while (inst != null) {
-				if (inst instanceof NumInstruction) {
-					comp = new MyComp() {
-						@Override
-						protected int compareTask(String s1, String s2) {
-							return new BigDecimal(s1).compareTo(new BigDecimal(
-									s2));
-						}
-					};
-				}
 				if (inst.params == null || inst.params.isEmpty())
-					list.add(inst.replacement);
+					list.add(convIfNumber(inst.replacement, inst.isNumber));
 				else {
-					Object obj = inst.params.get(0);
-					list.add(obj == null ? null : "" + obj);
+					list.add(convIfNumber(inst.params.get(0), inst.isNumber));
 				}
 				inst = inst.next;
 			}
 			for (int i = 0; i < (list.size() - 1); i++) {
-				if (!isOK(comp.compare(list.get(i), list.get(i + 1))))
+				if (!isOK(compare(list.get(i), list.get(i + 1))))
 					return instruction.merge().status(false);
 			}
 			return instruction.merge().status(true);
 		}
 
-		private boolean isOK(int res) {
-			if (result == 0)
-				return res == 0;
-			else if (result > 0)
-				return res > 0;
-			else
-				return res < 0;
+		private Object convIfNumber(Object obj, boolean isNumber) {
+			if (obj != null && isNumber) {
+				return new BigDecimal("" + obj);
+			} else {
+				return obj;
+			}
 		}
 
-		private static class MyComp implements Comparator<String> {
-			@Override
-			public int compare(String s1, String s2) {
-				if (s1 == null && s2 == null)
-					return 0;
-				else if (s1 == null)
-					return -1;
-				else if (s2 == null)
-					return 1;
-				return compareTask(s1, s2);
-			}
+		public int compare(Object o1, Object o2) {
+			if (o1 == null && o2 == null)
+				return 0;
+			else if (o1 == null)
+				return -1;
+			else if (o2 == null)
+				return 1;
+			return compareTask(o1, o2);
+		}
 
-			protected int compareTask(String s1, String s2) {
-				return s1.compareTo(s2);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		protected int compareTask(Object o1, Object o2) {
+			Exception cause = null;
+			try {
+				if (o1.equals(o2)) {
+					return 0;
+				} else if (this.type == Type.EQ) {
+					return 1;
+				} else if (o1 instanceof Comparable) {
+					return ((Comparable) o1).compareTo(o2);
+				} else if (o2 instanceof Comparable) {
+					return ((Comparable) o2).compareTo(o1);
+				}
+			} catch (Exception e) {
+				cause = e;
 			}
+			throw new ImpossibleToCompareException(o1.getClass()
+					.getSimpleName()
+					+ " and "
+					+ o2.getClass().getSimpleName()
+					+ " cannot be compared.(" + o1 + ", " + o2 + ")", cause);
+		}
+
+		private boolean isOK(int res) {
+			if (type == Type.EQ)
+				return res == 0;
+			else if (type == Type.GT)
+				return res > 0;
+			else if (type == Type.GE)
+				return res >= 0;
+			else if (type == Type.LT)
+				return res < 0;
+			else
+				return res <= 0;
 		}
 	}
 }
