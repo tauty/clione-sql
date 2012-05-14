@@ -90,6 +90,8 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
+
+		// %if - %elseif - %else
 		putFunction("if", new ExtFunction() {
 
 			@Override
@@ -131,8 +133,7 @@ public class Extention extends ClioneFunction {
 						if (!Extention.class.isInstance(cf))
 							return false;
 						Extention ext = (Extention) cf;
-						if (!contains(ext.func, "elseif", "else", "ELSEIF",
-								"ELSE")) {
+						if (!contains(ext.func, "elseif", "else")) {
 							return false;
 						}
 						return true;
@@ -176,7 +177,73 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
-		
+
+		// %IF - %ELSEIF - %ELSE
+		putFunction("IF", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				Instruction condition = getInsideInstruction();
+				if (condition != null) {
+					if (condition.merge().and() ^ isNegative()) {
+						Instruction nextInst = getNextInstruction();
+						return nextInst != null ? nextInst : new Instruction()
+								.nodeDispose(condition.isNodeDisposed);
+					} else {
+						ContextUtil.setIFStatus(IFStatus.DO_ELSE_NEXT);
+						return new Instruction().useValueInBack().doNothing()
+								.nodeDispose();
+					}
+				} else {
+					condition = getNextInstruction();
+					if (condition == null)
+						throw new ClioneFormatException(mkStringByCRLF("%"
+								+ getFuncName()
+								+ " must have next parameter like below:", "%"
+								+ getFuncName() + " PARAM1 or %"
+								+ getFuncName() + " PARAM1 :text"));
+					Instruction nextInst = condition.clearNext();
+					// if (isParamExists(condition) ^ isNegative()) {
+					if (condition.and() ^ isNegative()) {
+						return nextInst != null ? nextInst : new Instruction()
+								.nodeDispose(condition.isNodeDisposed);
+					} else {
+						ContextUtil.setIFStatus(IFStatus.DO_ELSE_NEXT);
+						return new Instruction().useValueInBack().doNothing()
+								.nodeDispose();
+					}
+				}
+			}
+		});
+		putFunction("ELSEIF", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				if (ContextUtil.getIFStatus() != IFStatus.DO_ELSE) {
+					return new Instruction().useValueInBack().doNothing()
+							.nodeDispose();
+				}
+				return getFunction("IF").perform();
+			}
+		});
+		putFunction("ELSE", new ExtFunction() {
+			@Override
+			public Instruction perform() {
+				if (ContextUtil.getIFStatus() != IFStatus.DO_ELSE) {
+					return new Instruction().useValueInBack().doNothing()
+							.nodeDispose();
+				} else {
+					Instruction nextInst = getNextInstruction();
+					return nextInst != null ? nextInst : new Instruction();
+				}
+			}
+
+			@Override
+			public void check() {
+				// no check
+			}
+		});
+
 		// compare
 		putFunction("equals", new CompFunction(Type.EQ));
 		putFunction("greaterThan", new CompFunction(Type.GT));
@@ -188,7 +255,7 @@ public class Extention extends ClioneFunction {
 		putFunction("ge", getFunction("greaterEqual"));
 		putFunction("lt", getFunction("lessThan"));
 		putFunction("le", getFunction("lessEqual"));
-		
+
 		putFunction("and", new ExtFunction() {
 
 			@Override

@@ -55,6 +55,10 @@ public class ContextUtil {
 					+ (endLineNo == beginLineNo ? "" : "-" + endLineNo);
 		}
 	}
+	
+	public enum IFStatus{
+		DO_ELSE, DO_ELSE_NEXT, NOTHING
+	}
 
 	private static class Context {
 		String productName;
@@ -62,6 +66,7 @@ public class ContextUtil {
 		HashSet<Object> negativeValues = new HashSet<Object>();
 		List<Extention> curExtentions = new ArrayList<Extention>();
 		List<ParamMap> curParamMaps = new ArrayList<ParamMap>();
+		IFStatus ifStatus = IFStatus.NOTHING;
 	}
 
 	private static final ThreadLocal<Context> tcontext = new ThreadLocal<ContextUtil.Context>();
@@ -71,6 +76,14 @@ public class ContextUtil {
 		if (context == null)
 			tcontext.set(context = new Context());
 		return context;
+	}
+	
+	public static IFStatus getIFStatus(){
+		return getContext().ifStatus;
+	}
+
+	public static void setIFStatus(IFStatus ifStatus){
+		getContext().ifStatus = ifStatus;
 	}
 
 	public static List<Extention> getCurExtensions() {

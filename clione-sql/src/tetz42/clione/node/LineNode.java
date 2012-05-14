@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.lang.ContextUtil.IFStatus;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.SQLLiteral;
@@ -76,8 +77,16 @@ public class LineNode extends Node {
 	public Instruction perform(ParamMap paramMap) {
 		this.setLineNo();
 		Instruction myInst = super.perform(paramMap);
-		if (myInst.isNodeDisposed)
+
+		// %IF - %ELSEIF - %ELSE
+		IFStatus ifStatus = getIFStatus();
+		setIFStatus(IFStatus.NOTHING);
+		if (myInst.isNodeDisposed) {
+			if (ifStatus == IFStatus.DO_ELSE_NEXT)
+				setIFStatus(IFStatus.DO_ELSE);
 			return myInst;
+		}
+
 		Instruction inst = mergeChildren(paramMap);
 		return inst.doNothing && !inst.isNodeDisposed ? myInst : myInst
 				.mergeLine(inst);
@@ -87,8 +96,6 @@ public class LineNode extends Node {
 		if (this.childBlocks.isEmpty())
 			return new Instruction().doNothing();
 		Instruction result = null;
-		// LineNode firstNode = childBlocks.get(0);
-		// LineNode lastNode = childBlocks.get(childBlocks.size() - 1);
 		LineNode firstNode = null;
 		LineNode lastNode = null;
 		LineNode firstMergedNode = null;

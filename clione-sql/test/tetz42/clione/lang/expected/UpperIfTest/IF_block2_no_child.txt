@@ -1,0 +1,11 @@
+select
+	*
+from
+	sea
+where
+  
+	tako2 = ?
+	and ika2 = ?
+order by
+	tako
+	,ika
