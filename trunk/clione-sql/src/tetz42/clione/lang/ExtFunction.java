@@ -93,8 +93,8 @@ public abstract class ExtFunction {
 
 	public void check() {
 		if (getInside() == null && getNext() == null)
-			throw new ClioneFormatException("Unknown function name '"
-					+ getFuncName() + "'\nsrc:" + getSrc() + "\nResource info:"
+			throw new ClioneFormatException("The function, '" + getSrc()
+					+ "', must have some parameters.\nResource info:"
 					+ getResourceInfo());
 	}
 

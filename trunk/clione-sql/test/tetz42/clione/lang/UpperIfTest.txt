@@ -1,0 +1,70 @@
+
+<<test>>
+select
+	*
+from
+	sea
+where
+  -- %IF block1
+	tako1 = /* $tako */8
+	and ika1 = /* $ika */10
+  -- %ELSEIF block2
+	tako2 = /* $tako */8
+	and ika2 = /* $ika */10
+  -- %ELSEIF block3
+	tako3 = /* $tako */8
+	and ika3 = /* $ika */10
+  -- %ELSE
+	tako4 = /* $tako */8
+	and ika4 = /* $ika */10
+order by
+	tako
+	,ika
+<</test>>
+
+<<nest>>
+select
+	*
+from
+	sea
+where
+  -- %IF block1
+	tako1 = /* $tako */8
+	and ika1 = /* $ika */10
+	-- %IF childBlock1
+		and octopus1 = 800
+		and squid1 = 1000
+	-- %ELSEIF childBlock2
+		and octopus2 = 8000
+		and squid2 = 10000
+  -- %ELSEIF block2
+	tako2 = /* $tako */8
+	and ika2 = /* $ika */10
+	-- %IF childBlock1
+		and octopus1 = 800
+		and squid1 = 1000
+	-- %ELSEIF childBlock2
+		and octopus2 = 8000
+		and squid2 = 10000
+  -- %ELSEIF block3
+	tako3 = /* $tako */8
+	and ika3 = /* $ika */10
+	-- %IF childBlock1
+		and octopus1 = 800
+		and squid1 = 1000
+	-- %ELSEIF childBlock2
+		and octopus2 = 8000
+		and squid2 = 10000
+  -- %ELSE
+	tako4 = /* $tako */8
+	and ika4 = /* $ika */10
+	-- %IF childBlock1
+		and octopus1 = 800
+		and squid1 = 1000
+	-- %ELSEIF childBlock2
+		and octopus2 = 8000
+		and squid2 = 10000
+order by
+	tako
+	,ika
+<</nest>>
