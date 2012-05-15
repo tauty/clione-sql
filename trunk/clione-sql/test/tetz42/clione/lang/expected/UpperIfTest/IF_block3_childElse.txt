@@ -1,0 +1,14 @@
+select
+	*
+from
+	sea
+where
+  
+	tako3 = ?
+	and ika3 = ?
+	
+		and octopusElse = 8000
+		and squidElse = 10000
+order by
+	tako
+	,ika
