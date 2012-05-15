@@ -49,12 +49,12 @@ where
   -- %ELSEIF block3
 	tako3 = /* $tako */8
 	and ika3 = /* $ika */10
-	-- %IF childBlock1
-		and octopus1 = 800
-		and squid1 = 1000
-	-- %ELSEIF childBlock2
-		and octopus2 = 8000
-		and squid2 = 10000
+	-- %IF childBlock
+		and octopus = 800
+		and squid = 1000
+	-- %ELSE
+		and octopusElse = 8000
+		and squidElse = 10000
   -- %ELSE
 	tako4 = /* $tako */8
 	and ika4 = /* $ika */10

@@ -88,6 +88,7 @@ public class LineNode extends Node {
 		}
 
 		Instruction inst = mergeChildren(paramMap);
+		setIFStatus(IFStatus.NOTHING); // ignore children's IFStatus
 		return inst.doNothing && !inst.isNodeDisposed ? myInst : myInst
 				.mergeLine(inst);
 	}

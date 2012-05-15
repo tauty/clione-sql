@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import tetz42.clione.parsar.SQLParser;
 import tetz42.util.HereDoc;
 
 public class UpperIfTest {
@@ -54,8 +53,8 @@ public class UpperIfTest {
 	@Test
 	public void IF_block1_child1() {
 		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
-				paramsOn("block1", "block2", "block3", "childBlock1").$("tako",
-						800).$("ika", 100));
+				paramsOn("block1", "block2", "block3", "childBlock1",
+						"childBlock2").$("tako", 800).$("ika", 100));
 		assertEqualsWithFile(sql, getClass(), "IF_block1_child1");
 	}
 
@@ -88,6 +87,20 @@ public class UpperIfTest {
 				paramsOn("block2", "block3", "childBlock2").$("tako", 800).$(
 						"ika", 100));
 		assertEqualsWithFile(sql, getClass(), "IF_block2_child2");
+	}
+
+	@Test
+	public void IF_block3_child() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block3", "childBlock").$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block3_child");
+	}
+
+	@Test
+	public void IF_block3_childElse() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block3").$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block3_childElse");
 	}
 
 	@Test
