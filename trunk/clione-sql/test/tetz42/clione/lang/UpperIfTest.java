@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import tetz42.clione.parsar.SQLParser;
 import tetz42.util.HereDoc;
 
 public class UpperIfTest {
@@ -52,61 +53,61 @@ public class UpperIfTest {
 
 	@Test
 	public void IF_block1_child1() {
-		String sql = sqlManager().useSQL(doc.get("test")).genSql(
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
 				paramsOn("block1", "block2", "block3", "childBlock1").$("tako",
 						800).$("ika", 100));
 		assertEqualsWithFile(sql, getClass(), "IF_block1_child1");
 	}
 
-	// @Test
-	// public void IF_block1_child2() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("block1", "block2", "block3", "childBlock2").$("tako",
-	// 800).$("ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block1_child2");
-	// }
-	//
-	// @Test
-	// public void IF_block2_no_child() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("block2", "block3").$("tako", 800).$("ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block2_no_child");
-	// }
-	//
-	// @Test
-	// public void IF_block2_child1() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("block2", "block3", "childBlock1").$("tako", 800).$(
-	// "ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block2_child1");
-	// }
-	//
-	// @Test
-	// public void IF_block2_child2() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("block2", "block3", "childBlock2").$("tako", 800).$(
-	// "ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block2_child2");
-	// }
-	//
-	// @Test
-	// public void IF_block4_ELSE_no_child() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// params().$("tako", 800).$("ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_no_child");
-	// }
-	//
-	// @Test
-	// public void IF_block4_ELSE_child1() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("childBlock1").$("tako", 800).$("ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_child1");
-	// }
-	//
-	// @Test
-	// public void IF_block4_ELSE_child2() {
-	// String sql = sqlManager().useSQL(doc.get("test")).genSql(
-	// paramsOn("childBlock2").$("tako", 800).$("ika", 100));
-	// assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_child2");
-	// }
+	@Test
+	public void IF_block1_child2() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block1", "block2", "block3", "childBlock2").$("tako",
+						800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block1_child2");
+	}
+
+	@Test
+	public void IF_block2_no_child() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block2", "block3").$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block2_no_child");
+	}
+
+	@Test
+	public void IF_block2_child1() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block2", "block3", "childBlock1").$("tako", 800).$(
+						"ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block2_child1");
+	}
+
+	@Test
+	public void IF_block2_child2() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("block2", "block3", "childBlock2").$("tako", 800).$(
+						"ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block2_child2");
+	}
+
+	@Test
+	public void IF_block4_ELSE_no_child() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				params().$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_no_child");
+	}
+
+	@Test
+	public void IF_block4_ELSE_child1() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("childBlock1").$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_child1");
+	}
+
+	@Test
+	public void IF_block4_ELSE_child2() {
+		String sql = sqlManager().useSQL(doc.get("nest")).genSql(
+				paramsOn("childBlock2").$("tako", 800).$("ika", 100));
+		assertEqualsWithFile(sql, getClass(), "IF_block4_ELSE_child2");
+	}
 }
