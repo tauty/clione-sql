@@ -24,24 +24,63 @@ import java.util.Properties;
 
 import tetz42.util.exception.WrapException;
 
+/**
+ * InputStream and OutputStream Utility class.
+ *
+ * @author tetsuo.ohta
+ */
 public class IOUtil {
 
-	public static String toString(final InputStream in, String encoding) {
+	/**
+	 * Generates string from input stream.
+	 *
+	 * @param in
+	 *            input stream
+	 * @param charset
+	 *            character set
+	 * @return string generated
+	 */
+	public static String toString(final InputStream in, String charset) {
 		try {
-			return new String(toByteArray(in), encoding);
+			return new String(toByteArray(in), charset);
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(e);
 		}
 	}
 
+	/**
+	 * Generates String from input stream.
+	 *
+	 * @param in
+	 *            - input stream
+	 * @return string generated
+	 */
 	public static String toString(final InputStream in) {
 		return toString(in, "utf-8");
 	}
 
+	/**
+	 * Generates byte array from input stream.
+	 *
+	 * @param in
+	 *            input stream
+	 * @return byte array generated
+	 */
 	public static byte[] toByteArray(final InputStream in) {
 		return in2out(in, new ByteArrayOutputStream(0xFFFF)).toByteArray();
 	}
 
+	/**
+	 * Copy the contents of input stream to output stream.
+	 *
+	 * @param <T>
+	 *            sub type of output stream
+	 * @param in
+	 *            input stream
+	 * @param out
+	 *            output stream
+	 * @return the output stream passed as a parameter
+	 */
 	public static <T extends OutputStream> T in2out(final InputStream in,
 			final T out) {
 		return new Using<T>(in, out) {
@@ -57,6 +96,15 @@ public class IOUtil {
 		}.invoke();
 	}
 
+	/**
+	 * Generates Property object.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @param loader
+	 *            class loader
+	 * @return Properties object
+	 */
 	public static Properties getProperties(String path, ClassLoader loader) {
 		final InputStream in = loader.getResourceAsStream(path);
 		if (in == null)
@@ -73,6 +121,13 @@ public class IOUtil {
 		}.invoke();
 	}
 
+	/**
+	 * Generates Property object.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @return Properties object
+	 */
 	public static Properties getProperties(String path) {
 		return getProperties(path, Thread.currentThread()
 				.getContextClassLoader());
