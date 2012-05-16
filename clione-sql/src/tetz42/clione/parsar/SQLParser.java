@@ -74,7 +74,7 @@ public class SQLParser {
 
 	private static final Pattern operatorPtn = Pattern
 			.compile(
-					"(=\\s*|in\\s+|is\\s+)|(!=\\s*|<>\\s*|not\\s+in\\s+|is\\s+not\\s+)",
+					"(=\\s*|in\\s+|is\\s+|like\\s+)|(!=\\s*|<>\\s*|not\\s+in\\s+|is\\s+not\\s+|not\\s+like\\s+)",
 					Pattern.CASE_INSENSITIVE);
 	private static final Pattern normalValuePtn = Pattern
 			.compile("[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)*");
