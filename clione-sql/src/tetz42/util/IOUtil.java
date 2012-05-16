@@ -133,4 +133,13 @@ public class IOUtil {
 				.getContextClassLoader());
 	}
 
+	/**
+	 * Load resource from default package.
+	 * @param path resource name
+	 * @return Input stream
+	 */
+	public static InputStream loadFromRoot(String path) {
+		return Thread.currentThread()
+				.getContextClassLoader().getResourceAsStream(path);
+	}
 }
