@@ -37,20 +37,21 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			return nodeInst.useValueInBack().merge(inst);
 		}
 
-		final int IN_MAX = ContextUtil.getDialect().inLimit();
+		boolean isLike = operator.toLowerCase().contains("like");
+		final int LIMIT = isLike ? 1 : ContextUtil.getDialect().inLimit();
 
-		if (inst.params.size() <= IN_MAX)
+		if (inst.params.size() <= LIMIT)
 			return build(nodeInst, inst);
 
 		Instruction result = new Instruction().replacement("("
 				+ ClioneUtil.CRLF);
 		Object[] paramAry = inst.params.toArray();
 		final String delim = isPositive ? "OR " : "AND ";
-		for (int i = 0; i * IN_MAX <= paramAry.length; i++) {
+		for (int i = 0; i * LIMIT <= paramAry.length; i++) {
 
 			result.addReplacement("\t").addReplacement(i == 0 ? "" : delim);
-			int start = i * IN_MAX;
-			int end = (i + 1) * IN_MAX;
+			int start = i * LIMIT;
+			int end = (i + 1) * LIMIT;
 			end = end < inst.params.size() ? end : paramAry.length;
 
 			ArrayList<Object> list = new ArrayList<Object>();

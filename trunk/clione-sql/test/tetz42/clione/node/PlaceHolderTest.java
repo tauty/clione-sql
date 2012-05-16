@@ -70,11 +70,43 @@ public class PlaceHolderTest {
 		for (int i = 0; i < 3333; i++) {
 			list.add("value" + i);
 		}
-		
+
 		// oracle
 		ContextUtil.setProductName("oracle");
 		Instruction inst = holder.perform(params("AAA", list));
 		assertEqualsWithFile(inst, getClass(), "param_over1000");
 	}
 
+	@Test
+	public void param_over1000_not() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "?AAA", false, "<> ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 3333; i++) {
+			list.add("value" + i);
+		}
+
+		// oracle
+		ContextUtil.setProductName("oracle");
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param_over1000_not");
+	}
+
+	@Test
+	public void param_like() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "%L '%' ?AAA", true, "LIKE ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 10; i++) {
+			list.add("value" + i);
+		}
+
+		// oracle
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param_like");
+	}
 }
