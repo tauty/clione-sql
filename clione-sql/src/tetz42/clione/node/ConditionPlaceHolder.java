@@ -14,6 +14,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 	private final INode node;
 	private final String operator;
 	private final boolean isPositive;
+	private final boolean isLike;
 
 	public ConditionPlaceHolder(INode node, String comment, boolean isPositive,
 			String operator, INode valueInBack) {
@@ -21,6 +22,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 		this.node = node;
 		this.operator = operator;
 		this.isPositive = isPositive;
+		this.isLike = operator.toLowerCase().contains("like");
 	}
 
 	@Override
@@ -37,7 +39,6 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			return nodeInst.useValueInBack().merge(inst);
 		}
 
-		boolean isLike = operator.toLowerCase().contains("like");
 		final int LIMIT = isLike ? 1 : ContextUtil.getDialect().inLimit();
 
 		if (inst.params.size() <= LIMIT)
@@ -49,7 +50,6 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 		final String delim = isPositive ? "OR " : "AND ";
 		for (int i = 0; i * LIMIT <= paramAry.length; i++) {
 
-			result.addReplacement("\t").addReplacement(i == 0 ? "" : delim);
 			int start = i * LIMIT;
 			int end = (i + 1) * LIMIT;
 			end = end < inst.params.size() ? end : paramAry.length;
@@ -58,10 +58,13 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			for (int j = start; j < end; j++)
 				list.add(inst.params.get(j));
 
-			Instruction subInst = new Instruction();
-			subInst.params = list;
-			result.merge(build(nodeInst, subInst)).addReplacement(
-					ClioneUtil.CRLF);
+			if (!list.isEmpty()) {
+				result.addReplacement("\t").addReplacement(i == 0 ? "" : delim);
+				Instruction subInst = new Instruction();
+				subInst.params = list;
+				result.merge(build(nodeInst, subInst)).addReplacement(
+						ClioneUtil.CRLF);
+			}
 		}
 		result.addReplacement(")");
 
@@ -75,15 +78,16 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 			result.addReplacement(isPositive ? " IS NULL" : " IS NOT NULL");
 			return result;
 		} else if (inst.params.size() == 1) {
-			result.addReplacement(isPositive ? " = " : " <> ");
+			result.addReplacement(isPositive ? isLike ? " LIKE " : " = "
+					: isLike ? " NOT LIKE " : " <> ");
 			return result.merge(inst);
 		} else {
 			result.addReplacement(isPositive ? " IN " : " NOT IN ");
 			if (inst.getReplacement().startsWith("("))
 				return result.merge(inst);
 			else
-				return result.addReplacement("(").merge(inst).addReplacement(
-						")");
+				return result.addReplacement("(").merge(inst)
+						.addReplacement(")");
 		}
 	}
 

@@ -61,6 +61,40 @@ public class PlaceHolderTest {
 	}
 
 	@Test
+	public void param_2000() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "?AAA", true, "= ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 2000; i++) {
+			list.add("value" + i);
+		}
+
+		// oracle
+		ContextUtil.setProductName("oracle");
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param_2000");
+	}
+
+	@Test
+	public void param_2001() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "?AAA", true, "= ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 2001; i++) {
+			list.add("value" + i);
+		}
+
+		// oracle
+		ContextUtil.setProductName("oracle");
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param_2001");
+	}
+
+	@Test
 	public void param_over1000() {
 		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
 		// .perform(params());
@@ -95,11 +129,11 @@ public class PlaceHolderTest {
 	}
 
 	@Test
-	public void param_like() {
+	public void param10_like() {
 		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
 		// .perform(params());
 		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
-				"ID "), "%L '%' ?AAA", true, "LIKE ", new StrNode("'AAA'"));
+				"ID "), "?AAA", true, "LIKE ", new StrNode("'AAA'"));
 		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < 10; i++) {
 			list.add("value" + i);
@@ -107,6 +141,22 @@ public class PlaceHolderTest {
 
 		// oracle
 		Instruction inst = holder.perform(params("AAA", list));
-		assertEqualsWithFile(inst, getClass(), "param_like");
+		assertEqualsWithFile(inst, getClass(), "param10_like");
+	}
+	
+	@Test
+	public void param10_like_useL() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "%L ?AAA, '%'", true, "LIKE ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 10; i++) {
+			list.add("val_" + i);
+		}
+
+		// oracle
+		Instruction inst = holder.perform(params("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param10_like_useL");
 	}
 }
