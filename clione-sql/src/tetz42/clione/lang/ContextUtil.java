@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.lang.dialect.Db2Dialect;
@@ -55,8 +54,8 @@ public class ContextUtil {
 					+ (endLineNo == beginLineNo ? "" : "-" + endLineNo);
 		}
 	}
-	
-	public enum IFStatus{
+
+	public enum IFStatus {
 		DO_ELSE, DO_ELSE_NEXT, NOTHING
 	}
 
@@ -67,7 +66,6 @@ public class ContextUtil {
 		List<Extention> curExtentions = new ArrayList<Extention>();
 		List<ParamMap> curParamMaps = new ArrayList<ParamMap>();
 		IFStatus ifStatus = IFStatus.NOTHING;
-		boolean isConditionPlaceHolder = false;
 	}
 
 	private static final ThreadLocal<Context> tcontext = new ThreadLocal<ContextUtil.Context>();
@@ -78,20 +76,12 @@ public class ContextUtil {
 			tcontext.set(context = new Context());
 		return context;
 	}
-	
-	public static boolean isConditionPlaceHolder(){
-		return getContext().isConditionPlaceHolder;
-	}
-	
-	public static void setConditionPlaceHolder(boolean flag){
-		getContext().isConditionPlaceHolder = flag;
-	}
-	
-	public static IFStatus getIFStatus(){
+
+	public static IFStatus getIFStatus() {
 		return getContext().ifStatus;
 	}
 
-	public static void setIFStatus(IFStatus ifStatus){
+	public static void setIFStatus(IFStatus ifStatus) {
 		getContext().ifStatus = ifStatus;
 	}
 
@@ -216,9 +206,8 @@ public class ContextUtil {
 	}
 
 	public static String escapeBySharp(String src) {
-		Pattern ptn = Pattern.compile("([#" + getDialect().needLikeEscape()
-				+ "])");
-		return src == null ? null : ptn.matcher(src).replaceAll("#$1");
+		return src == null ? null : getDialect().needLikeEscape().matcher(src)
+				.replaceAll("#$1");
 	}
 
 	public static String escapeBySharp(Object obj) {
