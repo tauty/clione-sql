@@ -28,14 +28,14 @@ public class Extention extends ClioneFunction {
 			.synchronizedMap(new HashMap<String, ExtFunction>());
 
 	static class Cycler<T> {
-		private List<T> list;
+		private final List<T> list;
 		int index = 0;
 		boolean hasNext = true;
 
 		Cycler(List<T> list) {
 			if (list == null || list.isEmpty())
 				throw new UnsupportedOperationException(
-						"Cycler does not support neither null nor empty.");
+						"Cycler does not support neither null or empty list.");
 			this.list = list;
 		}
 
@@ -64,8 +64,12 @@ public class Extention extends ClioneFunction {
 			protected Instruction perform(Instruction inst) {
 				inst = getFunction("esc_like").perform(inst);
 				inst = getFunction("concat").perform(inst);
-				inst.replacement = "? ESCAPE '#'";
-				return inst;
+				return new Instruction() {
+					@Override
+					public String getReplacement() {
+						return genQuestions() + " ESCAPE '#'";
+					}
+				}.merge(inst);
 			}
 		});
 		putFunction("esc_like", new ExtFunction() {
@@ -86,35 +90,6 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				if (!isConditionPlaceHolder()) {
-					return paramMany(inst);
-				} else {
-					return param1(inst);
-				}
-			}
-
-			private Instruction param1(Instruction inst) {
-				StringBuilder sb = new StringBuilder();
-				Instruction resultInst = inst;
-				while (inst != null) {
-					if (inst.replacement != null) {
-						sb.append(inst.replacement);
-					} else {
-						for (Object param : inst.params) {
-							if (isNotEmpty(param)) {
-								sb.append(param);
-								break;
-							}
-						}
-					}
-					inst = inst.next;
-				}
-				resultInst.merge().replacement(null).clearParams();
-				resultInst.params.add(sb.toString());
-				return resultInst;
-			}
-
-			private Instruction paramMany(Instruction inst) {
 				ArrayList<Cycler<Object>> list = new ArrayList<Cycler<Object>>();
 				Instruction resultInst = inst;
 				while (inst != null) {
@@ -144,7 +119,6 @@ public class Extention extends ClioneFunction {
 				resultInst.params.addAll(paramList);
 				return resultInst;
 			}
-
 		});
 		putFunction("C", getFunction("concat"));
 		putFunction("del_negative", new ExtFunction() {
@@ -415,7 +389,7 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst = getFunction("C").perform(inst);
+				inst = concat_all(inst);
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
@@ -425,12 +399,12 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst = getFunction("C").perform(inst);
+				inst = concat_all(inst);
 				Instruction retInst = new Instruction();
 				SQLGenerator sqlGenerator = new SQLGenerator();
 				retInst.replacement = sqlGenerator.genSql(getParamMap(),
-						LoaderUtil.getNodeBySQL(
-								String.valueOf(inst.params.get(0)),
+						LoaderUtil.getNodeBySQL(String.valueOf(inst.params
+								.get(0)),
 								"[WARN] Java String passed as parameter!!"));
 				if (sqlGenerator.params != null
 						&& sqlGenerator.params.size() != 0) {
@@ -441,12 +415,33 @@ public class Extention extends ClioneFunction {
 		});
 	}
 
-	public static ExtFunction putFunction(String keyword, ExtFunction f) {
+	private static ExtFunction putFunction(String keyword, ExtFunction f) {
 		return funcMap.put(keyword, f);
 	}
 
-	public static ExtFunction getFunction(String keyword) {
+	private static ExtFunction getFunction(String keyword) {
 		return funcMap.get(keyword);
+	}
+
+	private static Instruction concat_all(Instruction inst) {
+		StringBuilder sb = new StringBuilder();
+		Instruction resultInst = inst;
+		while (inst != null) {
+			if (inst.replacement != null) {
+				sb.append(inst.replacement);
+			} else {
+				for (Object param : inst.params) {
+					if (isNotEmpty(param)) {
+						sb.append(param);
+						break;
+					}
+				}
+			}
+			inst = inst.next;
+		}
+		resultInst.merge().replacement(null).clearParams();
+		resultInst.params.add(sb.toString());
+		return resultInst;
 	}
 
 	protected final String func;
@@ -560,7 +555,7 @@ public class Extention extends ClioneFunction {
 			return compareTask(o1, o2);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings("unchecked")
 		protected int compareTask(Object o1, Object o2) {
 			Exception cause = null;
 			try {
@@ -568,9 +563,9 @@ public class Extention extends ClioneFunction {
 					return 0;
 				} else if (this.type == Type.EQ) {
 					return 1;
-				} else if (o1 instanceof Comparable) {
+				} else if (o1 instanceof Comparable<?>) {
 					return ((Comparable) o1).compareTo(o2);
-				} else if (o2 instanceof Comparable) {
+				} else if (o2 instanceof Comparable<?>) {
 					return ((Comparable) o2).compareTo(o1);
 				}
 			} catch (Exception e) {
