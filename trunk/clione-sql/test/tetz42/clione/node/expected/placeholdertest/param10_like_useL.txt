@@ -1,0 +1,13 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "ID  LIKE  ? ESCAPE '#'"
+	status = true
+	isNumber = false
+	params = ArrayList[
+		"val#_0"
+	]
+	next = null
+	map = null
+}

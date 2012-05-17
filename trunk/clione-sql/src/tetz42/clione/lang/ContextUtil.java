@@ -67,6 +67,7 @@ public class ContextUtil {
 		List<Extention> curExtentions = new ArrayList<Extention>();
 		List<ParamMap> curParamMaps = new ArrayList<ParamMap>();
 		IFStatus ifStatus = IFStatus.NOTHING;
+		boolean isConditionPlaceHolder = false;
 	}
 
 	private static final ThreadLocal<Context> tcontext = new ThreadLocal<ContextUtil.Context>();
@@ -76,6 +77,14 @@ public class ContextUtil {
 		if (context == null)
 			tcontext.set(context = new Context());
 		return context;
+	}
+	
+	public static boolean isConditionPlaceHolder(){
+		return getContext().isConditionPlaceHolder;
+	}
+	
+	public static void setConditionPlaceHolder(boolean flag){
+		getContext().isConditionPlaceHolder = flag;
 	}
 	
 	public static IFStatus getIFStatus(){

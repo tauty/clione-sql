@@ -5,6 +5,7 @@ import static tetz42.util.Util.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.exception.ImpossibleToCompareException;
 import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.gen.SQLGenerator;
+import tetz42.clione.lang.ContextUtil.IFStatus;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.Parenthesises;
 import tetz42.clione.loader.LoaderUtil;
@@ -24,6 +26,36 @@ public class Extention extends ClioneFunction {
 
 	private static final Map<String, ExtFunction> funcMap = Collections
 			.synchronizedMap(new HashMap<String, ExtFunction>());
+
+	static class Cycler<T> {
+		private List<T> list;
+		int index = 0;
+		boolean hasNext = true;
+
+		Cycler(List<T> list) {
+			if (list == null || list.isEmpty())
+				throw new UnsupportedOperationException(
+						"Cycler does not support neither null nor empty.");
+			this.list = list;
+		}
+
+		Cycler(T[] ts) {
+			this.list = Arrays.asList(ts);
+		}
+
+		T next() {
+			T ele = list.get(index++);
+			if (index >= list.size()) {
+				index = 0;
+				hasNext = false;
+			}
+			return ele;
+		}
+
+		boolean hasNext() {
+			return hasNext;
+		}
+	}
 
 	static {
 		putFunction("L", new ExtFunction() {
@@ -54,6 +86,14 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
+				if (!isConditionPlaceHolder()) {
+					return paramMany(inst);
+				} else {
+					return param1(inst);
+				}
+			}
+
+			private Instruction param1(Instruction inst) {
 				StringBuilder sb = new StringBuilder();
 				Instruction resultInst = inst;
 				while (inst != null) {
@@ -61,8 +101,10 @@ public class Extention extends ClioneFunction {
 						sb.append(inst.replacement);
 					} else {
 						for (Object param : inst.params) {
-							if (!isEmpty(param))
+							if (isNotEmpty(param)) {
 								sb.append(param);
+								break;
+							}
 						}
 					}
 					inst = inst.next;
@@ -71,6 +113,38 @@ public class Extention extends ClioneFunction {
 				resultInst.params.add(sb.toString());
 				return resultInst;
 			}
+
+			private Instruction paramMany(Instruction inst) {
+				ArrayList<Cycler<Object>> list = new ArrayList<Cycler<Object>>();
+				Instruction resultInst = inst;
+				while (inst != null) {
+					if (inst.replacement != null) {
+						list.add(new Cycler<Object>(Arrays
+								.asList((Object) inst.replacement)));
+					} else {
+						list.add(new Cycler<Object>(inst.params));
+					}
+					inst = inst.next;
+				}
+				ArrayList<Object> paramList = new ArrayList<Object>();
+				while (true) {
+					boolean hasNext = false;
+					StringBuilder sb = new StringBuilder();
+					for (Cycler<Object> cycler : list) {
+						Object e = cycler.next();
+						if (isNotEmpty(e))
+							sb.append(e);
+						hasNext = hasNext || cycler.hasNext;
+					}
+					paramList.add(sb.toString());
+					if (!hasNext)
+						break;
+				}
+				resultInst.merge().replacement(null).clearParams();
+				resultInst.params.addAll(paramList);
+				return resultInst;
+			}
+
 		});
 		putFunction("C", getFunction("concat"));
 		putFunction("del_negative", new ExtFunction() {
