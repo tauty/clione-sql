@@ -22,7 +22,6 @@ import static tetz42.util.Util.*;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,19 +29,40 @@ import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
+import tetz42.clione.setting.Config;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLManager implements Closeable {
 
+	public static enum Product {
+		oracle, db2, sqlserver, mysql, postgres, sqlite, firebird, informix, hsql, derby
+	}
+
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
 	public static SQLManager sqlManager() {
-		return new SQLManager();
+		return new SQLManager(null, Config.get().DBMS_PRODUCT_NAME);
+	}
+
+	public static SQLManager sqlManager(Product product) {
+		return new SQLManager(null, product);
+	}
+
+	public static SQLManager sqlManager(String productName) {
+		return new SQLManager(null, productName);
 	}
 
 	public static SQLManager sqlManager(Connection con) {
-		return new SQLManager(con);
+		return new SQLManager(con, Config.get().DBMS_PRODUCT_NAME);
+	}
+
+	public static SQLManager sqlManager(Connection con, Product product) {
+		return new SQLManager(con, product);
+	}
+
+	public static SQLManager sqlManager(Connection con, String productName) {
+		return new SQLManager(con, productName);
 	}
 
 	public static void setThreadConnection(Connection con) {
@@ -61,19 +81,6 @@ public class SQLManager implements Closeable {
 		return params().$(key, value);
 	}
 
-	/**
-	 *
-	 * @param <T>
-	 *            note: This is not used, but required for avoiding warning.
-	 * @param key
-	 * @param values
-	 * @return
-	 */
-	@SuppressWarnings({ "unchecked", "varargs" })
-	public static <T> ParamMap params(String key, T... values) {
-		return params().$(key, values);
-	}
-
 	public static ParamMap params(Object obj) {
 		return params().object(obj);
 	}
@@ -88,29 +95,48 @@ public class SQLManager implements Closeable {
 
 	private final Connection con;
 	private final String productName;
-	private HashSet<SQLExecutor> processingExecutorSet = new HashSet<SQLExecutor>();
+	private final HashSet<SQLExecutor> processingExecutorSet = new HashSet<SQLExecutor>();
 	private String resourceInfo;
 	private String executedSql;
 	private List<Object> executedParams;
 	private Object[] negativeValues = null;
 
-	public SQLManager() {
-		this(null);
+	private SQLManager(Connection con, Product product) {
+		this.con = getCon(con);
+		this.productName = product.name();
 	}
 
-	public SQLManager(Connection con) {
-		this.con = con != null ? con : getThreadConnection();
-		if (this.con != null) {
+	private SQLManager(Connection con, String productName) {
+		this.con = getCon(con);
+
+		if (productName == null)
+			productName = Config.get().DBMS_PRODUCT_NAME;
+
+		if (this.con != null && productName == null) {
 			try {
-				DatabaseMetaData metaData = this.con.getMetaData();
-				String name = metaData.getDatabaseProductName();
-				productName = name == null ? name : name.toLowerCase();
-			} catch (SQLException e) {
-				throw new SQLRuntimeException(e);
+				productName = toProduct(this.con.getMetaData()
+						.getDatabaseProductName());
+			} catch (Exception ignore) {
 			}
-		} else {
-			productName = null;
 		}
+		this.productName = productName;
+	}
+
+	private static String toProduct(String productName) {
+		if (productName == null)
+			return null;
+		for (Product product : Product.values()) {
+			String name = product.name();
+			if (product == Product.sqlserver)
+				name = "sql server";
+			if (productName.toLowerCase().contains(name))
+				return product.name();
+		}
+		return null;
+	}
+
+	private Connection getCon(Connection con) {
+		return con != null ? con : getThreadConnection();
 	}
 
 	public SQLManager emptyAsNegative() {
@@ -195,7 +221,7 @@ public class SQLManager implements Closeable {
 
 	@Override
 	public void close() {
-		closeConnection();
+		closeStatement();
 	}
 
 	Object[] getNegativeValues() {
