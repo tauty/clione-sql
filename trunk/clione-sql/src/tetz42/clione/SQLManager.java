@@ -36,7 +36,7 @@ import tetz42.util.exception.SQLRuntimeException;
 public class SQLManager implements Closeable {
 
 	public static enum Product {
-		oracle, db2, sqlserver, mysql, postgres, sqlite, firebird, informix, hsql, derby
+		oracle, sqlserver, db2, postgres, mysql, sqlite
 	}
 
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
