@@ -18,6 +18,7 @@ import tetz42.clione.lang.dialect.OracleDialect;
 import tetz42.clione.lang.dialect.SqlserverDialect;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
+import static tetz42.clione.SQLManager.Product.*;
 
 public class ContextUtil {
 
@@ -27,12 +28,10 @@ public class ContextUtil {
 	static {
 		Map<String, Dialect> m = new HashMap<String, Dialect>();
 		m.put(STANDARD_RDBMS, new Dialect());
-		m.put("oracle", new OracleDialect());
-		m.put("mysql", new MysqlDialect());
-		m.put("postgressql", new Dialect());
-		m.put("sqlite", new Dialect());
-		m.put("db2", new Db2Dialect());
-		m.put("sqlserver", new SqlserverDialect());
+		m.put(sqlserver.name(), new SqlserverDialect());
+		m.put(oracle.name(), new OracleDialect());
+		m.put(mysql.name(), new MysqlDialect());
+		m.put(db2.name(), new Db2Dialect());
 		map = Collections.unmodifiableMap(m);
 	}
 
@@ -125,7 +124,7 @@ public class ContextUtil {
 		return getContext().resourceInfoes.pop().toString();
 	}
 
-	public static boolean isAllPoped() {
+	public static boolean isAllPopped() {
 		return getContext().resourceInfoes.isEmpty();
 	}
 
@@ -200,9 +199,7 @@ public class ContextUtil {
 
 	public static Dialect getDialect() {
 		Dialect dialect = map.get(getContext().productName);
-		if (dialect == null)
-			dialect = map.get(STANDARD_RDBMS);
-		return dialect;
+		return dialect != null ? dialect : map.get(STANDARD_RDBMS);
 	}
 
 	public static String escapeBySharp(String src) {

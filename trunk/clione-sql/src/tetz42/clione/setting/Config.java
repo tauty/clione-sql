@@ -28,6 +28,7 @@ public class Config {
 
 	private Properties prop;
 
+	public final String DBMS_PRODUCT_NAME = getStr("DBMS_PRODUCT_NAME");
 	public final String SQLFILE_ENCODING = getStr("SQLFILE_ENCODING", "utf-8");
 	public final boolean IS_DEVELOPMENT_MODE = getBool("IS_DEVELOPMENT_MODE",
 			false);
@@ -47,8 +48,12 @@ public class Config {
 		return prop;
 	}
 
+	private String getStr(String key) {
+		return prop().getProperty(key);
+	}
+
 	private String getStr(String key, String defaultValue) {
-		return nvl(prop().getProperty(key), defaultValue);
+		return nvl(getStr(key), defaultValue);
 	}
 
 	private boolean getBool(String key, boolean defaultValue) {
