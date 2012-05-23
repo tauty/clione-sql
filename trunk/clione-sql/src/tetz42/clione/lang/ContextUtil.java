@@ -28,10 +28,10 @@ public class ContextUtil {
 	static {
 		Map<String, Dialect> m = new HashMap<String, Dialect>();
 		m.put(STANDARD_RDBMS, new Dialect());
-		m.put(sqlserver.name(), new SqlserverDialect());
-		m.put(oracle.name(), new OracleDialect());
-		m.put(mysql.name(), new MysqlDialect());
-		m.put(db2.name(), new Db2Dialect());
+		m.put(SQLSERVER.name().toLowerCase(), new SqlserverDialect());
+		m.put(ORACLE.name().toLowerCase(), new OracleDialect());
+		m.put(MYSQL.name().toLowerCase(), new MysqlDialect());
+		m.put(DB2.name().toLowerCase(), new Db2Dialect());
 		map = Collections.unmodifiableMap(m);
 	}
 

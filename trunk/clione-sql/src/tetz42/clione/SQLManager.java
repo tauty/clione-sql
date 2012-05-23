@@ -36,13 +36,17 @@ import tetz42.util.exception.SQLRuntimeException;
 public class SQLManager implements Closeable {
 
 	public static enum Product {
-		oracle, sqlserver, db2, postgres, mysql, sqlite
+		ORACLE, SQLSERVER, DB2, MYSQL, FIREBIRD, POSTGRES, SQLITE
 	}
 
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
 	public static SQLManager sqlManager() {
-		return new SQLManager(null, Config.get().DBMS_PRODUCT_NAME);
+		return new SQLManager(null, (String) null);
+	}
+
+	public static SQLManager sqlManager(Connection con) {
+		return new SQLManager(con, (String) null);
 	}
 
 	public static SQLManager sqlManager(Product product) {
@@ -51,10 +55,6 @@ public class SQLManager implements Closeable {
 
 	public static SQLManager sqlManager(String productName) {
 		return new SQLManager(null, productName);
-	}
-
-	public static SQLManager sqlManager(Connection con) {
-		return new SQLManager(con, Config.get().DBMS_PRODUCT_NAME);
 	}
 
 	public static SQLManager sqlManager(Connection con, Product product) {
@@ -103,7 +103,7 @@ public class SQLManager implements Closeable {
 
 	private SQLManager(Connection con, Product product) {
 		this.con = getCon(con);
-		this.productName = product.name();
+		this.productName = product.name().toLowerCase();
 	}
 
 	private SQLManager(Connection con, String productName) {
@@ -126,10 +126,9 @@ public class SQLManager implements Closeable {
 		if (productName == null)
 			return null;
 		for (Product product : Product.values()) {
-			String name = product.name();
-			if (product == Product.sqlserver)
-				name = "sql server";
-			if (productName.toLowerCase().contains(name))
+			String token = product == Product.SQLSERVER ? "sql server"
+					: product.name().toLowerCase();
+			if (productName.toLowerCase().contains(token))
 				return product.name();
 		}
 		return null;
