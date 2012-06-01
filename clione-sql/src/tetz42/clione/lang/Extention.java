@@ -3,6 +3,7 @@ package tetz42.clione.lang;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.util.Util.*;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class Extention extends ClioneFunction {
 		Cycler(List<T> list) {
 			if (list == null || list.isEmpty())
 				throw new UnsupportedOperationException(
-						"Cycler does not support neither null or empty list.");
+						"Cycler does not support neither null nor empty list.");
 			this.list = list;
 		}
 
@@ -156,12 +157,6 @@ public class Extention extends ClioneFunction {
 					}
 				} else {
 					condition = getNextInstruction();
-					if (condition == null)
-						throw new ClioneFormatException(mkStringByCRLF("%"
-								+ getFuncName()
-								+ " must have next parameter like below:", "%"
-								+ getFuncName() + " PARAM1 or %"
-								+ getFuncName() + " PARAM1 :text"));
 					Instruction nextInst = condition.clearNext();
 					// if (isParamExists(condition) ^ isNegative()) {
 					if (condition.and() ^ isNegative()) {
@@ -244,14 +239,7 @@ public class Extention extends ClioneFunction {
 					}
 				} else {
 					condition = getNextInstruction();
-					if (condition == null)
-						throw new ClioneFormatException(mkStringByCRLF("%"
-								+ getFuncName()
-								+ " must have next parameter like below:", "%"
-								+ getFuncName() + " PARAM1 or %"
-								+ getFuncName() + " PARAM1 :text"));
 					Instruction nextInst = condition.clearNext();
-					// if (isParamExists(condition) ^ isNegative()) {
 					if (condition.and() ^ isNegative()) {
 						return nextInst != null ? nextInst : new Instruction()
 								.nodeDispose(condition.isNodeDisposed);
@@ -385,11 +373,45 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
+		putFunction("file", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				inst = concat_all(inst);
+				String path = "" + inst.params.get(0);
+				// TODO path -> fusionPath -> ClassLoader#getResource != null(Note:productName)
+				// TODO clearParams and replacement(path) and return it.
+				return null;
+			}
+		});
+		putFunction("str", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				inst = concat_all(inst);
+				// TODO check lv1([0-9a-zA-Z._]+)
+				return new Instruction().replacement(
+						String.valueOf(inst.params.get(0))).nodeDispose(
+						inst.isNodeDisposed);
+			}
+		});
 		putFunction("STR", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
+				// TODO check lv2
+				return new Instruction().replacement(
+						String.valueOf(inst.params.get(0))).nodeDispose(
+						inst.isNodeDisposed);
+			}
+		});
+		putFunction("STR!", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				inst = concat_all(inst);
+				// TODO check lv2
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);

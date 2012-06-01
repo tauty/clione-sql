@@ -68,3 +68,40 @@ order by
 	tako
 	,ika
 <</nest>>
+
+<<parenthesis>>
+select
+	*
+from
+	sea
+where
+  -- %IF(block1)
+	tako1 = /* $tako */8
+	and ika1 = /* $ika */10
+  -- %ELSEIF(block2)
+	tako2 = /* $tako */8
+	and ika2 = /* $ika */10
+  -- %ELSEIF(block3)
+	tako3 = /* $tako */8
+	and ika3 = /* $ika */10
+  -- %ELSE
+	tako4 = /* $tako */8
+	and ika4 = /* $ika */10
+order by
+	tako
+	,ika
+<</parenthesis>>
+
+<<nothing>>
+select
+	*
+from
+	sea
+where
+  -- %IF
+	tako1 = /* $tako */8
+	and ika1 = /* $ika */10
+order by
+	tako
+	,ika
+<</nothing>>
