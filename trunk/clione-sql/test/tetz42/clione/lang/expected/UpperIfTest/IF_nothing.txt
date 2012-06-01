@@ -1,0 +1,2 @@
+The function, '%IF', must have some parameters.
+Resource info:The SQL passed as parameter., line number:6
