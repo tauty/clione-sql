@@ -14,7 +14,6 @@ import java.util.List;
 import tetz42.clione.exception.UnsupportedTypeException;
 import tetz42.util.Const;
 import tetz42.util.IOUtil;
-import tetz42.util.ReflectionUtil;
 
 public class ClioneUtil {
 

@@ -166,11 +166,23 @@ public class ExtentionTest {
 	}
 
 	@Test
+	public void l_in_1param_have_3() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse(
+				"%L('%' PARAM1 '_' PARAM2 '%') PARAM3");
+		Instruction instruction = cf.perform(params(
+				"PARAM1",
+				Arrays.asList("#100%_", "#200%_", "300#%_", "#400%_",
+						"__500%%###")).$("PARAM2", Arrays.asList("1", "2")).$(
+				"PARAMS", 1000));
+		assertEqualsWithFile(instruction, getClass(), "l_in_1param_have_3");
+	}
+
+	@Test
 	public void delnull_list() {
 		ClioneFunction cf = ClioneFuncFactory.get()
 				.parse("%del_negative PARAM");
-		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
-				"tako", null, "ika", null, "namako")));
+		Instruction instruction = cf.perform(params("PARAM",
+				Arrays.asList("tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
 	}
 
