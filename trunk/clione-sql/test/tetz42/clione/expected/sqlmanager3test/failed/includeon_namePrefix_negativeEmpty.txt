@@ -1,0 +1,16 @@
+Pair{
+	first = "select
+	*
+from (
+	select
+		sub.*,
+		ROWNUM num
+	from
+		(
+) sub
+)
+where
+	2 <= num and num <= 3
+"
+	second = ArrayList[ ]
+}

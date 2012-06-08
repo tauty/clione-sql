@@ -69,6 +69,22 @@ public class ParamMap extends HashMap<String, Object> {
 		return this;
 	}
 
+	public ParamMap $orList(String key, Iterable<?> eles) {
+		return this.$(key, ListWithDelim.genList(eles).or());
+	}
+
+	public <T> ParamMap $orList(String key, T... eles) {
+		return this.$(key, ListWithDelim.genList(eles).or());
+	}
+
+	public ParamMap $andList(String key, Iterable<?> eles) {
+		return this.$(key, ListWithDelim.genList(eles).and());
+	}
+
+	public <T> ParamMap $andList(String key, T... eles) {
+		return this.$(key, ListWithDelim.genList(eles).and());
+	}
+
 	public ParamMap object(Object obj) {
 		if (obj == null)
 			return this;

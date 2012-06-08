@@ -1,0 +1,19 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "SELECT
+        *
+    FROM
+        people
+    WHERE
+        age = ?
+"
+	status = false
+	isNumber = false
+	params = ArrayList[
+		"120"
+	]
+	next = null
+	map = null
+}
