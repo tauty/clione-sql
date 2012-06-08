@@ -1,0 +1,30 @@
+{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = null
+	status = false
+	isNumber = false
+	this$1 = { }
+	params = ArrayList[
+		"%##100#%#__1%"
+		"%##200#%#__2%"
+		"%300###%#__1%"
+		"%##400#%#__2%"
+		"%#_#_500#%#%######_1%"
+	]
+	next = Instruction{
+		isNodeDisposed = false
+		doNothing = false
+		useValueInBack = false
+		replacement = null
+		status = false
+		isNumber = false
+		params = ArrayList[
+			null
+		]
+		next = null
+		map = null
+	}
+	map = null
+}
