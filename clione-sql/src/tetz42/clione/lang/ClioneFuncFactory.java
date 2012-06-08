@@ -22,7 +22,7 @@ public class ClioneFuncFactory {
 
 	private static final Pattern delimPtn = Pattern.compile("[()'\":|]");
 	private static final Pattern funcPtn = Pattern
-			.compile("[,\\s]*([$@&?%]?)(!?)([a-zA-Z0-9\\.\\-_]*)([,\\s]+|$)");
+			.compile("[,\\s]*([$@&?%]?)(!?)([a-zA-Z0-9\\.\\-_]*[!?]*)([,\\s]+|$)");
 	private static final Pattern backslashPtn = Pattern.compile("\\\\(.)");
 	private static final Pattern numPtn = Pattern
 			.compile("-?[0-9]+(\\.[0-9]+)?");

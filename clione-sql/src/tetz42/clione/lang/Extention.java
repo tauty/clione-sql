@@ -373,7 +373,7 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("file", new ExtFunction() {
+		putFunction("path", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -384,23 +384,12 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
-		putFunction("str", new ExtFunction() {
-
-			@Override
-			protected Instruction perform(Instruction inst) {
-				inst = concat_all(inst);
-				// TODO check lv1([0-9a-zA-Z._]+)
-				return new Instruction().replacement(
-						String.valueOf(inst.params.get(0))).nodeDispose(
-						inst.isNodeDisposed);
-			}
-		});
 		putFunction("STR", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				// TODO check lv2
+				// TODO to delete.
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
@@ -411,13 +400,23 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				// TODO check lv2
+				// TODO check(SQL comment not allowed, parenthesis & single quote matching check
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
 			}
 		});
-		putFunction("SQL", new ExtFunction() {
+		putFunction("STR!!", new ExtFunction() {
+
+			@Override
+			protected Instruction perform(Instruction inst) {
+				inst = concat_all(inst);
+				return new Instruction().replacement(
+						String.valueOf(inst.params.get(0))).nodeDispose(
+						inst.isNodeDisposed);
+			}
+		});
+		putFunction("SQL!", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {

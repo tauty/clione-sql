@@ -1,0 +1,14 @@
+{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = null
+	status = false
+	isNumber = false
+	this$1 = { }
+	params = ArrayList[
+		"%##100#%#__##200#%#_%"
+	]
+	next = null
+	map = null
+}
