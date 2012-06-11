@@ -8,11 +8,13 @@ Instruction{
         people
     WHERE
         age = ?
+        AND name LIKE ?
 "
 	status = false
 	isNumber = false
 	params = ArrayList[
 		"120"
+		"TA"
 	]
 	next = null
 	map = null

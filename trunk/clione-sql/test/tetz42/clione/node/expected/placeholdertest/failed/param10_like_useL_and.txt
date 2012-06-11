@@ -1,0 +1,33 @@
+Instruction{
+	isNodeDisposed = false
+	doNothing = false
+	useValueInBack = false
+	replacement = "(
+	 ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+	OR  ID  LIKE  ?
+)"
+	status = false
+	isNumber = false
+	params = ArrayList[
+		"val#_0"
+		"val#_1"
+		"val#_2"
+		"val#_3"
+		"val#_4"
+		"val#_5"
+		"val#_6"
+		"val#_7"
+		"val#_8"
+		"val#_9"
+	]
+	next = null
+	map = null
+}

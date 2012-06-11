@@ -3,10 +3,12 @@ package tetz42.clione.node;
 import static tetz42.clione.lang.LangUtil.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import tetz42.clione.lang.ContextUtil;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ClioneUtil;
+import tetz42.clione.util.ListWithDelim;
 import tetz42.clione.util.ParamMap;
 
 public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
@@ -46,8 +48,10 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 		Instruction result = new Instruction().replacement("("
 				+ ClioneUtil.CRLF);
-		Object[] paramAry = inst.params.toArray();
-		final String delim = isPositive ? "OR " : "AND ";
+
+		final String delim = delim(inst.params, isPositive);
+		System.out.println("delim:" + delim);
+		final Object[] paramAry = inst.params.toArray();
 		for (int i = 0; i * LIMIT <= paramAry.length; i++) {
 
 			int start = i * LIMIT;
@@ -60,8 +64,7 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 
 			if (!list.isEmpty()) {
 				result.addReplacement("\t").addReplacement(i == 0 ? "" : delim);
-				Instruction subInst = new Instruction();
-				subInst.params = list;
+				Instruction subInst = new Instruction(list);
 				result.merge(build(nodeInst, subInst)).addReplacement(
 						ClioneUtil.CRLF);
 			}
@@ -91,4 +94,10 @@ public class ConditionPlaceHolder extends PlaceHolder implements IPlaceHolder {
 		}
 	}
 
+	private String delim(List<Object> params, boolean isPositive) {
+		if(ListWithDelim.class.isInstance(params)) {
+			return ((ListWithDelim<?>)params).getDelim() + " ";
+		}
+		return isPositive ? "OR " : "AND ";
+	}
 }

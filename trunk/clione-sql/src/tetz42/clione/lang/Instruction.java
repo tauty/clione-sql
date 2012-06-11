@@ -6,6 +6,7 @@ import static tetz42.util.Util.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import tetz42.clione.util.ListWithDelim;
 import tetz42.clione.util.ParamMap;
 
 public class Instruction {
@@ -18,7 +19,7 @@ public class Instruction {
 	 * In case params.size is two and replacement is 'CONCAT(?, ''%'', ?)' ->
 	 * 'CONCAT(?, ''%'', ?)' and bind params<br>
 	 */
-	public List<Object> params = new ArrayList<Object>();
+	public List<Object> params;
 	public boolean isNodeDisposed = false;
 	public boolean doNothing = false;
 	public boolean useValueInBack = false;
@@ -27,13 +28,21 @@ public class Instruction {
 	public ParamMap map = null;
 	public boolean status = false;
 	public boolean isNumber = false;
-	
-	public Instruction number(boolean isNumber){
+
+	public Instruction() {
+		this(new ArrayList<Object>());
+	}
+
+	public Instruction(List<Object> params) {
+		this.params = params;
+	}
+
+	public Instruction number(boolean isNumber) {
 		this.isNumber = isNumber;
 		return this;
 	}
-	
-	public Instruction asNumber(){
+
+	public Instruction asNumber() {
 		return number(true);
 	}
 
@@ -131,7 +140,15 @@ public class Instruction {
 	}
 
 	private Instruction merge(Instruction another, boolean isLine) {
+
+		if (!ListWithDelim.class.isInstance(params)
+				&& ListWithDelim.class.isInstance(another.params)) {
+			// ListWithDelim win.
+			params = new ListWithDelim<Object>(params)
+					.copyDelim(another.params);
+		}
 		params.addAll(another.params);
+
 		if (!isNodeDisposed) // true win
 			isNodeDisposed = another.isNodeDisposed;
 		if (doNothing) // false win

@@ -181,8 +181,8 @@ public class ExtentionTest {
 	public void delnull_list() {
 		ClioneFunction cf = ClioneFuncFactory.get()
 				.parse("%del_negative PARAM");
-		Instruction instruction = cf.perform(params("PARAM",
-				Arrays.asList("tako", null, "ika", null, "namako")));
+		Instruction instruction = cf.perform(params("PARAM", Arrays.asList(
+				"tako", null, "ika", null, "namako")));
 		assertEqualsWithFile(instruction, getClass(), "delnull_list");
 	}
 
@@ -354,6 +354,17 @@ public class ExtentionTest {
 						+ " %on('age', '120', 'name_part', 'TA') )");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "include_kakko_on");
+	}
+
+	@Test
+	public void include_by_path() {
+		ClioneFunction cf = ClioneFuncFactory
+				.get()
+				.parse(
+						"%include( %path(aPath), %put('age', '120', 'name_part', 'TA') )");
+		Instruction instruction = cf.perform(params("aPath",
+				"tetz42/clione/sql/SQLManagerTest/Select.sql"));
+		assertEqualsWithFile(instruction, getClass(), "include_by_path");
 	}
 
 }
