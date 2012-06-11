@@ -3,7 +3,6 @@ package tetz42.clione.lang;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.util.Util.*;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,7 +132,8 @@ public class Extention extends ClioneFunction {
 						if (!ContextUtil.isNegative(e))
 							newParams.add(e);
 					}
-					inst.params = newParams;
+					inst.params.clear();
+					inst.params.addAll(newParams);
 					inst = inst.next;
 				}
 				return resultInst;
@@ -342,25 +342,14 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				String path = inst.replacement;
-				inst.merge();
-				if (path == null)
-					throw new ClioneFormatException(mkStringByCRLF(
-							"The parameter of %" + getFuncName()
-									+ " must be String literal.",
-							getResourceInfo()));
-				if (path.startsWith(".")) {
-					String res = getResourcePath();
-					if (res == null) {
-						throw new SQLFileNotFoundException(mkStringByCRLF(
-								"The relative path,'" + res
-										+ "' , can not found.",
-								getResourceInfo()));
-					}
-					path = fusionPath(res, path);
+				SQLNode sqlNode;
+				if(inst instanceof SQLNodeInstruction) {
+					sqlNode = ((SQLNodeInstruction)inst).sqlNode;
+				}else {
+					String path = inst.replacement;
+					sqlNode = getSQLNode(path, getFuncName());
 				}
-				SQLNode sqlNode = LoaderUtil.getNodeByPath(path,
-						getProductName());
+				inst.merge();
 				SQLGenerator generator = new SQLGenerator();
 				ParamMap paramMap = new ParamMap();
 				if (inst.map != null)
@@ -379,9 +368,10 @@ public class Extention extends ClioneFunction {
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
 				String path = "" + inst.params.get(0);
-				// TODO path -> fusionPath -> ClassLoader#getResource != null(Note:productName)
-				// TODO clearParams and replacement(path) and return it.
-				return null;
+				inst.params.clear();
+				SQLNodeInstruction ret = new SQLNodeInstruction();
+				ret.sqlNode = getSQLNode(path, getFuncName());
+				return ret.merge(inst);
 			}
 		});
 		putFunction("STR", new ExtFunction() {
@@ -400,7 +390,8 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				// TODO check(SQL comment not allowed, parenthesis & single quote matching check
+				// TODO check(SQL comment not allowed, parenthesis & single
+				// quote matching check
 				return new Instruction().replacement(
 						String.valueOf(inst.params.get(0))).nodeDispose(
 						inst.isNodeDisposed);
@@ -442,6 +433,22 @@ public class Extention extends ClioneFunction {
 
 	private static ExtFunction getFunction(String keyword) {
 		return funcMap.get(keyword);
+	}
+
+	private static SQLNode getSQLNode(String path, String funcName) {
+		if (path == null)
+			throw new ClioneFormatException(mkStringByCRLF("The parameter of %"
+					+ funcName + " must be String literal.", getResourceInfo()));
+		if (path.startsWith(".")) {
+			String res = getResourcePath();
+			if (res == null) {
+				throw new SQLFileNotFoundException(mkStringByCRLF(
+						"The relative path,'" + res + "' , can not found.",
+						getResourceInfo()));
+			}
+			path = fusionPath(res, path);
+		}
+		return LoaderUtil.getNodeByPath(path, getProductName());
 	}
 
 	private static Instruction concat_all(Instruction inst) {

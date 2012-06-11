@@ -143,7 +143,7 @@ public class PlaceHolderTest {
 		Instruction inst = holder.perform(params("AAA", list));
 		assertEqualsWithFile(inst, getClass(), "param10_like");
 	}
-	
+
 	@Test
 	public void param10_like_useL() {
 		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
@@ -158,5 +158,37 @@ public class PlaceHolderTest {
 		// oracle
 		Instruction inst = holder.perform(params("AAA", list));
 		assertEqualsWithFile(inst, getClass(), "param10_like_useL");
+	}
+
+	@Test
+	public void param10_like_and() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "?AAA", true, "LIKE ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 10; i++) {
+			list.add("value" + i);
+		}
+
+		// oracle
+		Instruction inst = holder.perform(params().$andList("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param10_like_and");
+	}
+
+	@Test
+	public void param10_like_useL_and() {
+		// Instruction inst = new PlaceHolder("?AAA", "= 'AAA'", 0)
+		// .perform(params());
+		ConditionPlaceHolder holder = new ConditionPlaceHolder(new StrNode(
+				"ID "), "%L ?AAA, '%'", true, "LIKE ", new StrNode("'AAA'"));
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < 10; i++) {
+			list.add("val_" + i);
+		}
+
+		// oracle
+		Instruction inst = holder.perform(params().$andList("AAA", list));
+		assertEqualsWithFile(inst, getClass(), "param10_like_useL_and");
 	}
 }

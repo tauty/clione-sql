@@ -76,7 +76,11 @@ public class ListWithDelim<E> extends ArrayList<E> {
 	 */
 	public ListWithDelim(Collection<? extends E> c) {
 		super(c);
-		or();
+		if(ListWithDelim.class.isInstance(c)) {
+			setDelim(((ListWithDelim<?>)c).getDelim());
+		}else {
+			or();
+		}
 	}
 
 	/**
@@ -125,11 +129,24 @@ public class ListWithDelim<E> extends ArrayList<E> {
 	}
 
 	/**
+	 * copy delimiter if the parameter is a instance of ListWithDelim
+	 * @param c
+	 * @return this object
+	 */
+	public ListWithDelim<E> copyDelim(Collection<E> c) {
+		if(ListWithDelim.class.isInstance(c)) {
+			setDelim(((ListWithDelim<?>)c).getDelim());
+		}
+		return this;
+	}
+
+	/**
 	 * Getter of delimiter.
 	 *
 	 * @return the delimiter
 	 */
 	public String getDelim() {
+		System.out.println("getDelim:" + delim);
 		return delim;
 	}
 
@@ -142,6 +159,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 	 */
 	public ListWithDelim<E> setDelim(String delim) {
 		this.delim = delim;
+		System.out.println("setDelim:" + delim);
 		return this;
 	}
 
