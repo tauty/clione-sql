@@ -119,14 +119,13 @@ public class SQLParser {
 				.bind("\"", doubleStrPtn).bind(OPERATOR, operatorPtn).bind(
 						NORMAL, normalValuePtn).bind(EMPTYLN, emptyLinePtn);
 		LineInfo info = new LineInfo(1);
-		parseFunc(flatList, rt, info);
-		if (!rt.isEnd())
+		if (!parseFunc(flatList, rt, info))
 			throw new ClioneFormatException(mkStringByCRLF(
 					"SQL Format Error: too much ')'", getResourceInfo()));
 		return flatList;
 	}
 
-	private void parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
+	private boolean parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
 			LineInfo info) {
 		doEmptyLine(flatList, rt, info);
 		while (rt.hasNext()) {
@@ -156,10 +155,11 @@ public class SQLParser {
 				}
 				flatList.add(info.fixLineNode());
 				if (div.equals(")"))
-					break;
+					return false;
 				doEmptyLine(flatList, rt, info);
 			}
 		}
+		return true;
 	}
 
 	private void doEmptyLine(List<LineNode> flatList, RegexpTokenizer rt,
@@ -265,8 +265,7 @@ public class SQLParser {
 	private void doParenthesis(RegexpTokenizer rt, LineInfo info) {
 		List<LineNode> flatList = new ArrayList<LineNode>();
 		info.push();
-		parseFunc(flatList, rt, info);
-		if (rt.isEnd() && !")".equals(rt.matcher().group()))
+		if (parseFunc(flatList, rt, info))
 			throw new ClioneFormatException(mkStringByCRLF(
 					"SQL Format Error: too much '('", getResourceInfo()));
 		info.pop();

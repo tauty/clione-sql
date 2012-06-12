@@ -13,8 +13,8 @@ public class LangUtil {
 		checkOut("takoikanamako");
 		checkOut("(takoikanamako)");
 		checkOut("(takoi')'kanama)ko");
-		checkOut("(takoi)kanamako)"); // TODO this should be detected as error.
 		checkOut("(takoi)kanama)ko");
+		checkOut("(takoi)kanamako)");
 	}
 
 	private static void checkOut(String src) {
@@ -24,15 +24,6 @@ public class LangUtil {
 
 	public static boolean isParamExists(Instruction instruction) {
 		return !isAllNegative(instruction.params);
-	}
-
-	public static void check(String src) {
-		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
-				commentPtn).bind("'", singleStrPtn).bind("\"", doubleStrPtn);
-		parseFunc(rt);
-		if (!rt.isEnd())
-			throw new RuntimeException(mkStringByCRLF(
-					"Too much ')'. It may be unsafe.", getResourceInfo()));
 	}
 
 	private static final String COMMENT = "COMMNET";
@@ -47,7 +38,19 @@ public class LangUtil {
 	private static final Pattern doubleStrPtn = Pattern
 			.compile("(([^\"]|\"\")*)\"");
 
-	private static void parseFunc(RegexpTokenizer rt) {
+	public static void check(String src) {
+		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn)
+				.bind(COMMENT, commentPtn).bind("'", singleStrPtn)
+				.bind("\"", doubleStrPtn);
+		if (!parseFunc(rt))
+			throw new RuntimeException(mkStringByCRLF(
+					"Too much ')'. It may be unsafe.", getResourceInfo()));
+	}
+
+	/**
+	 * @return the end of source string -> true, the end of parenthesis -> false
+	 */
+	private static boolean parseFunc(RegexpTokenizer rt) {
 		while (rt.hasNext()) {
 			rt.updateTokenPosition();
 			String div = rt.getDelim();
@@ -65,9 +68,10 @@ public class LangUtil {
 			} else {
 				// in case line end, end of parenthesis or end of source string
 				if (div.equals(")"))
-					break;
+					return false;
 			}
 		}
+		return true;
 	}
 
 	private static void findCommentEnd(RegexpTokenizer rt) {
@@ -83,8 +87,7 @@ public class LangUtil {
 
 	// find end parenthesis and try to parse as SQLNode.
 	private static void doParenthesis(RegexpTokenizer rt) {
-		parseFunc(rt);
-		if (rt.isEnd() && !")".equals(rt.matcher().group()))
+		if (parseFunc(rt))
 			throw new RuntimeException(mkStringByCRLF(
 					"Too much '('. It may be unsafe.", getResourceInfo()));
 	}
