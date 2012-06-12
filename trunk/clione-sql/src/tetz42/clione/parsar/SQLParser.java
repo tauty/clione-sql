@@ -79,8 +79,6 @@ public class SQLParser {
 	private static final Pattern normalValuePtn = Pattern
 			.compile("[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)*");
 
-	// private static final Pattern closePtn = Pattern.compile("\\A[ \\t]*\\)");
-
 	private String resourceInfo = null;
 
 	public SQLParser(String resourceInfo) {
@@ -131,11 +129,9 @@ public class SQLParser {
 	private void parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
 			LineInfo info) {
 		doEmptyLine(flatList, rt, info);
-		// while (mh.find()) {
 		while (rt.hasNext()) {
 			info.nodeSb.append(rt.nextToken());
 			String div = rt.getDelim();
-			// System.out.println("[" + div + "]");
 			if (div.equals("*/")) {
 				throw new ClioneFormatException(mkStringByCRLF(
 						"SQL Format Error: too much '*/'", getResourceInfo()));
@@ -164,10 +160,6 @@ public class SQLParser {
 				doEmptyLine(flatList, rt, info);
 			}
 		}
-		// if (!info.isEmpty()) {
-		// info.mergeNode();
-		// flatList.add(info.fixLineNode());
-		// }
 	}
 
 	private void doEmptyLine(List<LineNode> flatList, RegexpTokenizer rt,
@@ -191,7 +183,6 @@ public class SQLParser {
 	// find end comment and try to parse as function.
 	private void doMultiComment(RegexpTokenizer rt, LineInfo info) {
 		findCommentEnd(rt, info);
-		// String comment = mh.nextToken();
 		String comment = rt.getToken();
 		if (isEmpty(comment) || "*".contains(comment.substring(0, 1))) {
 			// Just a comment. Ignore.
@@ -200,7 +191,6 @@ public class SQLParser {
 		}
 		if ("!+".contains(comment.substring(0, 1))) {
 			// hint clause.
-			// info.nodeSb.append("/*" + comment + "*/");
 			info.nodeSb.append(rt.nextDelimTokenDelim());
 			return;
 		}
