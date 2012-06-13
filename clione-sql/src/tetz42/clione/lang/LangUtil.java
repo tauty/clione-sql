@@ -13,8 +13,8 @@ public class LangUtil {
 		checkOut("takoikanamako");
 		checkOut("(takoikanamako)");
 		checkOut("(takoi')'kanama)ko");
-		checkOut("(takoi)kanama)ko");
 		checkOut("(takoi)kanamako)");
+		checkOut("(takoi)kanama)ko");
 	}
 
 	private static void checkOut(String src) {
@@ -29,9 +29,7 @@ public class LangUtil {
 	private static final String COMMENT = "COMMNET";
 
 	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\"|\\(|\\)|(\r\n|\r|\n)"
-					+ "|,|(and|or|union([ \\t]+all)?)($|[ \\t]+)",
-			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			"/\\*|\\*/|--|'|\"|\\(|\\)|;|");
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/");
 	private static final Pattern singleStrPtn = Pattern
 			.compile("(([^']|'')*)'");
@@ -61,14 +59,17 @@ public class LangUtil {
 				throw new RuntimeException("temp");
 			} else if (div.equals("/*")) {
 				findCommentEnd(rt);
-			} else if (div.equals("(")) {
-				doParenthesis(rt);
 			} else if (div.equals("'") || div.equals("\"")) {
 				doString(rt, div);
+			} else if (div.equals("(")) {
+				doParenthesis(rt);
+			} else if (div.equals(")")) {
+				return false; //in case of parenthesis end
+			} else if (div.equals("") && rt.isEnd()) {
+				return true;
 			} else {
-				// in case line end, end of parenthesis or end of source string
-				if (div.equals(")"))
-					return false;
+				throw new RuntimeException("Unsafe symbol, '" + div
+						+ "', is detected.");
 			}
 		}
 		return true;
