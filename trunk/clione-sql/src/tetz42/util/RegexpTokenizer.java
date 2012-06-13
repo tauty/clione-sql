@@ -35,6 +35,12 @@ public class RegexpTokenizer {
 	private int rememberedStart = 0;
 	private int rememberedEnd = 0;
 
+	public void outputInfo() {
+		System.out.println("start = " + start + ", pos = " + pos
+				+ ", rememberdStart = " + rememberedStart + ", rememberdEnd"
+				+ rememberedEnd + ", isEnd = " + isEnd());
+	}
+
 	public RegexpTokenizer(String src, Pattern ptn) {
 		this.lastMatcher = this.matcher = ptn.matcher(src);
 		this.src = src;

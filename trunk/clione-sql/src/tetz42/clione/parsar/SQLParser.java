@@ -125,6 +125,9 @@ public class SQLParser {
 		return flatList;
 	}
 
+	/**
+	 * @return the end of source string -> true, the end of parenthesis -> false
+	 */
 	private boolean parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
 			LineInfo info) {
 		doEmptyLine(flatList, rt, info);
