@@ -17,13 +17,14 @@ public class LangUtil {
 		checkOut("takoikanamako");
 		checkOut("(takoikanamako)");
 		checkOut("(takoi')'kanama)ko");
-//		checkOut("(takoi)kanamako)");
-//		checkOut("(takoi)kanama)ko");
+		// checkOut("(takoi)kanamako)");
+		// checkOut("(takoi)kanama)ko");
 		checkOut("(takoi)kan 'tako\\' amako");
 		System.out.println(ContextUtil.getDialect().getClass());
 		ContextUtil.setProductName("postgres");
 		System.out.println(ContextUtil.getDialect().getClass());
-		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a failure case.
+		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
+												// failure case.
 	}
 
 	private static void checkOut(String src) {
@@ -39,7 +40,7 @@ public class LangUtil {
 	private static final Pattern singleStrPtn = Pattern
 			.compile("(([^']|'')*)'");
 	private static final Pattern singleStrPtn2 = Pattern
-			.compile("(([^']|''|\\\\')*)'");
+			.compile("(([^'\\\\]|''|\\\\.)*)'");
 
 	public static void check(String src) {
 		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
@@ -63,7 +64,8 @@ public class LangUtil {
 				throw new RuntimeException(mkStringByCRLF(
 						"Too much '*/'. It may be unsafe.", getResourceInfo()));
 			} else if (div.equals("--")) {
-				throw new RuntimeException("temp");
+				throw new RuntimeException("Unsafe symbol, '" + div
+						+ "', is detected.");
 			} else if (div.equals("/*")) {
 				findCommentEnd(rt);
 			} else if (div.equals("'")) {
