@@ -343,9 +343,9 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				SQLNode sqlNode;
-				if(inst instanceof SQLNodeInstruction) {
-					sqlNode = ((SQLNodeInstruction)inst).sqlNode;
-				}else {
+				if (inst instanceof SQLNodeInstruction) {
+					sqlNode = ((SQLNodeInstruction) inst).sqlNode;
+				} else {
 					String path = inst.replacement;
 					sqlNode = getSQLNode(path, getFuncName());
 				}
@@ -390,10 +390,9 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				// TODO check(SQL comment not allowed, parenthesis & single
-				// quote matching check
-				return new Instruction().replacement(
-						String.valueOf(inst.params.get(0))).nodeDispose(
+				String src = String.valueOf(inst.params.get(0));
+				LangUtil.check(src);
+				return new Instruction().replacement(src).nodeDispose(
 						inst.isNodeDisposed);
 			}
 		});
@@ -415,8 +414,8 @@ public class Extention extends ClioneFunction {
 				Instruction retInst = new Instruction();
 				SQLGenerator sqlGenerator = new SQLGenerator();
 				retInst.replacement = sqlGenerator.genSql(getParamMap(),
-						LoaderUtil.getNodeBySQL(String.valueOf(inst.params
-								.get(0)),
+						LoaderUtil.getNodeBySQL(
+								String.valueOf(inst.params.get(0)),
 								"[WARN] Java String passed as parameter!!"));
 				if (sqlGenerator.params != null
 						&& sqlGenerator.params.size() != 0) {
