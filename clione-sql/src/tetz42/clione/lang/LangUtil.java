@@ -9,12 +9,21 @@ import tetz42.util.RegexpTokenizer;
 
 public class LangUtil {
 
+	public static boolean isParamExists(Instruction instruction) {
+		return !isAllNegative(instruction.params);
+	}
+
 	public static void main(String[] args) {
 		checkOut("takoikanamako");
 		checkOut("(takoikanamako)");
 		checkOut("(takoi')'kanama)ko");
-		checkOut("(takoi)kanamako)");
-		checkOut("(takoi)kanama)ko");
+//		checkOut("(takoi)kanamako)");
+//		checkOut("(takoi)kanama)ko");
+		checkOut("(takoi)kan 'tako\\' amako");
+		System.out.println(ContextUtil.getDialect().getClass());
+		ContextUtil.setProductName("postgres");
+		System.out.println(ContextUtil.getDialect().getClass());
+		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a failure case.
 	}
 
 	private static void checkOut(String src) {
@@ -22,24 +31,22 @@ public class LangUtil {
 		check(src);
 	}
 
-	public static boolean isParamExists(Instruction instruction) {
-		return !isAllNegative(instruction.params);
-	}
-
 	private static final String COMMENT = "COMMNET";
 
-	private static final Pattern delimPtn = Pattern.compile(
-			"/\\*|\\*/|--|'|\"|\\(|\\)|;|");
+	private static final Pattern delimPtn = Pattern
+			.compile("/\\*|\\*/|--|'|\"|\\(|\\)|;|\"|\\|\\?|[\\x00-\\x08\\x11\\x12\\x14-\\x1F\\x7F]");
 	private static final Pattern commentPtn = Pattern.compile("/\\*|\\*/");
 	private static final Pattern singleStrPtn = Pattern
 			.compile("(([^']|'')*)'");
-	private static final Pattern doubleStrPtn = Pattern
-			.compile("(([^\"]|\"\")*)\"");
+	private static final Pattern singleStrPtn2 = Pattern
+			.compile("(([^']|''|\\\\')*)'");
 
 	public static void check(String src) {
-		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn)
-				.bind(COMMENT, commentPtn).bind("'", singleStrPtn)
-				.bind("\"", doubleStrPtn);
+		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
+				commentPtn).bind(
+				"'",
+				getDialect().backslashWorkAsEscape() ? singleStrPtn
+						: singleStrPtn2);
 		if (!parseFunc(rt))
 			throw new RuntimeException(mkStringByCRLF(
 					"Too much ')'. It may be unsafe.", getResourceInfo()));
@@ -54,17 +61,17 @@ public class LangUtil {
 			String div = rt.getDelim();
 			if (div.equals("*/")) {
 				throw new RuntimeException(mkStringByCRLF(
-						"Too much '/*'. It may be unsafe.", getResourceInfo()));
+						"Too much '*/'. It may be unsafe.", getResourceInfo()));
 			} else if (div.equals("--")) {
 				throw new RuntimeException("temp");
 			} else if (div.equals("/*")) {
 				findCommentEnd(rt);
-			} else if (div.equals("'") || div.equals("\"")) {
+			} else if (div.equals("'")) {
 				doString(rt, div);
 			} else if (div.equals("(")) {
 				doParenthesis(rt);
 			} else if (div.equals(")")) {
-				return false; //in case of parenthesis end
+				return false; // in case of parenthesis end
 			} else if (div.equals("") && rt.isEnd()) {
 				return true;
 			} else {

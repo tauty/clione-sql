@@ -15,6 +15,7 @@ import tetz42.clione.lang.dialect.Db2Dialect;
 import tetz42.clione.lang.dialect.Dialect;
 import tetz42.clione.lang.dialect.MysqlDialect;
 import tetz42.clione.lang.dialect.OracleDialect;
+import tetz42.clione.lang.dialect.PostgresDialect;
 import tetz42.clione.lang.dialect.SqlserverDialect;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
@@ -32,6 +33,7 @@ public class ContextUtil {
 		m.put(ORACLE.name().toLowerCase(), new OracleDialect());
 		m.put(MYSQL.name().toLowerCase(), new MysqlDialect());
 		m.put(DB2.name().toLowerCase(), new Db2Dialect());
+		m.put(POSTGRES.name().toLowerCase(), new PostgresDialect());
 		map = Collections.unmodifiableMap(m);
 	}
 

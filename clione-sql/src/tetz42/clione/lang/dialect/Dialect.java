@@ -13,4 +13,8 @@ public class Dialect {
 	public int inLimit() {
 		return Integer.MAX_VALUE;
 	}
+
+	public boolean backslashWorkAsEscape() {
+		return false;
+	}
 }
