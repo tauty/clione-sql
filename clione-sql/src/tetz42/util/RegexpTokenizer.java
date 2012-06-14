@@ -100,6 +100,10 @@ public class RegexpTokenizer {
 		return lastMatcher;
 	}
 
+	public Matcher matcher(String key) {
+		return getMatcherByKey(key);
+	}
+
 	public RegexpTokenizer forward() {
 		return forward(1);
 	}

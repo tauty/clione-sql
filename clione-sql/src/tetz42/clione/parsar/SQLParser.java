@@ -92,7 +92,8 @@ public class SQLParser {
 		} catch (UnsupportedEncodingException e) {
 			throw new WrapException(mkStringByCRLF(e.getMessage(),
 					"The setting of 'clione.properties' might be wrong. ",
-					"The key name = 'SQLFILE_ENCODING'"), e);
+					"key: SQLFILE_ENCODING, value: "
+							+ Config.get().SQLFILE_ENCODING), e);
 		}
 	}
 
@@ -128,8 +129,8 @@ public class SQLParser {
 	/**
 	 * @return the end of source string -> true, the end of parenthesis -> false
 	 */
-	private boolean parseFunc(final List<LineNode> flatList, RegexpTokenizer rt,
-			LineInfo info) {
+	private boolean parseFunc(final List<LineNode> flatList,
+			RegexpTokenizer rt, LineInfo info) {
 		doEmptyLine(flatList, rt, info);
 		while (rt.hasNext()) {
 			info.nodeSb.append(rt.nextToken());
@@ -278,7 +279,7 @@ public class SQLParser {
 	// find end string literal.
 	private void doString(RegexpTokenizer rt, LineInfo info, final String type) {
 		info.nodeSb.append(type);
-		if (!rt.find(type))
+		if (!rt.startsWith(type))
 			throw new ClioneFormatException(mkStringByCRLF(
 					"SQL Format Error: [" + type + "] unmatched!",
 					getResourceInfo()));

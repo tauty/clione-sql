@@ -20,9 +20,13 @@ public class LangUtil {
 		// checkOut("(takoi)kanamako)");
 		// checkOut("(takoi)kanama)ko");
 		checkOut("(takoi)kan 'tako\\' amako");
-		System.out.println(ContextUtil.getDialect().getClass());
+		ContextUtil.setProductName("oracle");
+		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
+												// failure case.
+		ContextUtil.setProductName("mysql");
+		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
+												// failure case.
 		ContextUtil.setProductName("postgres");
-		System.out.println(ContextUtil.getDialect().getClass());
 		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
 												// failure case.
 	}
@@ -46,8 +50,8 @@ public class LangUtil {
 		RegexpTokenizer rt = new RegexpTokenizer(src, delimPtn).bind(COMMENT,
 				commentPtn).bind(
 				"'",
-				getDialect().backslashWorkAsEscape() ? singleStrPtn
-						: singleStrPtn2);
+				getDialect().backslashWorkAsEscape() ? singleStrPtn2
+						: singleStrPtn);
 		if (!parseFunc(rt))
 			throw new RuntimeException(mkStringByCRLF(
 					"Too much ')'. It may be unsafe.", getResourceInfo()));
@@ -104,7 +108,7 @@ public class LangUtil {
 
 	// find end string literal.
 	private static void doString(RegexpTokenizer rt, final String type) {
-		if (!rt.find(type))
+		if (!rt.startsWith(type))
 			throw new RuntimeException(
 					mkStringByCRLF("Unmatch String literal: [" + type + "]",
 							getResourceInfo()));

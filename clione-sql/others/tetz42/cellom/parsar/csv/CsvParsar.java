@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 tetsuo.ohta[at]gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package tetz42.cellom.parsar.csv;
 
 import static tetz42.util.ReflectionUtil.*;
@@ -54,10 +69,19 @@ public class CsvParsar {
 
 	private int recordNo = 0;
 
+	/**
+	 * constructor.
+	 * @param istream InputStream to be parsed.
+	 */
 	public CsvParsar(InputStream istream) {
 		this(istream, "UTF-8");
 	}
 
+	/**
+	 * constructor.
+	 * @param istream InputStream to be parsed.
+	 * @param charsetName character set name.
+	 */
 	public CsvParsar(InputStream istream, final String charsetName) {
 		this.in = istream;
 		this.token = new IStreamToken(in, charsetName);
@@ -95,10 +119,38 @@ public class CsvParsar {
 				.nextFailureList());
 	}
 
+	/**
+	 * parse whole records.
+	 * @return the parsed String array.
+	 */
+	public String[][] parseAll() {
+		List<String[]> list = new ArrayList<String[]>();
+		while (status != Status.DATA_END) {
+			list.add(parseTask());
+		}
+		return (String[][]) list.toArray();
+	}
+
+	/**
+	 * parse one record.
+	 * @return the parsed String array.
+	 */
+	public String[] parse() {
+		return parseTask();
+	}
+
+	/**
+	 * skip one record.
+	 * @return the parsed String array.
+	 */
 	public CsvParsar skip() throws IOException {
 		return skipTask();
 	}
 
+	/**
+	 * get the current status.
+	 * @return status
+	 */
 	public Status getStatus() {
 		return status;
 	}
@@ -107,10 +159,17 @@ public class CsvParsar {
 		return isShortRecord;
 	}
 
+	/**
+	 * get the current record no.
+	 * @return record no.
+	 */
 	public int getRecordNo() {
 		return recordNo;
 	}
 
+	/**
+	 * close.
+	 */
 	public void close() {
 		token.close();
 	}
@@ -181,6 +240,14 @@ public class CsvParsar {
 			}
 		}
 		return res;
+	}
+
+	private String[] parseTask() {
+		List<String> list = new ArrayList<String>();
+		while(status != Status.RECORD_END && status != Status.DATA_END) {
+			list.add(token.nextCell());
+		}
+		return (String[]) list.toArray();
 	}
 
 	private class IStreamToken {
