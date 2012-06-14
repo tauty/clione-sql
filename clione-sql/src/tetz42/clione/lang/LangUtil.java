@@ -5,6 +5,7 @@ import static tetz42.util.Util.*;
 
 import java.util.regex.Pattern;
 
+import tetz42.clione.exception.ClioneValidationException;
 import tetz42.util.RegexpTokenizer;
 
 public class LangUtil {
@@ -67,9 +68,6 @@ public class LangUtil {
 			if (div.equals("*/")) {
 				throw new RuntimeException(mkStringByCRLF(
 						"Too much '*/'. It may be unsafe.", getResourceInfo()));
-			} else if (div.equals("--")) {
-				throw new RuntimeException("Unsafe symbol, '" + div
-						+ "', is detected.");
 			} else if (div.equals("/*")) {
 				findCommentEnd(rt);
 			} else if (div.equals("'")) {
@@ -81,7 +79,7 @@ public class LangUtil {
 			} else if (div.equals("") && rt.isEnd()) {
 				return true;
 			} else {
-				throw new RuntimeException("Unsafe symbol, '" + div
+				throw new ClioneValidationException("Unsafe symbol, '" + div
 						+ "', is detected.");
 			}
 		}
@@ -93,23 +91,24 @@ public class LangUtil {
 			if (rt.matcher().group().equals("*/"))
 				return; // normal end
 			else
-				throw new RuntimeException("Recursive comment is not safe.");
+				throw new ClioneValidationException(
+						"Recursive comment is not allowd because it might not be safe.");
 		}
-		throw new RuntimeException(mkStringByCRLF(
+		throw new ClioneValidationException(mkStringByCRLF(
 				"Too much '/*'. It may be unsafe.", getResourceInfo()));
 	}
 
 	// find end parenthesis and try to parse as SQLNode.
 	private static void doParenthesis(RegexpTokenizer rt) {
 		if (parseFunc(rt))
-			throw new RuntimeException(mkStringByCRLF(
+			throw new ClioneValidationException(mkStringByCRLF(
 					"Too much '('. It may be unsafe.", getResourceInfo()));
 	}
 
 	// find end string literal.
 	private static void doString(RegexpTokenizer rt, final String type) {
 		if (!rt.startsWith(type))
-			throw new RuntimeException(
+			throw new ClioneValidationException(
 					mkStringByCRLF("Unmatch String literal: [" + type + "]",
 							getResourceInfo()));
 		rt.updateTokenPosition();
