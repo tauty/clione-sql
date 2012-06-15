@@ -1,13 +1,13 @@
 package tetz42.clione.exception;
 
-public class ClioneValidationException extends RuntimeException {
+public class SecurityValidationException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2627823672518074462L;
 	
-	public ClioneValidationException(String msg) {
+	public SecurityValidationException(String msg) {
 		super(msg);
 	}
 }
