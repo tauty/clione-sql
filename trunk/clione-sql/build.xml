@@ -13,7 +13,7 @@
     </description>
 
 	<property name="basename" value="clione-sql" />
-	<property name="version" value="0.5.0a1" />
+	<property name="version" value="0.5.0b6" />
 	<property name="src" location="./src" />
 	<property name="classes" location="./classes" />
 	<property name="lib" location="./lib" />
@@ -25,7 +25,9 @@
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar basedir="${classes}" jarfile="${basename}-${version}.jar" />
+		<jar basedir="${classes}" jarfile="${basename}-${version}.jar">
+			<fileset dir="${src}" includes="**/*.txt" />
+		</jar>
 	</target>
 
 	<target name="compile">
