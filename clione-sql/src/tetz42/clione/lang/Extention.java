@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +23,7 @@ import tetz42.clione.util.ParamMap;
 
 public class Extention extends ClioneFunction {
 
-	private static final Map<String, ExtFunction> funcMap = Collections
-			.synchronizedMap(new HashMap<String, ExtFunction>());
+	private static final Map<String, ExtFunction> funcMap;
 
 	static class Cycler<T> {
 		private final List<T> list;
@@ -33,14 +31,7 @@ public class Extention extends ClioneFunction {
 		boolean hasNext = true;
 
 		Cycler(List<T> list) {
-			if (list == null || list.isEmpty())
-				throw new UnsupportedOperationException(
-						"Cycler does not support neither null nor empty list.");
 			this.list = list;
-		}
-
-		Cycler(T[] ts) {
-			this.list = Arrays.asList(ts);
 		}
 
 		T next() {
@@ -58,12 +49,17 @@ public class Extention extends ClioneFunction {
 	}
 
 	static {
-		putFunction("L", new ExtFunction() {
+		Map<String, ExtFunction> m = newMap();
+
+		//------------------------------------
+		// Like Clause / String
+		//------------------------------------
+		m.put("L", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
-				inst = getFunction("esc_like").perform(inst);
-				inst = getFunction("concat").perform(inst);
+				inst = funcMap.get("esc_like").perform(inst);
+				inst = funcMap.get("concat").perform(inst);
 				return new Instruction() {
 					@Override
 					public String getReplacement() {
@@ -72,7 +68,7 @@ public class Extention extends ClioneFunction {
 				}.merge(inst);
 			}
 		});
-		putFunction("esc_like", new ExtFunction() {
+		m.put("esc_like", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -86,7 +82,7 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("concat", new ExtFunction() {
+		m.put("concat", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -109,7 +105,7 @@ public class Extention extends ClioneFunction {
 						Object e = cycler.next();
 						if (isNotEmpty(e))
 							sb.append(e);
-						hasNext = hasNext || cycler.hasNext;
+						hasNext = hasNext || cycler.hasNext();
 					}
 					paramList.add(sb.toString());
 					if (!hasNext)
@@ -120,8 +116,12 @@ public class Extention extends ClioneFunction {
 				return resultInst;
 			}
 		});
-		putFunction("C", getFunction("concat"));
-		putFunction("del_negative", new ExtFunction() {
+		m.put("C", m.get("concat"));
+
+		//------------------------------------
+		// Parameter control
+		//------------------------------------
+		m.put("del_negative", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -140,8 +140,10 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
+		//------------------------------------
 		// %if - %elseif - %else
-		putFunction("if", new ExtFunction() {
+		//------------------------------------
+		m.put("if", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -191,7 +193,7 @@ public class Extention extends ClioneFunction {
 				}
 			}
 		});
-		putFunction("elseif", new ExtFunction() {
+		m.put("elseif", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -200,13 +202,13 @@ public class Extention extends ClioneFunction {
 					ExtendedParamMap extMap = (ExtendedParamMap) paramMap;
 					if (contains(extMap.getCaller(), "if", "elseif")) {
 						extMap.caller(null);
-						return getFunction("if").perform();
+						return funcMap.get("if").perform();
 					}
 				}
 				return null;
 			}
 		});
-		putFunction("else", new ExtFunction() {
+		m.put("else", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -221,8 +223,10 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
+		//------------------------------------
 		// %IF - %ELSEIF - %ELSE
-		putFunction("IF", new ExtFunction() {
+		//------------------------------------
+		m.put("IF", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -251,7 +255,7 @@ public class Extention extends ClioneFunction {
 				}
 			}
 		});
-		putFunction("ELSEIF", new ExtFunction() {
+		m.put("ELSEIF", new ExtFunction() {
 
 			@Override
 			public Instruction perform() {
@@ -259,10 +263,10 @@ public class Extention extends ClioneFunction {
 					return new Instruction().useValueInBack().doNothing()
 							.nodeDispose();
 				}
-				return getFunction("IF").perform();
+				return funcMap.get("IF").perform();
 			}
 		});
-		putFunction("ELSE", new ExtFunction() {
+		m.put("ELSE", new ExtFunction() {
 			@Override
 			public Instruction perform() {
 				if (ContextUtil.getIFStatus() != IFStatus.DO_ELSE) {
@@ -280,19 +284,24 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
+		//------------------------------------
 		// compare
-		putFunction("equals", new CompFunction(Type.EQ));
-		putFunction("greaterThan", new CompFunction(Type.GT));
-		putFunction("greaterEqual", new CompFunction(Type.GE));
-		putFunction("lessThan", new CompFunction(Type.LT));
-		putFunction("lessEqual", new CompFunction(Type.LE));
-		putFunction("eq", getFunction("equals"));
-		putFunction("gt", getFunction("greaterThan"));
-		putFunction("ge", getFunction("greaterEqual"));
-		putFunction("lt", getFunction("lessThan"));
-		putFunction("le", getFunction("lessEqual"));
+		//------------------------------------
+		m.put("equals", new CompFunction(Type.EQ));
+		m.put("greaterThan", new CompFunction(Type.GT));
+		m.put("greaterEqual", new CompFunction(Type.GE));
+		m.put("lessThan", new CompFunction(Type.LT));
+		m.put("lessEqual", new CompFunction(Type.LE));
+		m.put("eq", m.get("equals"));
+		m.put("gt", m.get("greaterThan"));
+		m.put("ge", m.get("greaterEqual"));
+		m.put("lt", m.get("lessThan"));
+		m.put("le", m.get("lessEqual"));
 
-		putFunction("and", new ExtFunction() {
+		//------------------------------------
+		// and/or
+		//------------------------------------
+		m.put("and", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -300,7 +309,7 @@ public class Extention extends ClioneFunction {
 				return inst.merge().status(result);
 			}
 		});
-		putFunction("or", new ExtFunction() {
+		m.put("or", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -308,7 +317,11 @@ public class Extention extends ClioneFunction {
 				return inst.merge().status(result);
 			}
 		});
-		putFunction("put", new ExtFunction() {
+
+		//------------------------------------
+		// ParamMap control
+		//------------------------------------
+		m.put("put", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -326,7 +339,7 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("on", new ExtFunction() {
+		m.put("on", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -338,7 +351,11 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("include", new ExtFunction() {
+
+		//------------------------------------
+		// include file
+		//------------------------------------
+		m.put("include", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -362,7 +379,7 @@ public class Extention extends ClioneFunction {
 				return result;
 			}
 		});
-		putFunction("path", new ExtFunction() {
+		m.put("path", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -374,18 +391,11 @@ public class Extention extends ClioneFunction {
 				return ret.merge(inst);
 			}
 		});
-		putFunction("STR", new ExtFunction() {
 
-			@Override
-			protected Instruction perform(Instruction inst) {
-				inst = concat_all(inst);
-				// TODO to delete.
-				return new Instruction().replacement(
-						String.valueOf(inst.params.get(0))).nodeDispose(
-						inst.isNodeDisposed);
-			}
-		});
-		putFunction("STR!", new ExtFunction() {
+		//------------------------------------
+		// Injection SQL from Java
+		//------------------------------------
+		m.put("STR!", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -396,7 +406,7 @@ public class Extention extends ClioneFunction {
 						inst.isNodeDisposed);
 			}
 		});
-		putFunction("STR!!", new ExtFunction() {
+		m.put("STR!!", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -406,7 +416,7 @@ public class Extention extends ClioneFunction {
 						inst.isNodeDisposed);
 			}
 		});
-		putFunction("SQL!", new ExtFunction() {
+		m.put("SQL!", new ExtFunction() {
 
 			@Override
 			protected Instruction perform(Instruction inst) {
@@ -424,14 +434,20 @@ public class Extention extends ClioneFunction {
 				return retInst;
 			}
 		});
-	}
 
-	private static ExtFunction putFunction(String keyword, ExtFunction f) {
-		return funcMap.put(keyword, f);
-	}
+		// @deprecated
+		m.put("STR", new ExtFunction() {
 
-	private static ExtFunction getFunction(String keyword) {
-		return funcMap.get(keyword);
+			@Override
+			protected Instruction perform(Instruction inst) {
+				System.err.println(LangUtil.getLongMsg("STR_WARNING"));
+				System.err.print("Resource: ");
+				System.err.println(getResourceInfo());
+				return funcMap.get("STR!").perform(inst);
+			}
+		});
+
+		funcMap = Collections.unmodifiableMap(m);
 	}
 
 	private static SQLNode getSQLNode(String path, String funcName) {

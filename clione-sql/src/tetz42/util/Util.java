@@ -22,9 +22,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
+
+	public static final <E> List<E> newList() {
+		return newArrayList();
+	}
 
 	public static final <E> ArrayList<E> newArrayList() {
 		return new ArrayList<E>();
@@ -34,8 +40,16 @@ public class Util {
 		return new LinkedList<E>();
 	}
 
+	public static final <E> Set<E> newSet() {
+		return newHashSet();
+	}
+
 	public static final <E> HashSet<E> newHashSet() {
 		return new HashSet<E>();
+	}
+
+	public static final <K, V> Map<K, V> newMap() {
+		return newHashMap();
 	}
 
 	public static final <K, V> HashMap<K, V> newHashMap() {

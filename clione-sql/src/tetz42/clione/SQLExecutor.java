@@ -6,7 +6,6 @@ import static tetz42.clione.util.ClioneUtil.*;
 import static tetz42.util.Util.*;
 
 import java.io.Closeable;
-import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -274,11 +273,7 @@ public class SQLExecutor implements Closeable {
 		manager.putExecutor(this);
 		int i = 1;
 		for (Object param : this.sqlGenerator.params) {
-			if (param instanceof InputStream) {
-				stmt.setBinaryStream(i++, (InputStream) param);
-			} else {
-				stmt.setObject(i++, param);
-			}
+			setSQLData(stmt, param, i++);
 		}
 		return stmt;
 	}

@@ -3,38 +3,23 @@ package tetz42.clione.lang;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.util.Util.*;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.SecurityValidationException;
+import tetz42.util.HereDoc;
 import tetz42.util.RegexpTokenizer;
 
 public class LangUtil {
 
+	private static final Map<String, String> hereDoc = HereDoc.get(LangUtil.class);
+
+	public static String getLongMsg(String key) {
+		return hereDoc.get(key);
+	}
+
 	public static boolean isParamExists(Instruction instruction) {
 		return !isAllNegative(instruction.params);
-	}
-
-	public static void main(String[] args) {
-		checkOut("takoikanamako");
-		checkOut("(takoikanamako)");
-		checkOut("(takoi')'kanama)ko");
-		// checkOut("(takoi)kanamako)");
-		// checkOut("(takoi)kanama)ko");
-		checkOut("(takoi)kan 'tako\\' amako");
-		ContextUtil.setProductName("oracle");
-		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
-												// failure case.
-		ContextUtil.setProductName("mysql");
-		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
-												// failure case.
-		ContextUtil.setProductName("postgres");
-		checkOut("(takoi)kan 'tako\\' amako"); // TODO this case must be a
-												// failure case.
-	}
-
-	private static void checkOut(String src) {
-		System.out.println(src);
-		check(src);
 	}
 
 	private static final String COMMENT = "COMMNET";

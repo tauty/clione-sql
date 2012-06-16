@@ -1,20 +1,21 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
-import java.sql.Date;
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SqlDateConv implements IConv {
+
+public class ArrayConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getDate(columnIndex);
+		return rs.getArray(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setDate(columnIndex, (Date)param);
+		stmt.setArray(columnIndex, (Array)param);
 	}
 }

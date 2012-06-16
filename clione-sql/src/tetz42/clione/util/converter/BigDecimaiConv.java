@@ -1,20 +1,21 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
-import java.io.Reader;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ReaderConv implements IConv {
+
+public class BigDecimaiConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getCharacterStream(columnIndex);
+		return rs.getBigDecimal(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setCharacterStream(columnIndex, (Reader)param);
+		stmt.setBigDecimal(columnIndex, (BigDecimal) param);
 	}
 }

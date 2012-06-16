@@ -1,20 +1,19 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
-public class TimestampConv implements IConv {
+public class ShortPrimitiveConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getTimestamp(columnIndex);
+		return rs.getShort(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setTimestamp(columnIndex, (Timestamp)param);
+		stmt.setShort(columnIndex, (Short) param);
 	}
 }

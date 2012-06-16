@@ -1,19 +1,24 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class FloatPrimitiveConv implements IConv {
+
+public class ByteConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getFloat(columnIndex);
+		return rs.getObject(columnIndex) == null ? null : rs
+				.getByte(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setFloat(columnIndex, (Float) param);
+		if (param != null)
+			stmt.setByte(columnIndex, (Byte) param);
+		else
+			stmt.setObject(columnIndex, null);
 	}
 }
