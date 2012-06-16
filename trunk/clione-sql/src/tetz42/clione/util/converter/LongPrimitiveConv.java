@@ -1,20 +1,19 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StringConv implements IConv {
+public class LongPrimitiveConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getString(columnIndex);
+		return rs.getLong(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setString(columnIndex, (String) param);
+		stmt.setLong(columnIndex, (Long) param);
 	}
-
 }

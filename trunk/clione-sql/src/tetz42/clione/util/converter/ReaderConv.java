@@ -1,19 +1,20 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
+import java.io.Reader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ByteArrayConv implements IConv {
+public class ReaderConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getBytes(columnIndex);
+		return rs.getCharacterStream(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setBytes(columnIndex, (byte[]) param);
+		stmt.setCharacterStream(columnIndex, (Reader)param);
 	}
 }

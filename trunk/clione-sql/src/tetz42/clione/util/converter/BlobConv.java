@@ -1,20 +1,21 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
-import java.sql.Clob;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ClobConv implements IConv {
+
+public class BlobConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getClob(columnIndex);
+		return rs.getBlob(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		stmt.setClob(columnIndex, (Clob) param);
+		stmt.setBlob(columnIndex, (Blob)param);
 	}
 }

@@ -1,4 +1,4 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

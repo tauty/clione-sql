@@ -1,23 +1,116 @@
 package tetz42.clione.util;
 
+import static tetz42.util.ReflectionUtil.*;
 import static tetz42.util.Util.*;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import tetz42.clione.exception.UnsupportedTypeException;
+import tetz42.clione.util.converter.ArrayConv;
+import tetz42.clione.util.converter.BigDecimaiConv;
+import tetz42.clione.util.converter.BigIntegerConv;
+import tetz42.clione.util.converter.BlobConv;
+import tetz42.clione.util.converter.BooleanConv;
+import tetz42.clione.util.converter.BooleanPrimitiveConv;
+import tetz42.clione.util.converter.ByteArrayConv;
+import tetz42.clione.util.converter.ByteConv;
+import tetz42.clione.util.converter.BytePrimitiveConv;
+import tetz42.clione.util.converter.ClobConv;
+import tetz42.clione.util.converter.DateConv;
+import tetz42.clione.util.converter.DefaultConv;
+import tetz42.clione.util.converter.DoubleConv;
+import tetz42.clione.util.converter.DoublePrimitiveConv;
+import tetz42.clione.util.converter.FloatConv;
+import tetz42.clione.util.converter.FloatPrimitiveConv;
+import tetz42.clione.util.converter.IConv;
+import tetz42.clione.util.converter.InputStreamConv;
+import tetz42.clione.util.converter.IntConv;
+import tetz42.clione.util.converter.IntegerConv;
+import tetz42.clione.util.converter.LongConv;
+import tetz42.clione.util.converter.LongPrimitiveConv;
+import tetz42.clione.util.converter.NClobConv;
+import tetz42.clione.util.converter.ReaderConv;
+import tetz42.clione.util.converter.RefConv;
+import tetz42.clione.util.converter.SQLXMLConv;
+import tetz42.clione.util.converter.ShortConv;
+import tetz42.clione.util.converter.ShortPrimitiveConv;
+import tetz42.clione.util.converter.SqlDateConv;
+import tetz42.clione.util.converter.StringConv;
+import tetz42.clione.util.converter.TimeConv;
+import tetz42.clione.util.converter.TimestampConv;
+import tetz42.clione.util.converter.URLConv;
 import tetz42.util.Const;
-import tetz42.util.IOUtil;
+
 
 public class ClioneUtil {
 
 	public static final String CRLF = Const.CRLF;
+
+	private static final Map<Class<?>, IConv> convMap4FinalClass;
+	private static final Map<Class<?>, IConv> convMap4NormalClass;
+
+	private static final IConv byteArrayConv = new ByteArrayConv();
+	private static final IConv defaultConv = new DefaultConv();
+	static {
+		Map<Class<?>, IConv> map = new HashMap<Class<?>, IConv>();
+		map.put(String.class, new StringConv());
+		map.put(Boolean.class, new BooleanConv());
+		map.put(Boolean.TYPE, new BooleanPrimitiveConv());
+		map.put(Byte.class, new ByteConv());
+		map.put(Byte.TYPE, new BytePrimitiveConv());
+		map.put(Short.class, new ShortConv());
+		map.put(Short.TYPE, new ShortPrimitiveConv());
+		map.put(Integer.class, new IntegerConv());
+		map.put(Integer.TYPE, new IntConv());
+		map.put(Long.class, new LongConv());
+		map.put(Long.TYPE, new LongPrimitiveConv());
+		map.put(Float.class, new FloatConv());
+		map.put(Float.TYPE, new FloatPrimitiveConv());
+		map.put(Double.class, new DoubleConv());
+		map.put(Double.TYPE, new DoublePrimitiveConv());
+		map.put(URL.class, new URLConv());
+		convMap4FinalClass = Collections.unmodifiableMap(map);
+
+		map = new LinkedHashMap<Class<?>, IConv>();
+		map.put(Timestamp.class, new TimestampConv());
+		map.put(java.sql.Date.class, new SqlDateConv());
+		map.put(Time.class, new TimeConv());
+		map.put(Date.class, new DateConv());
+		map.put(BigDecimal.class, new BigDecimaiConv());
+		map.put(BigInteger.class, new BigIntegerConv());
+		map.put(InputStream.class, new InputStreamConv());
+		map.put(Reader.class, new ReaderConv());
+		map.put(Blob.class, new BlobConv());
+		map.put(NClob.class, new NClobConv());
+		map.put(Clob.class, new ClobConv());
+		map.put(Array.class, new ArrayConv());
+		map.put(Ref.class, new RefConv());
+		map.put(SQLXML.class, new SQLXMLConv());
+		convMap4NormalClass = Collections.unmodifiableMap(map);
+	}
 
 	public static boolean isAllSpace(String s) {
 		for (byte b : s.getBytes()) {
@@ -43,18 +136,10 @@ public class ClioneUtil {
 				"--- resource ---", resourceInfo);
 	}
 
-	// TODO better solution.
 	public static boolean isSQLType(Class<?> clazz) {
-		return clazz == String.class || clazz == Boolean.class
-				|| clazz == Boolean.TYPE || clazz == Short.class
-				|| clazz == Short.TYPE || clazz == Integer.class
-				|| clazz == Integer.TYPE || clazz == Long.class
-				|| clazz == Long.TYPE || clazz == Float.class
-				|| clazz == Float.TYPE || clazz == Double.class
-				|| clazz == Double.TYPE || clazz == BigDecimal.class
-				|| clazz == Date.class || clazz == java.sql.Date.class
-				|| (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
-				|| clazz == InputStream.class;
+		return convMap4FinalClass.get(clazz) != null ? true
+				: convMap4NormalClass.get(clazz) != null ? true : (clazz
+						.isArray() && clazz.getComponentType() == Byte.TYPE);
 	}
 
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
@@ -70,98 +155,40 @@ public class ClioneUtil {
 
 	public static Object getSQLData(Class<?> clazz, ResultSet rs,
 			int columnIndex) throws SQLException {
+		return conv4Get(clazz).get(rs, columnIndex);
+	}
 
-		// String
-		if (clazz == String.class) {
-			return rs.getString(columnIndex);
-		}
+	public static <T> void setSQLData(PreparedStatement stmt, Object param,
+			int columnIndex) throws SQLException {
+		if (param == null)
+			defaultConv.set(stmt, param, columnIndex);
+		else
+			conv4Set(param.getClass()).set(stmt, param, columnIndex);
+	}
 
-		// boolean
-		if (clazz == Boolean.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getBoolean(columnIndex);
-		} else if (clazz == Boolean.TYPE) {
-			return rs.getBoolean(columnIndex);
-		}
-
-		// short
-		if (clazz == Short.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getShort(columnIndex);
-		} else if (clazz == Short.TYPE) {
-			return rs.getShort(columnIndex);
-		}
-
-		// integer
-		if (clazz == Integer.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getInt(columnIndex);
-		} else if (clazz == Integer.TYPE) {
-			return rs.getInt(columnIndex);
-		}
-
-		// long
-		if (clazz == Long.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getLong(columnIndex);
-		} else if (clazz == Long.TYPE) {
-			return rs.getLong(columnIndex);
-		}
-
-		// float
-		if (clazz == Float.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getFloat(columnIndex);
-		} else if (clazz == Float.TYPE) {
-			return rs.getFloat(columnIndex);
-		}
-
-		// double
-		if (clazz == Double.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return rs.getDouble(columnIndex);
-		} else if (clazz == Double.TYPE) {
-			return rs.getDouble(columnIndex);
-		}
-
-		// BigDecimal
-		if (clazz == BigDecimal.class) {
-			return rs.getBigDecimal(columnIndex);
-		}
-
-		// Date
-		if (clazz == Date.class) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return new Date(rs.getTimestamp(columnIndex).getTime());
-		} else if (clazz == java.sql.Date.class) {
-			return rs.getDate(columnIndex);
-		}
-
-		// Timestamp
-		if (clazz == Timestamp.class) {
-			return rs.getTimestamp(columnIndex);
-		}
-
-		// byte[]
-		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE) {
-			if (rs.getObject(columnIndex) == null)
-				return null;
-			return IOUtil.toByteArray(rs.getBinaryStream(columnIndex));
-		}
-
-		// input stream
-		if (clazz == InputStream.class) {
-			return rs.getBinaryStream(columnIndex);
-		}
-
+	private static IConv conv4Get(Class<?> clazz) {
+		IConv conv = convMap4FinalClass.get(clazz);
+		if (conv != null)
+			return conv;
+		conv = convMap4NormalClass.get(clazz);
+		if (conv != null)
+			return conv;
+		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
+			return byteArrayConv;
 		throw new UnsupportedTypeException("The type(" + clazz.getName()
 				+ ") is not supported.");
+	}
+
+	private static IConv conv4Set(Class<?> clazz) {
+		IConv conv = convMap4FinalClass.get(clazz);
+		if (conv != null)
+			return conv;
+		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
+			return byteArrayConv;
+		for (Entry<Class<?>, IConv> e : convMap4NormalClass.entrySet()) {
+			if (classOf(clazz, e.getKey()))
+				return e.getValue();
+		}
+		return defaultConv;
 	}
 }

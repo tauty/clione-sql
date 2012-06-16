@@ -1,23 +1,20 @@
-package tetz42.clione.conversion;
+package tetz42.clione.util.converter;
 
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LongConv implements IConv {
+public class NClobConv implements IConv {
 
 	@Override
 	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getObject(columnIndex) == null ? null : rs
-				.getLong(columnIndex);
+		return rs.getNClob(columnIndex);
 	}
 
 	@Override
 	public void set(PreparedStatement stmt, Object param, int columnIndex)
 			throws SQLException {
-		if (param != null)
-			stmt.setLong(columnIndex, (Long) param);
-		else
-			stmt.setObject(columnIndex, null);
+		stmt.setNClob(columnIndex, (NClob) param);
 	}
 }
