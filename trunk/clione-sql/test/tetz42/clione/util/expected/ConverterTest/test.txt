@@ -1,0 +1,99 @@
+ArrayList[
+	Sample{
+		id = "100"
+		bd = 21231230.1231000000
+		bi = 12310298
+		byt = 8
+		bytn = null
+		bytp = 88
+		dt = Mon, Jun. 18, 2012 at 18:30:00.000
+		fl = 2123.12
+		fln = null
+		flp = 12312.2
+		lo = 12312098
+		lon = null
+		lop = 121232139980
+		sh = 4587
+		shn = null
+		shp = 1231
+		sdate = Fri, Jun. 22, 2012 at 00:00:00.000
+		ti = Thu, Jan. 1, 1970 at 10:00:00.000
+		ts = Fri, Jun. 22, 2012 at 09:55:21.000
+		bytes = byte[][
+			116
+			97
+			107
+			111
+			105
+			107
+			97
+			110
+			97
+			109
+			97
+			107
+			111
+		]
+		url = URL{
+			protocol = "http"
+			host = "localhost"
+			port = 8080
+			file = "/sample"
+			query = null
+			authority = "localhost:8080"
+			path = "/sample"
+			userInfo = null
+			ref = null
+			hashCode = -1
+			hostAddress = null
+			handler = Handler{
+				proxy = null
+				proxyPort = -1
+			}
+		}
+	}
+	Sample{
+		id = "101"
+		bd = 23423083150983.9923000000
+		bi = 419232214420111941
+		byt = 10
+		bytn = null
+		bytp = 8
+		dt = Tue, Jan. 6, 1970 at 09:05:40.000
+		fl = 302.193
+		fln = null
+		flp = 302.193
+		lo = 1021231230129
+		lon = null
+		lop = 102123123980909
+		sh = 10021
+		shn = null
+		shp = 12312
+		sdate = Mon, Jan. 12, 1970 at 00:00:00.000
+		ti = Thu, Jan. 1, 1970 at 01:32:20.000
+		ts = Wed, Aug. 25, 1976 at 21:25:10.000
+		bytes = byte[][
+			3
+			1
+			4
+			1
+			5
+			9
+			2
+		]
+		url = URL{
+			protocol = "http"
+			host = "locahlost"
+			port = 8080
+			file = "/test"
+			query = null
+			authority = "locahlost:8080"
+			path = "/test"
+			userInfo = null
+			ref = null
+			hashCode = -1
+			hostAddress = null
+			handler = Handler{...}
+		}
+	}
+]

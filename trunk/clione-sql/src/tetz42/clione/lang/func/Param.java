@@ -37,7 +37,8 @@ public class Param extends ClioneFunction {
 	private Instruction convToCol(Object val) {
 		if (isNegative(val)) {
 			return genInstruction(Arrays.asList(val), false);
-		} else if (val.getClass().isArray()) {
+		} else if (val.getClass().isArray()
+				&& val.getClass().getComponentType() != Byte.TYPE) {
 			ArrayList<Object> list = new ArrayList<Object>();
 			int length = Array.getLength(val);
 			boolean isTrue = false;

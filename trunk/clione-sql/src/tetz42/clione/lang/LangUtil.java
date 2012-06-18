@@ -12,7 +12,8 @@ import tetz42.util.RegexpTokenizer;
 
 public class LangUtil {
 
-	private static final Map<String, String> hereDoc = HereDoc.get(LangUtil.class);
+	private static final Map<String, String> hereDoc = HereDoc
+			.get(LangUtil.class);
 
 	public static String getLongMsg(String key) {
 		return hereDoc.get(key);
@@ -39,8 +40,8 @@ public class LangUtil {
 				getDialect().backslashWorkAsEscape() ? singleStrPtn2
 						: singleStrPtn);
 		if (!parseFunc(rt))
-			throw new RuntimeException(mkStringByCRLF(
-					"Too much ')'. It may be unsafe.", getResourceInfo()));
+			throw new SecurityValidationException(mkStringByCRLF(
+					"Too much ')'.", getResourceInfo()));
 	}
 
 	/**
@@ -51,8 +52,8 @@ public class LangUtil {
 			rt.updateTokenPosition();
 			String div = rt.getDelim();
 			if (div.equals("*/")) {
-				throw new RuntimeException(mkStringByCRLF(
-						"Too much '*/'. It may be unsafe.", getResourceInfo()));
+				throw new SecurityValidationException(mkStringByCRLF(
+						"Too much '*/'.", getResourceInfo()));
 			} else if (div.equals("/*")) {
 				findCommentEnd(rt);
 			} else if (div.equals("'")) {
@@ -62,10 +63,11 @@ public class LangUtil {
 			} else if (div.equals(")")) {
 				return false; // in case of parenthesis end
 			} else if (div.equals("") && rt.isEnd()) {
-				return true;
+				break;
 			} else {
-				throw new SecurityValidationException("Unsafe symbol, '" + div
-						+ "', is detected.");
+				throw new SecurityValidationException(mkStringByCRLF(
+						"Unsafe symbol, '" + div + "', is detected.",
+						getResourceInfo()));
 			}
 		}
 		return true;
@@ -76,18 +78,17 @@ public class LangUtil {
 			if (rt.matcher().group().equals("*/"))
 				return; // normal end
 			else
-				throw new SecurityValidationException(
-						"Recursive comment is not allowd because it might not be safe.");
+				throw new SecurityValidationException(mkStringByCRLF(
+						"Recursive comment is not allowed.", getResourceInfo()));
 		}
-		throw new SecurityValidationException(mkStringByCRLF(
-				"Too much '/*'. It may be unsafe.", getResourceInfo()));
+		throw new SecurityValidationException(mkStringByCRLF("Too much '/*'.",
+				getResourceInfo()));
 	}
 
-	// find end parenthesis and try to parse as SQLNode.
 	private static void doParenthesis(RegexpTokenizer rt) {
 		if (parseFunc(rt))
 			throw new SecurityValidationException(mkStringByCRLF(
-					"Too much '('. It may be unsafe.", getResourceInfo()));
+					"Too much '('.", getResourceInfo()));
 	}
 
 	// find end string literal.
