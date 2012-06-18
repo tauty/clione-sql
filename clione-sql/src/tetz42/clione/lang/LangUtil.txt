@@ -1,5 +1,5 @@
 <<STR_WARNING>>
-[WARNING!] The function, '%STR', is deprecated because it might be cause of SQLInjection.
+[WARNING!] The function, '%STR', is deprecated because it might be cause of SQLInjection vulnerability.
            Please follow the instructions below and modify your SQL file/string.
 
 	- In case use with '%include' function
@@ -7,6 +7,6 @@
 			ex)  /* %include %path(parameter) */( ... )
 
 	- In case insert SQL code
-		Use '%SQL!' function instead. The function checks the specified string, but it NOT means the parameter is safe completely.
+		Use '%SQL!' function instead. The function checks the specified string, but it does NOT mean the parameter is safe completely.
 			ex)  SELECT * FROM /* %STR!(tableName) */EMPLOYEE
 <</STR_WARNING>>

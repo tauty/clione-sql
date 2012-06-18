@@ -43,6 +43,33 @@ CREATE TABLE blobtest
     primary key(id)
 )
 /
+CREATE TABLE sample
+(
+    id              INT(3) NOT NULL,
+	bd				decimal(30, 10),
+	bi				numeric(40),
+	byt				tinyint,
+	bytn			tinyint,
+	bytp			tinyint,
+	bytes			blob,
+	dt				datetime,
+	fl				float,
+	fln				float,
+	flp				float,
+	lo				bigint,
+	lon				bigint,
+	lop				bigint,
+	r				text,
+	sh				smallint,
+	shn				smallint,
+	shp				smallint,
+	sdate			date,
+	ti				time,
+	ts				timestamp,
+	url				varchar(100),
+    primary key(id)
+)
+/
 insert into employees values(0,100000,'柔道部男子課','泰山天伍','tengo@judo.com');
 insert into employees values(1,100001,'柔道部女子課','猪熊柔','yawara@urasawa.com');
 insert into employees values(2,100002,'相撲部モンゴル課','朝青龍','asashoryu@docomo.com');
