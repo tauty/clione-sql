@@ -86,4 +86,56 @@ insert into people values(2,'Tao Kawada',2);
 insert into people values(3,'Hiromitsu Hara',31);
 insert into people values(4,'Hiroko Hara',31);
 
+INSERT
+    INTO
+        test.sample(
+            id
+            ,bd
+            ,bi
+            ,byt
+            ,bytn
+            ,bytp
+            ,bytes
+            ,dt
+            ,fl
+            ,fln
+            ,flp
+            ,lo
+            ,lon
+            ,lop
+            ,r
+            ,sh
+            ,shn
+            ,shp
+            ,sdate
+            ,ti
+            ,ts
+            ,url
+        )
+    VALUES
+        (
+            102
+            ,21231230.1231000000
+            ,12310298
+            ,8
+            ,null
+            ,88
+            ,'takoikanamako'
+            ,'2012-06-18 18:30:00'
+            ,2123.12
+            ,null
+            ,12312.2
+            ,12312098
+            ,null
+            ,121232139980
+            ,'Well, she was just 17. You know what I mean.'
+            ,4587
+            ,null
+            ,1231
+            ,'2012-06-22'
+            ,'10:00:00'
+            ,'2012-06-22 09:55:21'
+            ,'http://localhost:8080/sample'
+        );
+
 commit;
