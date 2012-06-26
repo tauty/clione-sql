@@ -247,7 +247,12 @@ public class CsvParsar {
 		while(status != Status.RECORD_END && status != Status.DATA_END) {
 			list.add(token.nextCell());
 		}
-		return (String[]) list.toArray();
+		String[] vals = new String[list.size()];
+		for(int i=0; i<list.size(); i++) {
+			vals[i] = list.get(i);
+		}
+		status = Status.PARSING;
+		return vals;
 	}
 
 	private class IStreamToken {

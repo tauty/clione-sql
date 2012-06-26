@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.MissingResourceException;
 import java.util.Properties;
 
 import tetz42.util.exception.WrapException;
@@ -122,6 +123,54 @@ public class IOUtil {
 	}
 
 	/**
+	 * Generates Property object. <br>
+	 * If the key is not specified, MissingResourceException will be thrown.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @param loader
+	 *            class loader
+	 * @return Properties object
+	 */
+	public static Properties getPropertiesRB(final String path,
+			ClassLoader loader) {
+		final InputStream in = loader.getResourceAsStream(path);
+		if (in == null)
+			return null;
+
+		return new Using<Properties>(in) {
+
+			@Override
+			protected Properties execute() throws IOException {
+				Properties prop = new Properties() {
+					/** */
+					private static final long serialVersionUID = 1L;
+
+					/**
+					 * @param key
+					 *            key
+					 * @return the value obtained by the key
+					 * @throws MissingResourceException
+					 *             if the key is not specified.
+					 */
+					@Override
+					public String getProperty(String key) {
+						String value = super.getProperty(key);
+						if (value == null)
+							throw new MissingResourceException(
+									"No object for the given key, '" + key
+											+ "', can be found in '" + path
+											+ "'.", getClass().getName(), key);
+						return value;
+					}
+				};
+				prop.load(in);
+				return prop;
+			}
+		}.invoke();
+	}
+
+	/**
 	 * Generates Property object.
 	 *
 	 * @param path
@@ -134,12 +183,64 @@ public class IOUtil {
 	}
 
 	/**
+	 * Generates Property object. <br>
+	 * If the key is not specified, MissingResourceException will be thrown.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @return Properties object
+	 */
+	public static Properties getPropertiesRB(String path) {
+		return getPropertiesRB(path, Thread.currentThread()
+				.getContextClassLoader());
+	}
+
+	/**
+	 * Generates Property object.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @param ext
+	 *            the extension folder.
+	 * @return Properties object
+	 */
+	public static Properties getProperties(String path, String ext) {
+		Properties prop = IOUtil.getProperties(path);
+		Properties extProp = IOUtil.getProperties(ext + "/" + path);
+		if (extProp != null) {
+			prop.putAll(extProp);
+		}
+		return prop;
+	}
+
+	/**
+	 * Generates Property object. <br>
+	 * If the key is not specified, MissingResourceException will be thrown.
+	 *
+	 * @param path
+	 *            the path of the property file
+	 * @param ext
+	 *            the extension folder.
+	 * @return Properties object
+	 */
+	public static Properties getPropertiesRB(String path, String ext) {
+		Properties prop = IOUtil.getPropertiesRB(path);
+		Properties extProp = IOUtil.getPropertiesRB(ext + "/" + path);
+		if (extProp != null) {
+			prop.putAll(extProp);
+		}
+		return prop;
+	}
+
+	/**
 	 * Load resource from default package.
-	 * @param path resource name
+	 *
+	 * @param path
+	 *            resource name
 	 * @return Input stream
 	 */
 	public static InputStream loadFromRoot(String path) {
-		return Thread.currentThread()
-				.getContextClassLoader().getResourceAsStream(path);
+		return Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(path);
 	}
 }

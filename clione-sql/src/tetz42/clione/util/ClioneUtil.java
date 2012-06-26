@@ -22,7 +22,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +75,7 @@ public class ClioneUtil {
 	private static final IConv byteArrayConv = new ByteArrayConv();
 	private static final IConv defaultConv = new DefaultConv();
 	static {
-		Map<Class<?>, IConv> map = new HashMap<Class<?>, IConv>();
+		Map<Class<?>, IConv> map = new IdentityHashMap<Class<?>, IConv>();
 		map.put(String.class, new StringConv());
 		map.put(Boolean.class, new BooleanConv());
 		map.put(Boolean.TYPE, new BooleanPrimitiveConv());
