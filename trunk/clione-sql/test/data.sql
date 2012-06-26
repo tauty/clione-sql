@@ -88,7 +88,7 @@ insert into people values(4,'Hiroko Hara',31);
 
 INSERT
     INTO
-        test.sample(
+        sample(
             id
             ,bd
             ,bi
@@ -114,13 +114,13 @@ INSERT
         )
     VALUES
         (
-            102
-            ,21231230.1231000000
+            100
+            ,21231230.1231000001
             ,12310298
             ,8
             ,null
             ,88
-            ,'takoikanamako'
+            ,HEXTORAW('74616B6F696B616E616D616B6F')
             ,'2012-06-18 18:30:00'
             ,2123.12
             ,null
@@ -133,7 +133,7 @@ INSERT
             ,null
             ,1231
             ,'2012-06-22'
-            ,'10:00:00'
+            ,'1970-01-01 10:00:00'
             ,'2012-06-22 09:55:21'
             ,'http://localhost:8080/sample'
         );

@@ -39,8 +39,8 @@ public class ConverterTest {
 	@Before
 	public void setUp() throws SQLException {
 		ResourceBundle bundle = ResourceBundle.getBundle("db");
-		con = DriverManager.getConnection(bundle.getString("url"),
-				bundle.getString("user"), bundle.getString("pass"));
+		con = DriverManager.getConnection(bundle.getString("url"), bundle
+				.getString("user"), bundle.getString("pass"));
 		con.setAutoCommit(false);
 		setThreadConnection(con);
 	}
@@ -58,8 +58,8 @@ public class ConverterTest {
 	public void test() throws MalformedURLException {
 		Sample sample = new Sample();
 		sqlManager().useFile(getClass(), "test.sql").update(sample);
-		List<Sample> list = sqlManager().useSQL("select * from sample")
-				.findAll(Sample.class);
+		List<Sample> list = sqlManager().useSQL(
+				"select * from sample order by id").findAll(Sample.class);
 		assertEqualsWithFile(list, getClass(), "test");
 	}
 
@@ -80,7 +80,7 @@ public class ConverterTest {
 
 	static class Sample {
 		String id = "101";
-		BigDecimal bd = new BigDecimal("23423083150983.9923");
+		BigDecimal bd = new BigDecimal("23423083150983.9923000022");
 		BigInteger bi = new BigInteger("419232214420111941");
 		// Boolean bl = true;
 		// Boolean bln = null;
@@ -101,7 +101,7 @@ public class ConverterTest {
 		short shp = 12312;
 		java.sql.Date sdate = new java.sql.Date(1000010100L);
 		Time ti = new Time(232340980);
-		Timestamp ts = new Timestamp(209823910241L);
+		Timestamp ts = new Timestamp(209823910000L);
 		URL url = new URL("http://locahlost:8080/test");
 
 		Sample() throws MalformedURLException {
