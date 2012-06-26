@@ -183,6 +183,9 @@ public class ClioneUtil {
 		IConv conv = convMap4FinalClass.get(clazz);
 		if (conv != null)
 			return conv;
+		conv = convMap4NormalClass.get(clazz);
+		if (conv != null)
+			return conv;
 		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
 			return byteArrayConv;
 		for (Entry<Class<?>, IConv> e : convMap4NormalClass.entrySet()) {
