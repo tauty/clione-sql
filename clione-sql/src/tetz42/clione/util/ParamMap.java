@@ -133,7 +133,8 @@ public class ParamMap extends HashMap<String, Object> {
 			for (Entry<String, Object> e : subMap.entrySet()) {
 				if (!isSupported(e.getKey()))
 					continue;
-				this.put(key + "." + e.getKey(), e.getValue());
+//				this.put(key + "." + e.getKey(), e.getValue());
+				this.put(key + "_" + e.getKey(), e.getValue());
 			}
 		}
 	}
