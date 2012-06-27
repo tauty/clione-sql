@@ -1,7 +1,7 @@
 ParamMap{
-	"cls424.int2": 21
-	"cls424.int4": 4321
-	"cls424.str4": "4321"
+	"cls424_int2": 21
+	"cls424_int4": 4321
+	"cls424_str4": "4321"
 	"int10": 1234567890
 	"intNull": 0
 	"str10": "1234567890"
