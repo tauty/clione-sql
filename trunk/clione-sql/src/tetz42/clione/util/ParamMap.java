@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.exception.DuplicateKeyException;
 import tetz42.clione.setting.Config;
 
 public class ParamMap extends HashMap<String, Object> {
@@ -121,6 +122,10 @@ public class ParamMap extends HashMap<String, Object> {
 	private void setValue(String key, Object obj, int depth) {
 		if (!isSupported(key))
 			return;
+		if (containsKey(key))
+			throw new DuplicateKeyException("The key, '" + key
+					+ "' is duplicate. One of value:" + get(key) + ", Another:"
+					+ obj);
 		this.put(key, obj);
 		if (!isSingle(obj) && !isEachable(obj)
 				&& depth < Config.get().ENTITY_DEPTH_LIMIT) {
@@ -133,7 +138,6 @@ public class ParamMap extends HashMap<String, Object> {
 			for (Entry<String, Object> e : subMap.entrySet()) {
 				if (!isSupported(e.getKey()))
 					continue;
-//				this.put(key + "." + e.getKey(), e.getValue());
 				this.put(key + "_" + e.getKey(), e.getValue());
 			}
 		}

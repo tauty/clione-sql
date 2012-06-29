@@ -64,7 +64,6 @@ import tetz42.clione.util.converter.TimestampConv;
 import tetz42.clione.util.converter.URLConv;
 import tetz42.util.Const;
 
-
 public class ClioneUtil {
 
 	public static final String CRLF = Const.CRLF;

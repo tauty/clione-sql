@@ -7,11 +7,13 @@ import static tetz42.util.Util.*;
 import java.lang.reflect.Field;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import tetz42.clione.util.ResultMap;
+import tetz42.util.Function;
 import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLIterator<T> implements Iterable<T> {
@@ -24,9 +26,9 @@ public class SQLIterator<T> implements Iterable<T> {
 	private final Class<T> clazz;
 	private final SQLExecutor executor;
 	private final ResultSetMetaData md;
-	private final HashMap<String, Field> fieldMap;
+	private final ConcurrentHashMap<Class<?>, Map<String, Field>> fieldMapCache = newConcurrentMap();
 
-	public SQLIterator(SQLExecutor executor, Class<T> clazz,
+	public SQLIterator(SQLExecutor executor, final Class<T> clazz,
 			Map<String, Object> paramMap) {
 		this.executor = executor;
 		this.clazz = clazz;
@@ -37,11 +39,6 @@ public class SQLIterator<T> implements Iterable<T> {
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
 					executor.getSQLInfo()), e);
-		}
-
-		fieldMap = new HashMap<String, Field>();
-		for (Field field : getFields(clazz)) {
-			fieldMap.put(field.getName(), field);
 		}
 	}
 
@@ -67,6 +64,7 @@ public class SQLIterator<T> implements Iterable<T> {
 				try {
 					if (isSQLType(clazz))
 						return (T) getSQLData(clazz, executor.rs, 1);
+					Map<String, Field> fieldMap = getFieldMap(clazz);
 					T instance = newInstance(clazz);
 					for (int i = 1; i <= md.getColumnCount(); i++) {
 						Field field = fieldMap.get(md.getColumnLabel(i));
@@ -74,8 +72,8 @@ public class SQLIterator<T> implements Iterable<T> {
 							field = fieldMap.get(conv(md.getColumnLabel(i)));
 						if (field == null)
 							continue;
-						setValue(instance, field, getSQLData(field,
-								executor.rs, i));
+						setValue(instance, field,
+								getSQLData(field, executor.rs, i));
 					}
 					return instance;
 				} catch (SQLException e) {
@@ -118,5 +116,20 @@ public class SQLIterator<T> implements Iterable<T> {
 				sb.append(s.substring(0, 1).toUpperCase() + s.substring(1));
 		}
 		return sb.toString();
+	}
+	
+	private Map<String, Field> getFieldMap(final Class<?> clazz) {
+		return getOrNew(fieldMapCache, clazz,
+				new Function<Map<String, Field>>() {
+
+					@Override
+					public Map<String, Field> apply() {
+						Map<String, Field> map = newMap();
+						for (Field field : getFields(clazz)) {
+							map.put(field.getName(), field);
+						}
+						return Collections.unmodifiableMap(map);
+					}
+				});
 	}
 }
