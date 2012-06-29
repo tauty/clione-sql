@@ -16,10 +16,9 @@ public class ListWithDelim<E> extends ArrayList<E> {
 	 */
 	private static final long serialVersionUID = -53884053944137307L;
 
-
 	/**
 	 * Generate a list from parameter.
-	 *
+	 * 
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @return the list generated
@@ -30,7 +29,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Generate a list from parameter.
-	 *
+	 * 
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @param eles
@@ -46,7 +45,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Generate a list from parameter.
-	 *
+	 * 
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @param eles
@@ -72,19 +71,22 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * constructor.
-	 * @param c the collection to be copied
+	 * 
+	 * @param c
+	 *            the collection to be copied
 	 */
 	public ListWithDelim(Collection<? extends E> c) {
 		super(c);
-		if(ListWithDelim.class.isInstance(c)) {
-			setDelim(((ListWithDelim<?>)c).getDelim());
-		}else {
+		if (ListWithDelim.class.isInstance(c)) {
+			setDelim(((ListWithDelim<?>) c).getDelim());
+		} else {
 			or();
 		}
 	}
 
 	/**
 	 * constructor.
+	 * 
 	 * @param initialCapacity
 	 */
 	public ListWithDelim(int initialCapacity) {
@@ -94,7 +96,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set 'OR' as delimiter.
-	 *
+	 * 
 	 * @return this object
 	 */
 	public ListWithDelim<E> or() {
@@ -103,7 +105,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set 'AND' as delimiter.
-	 *
+	 * 
 	 * @return this object
 	 */
 	public ListWithDelim<E> and() {
@@ -112,7 +114,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set ',' as delimiter.
-	 *
+	 * 
 	 * @return this object
 	 */
 	public ListWithDelim<E> comma() {
@@ -121,7 +123,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set CRLF as delimiter.
-	 *
+	 * 
 	 * @return this object
 	 */
 	public ListWithDelim<E> crlf() {
@@ -130,29 +132,29 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * copy delimiter if the parameter is a instance of ListWithDelim
+	 * 
 	 * @param c
 	 * @return this object
 	 */
 	public ListWithDelim<E> copyDelim(Collection<E> c) {
-		if(ListWithDelim.class.isInstance(c)) {
-			setDelim(((ListWithDelim<?>)c).getDelim());
+		if (ListWithDelim.class.isInstance(c)) {
+			setDelim(((ListWithDelim<?>) c).getDelim());
 		}
 		return this;
 	}
 
 	/**
 	 * Getter of delimiter.
-	 *
+	 * 
 	 * @return the delimiter
 	 */
 	public String getDelim() {
-		System.out.println("getDelim:" + delim);
 		return delim;
 	}
 
 	/**
 	 * Setter of delimiter.
-	 *
+	 * 
 	 * @param delim
 	 *            the delimiter to set
 	 * @return this object.
