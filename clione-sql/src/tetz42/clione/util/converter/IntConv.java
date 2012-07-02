@@ -7,13 +7,13 @@ import java.sql.SQLException;
 public class IntConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getInt(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getInt(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setInt(columnIndex, (Integer) param);
+		stmt.setInt(index, (Integer) param);
 	}
 }

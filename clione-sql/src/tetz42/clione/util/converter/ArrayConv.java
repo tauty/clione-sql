@@ -9,13 +9,13 @@ import java.sql.SQLException;
 public class ArrayConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getArray(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getArray(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setArray(columnIndex, (Array)param);
+		stmt.setArray(index, (Array)param);
 	}
 }

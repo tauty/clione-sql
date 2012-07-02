@@ -8,13 +8,13 @@ import java.sql.SQLException;
 public class ReaderConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getCharacterStream(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getCharacterStream(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setCharacterStream(columnIndex, (Reader)param);
+		stmt.setCharacterStream(index, (Reader)param);
 	}
 }

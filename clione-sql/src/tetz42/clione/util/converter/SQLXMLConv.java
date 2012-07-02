@@ -8,13 +8,13 @@ import java.sql.SQLXML;
 public class SQLXMLConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getSQLXML(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getSQLXML(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setSQLXML(columnIndex, (SQLXML) param);
+		stmt.setSQLXML(index, (SQLXML) param);
 	}
 }

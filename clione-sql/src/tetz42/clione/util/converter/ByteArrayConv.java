@@ -8,13 +8,13 @@ import java.sql.SQLException;
 public class ByteArrayConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getBytes(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getBytes(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setBytes(columnIndex, (byte[]) param);
+		stmt.setBytes(index, (byte[]) param);
 	}
 }

@@ -5,6 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface IConv {
-	Object get(ResultSet rs, int columnIndex) throws SQLException;
-	void set(PreparedStatement stmt, Object param, int columnIndex) throws SQLException;
+	Object get(ResultSet rs, int index) throws SQLException;
+	void set(PreparedStatement stmt, Object param, int index) throws SQLException;
 }

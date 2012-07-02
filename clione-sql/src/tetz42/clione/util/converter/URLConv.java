@@ -8,13 +8,13 @@ import java.sql.SQLException;
 public class URLConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getURL(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getURL(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setURL(columnIndex, (URL) param);
+		stmt.setURL(index, (URL) param);
 	}
 }

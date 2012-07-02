@@ -7,13 +7,13 @@ import java.sql.SQLException;
 public class FloatPrimitiveConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getFloat(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getFloat(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setFloat(columnIndex, (Float) param);
+		stmt.setFloat(index, (Float) param);
 	}
 }

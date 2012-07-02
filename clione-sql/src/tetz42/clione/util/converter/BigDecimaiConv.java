@@ -9,13 +9,13 @@ import java.sql.SQLException;
 public class BigDecimaiConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getBigDecimal(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getBigDecimal(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setBigDecimal(columnIndex, (BigDecimal) param);
+		stmt.setBigDecimal(index, (BigDecimal) param);
 	}
 }
