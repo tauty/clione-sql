@@ -26,7 +26,7 @@ public class SQLIterator<T> implements Iterable<T> {
 	private final Class<T> clazz;
 	private final SQLExecutor executor;
 	private final ResultSetMetaData md;
-	private final ConcurrentHashMap<Class<?>, Map<String, Field>> fieldMapCache = newConcurrentMap();
+	private final ConcurrentHashMap<Class<?>, FieldMapContainer> fieldMapCache = newConcurrentMap();
 
 	public SQLIterator(SQLExecutor executor, final Class<T> clazz,
 			Map<String, Object> paramMap) {
@@ -64,13 +64,13 @@ public class SQLIterator<T> implements Iterable<T> {
 				try {
 					if (isSQLType(clazz))
 						return (T) getSQLData(clazz, executor.rs, 1);
-					Map<String, Field> fieldMap = getFieldMap(clazz);
+					FieldMapContainer con = getFieldMap(clazz);
 					T instance = newInstance(clazz);
 					for (int i = 1; i <= md.getColumnCount(); i++) {
-						String label = md.getColumnLabel(i);
-						Field field = fieldMap.get(label);
+						String label = md.getColumnLabel(i).toLowerCase();
+						Field field = con.snakeMap.get(label);
 						if (field == null)
-							field = fieldMap.get(conv(label));
+							field = con.camelMap.get(camelize(label));
 						if (field == null)
 							continue;
 						setValue(instance, field,
@@ -105,8 +105,8 @@ public class SQLIterator<T> implements Iterable<T> {
 		}
 	}
 
-	private Object conv(String columnLabel) {
-		String[] strings = columnLabel.toLowerCase().split("_");
+	private Object camelize(String columnLabel) {
+		String[] strings = columnLabel.split("_");
 		StringBuilder sb = new StringBuilder();
 		for (String s : strings) {
 			if (s.length() == 0)
@@ -118,32 +118,72 @@ public class SQLIterator<T> implements Iterable<T> {
 		}
 		return sb.toString();
 	}
-	
-	private Map<String, Field> getFieldMap(final Class<?> clazz) {
+
+	private FieldMapContainer getFieldMap(final Class<?> clazz) {
 		return getOrNew(fieldMapCache, clazz,
-				new Function<Map<String, Field>>() {
+				new Function<FieldMapContainer>() {
 
 					@Override
-					public Map<String, Field> apply() {
-						Map<String, Field> map = newMap();
-						for (Field field : getFields(clazz)) {
-							if(isSQLType(field.getType()))
-								map.put(field.getName(), field);
-							else
-								map(field.getName(), field.getType(), map);
-						}
-						return Collections.unmodifiableMap(map);
+					public FieldMapContainer apply() {
+						FieldMapContainer con = new FieldMapContainer();
+						map("", "", clazz, con);
+						return con.toUnmodifiable();
 					}
-					
-					private void map(String baseName, Class<?> type,
-							Map<String, Field> map) {
-						for (Field field : getFields(clazz)) {
-							if(isSQLType(field.getType()))
-								map.put(field.getName(), field);
-							else
-								map(field.getName(), field.getType(), map);
+
+					private void map(String snakeBaseName,
+							String camelBaseName, Class<?> type,
+							FieldMapContainer con) {
+						for (Field f : getFields(type)) {
+							String snakeName = con.putSnake(snakeBaseName, f);
+							String camelName = con.putCamel(camelBaseName, f);
+							if (!isSQLType(f.getType()))
+								map(snakeName, camelName, f.getType(), con);
 						}
 					}
 				});
 	}
+
+	private static class FieldMapContainer {
+		final Map<String, Field> snakeMap;
+		final Map<String, Field> camelMap;
+
+		FieldMapContainer() {
+			snakeMap = newMap();
+			camelMap = newMap();
+		}
+
+		FieldMapContainer(Map<String, Field> snakeMap,
+				Map<String, Field> camelMap) {
+			this.snakeMap = snakeMap;
+			this.camelMap = camelMap;
+		}
+
+		String putSnake(String snakeBaseName, Field f) {
+			String name;
+			if (isEmpty(snakeBaseName))
+				name = f.getName().toLowerCase();
+			else
+				name = snakeBaseName + "_" + f.getName().toLowerCase();
+			snakeMap.put(name, f);
+			return name;
+		}
+
+		String putCamel(String camelBaseName, Field f) {
+			String name;
+			if (isEmpty(camelBaseName))
+				name = f.getName();
+			else
+				name = camelBaseName
+						+ f.getName().substring(0, 1).toUpperCase()
+						+ f.getName().substring(1);
+			camelMap.put(name, f);
+			return name;
+		}
+
+		FieldMapContainer toUnmodifiable() {
+			return new FieldMapContainer(Collections.unmodifiableMap(snakeMap),
+					Collections.unmodifiableMap(camelMap));
+		}
+	}
+
 }
