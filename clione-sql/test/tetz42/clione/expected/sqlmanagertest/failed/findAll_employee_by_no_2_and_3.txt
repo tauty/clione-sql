@@ -1,0 +1,23 @@
+ArrayList[
+	Employee{
+		id = 0
+		SHAIN_NO = 0
+		shozokuBuKa = "柔道部男子課"
+		name = "泰山天伍"
+		age = 0
+	}
+	Employee{
+		id = 2
+		SHAIN_NO = 0
+		shozokuBuKa = "相撲部モンゴル課"
+		name = "朝青龍"
+		age = 0
+	}
+	Employee{
+		id = 3
+		SHAIN_NO = 0
+		shozokuBuKa = "バレー部ホモ課"
+		name = "河合俊一"
+		age = 0
+	}
+]

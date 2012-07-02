@@ -1,0 +1,7 @@
+Employee{
+	id = 2
+	SHAIN_NO = 0
+	shozokuBuKa = "相撲部モンゴル課"
+	name = "朝青龍"
+	age = 0
+}

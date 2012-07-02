@@ -20,14 +20,41 @@ import java.util.Iterator;
 
 /**
  * @author Administrator
- *
+ * 
  */
 public class PureList<E> implements Iterable<E>, Serializable {
 
-	/**
-	 *
-	 */
+	/***/
 	private static final long serialVersionUID = -6009911785500721458L;
+
+	@SuppressWarnings({ "unchecked", "varargs" })
+	public static <T> PureList<T> genList() {
+		return new PureList<T>(null, null) {
+			/***/
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isEmpty() {
+				return true;
+			}
+		};
+	}
+
+	public static <T> PureList<T> cons(T head, PureList<T> tail) {
+		return new PureList<T>(head, tail);
+	}
+
+	// @SuppressWarnings({"unchecked", "varargs"})
+	// public static <T> PureList<T> genList(T... es) {
+	// return genList(0, es);
+	// }
+	//
+	// @SuppressWarnings({"unchecked", "varargs"})
+	// private static <T> PureList<T> genList(int index, T... es) {
+	// if (es.length >= index)
+	// return null;
+	// return cons(es[index], genList(index + 1, es));
+	// }
 
 	public final E head;
 	public final PureList<E> tail;
@@ -37,24 +64,20 @@ public class PureList<E> implements Iterable<E>, Serializable {
 		this.tail = tail;
 	}
 
-	@SuppressWarnings({"unchecked", "varargs"})
-	public static <T> PureList<T> genList(T... es) {
-		return genList(0, es);
-	}
-
-	@SuppressWarnings({"unchecked", "varargs"})
-	private static <T> PureList<T> genList(int index, T... es) {
-		if (es.length >= index)
-			return null;
-		return cons(es[index], genList(index + 1, es));
-	}
-
-	public static <T> PureList<T> cons(T head, PureList<T> tail) {
-		return new PureList<T>(head, tail);
+	public boolean isEmpty() {
+		return false;
 	}
 
 	public boolean hasNext() {
-		return this.tail != null;
+		return tail != null && !tail.isEmpty();
+	}
+
+	public PureList<E> reverse() {
+		PureList<E> pl = genList();
+		for (E value : this) {
+			pl = cons(value, pl);
+		}
+		return pl;
 	}
 
 	@Override
