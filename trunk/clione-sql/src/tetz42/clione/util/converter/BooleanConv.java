@@ -8,17 +8,17 @@ import java.sql.SQLException;
 public class BooleanConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getObject(columnIndex) == null ? null : rs
-				.getBoolean(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getObject(index) == null ? null : rs
+				.getBoolean(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
 		if (param != null)
-			stmt.setBoolean(columnIndex, (Boolean) param);
+			stmt.setBoolean(index, (Boolean) param);
 		else
-			stmt.setObject(columnIndex, null);
+			stmt.setObject(index, null);
 	}
 }

@@ -10,17 +10,17 @@ import java.sql.SQLException;
 public class BigIntegerConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getObject(columnIndex) == null ? null : rs.getBigDecimal(
-				columnIndex).toBigInteger();
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getObject(index) == null ? null : rs.getBigDecimal(
+				index).toBigInteger();
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
 		if (param != null)
-			stmt.setBigDecimal(columnIndex, new BigDecimal((BigInteger) param));
+			stmt.setBigDecimal(index, new BigDecimal((BigInteger) param));
 		else
-			stmt.setObject(columnIndex, null);
+			stmt.setObject(index, null);
 	}
 }

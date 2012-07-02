@@ -8,13 +8,13 @@ import java.sql.Time;
 public class TimeConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getTime(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getTime(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setTime(columnIndex, (Time) param);
+		stmt.setTime(index, (Time) param);
 	}
 }

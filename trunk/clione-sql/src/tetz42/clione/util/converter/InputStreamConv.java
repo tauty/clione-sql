@@ -8,13 +8,13 @@ import java.sql.SQLException;
 public class InputStreamConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getBinaryStream(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getBinaryStream(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setBinaryStream(columnIndex, (InputStream)param);
+		stmt.setBinaryStream(index, (InputStream)param);
 	}
 }

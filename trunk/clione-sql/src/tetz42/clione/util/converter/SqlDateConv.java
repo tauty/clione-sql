@@ -8,13 +8,13 @@ import java.sql.SQLException;
 public class SqlDateConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getDate(columnIndex);
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getDate(index);
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
-		stmt.setDate(columnIndex, (Date)param);
+		stmt.setDate(index, (Date)param);
 	}
 }

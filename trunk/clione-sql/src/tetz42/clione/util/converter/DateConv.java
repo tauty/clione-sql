@@ -9,17 +9,17 @@ import java.util.Date;
 public class DateConv implements IConv {
 
 	@Override
-	public Object get(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getObject(columnIndex) == null ? null : new Date(rs
-				.getTimestamp(columnIndex).getTime());
+	public Object get(ResultSet rs, int index) throws SQLException {
+		return rs.getObject(index) == null ? null : new Date(rs
+				.getTimestamp(index).getTime());
 	}
 
 	@Override
-	public void set(PreparedStatement stmt, Object param, int columnIndex)
+	public void set(PreparedStatement stmt, Object param, int index)
 			throws SQLException {
 		if (param != null)
-			stmt.setTimestamp(columnIndex, new Timestamp(((Date)param).getTime()));
+			stmt.setTimestamp(index, new Timestamp(((Date)param).getTime()));
 		else
-			stmt.setObject(columnIndex, null);
+			stmt.setObject(index, null);
 	}
 }
