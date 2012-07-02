@@ -1,0 +1,7 @@
+Employee{
+	id = 1
+	SHAIN_NO = 0
+	shozokuBuKa = "柔道部女子課"
+	name = "猪熊柔"
+	age = 0
+}

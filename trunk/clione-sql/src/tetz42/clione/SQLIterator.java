@@ -67,9 +67,10 @@ public class SQLIterator<T> implements Iterable<T> {
 					Map<String, Field> fieldMap = getFieldMap(clazz);
 					T instance = newInstance(clazz);
 					for (int i = 1; i <= md.getColumnCount(); i++) {
-						Field field = fieldMap.get(md.getColumnLabel(i));
+						String label = md.getColumnLabel(i);
+						Field field = fieldMap.get(label);
 						if (field == null)
-							field = fieldMap.get(conv(md.getColumnLabel(i)));
+							field = fieldMap.get(conv(label));
 						if (field == null)
 							continue;
 						setValue(instance, field,
@@ -126,9 +127,22 @@ public class SQLIterator<T> implements Iterable<T> {
 					public Map<String, Field> apply() {
 						Map<String, Field> map = newMap();
 						for (Field field : getFields(clazz)) {
-							map.put(field.getName(), field);
+							if(isSQLType(field.getType()))
+								map.put(field.getName(), field);
+							else
+								map(field.getName(), field.getType(), map);
 						}
 						return Collections.unmodifiableMap(map);
+					}
+					
+					private void map(String baseName, Class<?> type,
+							Map<String, Field> map) {
+						for (Field field : getFields(clazz)) {
+							if(isSQLType(field.getType()))
+								map.put(field.getName(), field);
+							else
+								map(field.getName(), field.getType(), map);
+						}
 					}
 				});
 	}
