@@ -18,7 +18,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Generate a list from parameter.
-	 * 
+	 *
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @return the list generated
@@ -29,7 +29,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Generate a list from parameter.
-	 * 
+	 *
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @param eles
@@ -45,7 +45,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Generate a list from parameter.
-	 * 
+	 *
 	 * @param <ELE>
 	 *            type parameter of elements
 	 * @param eles
@@ -71,7 +71,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * constructor.
-	 * 
+	 *
 	 * @param c
 	 *            the collection to be copied
 	 */
@@ -86,7 +86,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * constructor.
-	 * 
+	 *
 	 * @param initialCapacity
 	 */
 	public ListWithDelim(int initialCapacity) {
@@ -96,7 +96,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set 'OR' as delimiter.
-	 * 
+	 *
 	 * @return this object
 	 */
 	public ListWithDelim<E> or() {
@@ -105,7 +105,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set 'AND' as delimiter.
-	 * 
+	 *
 	 * @return this object
 	 */
 	public ListWithDelim<E> and() {
@@ -114,7 +114,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set ',' as delimiter.
-	 * 
+	 *
 	 * @return this object
 	 */
 	public ListWithDelim<E> comma() {
@@ -123,7 +123,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Set CRLF as delimiter.
-	 * 
+	 *
 	 * @return this object
 	 */
 	public ListWithDelim<E> crlf() {
@@ -132,7 +132,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * copy delimiter if the parameter is a instance of ListWithDelim
-	 * 
+	 *
 	 * @param c
 	 * @return this object
 	 */
@@ -145,7 +145,7 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Getter of delimiter.
-	 * 
+	 *
 	 * @return the delimiter
 	 */
 	public String getDelim() {
@@ -154,14 +154,13 @@ public class ListWithDelim<E> extends ArrayList<E> {
 
 	/**
 	 * Setter of delimiter.
-	 * 
+	 *
 	 * @param delim
 	 *            the delimiter to set
 	 * @return this object.
 	 */
 	public ListWithDelim<E> setDelim(String delim) {
 		this.delim = delim;
-		System.out.println("setDelim:" + delim);
 		return this;
 	}
 
