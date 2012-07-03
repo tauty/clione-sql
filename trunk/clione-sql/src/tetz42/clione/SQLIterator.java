@@ -26,7 +26,7 @@ public class SQLIterator<T> implements Iterable<T> {
 	private final Class<T> clazz;
 	private final SQLExecutor executor;
 	private final ResultSetMetaData md;
-	private final ConcurrentHashMap<Class<?>, FieldMapContainer> fieldMapCache = newConcurrentMap();
+	private final ConcurrentHashMap<Class<?>, FieldMapContainer> fieldContainerCache = newConcurrentMap();
 
 	public SQLIterator(SQLExecutor executor, final Class<T> clazz,
 			Map<String, Object> paramMap) {
@@ -44,65 +44,44 @@ public class SQLIterator<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
-
-			@Override
-			public boolean hasNext() {
-				try {
-					return executor.rs.next();
-				} catch (SQLException e) {
-					throw new SQLRuntimeException(mkStringByCRLF(
-							e.getMessage(), executor.getSQLInfo()), e);
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public T next() {
-				if (clazz == ResultMap.class)
-					return nextMap();
-				try {
-					if (isSQLType(clazz))
-						return (T) getSQLData(clazz, executor.rs, 1);
-					FieldMapContainer con = getFieldMap(clazz);
-					T instance = newInstance(clazz);
+		if (clazz == ResultMap.class) {
+			return new RsIterator() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public T nextTask() throws SQLException {
+					ResultMap map = new ResultMap();
 					for (int i = 1; i <= md.getColumnCount(); i++) {
-						String label = md.getColumnLabel(i).toLowerCase();
-						Field field = con.snakeMap.get(label);
-						if (field == null)
-							field = con.camelMap.get(camelize(label));
-						if (field == null)
-							continue;
-						setValue(instance, field,
-								getSQLData(field, executor.rs, i));
+						map.put(md.getColumnLabel(i), executor.rs.getObject(i));
 					}
-					return instance;
-				} catch (SQLException e) {
-					throw new SQLRuntimeException(mkStringByCRLF(
-							e.getMessage(), executor.getSQLInfo()), e);
+					return (T) map;
 				}
-			}
-
+			};
+		} else if (isSQLType(clazz)) {
+			return new RsIterator() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public T nextTask() throws SQLException {
+					return (T) getSQLData(clazz, executor.rs, 1);
+				}
+			};
+		}
+		return new RsIterator() {
 			@Override
-			public void remove() {
-				throw new UnsupportedOperationException(
-						"Iterator#remove is not supported.");
+			public T nextTask() throws SQLException {
+				FieldMapContainer con = getFieldContainer(clazz);
+				T instance = newInstance(clazz);
+				for (int i = 1; i <= md.getColumnCount(); i++) {
+					String label = md.getColumnLabel(i).toLowerCase();
+					Field field = con.snakeMap.get(label);
+					if (field == null)
+						field = con.camelMap.get(camelize(label));
+					if (field == null)
+						continue;
+					setValue(instance, field, getSQLData(field, executor.rs, i));
+				}
+				return instance;
 			}
 		};
-	}
-
-	@SuppressWarnings("unchecked")
-	private T nextMap() {
-		ResultMap map = new ResultMap();
-		try {
-			for (int i = 1; i <= md.getColumnCount(); i++) {
-				map.put(md.getColumnLabel(i), executor.rs.getObject(i));
-			}
-			return (T) map;
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
-					executor.getSQLInfo()), e);
-		}
 	}
 
 	private Object camelize(String columnLabel) {
@@ -119,8 +98,8 @@ public class SQLIterator<T> implements Iterable<T> {
 		return sb.toString();
 	}
 
-	private FieldMapContainer getFieldMap(final Class<?> clazz) {
-		return getOrNew(fieldMapCache, clazz,
+	private FieldMapContainer getFieldContainer(final Class<?> clazz) {
+		return getOrNew(fieldContainerCache, clazz,
 				new Function<FieldMapContainer>() {
 
 					@Override
@@ -141,6 +120,37 @@ public class SQLIterator<T> implements Iterable<T> {
 						}
 					}
 				});
+	}
+
+	private abstract class RsIterator implements Iterator<T> {
+
+		@Override
+		public boolean hasNext() {
+			try {
+				return executor.rs.next();
+			} catch (SQLException e) {
+				throw new SQLRuntimeException(mkStringByCRLF(
+						e.getMessage(), executor.getSQLInfo()), e);
+			}
+		}
+
+		@Override
+		public T next() {
+			try {
+				return nextTask();
+			} catch (SQLException e) {
+				throw new SQLRuntimeException(mkStringByCRLF(
+						e.getMessage(), executor.getSQLInfo()), e);
+			}
+		}
+
+		abstract T nextTask() throws SQLException;
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException(
+					"Iterator#remove is not supported.");
+		}
 	}
 
 	private static class FieldMapContainer {
