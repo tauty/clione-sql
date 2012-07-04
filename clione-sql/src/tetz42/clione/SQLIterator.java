@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,6 +85,33 @@ public class SQLIterator<T> implements Iterable<T> {
 		};
 	}
 
+	class Tako {
+		final Map<String, Object> cache = newMap();
+		final FieldMapContainer con;
+
+		Tako(Object obj) {
+			con = getFieldContainer(clazz);
+			cache.put("", newInstance(clazz));
+		}
+
+		void set(String label, Object obj) {
+			Field f = con.snakeMap.get(label);
+			if (f == null)
+				f = con.camelMap.get(camelize(label));
+			if (f == null)
+				return;
+
+		}
+
+		String toBase(Field f, String snake) {
+			String base = snake.substring(0, snake.length()
+					- f.getName().length());
+			if (base.endsWith("_"))
+				base = base.substring(0, base.length() - 1);
+			return base;
+		}
+	}
+
 	private Object camelize(String columnLabel) {
 		String[] strings = columnLabel.split("_");
 		StringBuilder sb = new StringBuilder();
@@ -129,8 +157,8 @@ public class SQLIterator<T> implements Iterable<T> {
 			try {
 				return executor.rs.next();
 			} catch (SQLException e) {
-				throw new SQLRuntimeException(mkStringByCRLF(
-						e.getMessage(), executor.getSQLInfo()), e);
+				throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
+						executor.getSQLInfo()), e);
 			}
 		}
 
@@ -139,8 +167,8 @@ public class SQLIterator<T> implements Iterable<T> {
 			try {
 				return nextTask();
 			} catch (SQLException e) {
-				throw new SQLRuntimeException(mkStringByCRLF(
-						e.getMessage(), executor.getSQLInfo()), e);
+				throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
+						executor.getSQLInfo()), e);
 			}
 		}
 
