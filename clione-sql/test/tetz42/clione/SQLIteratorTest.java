@@ -58,14 +58,54 @@ public class SQLIteratorTest {
 
 	@Test
 	public void findAll_by_dto_param() throws IOException, SQLException {
-		SQLExecutor exe = sqlManager().useFile(SQLExecutorTest.class, "Select.sql");
+		SQLExecutor exe = sqlManager().useFile(SQLExecutorTest.class,
+				"Select.sql");
 		List<Person2> people = exe.findAll(Person2.class, new ParamDto(31,
 				"%H%"));
 		assertEqualsWithFile(people, getClass(), "findAll_by_dto_param");
 	}
 
+	@Test
+	public void find_tree_entity() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<GranpaEntity> list = sqlManager
+				.useSQL(
+						"select * from EMPLOYEES where SHOZOKU_BU_KA like /* %L shozoku_bu_ka '%' */'%課'")
+				.findAll(GranpaEntity.class, new GranpaParam());
+
+		assertEqualsWithFile(list, getClass(), "find_tree_entity");
+	}
 }
 
 class Person2 extends Person {
 	int age;
+}
+
+class GranpaParam {
+	ParentParam shozoku = new ParentParam();
+}
+
+class ParentParam {
+	ChildParam bu = new ChildParam();
+}
+
+class ChildParam {
+	String ka = "柔道";
+}
+
+class GranpaEntity {
+	String id;
+	ParentEntity shain = new ParentEntity();
+	ParentEntity shozoku = shain;
+	String name;
+	String address;
+}
+
+class ParentEntity {
+	String no;
+	ChildEntity bu;
+}
+
+class ChildEntity {
+	String ka;
 }
