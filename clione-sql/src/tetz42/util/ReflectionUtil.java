@@ -24,7 +24,6 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -89,9 +88,7 @@ public class ReflectionUtil {
 	}
 
 	public static boolean isSingle(Object obj) {
-		if (obj == null)
-			return true;
-		return isSingle(obj.getClass());
+		return obj == null || isSingle(obj.getClass());
 	}
 
 	public static boolean isEachable(Object obj) {
@@ -104,8 +101,7 @@ public class ReflectionUtil {
 		if (clazz.isArray())
 			return true;
 		for (Class<?> c : clazz.getInterfaces()) {
-			// TODO consider if it should be 'Iterable' instead.
-			if (c == Collection.class)
+			if (c == Iterable.class)
 				return true;
 		}
 		return false;
@@ -131,7 +127,7 @@ public class ReflectionUtil {
 
 	public static void setValue(Object receiver, Field field, Object value) {
 		try {
-			if(!field.isAccessible())
+			if (!field.isAccessible())
 				field.setAccessible(true);
 			field.set(receiver, value);
 		} catch (IllegalArgumentException e) {
@@ -185,7 +181,7 @@ public class ReflectionUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T getValue(Object receiver, Field field) {
 		try {
-			if(!field.isAccessible())
+			if (!field.isAccessible())
 				field.setAccessible(true);
 			return (T) field.get(receiver);
 		} catch (IllegalArgumentException e) {
@@ -212,7 +208,7 @@ public class ReflectionUtil {
 		}
 	}
 
-	public static List<Field> getFields(Class<?> clazz){
+	public static List<Field> getFields(Class<?> clazz) {
 		return avoidDuplication(getAllFields(clazz));
 	}
 

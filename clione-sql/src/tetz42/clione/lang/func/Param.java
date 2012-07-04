@@ -1,17 +1,15 @@
 package tetz42.clione.lang.func;
 
 import static tetz42.clione.lang.ContextUtil.*;
+import static tetz42.util.ReflectionUtil.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ListWithDelim;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.ReflectionUtil;
 
 public class Param extends ClioneFunction {
 
@@ -29,45 +27,61 @@ public class Param extends ClioneFunction {
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		Instruction inst = convToCol(paramMap.get(key));
+		Instruction inst = genInstruction(paramMap.get(key));
 		return inst.next(getNextInstruction(paramMap));
 	}
 
-	@SuppressWarnings("unchecked")
-	private Instruction convToCol(Object val) {
+	private Instruction genInstruction(Object val) {
 		if (isNegative(val)) {
-			return genInstruction(Arrays.asList(val), false);
+			return genInstruction(val, false);
+		} else if (val instanceof Iterable<?>) {
+			Iterable<?> ite = (Iterable<?>) val;
+			return genInstruction(ite);
 		} else if (val.getClass().isArray()
 				&& val.getClass().getComponentType() != Byte.TYPE) {
-			ArrayList<Object> list = new ArrayList<Object>();
+			ArrayList<Object> params = new ArrayList<Object>();
 			int length = Array.getLength(val);
-			boolean isTrue = false;
+			boolean isNum = true;
+			boolean status = false;
 			for (int i = 0; i < length; i++) {
 				Object e = Array.get(val, i);
-				if (!isNegative(e))
-					isTrue = true;
-				list.add(e);
+				isNum = isNum ? isNumber(e) : false;
+				status = status ? true : !isNegative(e);
+				params.add(e);
 			}
-			return genInstruction(list, isTrue);
-		} else if (val instanceof Collection<?>) {
-			Collection<Object> col = (Collection<Object>) val;
-			return genInstruction(col, !isAllNegative(col));
-		} else
-			return genInstruction(Arrays.asList(val), true);
+			return genInstruction(params, status, isNum);
+		} else {
+			return genInstruction(val, true);
+		}
 	}
 
-	private Instruction genInstruction(Collection<Object> vals, boolean status) {
+	private Instruction genInstruction(Object val, boolean status) {
+		ArrayList<Object> params = new ArrayList<Object>();
+		params.add(val);
+		return genInstruction(params, status, isNumber(val));
+	}
+
+	private Instruction genInstruction(Iterable<?> ite) {
 		List<Object> params;
-		if (ListWithDelim.class.isInstance(vals)) {
-			params = new ListWithDelim<Object>(vals);
+		if (ListWithDelim.class.isInstance(ite)) {
+			ListWithDelim<Object> lwd = new ListWithDelim<Object>();
+			lwd.setDelim(((ListWithDelim<?>) ite).getDelim());
+			params = lwd;
 		} else {
-			params = new ArrayList<Object>(vals);
+			params = new ArrayList<Object>();
 		}
 		boolean isNum = true;
-		for (Object param : params) {
-			if (!ReflectionUtil.isNumber(param))
-				isNum = false;
+		boolean status = false;
+		for (Object e : ite) {
+			isNum = isNum ? isNumber(e) : false;
+			status = status ? true : !isNegative(e);
+			params.add(e);
 		}
+		return genInstruction(params, status, isNum);
+	}
+
+	private Instruction genInstruction(List<Object> params, boolean status,
+			boolean isNum) {
 		Instruction inst = new Instruction(params).number(isNum);
 		inst.status(status ^ isNegative);
 		return inst;
