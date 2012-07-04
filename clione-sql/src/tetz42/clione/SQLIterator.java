@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import tetz42.clione.exception.DuplicateKeyException;
+import tetz42.clione.setting.Config;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Function;
 import tetz42.util.exception.SQLRuntimeException;
@@ -75,9 +76,7 @@ public class SQLIterator<T> implements Iterable<T> {
 					FN fn = builder.con.getField(label);
 					if (fn.f == null)
 						continue;
-					builder
-							.set(fn.name, fn.f,
-									getSQLData(fn.f, executor.rs, i));
+					builder.set(fn.name, fn.f, getSQLData(fn.f, executor.rs, i));
 				}
 				return builder.getInstance();
 			}
@@ -157,18 +156,20 @@ public class SQLIterator<T> implements Iterable<T> {
 					@Override
 					public FieldMapContainer apply() {
 						FieldMapContainer con = new FieldMapContainer();
-						map("", "", clazz, con);
+						map("", "", clazz, con, 0);
 						return con.toUnmodifiable();
 					}
 
 					private void map(String snakeBaseName,
 							String camelBaseName, Class<?> type,
-							FieldMapContainer con) {
+							FieldMapContainer con, int depth) {
 						for (Field f : getFields(type)) {
 							String snakeName = con.putSnake(snakeBaseName, f);
 							String camelName = con.putCamel(camelBaseName, f);
-							if (!isSQLType(f.getType()))
-								map(snakeName, camelName, f.getType(), con);
+							if (!isSQLType(f.getType())
+									&& depth < Config.get().ENTITY_DEPTH_LIMIT)
+								map(snakeName, camelName, f.getType(), con,
+										depth + 1);
 						}
 					}
 				});
@@ -205,7 +206,7 @@ public class SQLIterator<T> implements Iterable<T> {
 		}
 	}
 
-	private static class FieldMapContainer {
+	private class FieldMapContainer {
 		final Map<String, Field> snakeMap;
 		final Map<String, Field> camelMap;
 
@@ -259,7 +260,7 @@ public class SQLIterator<T> implements Iterable<T> {
 		private void putMap(Map<String, Field> map, String name, Field f) {
 			if (map.containsKey(name))
 				throw new DuplicateKeyException("The key, '" + name
-						+ "', is duplicated.");
+						+ "' is duplicate. class:" + clazz.getName());
 			map.put(name, f);
 		}
 	}

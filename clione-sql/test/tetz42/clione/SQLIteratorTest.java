@@ -69,8 +69,7 @@ public class SQLIteratorTest {
 	public void find_tree_entity() throws IOException, SQLException {
 		SQLManager sqlManager = sqlManager();
 		List<GranpaEntity> list = sqlManager
-				.useSQL(
-						"select * from EMPLOYEES where SHOZOKU_BU_KA like /* %L shozoku_bu_ka '%' */'%課'")
+				.useSQL("select * from EMPLOYEES where SHOZOKU_BU_KA like /* %L shozoku_bu_ka '%' */'%課'")
 				.findAll(GranpaEntity.class, new GranpaParam());
 
 		assertEqualsWithFile(list, getClass(), "find_tree_entity");

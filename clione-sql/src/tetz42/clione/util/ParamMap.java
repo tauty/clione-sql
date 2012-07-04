@@ -127,6 +127,7 @@ public class ParamMap extends HashMap<String, Object> {
 					+ "' is duplicate. One of value:" + get(key) + ", Another:"
 					+ obj);
 		this.put(key, obj);
+		// TODO use isSQLType
 		if (!isSingle(obj) && !isEachable(obj)
 				&& depth < Config.get().ENTITY_DEPTH_LIMIT) {
 			ParamMap subMap;
