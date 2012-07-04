@@ -135,11 +135,11 @@ public class ClioneUtil {
 				"--- resource ---", resourceInfo);
 	}
 
-	public static boolean isSQLType(Class<?> clazz) {
-		return convMap4FinalClass.get(clazz) != null ? true
-				: convMap4NormalClass.get(clazz) != null ? true : (clazz
-						.isArray() && clazz.getComponentType() == Byte.TYPE);
-	}
+	// public static boolean isSQLType(Class<?> clazz) {
+	// return convMap4FinalClass.get(clazz) != null ? true
+	// : convMap4NormalClass.get(clazz) != null ? true : (clazz
+	// .isArray() && clazz.getComponentType() == Byte.TYPE);
+	// }
 
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
 			throws SQLException {
@@ -165,7 +165,35 @@ public class ClioneUtil {
 			conv4Set(param.getClass()).set(stmt, param, columnIndex);
 	}
 
+	public static boolean isGetSQLType(Class<?> clazz) {
+		return null != conv4GetSub(clazz);
+	}
+
+	public static boolean isSetSQLType(Class<?> clazz) {
+		return null != conv4SetSub(clazz);
+	}
+
+	public static boolean isSetSQLType(Object obj) {
+		return obj == null || isSetSQLType(obj.getClass());
+	}
+
 	private static IConv conv4Get(Class<?> clazz) {
+		IConv conv = conv4GetSub(clazz);
+		if (conv == null)
+			throw new UnsupportedTypeException("The type(" + clazz.getName()
+					+ ") is not supported.");
+		return conv;
+	}
+
+	private static IConv conv4Set(Class<?> clazz) {
+		IConv conv = conv4SetSub(clazz);
+		if (conv == null)
+			throw new UnsupportedTypeException("The type(" + clazz.getName()
+					+ ") is not supported.");
+		return conv;
+	}
+
+	private static IConv conv4GetSub(Class<?> clazz) {
 		IConv conv = convMap4FinalClass.get(clazz);
 		if (conv != null)
 			return conv;
@@ -174,11 +202,10 @@ public class ClioneUtil {
 			return conv;
 		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
 			return byteArrayConv;
-		throw new UnsupportedTypeException("The type(" + clazz.getName()
-				+ ") is not supported.");
+		return null;
 	}
 
-	private static IConv conv4Set(Class<?> clazz) {
+	private static IConv conv4SetSub(Class<?> clazz) {
 		IConv conv = convMap4FinalClass.get(clazz);
 		if (conv != null)
 			return conv;
@@ -191,6 +218,6 @@ public class ClioneUtil {
 			if (classOf(clazz, e.getKey()))
 				return e.getValue();
 		}
-		return defaultConv;
+		return null;
 	}
 }

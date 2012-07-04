@@ -58,7 +58,7 @@ public class SQLIterator<T> implements Iterable<T> {
 					return (T) map;
 				}
 			};
-		} else if (isSQLType(clazz)) {
+		} else if (isGetSQLType(clazz)) {
 			return new RsIterator() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -166,7 +166,7 @@ public class SQLIterator<T> implements Iterable<T> {
 						for (Field f : getFields(type)) {
 							String snakeName = con.putSnake(snakeBaseName, f);
 							String camelName = con.putCamel(camelBaseName, f);
-							if (!isSQLType(f.getType())
+							if (!isGetSQLType(f.getType())
 									&& depth < Config.get().ENTITY_DEPTH_LIMIT)
 								map(snakeName, camelName, f.getType(), con,
 										depth + 1);
