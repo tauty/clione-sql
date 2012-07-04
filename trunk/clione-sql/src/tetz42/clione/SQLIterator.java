@@ -8,11 +8,11 @@ import java.lang.reflect.Field;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import tetz42.clione.exception.DuplicateKeyException;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Function;
 import tetz42.util.exception.SQLRuntimeException;
@@ -69,50 +69,67 @@ public class SQLIterator<T> implements Iterable<T> {
 		return new RsIterator() {
 			@Override
 			public T nextTask() throws SQLException {
-				FieldMapContainer con = getFieldContainer(clazz);
-				T instance = newInstance(clazz);
+				ObjBuilder builder = new ObjBuilder();
 				for (int i = 1; i <= md.getColumnCount(); i++) {
 					String label = md.getColumnLabel(i).toLowerCase();
-					Field field = con.snakeMap.get(label);
-					if (field == null)
-						field = con.camelMap.get(camelize(label));
-					if (field == null)
+					FN fn = builder.con.getField(label);
+					if (fn.f == null)
 						continue;
-					setValue(instance, field, getSQLData(field, executor.rs, i));
+					builder
+							.set(fn.name, fn.f,
+									getSQLData(fn.f, executor.rs, i));
 				}
-				return instance;
+				return builder.getInstance();
 			}
 		};
 	}
 
-	class Tako {
+	class ObjBuilder {
 		final Map<String, Object> cache = newMap();
-		final FieldMapContainer con;
+		final FieldMapContainer con = getFieldContainer(clazz);
+		final T instance = newInstance(clazz);
 
-		Tako(Object obj) {
-			con = getFieldContainer(clazz);
-			cache.put("", newInstance(clazz));
+		{
+			cache.put("", instance);
 		}
 
-		void set(String label, Object obj) {
-			Field f = con.snakeMap.get(label);
-			if (f == null)
-				f = con.camelMap.get(camelize(label));
-			if (f == null)
+		T getInstance() {
+			return instance;
+		}
+
+		void set(String label, Field f, Object obj) {
+			Object receiver = getObj(toBase(f.getName(), label));
+			if (receiver == null)
 				return;
 
+			setValue(receiver, f, obj);
 		}
 
-		String toBase(Field f, String snake) {
-			String base = snake.substring(0, snake.length()
-					- f.getName().length());
-			if (base.endsWith("_"))
-				base = base.substring(0, base.length() - 1);
-			return base;
+		Object getObj(String name) {
+
+			Object obj = cache.get(name);
+			if (obj != null)
+				return obj;
+
+			FN fn = con.getField(name);
+			if (fn.f == null)
+				return null;
+
+			Object receiver = getObj(toBase(fn.f.getName(), fn.name));
+			if (receiver == null)
+				return null;
+
+			obj = getValue(receiver, fn.f);
+			if (obj == null) {
+				obj = newInstance(fn.f.getType());
+				setValue(receiver, fn.f, obj);
+			}
+			cache.put(name, obj);
+			return obj;
 		}
 	}
 
-	private Object camelize(String columnLabel) {
+	private static String camelize(String columnLabel) {
 		String[] strings = columnLabel.split("_");
 		StringBuilder sb = new StringBuilder();
 		for (String s : strings) {
@@ -124,6 +141,13 @@ public class SQLIterator<T> implements Iterable<T> {
 				sb.append(s.substring(0, 1).toUpperCase() + s.substring(1));
 		}
 		return sb.toString();
+	}
+
+	private static String toBase(String name, String fullName) {
+		String base = fullName.substring(0, fullName.length() - name.length());
+		if (base.endsWith("_"))
+			base = base.substring(0, base.length() - 1);
+		return base;
 	}
 
 	private FieldMapContainer getFieldContainer(final Class<?> clazz) {
@@ -196,13 +220,22 @@ public class SQLIterator<T> implements Iterable<T> {
 			this.camelMap = camelMap;
 		}
 
+		FN getField(String name) {
+			Field f = snakeMap.get(name);
+			if (f == null) {
+				name = camelize(name);
+				f = camelMap.get(name);
+			}
+			return new FN(f, name);
+		}
+
 		String putSnake(String snakeBaseName, Field f) {
 			String name;
 			if (isEmpty(snakeBaseName))
 				name = f.getName().toLowerCase();
 			else
 				name = snakeBaseName + "_" + f.getName().toLowerCase();
-			snakeMap.put(name, f);
+			putMap(snakeMap, name, f);
 			return name;
 		}
 
@@ -214,13 +247,30 @@ public class SQLIterator<T> implements Iterable<T> {
 				name = camelBaseName
 						+ f.getName().substring(0, 1).toUpperCase()
 						+ f.getName().substring(1);
-			camelMap.put(name, f);
+			putMap(camelMap, name, f);
 			return name;
 		}
 
 		FieldMapContainer toUnmodifiable() {
 			return new FieldMapContainer(Collections.unmodifiableMap(snakeMap),
 					Collections.unmodifiableMap(camelMap));
+		}
+
+		private void putMap(Map<String, Field> map, String name, Field f) {
+			if (map.containsKey(name))
+				throw new DuplicateKeyException("The key, '" + name
+						+ "', is duplicated.");
+			map.put(name, f);
+		}
+	}
+
+	static class FN {
+		final Field f;
+		final String name;
+
+		FN(Field f, String name) {
+			this.f = f;
+			this.name = name;
 		}
 	}
 

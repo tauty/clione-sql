@@ -1,0 +1,26 @@
+ArrayList[
+	GranpaEntity{
+		id = "0"
+		name = "泰山天伍"
+		address = "tengo@judo.com"
+		shain = ParentEntity{
+			no = "100000"
+			bu = ChildEntity{
+				ka = "柔道部男子課"
+			}
+		}
+		shozoku = ParentEntity{...}
+	}
+	GranpaEntity{
+		id = "1"
+		name = "猪熊柔"
+		address = "yawara@urasawa.com"
+		shain = ParentEntity{
+			no = "100001"
+			bu = ChildEntity{
+				ka = "柔道部女子課"
+			}
+		}
+		shozoku = ParentEntity{...}
+	}
+]
