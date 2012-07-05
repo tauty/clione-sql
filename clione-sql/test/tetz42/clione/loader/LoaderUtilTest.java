@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import tetz42.clione.SQLManager;
 import tetz42.clione.SQLManagerTest.Employee;
-import tetz42.clione.setting.Config;
+import tetz42.clione.util.Config;
 
 public class LoaderUtilTest {
 

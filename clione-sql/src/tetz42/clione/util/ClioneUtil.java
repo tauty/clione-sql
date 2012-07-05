@@ -6,6 +6,7 @@ import static tetz42.util.Util.*;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
@@ -74,41 +75,56 @@ public class ClioneUtil {
 	private static final IConv byteArrayConv = new ByteArrayConv();
 	private static final IConv defaultConv = new DefaultConv();
 	static {
-		Map<Class<?>, IConv> map = new IdentityHashMap<Class<?>, IConv>();
-		map.put(String.class, new StringConv());
-		map.put(Boolean.class, new BooleanConv());
-		map.put(Boolean.TYPE, new BooleanPrimitiveConv());
-		map.put(Byte.class, new ByteConv());
-		map.put(Byte.TYPE, new BytePrimitiveConv());
-		map.put(Short.class, new ShortConv());
-		map.put(Short.TYPE, new ShortPrimitiveConv());
-		map.put(Integer.class, new IntegerConv());
-		map.put(Integer.TYPE, new IntConv());
-		map.put(Long.class, new LongConv());
-		map.put(Long.TYPE, new LongPrimitiveConv());
-		map.put(Float.class, new FloatConv());
-		map.put(Float.TYPE, new FloatPrimitiveConv());
-		map.put(Double.class, new DoubleConv());
-		map.put(Double.TYPE, new DoublePrimitiveConv());
-		map.put(URL.class, new URLConv());
-		convMap4FinalClass = Collections.unmodifiableMap(map);
+		Map<Class<?>, IConv> finalMap = new IdentityHashMap<Class<?>, IConv>();
+		finalMap.put(String.class, new StringConv());
+		finalMap.put(Boolean.class, new BooleanConv());
+		finalMap.put(Boolean.TYPE, new BooleanPrimitiveConv());
+		finalMap.put(Byte.class, new ByteConv());
+		finalMap.put(Byte.TYPE, new BytePrimitiveConv());
+		finalMap.put(Short.class, new ShortConv());
+		finalMap.put(Short.TYPE, new ShortPrimitiveConv());
+		finalMap.put(Integer.class, new IntegerConv());
+		finalMap.put(Integer.TYPE, new IntConv());
+		finalMap.put(Long.class, new LongConv());
+		finalMap.put(Long.TYPE, new LongPrimitiveConv());
+		finalMap.put(Float.class, new FloatConv());
+		finalMap.put(Float.TYPE, new FloatPrimitiveConv());
+		finalMap.put(Double.class, new DoubleConv());
+		finalMap.put(Double.TYPE, new DoublePrimitiveConv());
+		finalMap.put(URL.class, new URLConv());
 
-		map = new LinkedHashMap<Class<?>, IConv>();
-		map.put(Timestamp.class, new TimestampConv());
-		map.put(java.sql.Date.class, new SqlDateConv());
-		map.put(Time.class, new TimeConv());
-		map.put(Date.class, new DateConv());
-		map.put(BigDecimal.class, new BigDecimaiConv());
-		map.put(BigInteger.class, new BigIntegerConv());
-		map.put(InputStream.class, new InputStreamConv());
-		map.put(Reader.class, new ReaderConv());
-		map.put(Blob.class, new BlobConv());
-		map.put(NClob.class, new NClobConv());
-		map.put(Clob.class, new ClobConv());
-		map.put(Array.class, new ArrayConv());
-		map.put(Ref.class, new RefConv());
-		map.put(SQLXML.class, new SQLXMLConv());
-		convMap4NormalClass = Collections.unmodifiableMap(map);
+		Map<Class<?>, IConv> normalMap = new LinkedHashMap<Class<?>, IConv>();
+		normalMap.put(Timestamp.class, new TimestampConv());
+		normalMap.put(java.sql.Date.class, new SqlDateConv());
+		normalMap.put(Time.class, new TimeConv());
+		normalMap.put(Date.class, new DateConv());
+		normalMap.put(BigDecimal.class, new BigDecimaiConv());
+		normalMap.put(BigInteger.class, new BigIntegerConv());
+		normalMap.put(InputStream.class, new InputStreamConv());
+		normalMap.put(Reader.class, new ReaderConv());
+		normalMap.put(Blob.class, new BlobConv());
+		normalMap.put(NClob.class, new NClobConv());
+		normalMap.put(Clob.class, new ClobConv());
+		normalMap.put(Array.class, new ArrayConv());
+		normalMap.put(Ref.class, new RefConv());
+		normalMap.put(SQLXML.class, new SQLXMLConv());
+
+		for (String keyVal : Config.get().CONVERTERS) {
+			try {
+				String[] ary = keyVal.split(":");
+				Class<?> clazz = Class.forName(ary[0]);
+				IConv conv = (IConv) Class.forName(ary[1]).newInstance();
+				if (Modifier.isFinal(clazz.getModifiers()))
+					finalMap.put(clazz, conv);
+				else
+					normalMap.put(clazz, conv);
+			} catch (Throwable ignore) {
+				ignore.printStackTrace();
+			}
+		}
+
+		convMap4FinalClass = Collections.unmodifiableMap(finalMap);
+		convMap4NormalClass = Collections.unmodifiableMap(normalMap);
 	}
 
 	public static boolean isAllSpace(String s) {

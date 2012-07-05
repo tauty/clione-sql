@@ -1,7 +1,10 @@
-package tetz42.clione.setting;
+package tetz42.clione.util;
 
 import static tetz42.util.Util.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import tetz42.util.IOUtil;
@@ -35,6 +38,7 @@ public class Config {
 	public final int SQLFILE_CACHETIME = getNum("SQLFILE_CACHETIME", 0);
 	public final int TAB_SIZE = getNum("TAB_SIZE", 4);
 	public final int ENTITY_DEPTH_LIMIT = getNum("ENTITY_DEPTH_LIMIT", 8);;
+	public final List<String> CONVERTERS = getStrList("CONVERTERS");
 
 	private Config() {
 		prop = null;
@@ -66,4 +70,15 @@ public class Config {
 		return s != null ? Integer.parseInt(s) : defaultValue;
 	}
 
+	private List<String> getStrList(String key) {
+		ArrayList<String> list = new ArrayList<String>();
+		int i = 0;
+		while (true) {
+			String data = prop().getProperty(key + "." + i++);
+			if (data == null)
+				break;
+			list.add(data);
+		}
+		return Collections.unmodifiableList(list);
+	}
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import tetz42.clione.exception.DuplicateKeyException;
-import tetz42.clione.setting.Config;
+import tetz42.clione.util.Config;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Function;
 import tetz42.util.exception.SQLRuntimeException;

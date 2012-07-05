@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import tetz42.clione.exception.SQLFileNotFoundException;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.parsar.SQLParser;
-import tetz42.clione.setting.Config;
+import tetz42.clione.util.Config;
 import tetz42.util.Using;
 
 public class LoaderUtil {

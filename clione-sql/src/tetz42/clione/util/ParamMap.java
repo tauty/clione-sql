@@ -26,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import tetz42.clione.exception.DuplicateKeyException;
-import tetz42.clione.setting.Config;
 
 public class ParamMap extends HashMap<String, Object> {
 
