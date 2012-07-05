@@ -1,0 +1,14 @@
+Config{
+	DBMS_PRODUCT_NAME = "sqlite"
+	SQLFILE_ENCODING = "shift-jis"
+	IS_DEVELOPMENT_MODE = true
+	SQLFILE_CACHETIME = 999999999
+	TAB_SIZE = 8
+	ENTITY_DEPTH_LIMIT = 88
+	prop = null
+	CONVERTERS = UnmodifiableRandomAccessList[
+		"java.util.List:tetz42.conv.ListConv"
+		"java.util.Set:tetz42.conv.SetConv"
+		"java.util.Map:tetz42.conv.MapConv"
+	]
+}

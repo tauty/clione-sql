@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.node.LineNode;
-import tetz42.clione.setting.Config;
+import tetz42.clione.util.Config;
 
 public class ParsarUtil {
 

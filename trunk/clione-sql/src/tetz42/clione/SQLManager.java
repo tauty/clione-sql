@@ -27,7 +27,7 @@ import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
-import tetz42.clione.setting.Config;
+import tetz42.clione.util.Config;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.Using;
 
