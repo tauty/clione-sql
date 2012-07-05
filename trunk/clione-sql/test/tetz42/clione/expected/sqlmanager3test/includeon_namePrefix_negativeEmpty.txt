@@ -1,0 +1,20 @@
+SqlAndParam{
+	sql = "select
+	*
+from (
+	select
+		sub.*,
+		ROWNUM num
+	from
+		(
+select
+	*
+from
+	employees
+) sub
+)
+where
+	2 <= num and num <= 3
+"
+	params = ArrayList[ ]
+}
