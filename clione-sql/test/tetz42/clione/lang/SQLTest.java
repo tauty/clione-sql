@@ -39,7 +39,7 @@ public class SQLTest {
 			assertThat(
 					e.getMessage(),
 					is("SQL Format Error: too much '/*'\r\n"
-							+ "[WARN] Java String passed as parameter!!, line number:1"));
+							+ "Java String passed as parameter, line number:1"));
 		}
 	}
 }

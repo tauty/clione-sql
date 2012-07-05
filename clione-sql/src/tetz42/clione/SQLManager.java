@@ -22,8 +22,6 @@ import static tetz42.util.Util.*;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,24 +29,48 @@ import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.setting.Config;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.exception.SQLRuntimeException;
+import tetz42.util.Using;
 
 public class SQLManager implements Closeable {
 
+	/**
+	 * Product names of RDBMS.
+	 *
+	 * @author tetz
+	 */
 	public static enum Product {
 		ORACLE, SQLSERVER, DB2, MYSQL, FIREBIRD, POSTGRES, SQLITE
 	}
 
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
+	/**
+	 * Generate SQLManager instance.<br>
+	 * The instance generated will use the connection passed through
+	 * SQLManager#setThreadConnection(Connection).
+	 *
+	 * @return SQLManager
+	 * @see SQLManager#setThreadConnection(Connection)
+	 */
 	public static SQLManager sqlManager() {
 		return new SQLManager(null, (String) null);
 	}
 
+	/**
+	 * Generate SQLManager instance.
+	 *
+	 * @param con connection
+	 * @return
+	 */
 	public static SQLManager sqlManager(Connection con) {
 		return new SQLManager(con, (String) null);
 	}
 
+	/**
+	 *
+	 * @param product
+	 * @return
+	 */
 	public static SQLManager sqlManager(Product product) {
 		return new SQLManager(null, product);
 	}
@@ -163,13 +185,6 @@ public class SQLManager implements Closeable {
 		return this.executedParams;
 	}
 
-	public void closeStatement() {
-		ArrayList<SQLExecutor> list = new ArrayList<SQLExecutor>(
-				processingExecutorSet);
-		for (SQLExecutor executor : list)
-			executor.closeStatement();
-	}
-
 	public SQLExecutor useSQL(String sql) {
 		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeBySQL(sql));
 		// TODO better solution.
@@ -206,16 +221,22 @@ public class SQLManager implements Closeable {
 		return this.con;
 	}
 
-	public void closeConnection() {
-		closeStatement();
-		Connection con = con();
-		if (con != null) {
-			try {
-				con.close();
-			} catch (SQLException e) {
-				throw new SQLRuntimeException(e);
+	public void closeStatement() {
+		new Using<Object>(processingExecutorSet) {
+			@Override
+			protected Object execute() throws Exception {
+				return null; // do nothing.
 			}
-		}
+		}.invoke();
+	}
+
+	public void closeConnection() {
+		new Using<Object>(processingExecutorSet, con()) {
+			@Override
+			protected Object execute() throws Exception {
+				return null; // do nothing.
+			}
+		}.invoke();
 	}
 
 	@Override
@@ -243,5 +264,15 @@ public class SQLManager implements Closeable {
 
 	String getProductName() {
 		return productName;
+	}
+
+	public static class SqlAndParam {
+		public final String sql;
+		public final List<Object> params;
+
+		public SqlAndParam(String sql, List<Object> params) {
+			this.sql = sql;
+			this.params = params;
+		}
 	}
 }

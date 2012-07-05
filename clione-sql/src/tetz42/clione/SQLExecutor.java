@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import tetz42.clione.SQLManager.SqlAndParam;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ResultMap;
-import tetz42.util.Pair;
 import tetz42.util.Using;
 import tetz42.util.exception.SQLRuntimeException;
 
@@ -150,8 +150,8 @@ public class SQLExecutor implements Closeable {
 		return each(entityClass, null);
 	}
 
-	public <T> SQLIterator<T> each(Class<T> entityClass, Object obj) {
-		return each(entityClass, params(obj));
+	public <T> SQLIterator<T> each(Class<T> entityClass, Object paramObj) {
+		return each(entityClass, params(paramObj));
 	}
 
 	public SQLIterator<ResultMap> each(Map<String, Object> paramMap) {
@@ -199,20 +199,17 @@ public class SQLExecutor implements Closeable {
 	}
 
 	public void closeStatement() {
-		try {
-			if (rs != null) {
-				rs.close();
-				rs = null;
+		new Using<Object>(rs, stmt) {
+			@Override
+			protected Object execute() throws Exception {
+				return null; // do nothing.
 			}
-			if (stmt != null) {
-				stmt.close();
-				stmt = null;
+
+			@Override
+			protected void finallyCallback() {
+				manager.removeExecutor(SQLExecutor.this);
 			}
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			manager.removeExecutor(this);
-		}
+		}.invoke();
 	}
 
 	@Override
@@ -236,6 +233,45 @@ public class SQLExecutor implements Closeable {
 		}
 	}
 
+	public SqlAndParam genSqlAndParams() {
+		return genSqlAndParams(null);
+	}
+
+	public SqlAndParam genSqlAndParams(Object paramObj) {
+		return genSqlAndParams(params(paramObj));
+	}
+
+	public SqlAndParam genSqlAndParams(Map<String, Object> paramMap) {
+		String sql = genSql(paramMap);
+		return new SqlAndParam(sql, getParams());
+	}
+
+	public PreparedStatement genStatment() {
+		return genStmt(null);
+	}
+
+	public PreparedStatement genStatment(Object paramObj) {
+		return genStmt(params(paramObj));
+	}
+
+	public PreparedStatement genStatment(Map<String, Object> paramMap) {
+		try {
+			stmt = manager.con().prepareStatement(genSql(paramMap));
+			int i = 1;
+			for (Object param : this.sqlGenerator.params) {
+				setSQLData(stmt, param, i++);
+			}
+			return stmt;
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(getSQLInfo(), e);
+		}
+	}
+
+	PreparedStatement genStmt(Map<String, Object> paramMap) {
+		manager.putExecutor(this);
+		return genStatment(paramMap);
+	}
+
 	public String getSql() {
 		return this.sqlGenerator.sql;
 	}
@@ -250,31 +286,5 @@ public class SQLExecutor implements Closeable {
 
 	public String getResourceInfo() {
 		return this.resourceInfo;
-	}
-
-	public Pair<String, List<Object>> genSqlAndParams() {
-		return genSqlAndParams(null);
-	}
-
-	public Pair<String, List<Object>> genSqlAndParams(Object obj) {
-		return genSqlAndParams(params(obj));
-	}
-
-	public Pair<String, List<Object>> genSqlAndParams(
-			Map<String, Object> paramMap) {
-		Pair<String, List<Object>> pair = new Pair<String, List<Object>>();
-		pair.setFirst(genSql(paramMap));
-		pair.setSecond(getParams());
-		return pair;
-	}
-
-	PreparedStatement genStmt(Map<String, Object> paramMap) throws SQLException {
-		stmt = manager.con().prepareStatement(genSql(paramMap));
-		manager.putExecutor(this);
-		int i = 1;
-		for (Object param : this.sqlGenerator.params) {
-			setSQLData(stmt, param, i++);
-		}
-		return stmt;
 	}
 }

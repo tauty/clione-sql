@@ -12,7 +12,6 @@ public class SQLNode implements INode{
 
 	@Override
 	public Instruction perform(ParamMap paramMap) {
-		// TODO root should be a field.
 		LineNode root = new LineNode(0);
 		root.childBlocks = nodes;
 		return root.mergeChildren(paramMap);

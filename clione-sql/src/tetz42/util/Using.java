@@ -42,39 +42,55 @@ public abstract class Using<T> {
 	}
 
 	protected final void addResources(Object... resources) {
-		for (final Object res : resources) {
-			if (res instanceof Closeable) {
-				this.ioList.add((Closeable) res);
-			} else if (res instanceof ResultSet) {
-				final ResultSet rs = (ResultSet) res;
-				this.rsList.add(new Closeable() {
-					@Override
-					public void close() {
-						try {
-							rs.close();
-						} catch (SQLException e) {
-							throw new ResourceClosingException(e);
-						}
+		for (Object res : resources) {
+			addResource(res);
+		}
+	}
+
+	protected final void addResources(Iterable<?> resources) {
+		for (Object res : resources) {
+			addResource(res);
+		}
+	}
+
+	protected void addResource(Object resource) {
+		if (resource == null) {
+			return;
+		} else if (resource instanceof Closeable) {
+			this.ioList.add((Closeable) resource);
+		} else if (resource instanceof ResultSet) {
+			final ResultSet rs = (ResultSet) resource;
+			this.rsList.add(new Closeable() {
+				@Override
+				public void close() {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+						throw new ResourceClosingException(e);
 					}
-				});
-			} else if (res instanceof Statement) {
-				final Statement stmt = (Statement) res;
-				this.stmtList.add(new Closeable() {
-					@Override
-					public void close() {
-						try {
-							stmt.close();
-						} catch (SQLException e) {
-							throw new ResourceClosingException(e);
-						}
+				}
+			});
+		} else if (resource instanceof Statement) {
+			final Statement stmt = (Statement) resource;
+			this.stmtList.add(new Closeable() {
+				@Override
+				public void close() {
+					try {
+						stmt.close();
+					} catch (SQLException e) {
+						throw new ResourceClosingException(e);
 					}
-				});
-			} else if (res instanceof Connection) {
-				this.cons.add((Connection) res);
-			} else {
-				throw new UnsupportedTypeException("Using does not support "
-						+ res.getClass().getName());
-			}
+				}
+			});
+		} else if (resource instanceof Connection) {
+			this.cons.add((Connection) resource);
+		} else if (resource instanceof Iterable<?>) {
+			this.addResources((Iterable<?>) resource);
+		} else if (resource.getClass().isArray()) {
+			this.addResources((Object[]) resource);
+		} else {
+			throw new UnsupportedTypeException("Using does not support "
+					+ resource.getClass().getName());
 		}
 	}
 
@@ -94,44 +110,53 @@ public abstract class Using<T> {
 		} catch (Error e) {
 			throw err = e;
 		} finally {
-			// Exception from execute method
-			Throwable t = re != null ? re : err;
+			try {
+				// Exception from execute method
+				Throwable t = re != null ? re : err;
 
-			ResourceClosingException rce = null;
+				ResourceClosingException rce = null;
 
-			// close
-			rce = close(ioList, rce);
-			rce = close(rsList, rce);
-			rce = close(stmtList, rce);
+				// close
+				rce = close(ioList, rce);
+				rce = close(rsList, rce);
+				rce = close(stmtList, rce);
 
-			for (Connection con : cons) {
-				if (t != null) {
-					// Connection should be rolled back if exception has occurred.
+				for (Connection con : cons) {
+					if (t != null || rce != null) {
+						// Connection should be rolled back if the exception has
+						// occurred.
+						try {
+							con.rollback();
+						} catch (Throwable e) {
+							rce = coalsceRce(rce, new ResourceClosingException(
+									e));
+						}
+					}
 					try {
-						con.rollback();
+						con.close();
 					} catch (Throwable e) {
 						rce = coalsceRce(rce, new ResourceClosingException(e));
 					}
 				}
+
+				if (rce != null) {
+					if (t == null) {
+						// execute did not fail and close process fail case
+						throw rce;
+					} else {
+						// both fail case
+						coalsce(t, rce);
+					}
+				}
+
+				// normal end or the exception thrown by execute method
+
+			} finally {
 				try {
-					con.close();
-				} catch (Throwable e) {
-					rce = coalsceRce(rce, new ResourceClosingException(e));
+					finallyCallback();
+				} catch (Throwable ignore) {
 				}
 			}
-
-			if (rce != null) {
-				if (t == null) {
-					// execute did not fail and close process fail case
-					throw rce;
-				} else {
-					// both fail case
-					coalsce(t, rce);
-				}
-			}
-
-			// normal end or the exception thrown by execute throws if it is
-			// available
 		}
 	}
 
@@ -140,12 +165,12 @@ public abstract class Using<T> {
 		for (Closeable res : resources) {
 			try {
 				res.close();
-			} catch (Throwable e) {
+			} catch (Throwable t) {
 				ResourceClosingException newRce;
-				if (e instanceof ResourceClosingException)
-					newRce = (ResourceClosingException) e;
+				if (t instanceof ResourceClosingException)
+					newRce = (ResourceClosingException) t;
 				else
-					newRce = new ResourceClosingException(e);
+					newRce = new ResourceClosingException(t);
 				rce = coalsceRce(rce, newRce);
 			}
 		}
@@ -163,12 +188,15 @@ public abstract class Using<T> {
 	}
 
 	private void coalsce(Throwable src, RuntimeException dst) {
-		Throwable tmp = src;
-		while (tmp.getCause() != null) {
-			tmp = tmp.getCause();
+		Throwable t = src;
+		while (t.getCause() != null) {
+			t = t.getCause();
 		}
-		tmp.initCause(dst);
+		t.initCause(dst);
 	}
 
 	protected abstract T execute() throws Exception;
+
+	protected void finallyCallback() {
+	}
 }

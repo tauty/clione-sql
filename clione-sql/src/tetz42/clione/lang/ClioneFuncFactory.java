@@ -98,7 +98,6 @@ public class ClioneFuncFactory {
 	private String endQuotation(Matcher m, String quot) {
 		int begin = m.end();
 		while (m.find()) {
-			// TODO consider about backslash escape
 			if (quot.equals(m.group(0))) {
 				if (quot.equals(nextChar(src, m.end()))) {
 					m.find();

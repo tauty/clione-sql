@@ -14,8 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import tetz42.clione.SQLManager.SqlAndParam;
 import tetz42.clione.SQLManagerTest.Employee;
-import tetz42.util.Pair;
 
 public class SQLManager3Test {
 
@@ -162,8 +162,8 @@ public class SQLManager3Test {
 	@Test
 	public void include_no_param() throws IOException, SQLException {
 		SQLManager sqlManager = sqlManager();
-		Pair<String, List<Object>> pair = sqlManager.useFile(getClass(),
-				"Include.sql").genSqlAndParams();
+		SqlAndParam pair = sqlManager.useFile(getClass(), "Include.sql")
+				.genSqlAndParams();
 		// List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
 		// .findAll();
 		// assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
@@ -175,8 +175,8 @@ public class SQLManager3Test {
 	public void include_namePrefix_positiveEmpty() throws IOException,
 			SQLException {
 		SQLManager sqlManager = sqlManager();
-		Pair<String, List<Object>> pair = sqlManager.useFile(getClass(),
-				"Include.sql").genSqlAndParams(params("namePrefix", ""));
+		SqlAndParam pair = sqlManager.useFile(getClass(), "Include.sql")
+				.genSqlAndParams(params("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"include_namePrefix_positiveEmpty");
 		// assertEqualsWithFile(pair.getFirst(), getClass(),
@@ -189,9 +189,8 @@ public class SQLManager3Test {
 	public void include_namePrefix_negativeEmpty() throws IOException,
 			SQLException {
 		SQLManager sqlManager = sqlManager();
-		Pair<String, List<Object>> pair = sqlManager.useFile(getClass(),
-				"Include.sql").emptyAsNegative().genSqlAndParams(
-				params("namePrefix", ""));
+		SqlAndParam pair = sqlManager.useFile(getClass(), "Include.sql")
+				.emptyAsNegative().genSqlAndParams(params("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"include_namePrefix_negativeEmpty");
 	}
@@ -200,9 +199,8 @@ public class SQLManager3Test {
 	public void includeon_namePrefix_positiveEmpty() throws IOException,
 			SQLException {
 		SQLManager sqlManager = sqlManager();
-		Pair<String, List<Object>> pair = sqlManager.useFile(getClass(),
-				"Include.sql").genSqlAndParams(
-				paramsOn("isEmp").$("namePrefix", ""));
+		SqlAndParam pair = sqlManager.useFile(getClass(), "Include.sql")
+				.genSqlAndParams(paramsOn("isEmp").$("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"includeon_namePrefix_positiveEmpty");
 	}
@@ -214,9 +212,9 @@ public class SQLManager3Test {
 		// List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
 		// .emptyAsNegative()
 		// .findAll(paramsOn("isEmp").$("namePrefix", ""));
-		Pair<String, List<Object>> pair = sqlManager.useFile(getClass(),
-				"Include.sql").emptyAsNegative().genSqlAndParams(
-				paramsOn("isEmp").$("namePrefix", ""));
+		SqlAndParam pair = sqlManager.useFile(getClass(), "Include.sql")
+				.emptyAsNegative().genSqlAndParams(
+						paramsOn("isEmp").$("namePrefix", ""));
 		// assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
 		// "includeon_namePrefix_negativeEmpty_sql");
 		assertEqualsWithFile(pair, getClass(),

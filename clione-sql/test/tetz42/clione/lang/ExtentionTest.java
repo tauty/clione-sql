@@ -197,32 +197,30 @@ public class ExtentionTest {
 		assertEqualsWithFile(inst.merge(), getClass(), "delnull_params_merged");
 	}
 
-	// @Test
-	// public void tosql() {
-	// ClioneFunction cf = ClioneFuncFactory.get().parse(
-	// "%TO_SQL(',' $PARAM)");
-	// Instruction instruction = cf.perform(params("PARAM", "ASC"));
-	// assertEqualsWithFile(instruction, getClass(), "tosql");
-	// }
-	//
-	// @Test
-	// public void tosql_null() {
-	// ClioneFunction cf = ClioneFuncFactory.get().parse(
-	// "%TO_SQL(',' $PARAM)");
-	// Instruction instruction = cf.perform(params());
-	// assertEqualsWithFile(instruction, getClass(), "tosql_null");
-	// }
+	@Test
+	public void tosql() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL!(',' $PARAM)");
+		Instruction instruction = cf.perform(params("PARAM", "ASC"));
+		assertEqualsWithFile(instruction, getClass(), "tosql");
+	}
+
+	@Test
+	public void tosql_null() {
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%SQL!(',' $PARAM)");
+		Instruction instruction = cf.perform(params());
+		assertEqualsWithFile(instruction, getClass(), "tosql_null");
+	}
 
 	@Test
 	public void tostr() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR!(',' $PARAM)");
 		Instruction instruction = cf.perform(params("PARAM", "ASC"));
 		assertEqualsWithFile(instruction, getClass(), "tostr");
 	}
 
 	@Test
 	public void tostr_null() {
-		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR(',' $PARAM)");
+		ClioneFunction cf = ClioneFuncFactory.get().parse("%STR!!(',' $PARAM)");
 		Instruction instruction = cf.perform(params());
 		assertEqualsWithFile(instruction, getClass(), "tostr_null");
 	}
@@ -338,7 +336,6 @@ public class ExtentionTest {
 
 	@Test
 	public void include_kakko_put() {
-		// '), ' bug was occurred and fail this test case. TODO fix it.
 		ClioneFunction cf = ClioneFuncFactory.get().parse(
 				"%include( 'tetz42/clione/sql/SQLManagerTest/Select.sql',"
 						+ " %put('age', '120'), %put('name_part', 'TA') )");
