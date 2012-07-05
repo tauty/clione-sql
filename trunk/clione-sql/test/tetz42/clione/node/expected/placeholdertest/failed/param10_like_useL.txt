@@ -4,15 +4,15 @@ Instruction{
 	useValueInBack = false
 	replacement = "(
 	  ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
-	AND   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
+	OR   ID  LIKE  ?
 )"
 	status = false
 	isNumber = false

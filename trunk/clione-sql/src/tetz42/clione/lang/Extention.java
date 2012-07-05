@@ -421,12 +421,12 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				Instruction retInst = new Instruction();
+				Instruction retInst = new Instruction().nodeDispose(inst.isNodeDisposed);
 				SQLGenerator sqlGenerator = new SQLGenerator();
 				retInst.replacement = sqlGenerator.genSql(getParamMap(),
 						LoaderUtil.getNodeBySQL(
 								String.valueOf(inst.params.get(0)),
-								"[WARN] Java String passed as parameter!!"));
+								"Java String passed as parameter"));
 				if (sqlGenerator.params != null
 						&& sqlGenerator.params.size() != 0) {
 					retInst.params.addAll(sqlGenerator.params);
