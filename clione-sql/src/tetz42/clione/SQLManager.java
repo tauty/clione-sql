@@ -34,7 +34,7 @@ import tetz42.util.Using;
 public class SQLManager implements Closeable {
 
 	/**
-	 * Enumeration of RDBMS Product names.
+	 * Enumeration of RDBMS Product.
 	 *
 	 * @author tetz
 	 */
@@ -48,8 +48,10 @@ public class SQLManager implements Closeable {
 	 * Generates SQLManager instance.<br>
 	 * The instance generated would use the connection passed through
 	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
+	 * It will be determined by the value obtained by
+	 * DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
 	 *
-	 * @return SQLManager
+	 * @return SQLManager instance
 	 * @see SQLManager#setThreadConnection(Connection)
 	 */
 	public static SQLManager sqlManager() {
@@ -57,41 +59,92 @@ public class SQLManager implements Closeable {
 	}
 
 	/**
-	 * Generates SQLManager instance.
+	 * Generates SQLManager instance.<br>
+	 * It will be determined by the value obtained by
+	 * DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
 	 *
 	 * @param con
 	 *            connection
-	 * @return
+	 * @return SQLManager instance
 	 */
 	public static SQLManager sqlManager(Connection con) {
 		return new SQLManager(con, (String) null);
 	}
 
 	/**
+	 * Generates SQLManager instance.<br>
+	 * The instance generated would use the connection passed through
+	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
 	 *
 	 * @param product
-	 * @return
+	 *            RDBMS product
+	 * @return SQLManager instance
+	 * @see SQLManager#setThreadConnection(Connection)
 	 */
 	public static SQLManager sqlManager(Product product) {
 		return new SQLManager(null, product);
 	}
 
+	/**
+	 * Generates SQLManager instance.<br>
+	 * The instance generated would use the connection passed through
+	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
+	 *
+	 * @param productName
+	 *            RDBMS product name. ex) oracle, mysql, db2, and so on.
+	 * @return SQLManager instance
+	 * @see SQLManager#setThreadConnection(Connection)
+	 */
 	public static SQLManager sqlManager(String productName) {
 		return new SQLManager(null, productName);
 	}
 
+	/**
+	 * Generates SQLManager instance.<br>
+	 *
+	 * @param con
+	 *            connection
+	 * @param product
+	 *            RDBMS product
+	 * @return SQLManager instance
+	 */
 	public static SQLManager sqlManager(Connection con, Product product) {
 		return new SQLManager(con, product);
 	}
 
+	/**
+	 * Generates SQLManager instance.<br>
+	 *
+	 * @param con
+	 *            connection
+	 * @param productName
+	 *            RDBMS product name. ex) oracle, mysql, db2, and so on.
+	 * @return SQLManager instance
+	 */
 	public static SQLManager sqlManager(Connection con, String productName) {
 		return new SQLManager(con, productName);
 	}
 
+	/**
+	 * Registers the connection with thread local variable.<br>
+	 * Note: If you register a connection using this method,
+	 * SQLManager.setThreadConnection(null) should be called before the thread
+	 * ends.
+	 *
+	 * @param con
+	 *            connection
+	 */
 	public static void setThreadConnection(Connection con) {
 		tcon.set(con);
 	}
 
+	/**
+	 * Obtains the connection registered by
+	 * SQLManager#setThreadConnection(Connection).
+	 *
+	 * @return connection
+	 * @see SQLManager#setThreadConnection(Connection)
+	 */
 	public static Connection getThreadConnection() {
 		return tcon.get();
 	}
