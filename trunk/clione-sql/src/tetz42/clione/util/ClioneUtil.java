@@ -70,7 +70,7 @@ public class ClioneUtil {
 	public static final String CRLF = Const.CRLF;
 
 	private static final Map<Class<?>, IConv> convMap4FinalClass;
-	private static final Map<Class<?>, IConv> convMap4NormalClass;
+	private static final Map<Class<?>, IConv> convMap4ExtendableClass;
 
 	private static final IConv byteArrayConv = new ByteArrayConv();
 	private static final IConv defaultConv = new DefaultConv();
@@ -93,21 +93,21 @@ public class ClioneUtil {
 		finalMap.put(Double.TYPE, new DoublePrimitiveConv());
 		finalMap.put(URL.class, new URLConv());
 
-		Map<Class<?>, IConv> normalMap = new LinkedHashMap<Class<?>, IConv>();
-		normalMap.put(Timestamp.class, new TimestampConv());
-		normalMap.put(java.sql.Date.class, new SqlDateConv());
-		normalMap.put(Time.class, new TimeConv());
-		normalMap.put(Date.class, new DateConv());
-		normalMap.put(BigDecimal.class, new BigDecimaiConv());
-		normalMap.put(BigInteger.class, new BigIntegerConv());
-		normalMap.put(InputStream.class, new InputStreamConv());
-		normalMap.put(Reader.class, new ReaderConv());
-		normalMap.put(Blob.class, new BlobConv());
-		normalMap.put(NClob.class, new NClobConv());
-		normalMap.put(Clob.class, new ClobConv());
-		normalMap.put(Array.class, new ArrayConv());
-		normalMap.put(Ref.class, new RefConv());
-		normalMap.put(SQLXML.class, new SQLXMLConv());
+		Map<Class<?>, IConv> extendableMap = new LinkedHashMap<Class<?>, IConv>();
+		extendableMap.put(Timestamp.class, new TimestampConv());
+		extendableMap.put(java.sql.Date.class, new SqlDateConv());
+		extendableMap.put(Time.class, new TimeConv());
+		extendableMap.put(Date.class, new DateConv());
+		extendableMap.put(BigDecimal.class, new BigDecimaiConv());
+		extendableMap.put(BigInteger.class, new BigIntegerConv());
+		extendableMap.put(InputStream.class, new InputStreamConv());
+		extendableMap.put(Reader.class, new ReaderConv());
+		extendableMap.put(Blob.class, new BlobConv());
+		extendableMap.put(NClob.class, new NClobConv());
+		extendableMap.put(Clob.class, new ClobConv());
+		extendableMap.put(Array.class, new ArrayConv());
+		extendableMap.put(Ref.class, new RefConv());
+		extendableMap.put(SQLXML.class, new SQLXMLConv());
 
 		for (String keyVal : Config.get().CONVERTERS) {
 			try {
@@ -117,14 +117,14 @@ public class ClioneUtil {
 				if (Modifier.isFinal(clazz.getModifiers()))
 					finalMap.put(clazz, conv);
 				else
-					normalMap.put(clazz, conv);
+					extendableMap.put(clazz, conv);
 			} catch (Throwable ignore) {
 				ignore.printStackTrace();
 			}
 		}
 
 		convMap4FinalClass = Collections.unmodifiableMap(finalMap);
-		convMap4NormalClass = Collections.unmodifiableMap(normalMap);
+		convMap4ExtendableClass = Collections.unmodifiableMap(extendableMap);
 	}
 
 	public static boolean isAllSpace(String s) {
@@ -213,7 +213,7 @@ public class ClioneUtil {
 		IConv conv = convMap4FinalClass.get(clazz);
 		if (conv != null)
 			return conv;
-		conv = convMap4NormalClass.get(clazz);
+		conv = convMap4ExtendableClass.get(clazz);
 		if (conv != null)
 			return conv;
 		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
@@ -225,12 +225,12 @@ public class ClioneUtil {
 		IConv conv = convMap4FinalClass.get(clazz);
 		if (conv != null)
 			return conv;
-		conv = convMap4NormalClass.get(clazz);
+		conv = convMap4ExtendableClass.get(clazz);
 		if (conv != null)
 			return conv;
 		if (clazz.isArray() && clazz.getComponentType() == Byte.TYPE)
 			return byteArrayConv;
-		for (Entry<Class<?>, IConv> e : convMap4NormalClass.entrySet()) {
+		for (Entry<Class<?>, IConv> e : convMap4ExtendableClass.entrySet()) {
 			if (classOf(clazz, e.getKey()))
 				return e.getValue();
 		}
