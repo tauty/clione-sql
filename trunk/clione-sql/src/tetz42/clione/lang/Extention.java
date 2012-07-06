@@ -141,7 +141,7 @@ public class Extention extends ClioneFunction {
 		});
 
 		//------------------------------------
-		// %if - %elseif - %else
+		// %if - %elseif - %else - %end
 		//------------------------------------
 		m.put("if", new ExtFunction() {
 
@@ -222,9 +222,16 @@ public class Extention extends ClioneFunction {
 				return null;
 			}
 		});
+		m.put("end", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				return null; // do nothing
+			}
+		});
 
 		//------------------------------------
-		// %IF - %ELSEIF - %ELSE
+		// %IF - %ELSEIF - %ELSE - %END
 		//------------------------------------
 		m.put("IF", new ExtFunction() {
 
@@ -276,6 +283,18 @@ public class Extention extends ClioneFunction {
 					Instruction nextInst = getNextInstruction();
 					return nextInst != null ? nextInst : new Instruction();
 				}
+			}
+
+			@Override
+			public void check() {
+				// no check
+			}
+		});
+		m.put("END", new ExtFunction() {
+
+			@Override
+			public Instruction perform() {
+				return null; // do nothing
 			}
 
 			@Override

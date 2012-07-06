@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
-import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.Config;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.Using;
@@ -48,11 +47,12 @@ public class SQLManager implements Closeable {
 	 * Generates SQLManager instance.<br>
 	 * The instance generated would use the connection passed through
 	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
-	 * It will be determined by the value obtained by
-	 * DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
+	 * It will be determined by Config#DBMS_PRODUCT_NAME or the value obtained
+	 * by DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
 	 *
 	 * @return SQLManager instance
 	 * @see SQLManager#setThreadConnection(Connection)
+	 * @see Config#DBMS_PRODUCT_NAME
 	 */
 	public static SQLManager sqlManager() {
 		return new SQLManager(null, (String) null);
@@ -60,12 +60,13 @@ public class SQLManager implements Closeable {
 
 	/**
 	 * Generates SQLManager instance.<br>
-	 * It will be determined by the value obtained by
-	 * DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
+	 * It will be determined by Config#DBMS_PRODUCT_NAME or the value obtained
+	 * by DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
 	 *
 	 * @param con
 	 *            connection
 	 * @return SQLManager instance
+	 * @see Config#DBMS_PRODUCT_NAME
 	 */
 	public static SQLManager sqlManager(Connection con) {
 		return new SQLManager(con, (String) null);
@@ -149,24 +150,40 @@ public class SQLManager implements Closeable {
 		return tcon.get();
 	}
 
+	/**
+	 * Generates ParamMap instance.
+	 *
+	 * @return ParamMap instance
+	 */
 	public static ParamMap params() {
 		return new ParamMap();
 	}
 
+	/**
+	 * Generates ParamMap instance and registers the key and value.
+	 *
+	 * @return ParamMap instance
+	 * @see ParamMap#$(String, Object)
+	 */
 	public static ParamMap params(String key, Object value) {
 		return params().$(key, value);
 	}
 
+	/**
+	 * Generates ParamMap instance, inspects the parameter object, and registers
+	 * its result.
+	 *
+	 * @param obj
+	 *            object
+	 * @return ParamMap instance
+	 * @see ParamMap#object(Object)
+	 */
 	public static ParamMap params(Object obj) {
 		return params().object(obj);
 	}
 
 	public static ParamMap paramsOn(String... keys) {
 		return params().$on(keys);
-	}
-
-	public static String getSQLPath(Class<?> clazz, String sqlFileName) {
-		return LoaderUtil.getSQLPath(clazz, sqlFileName);
 	}
 
 	private final Connection con;
