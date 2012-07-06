@@ -34,7 +34,7 @@ import tetz42.util.Using;
 public class SQLManager implements Closeable {
 
 	/**
-	 * Product names of RDBMS.
+	 * Enumeration of RDBMS Product names.
 	 *
 	 * @author tetz
 	 */
@@ -45,9 +45,9 @@ public class SQLManager implements Closeable {
 	private static ThreadLocal<Connection> tcon = new ThreadLocal<Connection>();
 
 	/**
-	 * Generate SQLManager instance.<br>
-	 * The instance generated will use the connection passed through
-	 * SQLManager#setThreadConnection(Connection).
+	 * Generates SQLManager instance.<br>
+	 * The instance generated would use the connection passed through
+	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
 	 *
 	 * @return SQLManager
 	 * @see SQLManager#setThreadConnection(Connection)
@@ -57,9 +57,10 @@ public class SQLManager implements Closeable {
 	}
 
 	/**
-	 * Generate SQLManager instance.
+	 * Generates SQLManager instance.
 	 *
-	 * @param con connection
+	 * @param con
+	 *            connection
 	 * @return
 	 */
 	public static SQLManager sqlManager(Connection con) {

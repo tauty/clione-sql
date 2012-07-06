@@ -1,0 +1,5 @@
+Person{
+	name = "Ryoma Sakamoto"
+	sex = "male"
+	address = "1-2-3 Katuraga-hama, Tosa-han, Japan"
+}

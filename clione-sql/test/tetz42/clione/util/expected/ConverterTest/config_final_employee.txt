@@ -1,0 +1,6 @@
+Employee{
+	title = "Actress"
+	name = "Ryoko Hirosue"
+	sex = "female"
+	address = "1-2-3 Katuraga-hama, Kochi-pref., Japan"
+}

@@ -27,6 +27,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import tetz42.clione.util.converter.Employee;
+import tetz42.clione.util.converter.Person;
+
 public class ConverterTest {
 
 	@BeforeClass
@@ -76,6 +79,52 @@ public class ConverterTest {
 		assertThat(br.readLine(), is("Leader has a book reader, kobo."));
 		br.close();
 		reader.close();
+	}
+
+	@Test
+	public void config_extendable() {
+		Person person = new Person();
+		person.name = "Ryoma Sakamoto";
+		person.sex = "male";
+		person.address = "1-2-3 Katuraga-hama, Tosa-han, Japan";
+		sqlManager()
+				.useSQL("update sample set r = /* r */ where id = /* id */")
+				.update(params("r", person).$("id", "100"));
+		String s = sqlManager().useSQL(
+				"select r from sample where id = /* id */").find(String.class,
+				params("id", "100"));
+		assertThat(s,
+				is("Ryoma Sakamoto:male:1-2-3 Katuraga-hama, Tosa-han, Japan"));
+		Person person2 = sqlManager().useSQL(
+				"select r from sample where id = /* id */").find(Person.class,
+				params("id", "100"));
+		assertEqualsWithFile(person2, getClass(), "config_extendable");
+	}
+
+	@Test
+	public void config_final() {
+		Employee employee = new Employee();
+		employee.name = "Ryoko Hirosue";
+		employee.sex = "female";
+		employee.address = "1-2-3 Katuraga-hama, Kochi-pref., Japan";
+		employee.title = "Actress";
+		sqlManager()
+				.useSQL("update sample set r = /* r */ where id = /* id */")
+				.update(params("r", employee).$("id", "100"));
+		String s = sqlManager().useSQL(
+				"select r from sample where id = /* id */").find(String.class,
+				params("id", "100"));
+		assertThat(
+				s,
+				is("Ryoko Hirosue:female:1-2-3 Katuraga-hama, Kochi-pref., Japan:Actress"));
+		Person person2 = sqlManager().useSQL(
+				"select r from sample where id = /* id */").find(Person.class,
+				params("id", "100"));
+		assertEqualsWithFile(person2, getClass(), "config_final_person");
+		Employee employee2 = sqlManager().useSQL(
+				"select r from sample where id = /* id */").find(
+				Employee.class, params("id", "100"));
+		assertEqualsWithFile(employee2, getClass(), "config_final_employee");
 	}
 
 	static class Sample {
