@@ -32,14 +32,14 @@ import tetz42.clione.util.ParamMap;
 import tetz42.util.Using;
 
 /**
- *
+ * 
  * @author tetz
  */
 public class SQLManager implements Closeable {
 
 	/**
 	 * Enumeration of RDBMS Product.
-	 *
+	 * 
 	 * @author tetz
 	 */
 	public static enum Product {
@@ -54,7 +54,7 @@ public class SQLManager implements Closeable {
 	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
 	 * It will be determined by Config#DBMS_PRODUCT_NAME or the value obtained
 	 * by DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
-	 *
+	 * 
 	 * @return SQLManager instance
 	 * @see SQLManager#setThreadConnection(Connection)
 	 * @see Config#DBMS_PRODUCT_NAME
@@ -67,7 +67,7 @@ public class SQLManager implements Closeable {
 	 * Generates SQLManager instance.<br>
 	 * It will be determined by Config#DBMS_PRODUCT_NAME or the value obtained
 	 * by DatabaseMetaData#getDatabaseProductName() what RDBMS products are.
-	 *
+	 * 
 	 * @param con
 	 *            connection
 	 * @return SQLManager instance
@@ -81,7 +81,7 @@ public class SQLManager implements Closeable {
 	 * Generates SQLManager instance.<br>
 	 * The instance generated would use the connection passed through
 	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
-	 *
+	 * 
 	 * @param product
 	 *            RDBMS product
 	 * @return SQLManager instance
@@ -95,7 +95,7 @@ public class SQLManager implements Closeable {
 	 * Generates SQLManager instance.<br>
 	 * The instance generated would use the connection passed through
 	 * SQLManager.setThreadConnection(Connection) if it is available.<br>
-	 *
+	 * 
 	 * @param productName
 	 *            RDBMS product name. ex) oracle, mysql, db2, and so on.
 	 * @return SQLManager instance
@@ -107,7 +107,7 @@ public class SQLManager implements Closeable {
 
 	/**
 	 * Generates SQLManager instance.<br>
-	 *
+	 * 
 	 * @param con
 	 *            connection
 	 * @param product
@@ -120,7 +120,7 @@ public class SQLManager implements Closeable {
 
 	/**
 	 * Generates SQLManager instance.<br>
-	 *
+	 * 
 	 * @param con
 	 *            connection
 	 * @param productName
@@ -136,7 +136,7 @@ public class SQLManager implements Closeable {
 	 * Note: If you register a connection using this method,
 	 * SQLManager.setThreadConnection(null) should be called before the thread
 	 * ends.
-	 *
+	 * 
 	 * @param con
 	 *            connection
 	 */
@@ -147,7 +147,7 @@ public class SQLManager implements Closeable {
 	/**
 	 * Obtains the connection registered by
 	 * SQLManager#setThreadConnection(Connection).
-	 *
+	 * 
 	 * @return connection
 	 * @see SQLManager#setThreadConnection(Connection)
 	 */
@@ -157,7 +157,7 @@ public class SQLManager implements Closeable {
 
 	/**
 	 * Generates ParamMap instance.
-	 *
+	 * 
 	 * @return ParamMap instance
 	 */
 	public static ParamMap params() {
@@ -166,7 +166,7 @@ public class SQLManager implements Closeable {
 
 	/**
 	 * Generates ParamMap instance and registers the key and value.
-	 *
+	 * 
 	 * @return ParamMap instance
 	 * @see ParamMap#$(String, Object)
 	 */
@@ -177,7 +177,7 @@ public class SQLManager implements Closeable {
 	/**
 	 * Generates ParamMap instance, inspects the parameter object, and registers
 	 * its result.
-	 *
+	 * 
 	 * @param obj
 	 *            object
 	 * @return ParamMap instance
@@ -190,7 +190,7 @@ public class SQLManager implements Closeable {
 	/**
 	 * Generates ParamMap instance and registers the keys with the value
 	 * 'Boolean.TRUE'.
-	 *
+	 * 
 	 * @param keys
 	 * @return ParamMap instance
 	 * @see ParamMap#$on(String...)
@@ -229,8 +229,9 @@ public class SQLManager implements Closeable {
 	}
 
 	/**
-	 * Generates SQLExecutor instance and binds the SQL to it.
-	 *
+	 * Generates SQLExecutor instance.<br>
+	 * The given SQL is bound to the instance.
+	 * 
 	 * @param sql
 	 *            SQL string performed
 	 * @return SQLExecuter instance
@@ -244,13 +245,21 @@ public class SQLManager implements Closeable {
 	}
 
 	/**
-	 * Generates SQLExecutor instance, generate the SQL from parameter, and
-	 * binds the SQL to the instance.
-	 * If the parameter
-	 *
+	 * Generates SQLExecutor instance.<br>
+	 * The given parameters will converted to the SQL file path like below:<br>
+	 * -- [the package name of clazz]/sql/[the class name of clazz]/[sqlFile]<br>
+	 * For exsample, 'clazz' is a class object of 'tetz42.dao.PersonDao', and
+	 * 'sqlFile' is 'Select.sql', the sql file path is:<br>
+	 * -- tetz42/dao/sql/PersonDao/Select.sql<br>
+	 * The SQL file indicated is loaded and the contents is bound to the
+	 * instance to be returned.
+	 * 
 	 * @param clazz
+	 *            class object
 	 * @param sqlFile
-	 * @return
+	 *            SQL file name
+	 * @return SQLExecuter instance
+	 * @see SQLExecutor
 	 */
 	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
 		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByClass(clazz,
@@ -260,6 +269,16 @@ public class SQLManager implements Closeable {
 		return sqlExecutor;
 	}
 
+	/**
+	 * Generates SQLExecutor instance.<br>
+	 * The SQL file indicated by parameter is loaded and the contents is bound
+	 * to the instance to be returned.
+	 * 
+	 * @param sqlPath
+	 *            SQL file path
+	 * @return SQLExecuter instance
+	 * @see SQLExecutor
+	 */
 	public SQLExecutor useFile(String sqlPath) {
 		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath,
 				productName));
@@ -268,6 +287,16 @@ public class SQLManager implements Closeable {
 		return sqlExecutor;
 	}
 
+	/**
+	 * Generates SQLExecutor instance.<br>
+	 * The given input stream is loaded and the contents is bound to the
+	 * instance to be returned.
+	 * 
+	 * @param in
+	 *            input stream
+	 * @return SQLExecuter instance
+	 * @see SQLExecutor
+	 */
 	public SQLExecutor useStream(InputStream in) {
 		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByStream(in));
 		// TODO better solution.
