@@ -113,7 +113,7 @@ public class ClioneUtil {
 			try {
 				String[] ary = keyVal.split(":");
 				Class<?> clazz = Class.forName(ary[0]);
-				IConv conv = (IConv) Class.forName(ary[1]).newInstance();
+				IConv conv = (IConv) newInstance(Class.forName(ary[1]));
 				if (Modifier.isFinal(clazz.getModifiers()))
 					finalMap.put(clazz, conv);
 				else
