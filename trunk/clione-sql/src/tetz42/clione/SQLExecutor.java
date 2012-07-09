@@ -348,23 +348,38 @@ public class SQLExecutor implements Closeable {
 	}
 
 	/**
+	 * Considers empty string as negative.<br>
 	 * 
 	 * @return this
+	 * @see SQLExecutor#asNegative(Object...)
 	 */
 	public SQLExecutor emptyAsNegative() {
 		return asNegative("");
 	}
 
 	/**
+	 * Considers given parameters as negative.<br>
+	 * By default, negative values are below:<br>
+	 * - null<br>
+	 * - Boolean.FALSE<br>
+	 * - empty list<br>
+	 * - empty array<br>
+	 * - a list contains negative value only<br>
+	 * - a array contains negative value only<br>
 	 * 
 	 * @param negativeValues
-	 * @return
+	 *            values to be considered as negative
+	 * @return this
 	 */
 	public SQLExecutor asNegative(Object... negativeValues) {
 		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
 	}
 
+	/**
+	 * Close the statement and the result set bound to this SQLExecuter
+	 * instance.
+	 */
 	public void closeStatement() {
 		new Using<Object>(rs, stmt) {
 			@Override
@@ -379,6 +394,12 @@ public class SQLExecutor implements Closeable {
 		}.invoke();
 	}
 
+	/**
+	 * Close the statement and the result set bound to this SQLExecuter
+	 * instance.
+	 * 
+	 * @see SQLExecutor#closeStatement()
+	 */
 	@Override
 	public void close() {
 		closeStatement();
@@ -434,11 +455,6 @@ public class SQLExecutor implements Closeable {
 		}
 	}
 
-	PreparedStatement genStmt(Map<String, Object> paramMap) {
-		manager.putExecutor(this);
-		return genStatment(paramMap);
-	}
-
 	public String getSql() {
 		return this.sqlGenerator.sql;
 	}
@@ -458,5 +474,10 @@ public class SQLExecutor implements Closeable {
 	@Override
 	public int hashCode() {
 		return hashValue;
+	}
+
+	PreparedStatement genStmt(Map<String, Object> paramMap) {
+		manager.putExecutor(this);
+		return genStatment(paramMap);
 	}
 }
