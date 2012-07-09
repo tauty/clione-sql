@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import tetz42.clione.exception.ConnectionNotFoundException;
+import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.Config;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.Using;
@@ -281,6 +282,10 @@ public class SQLManager implements Closeable {
 	public SQLManager asNegative(Object... negativeValues) {
 		this.negativeValues = combine(this.negativeValues, negativeValues);
 		return this;
+	}
+
+	public static String getSQLPath(Class<?> clazz, String sqlFileName) {
+		return LoaderUtil.getSQLPath(clazz, sqlFileName);
 	}
 
 	public String getSQLInfo() {
