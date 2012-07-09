@@ -30,6 +30,10 @@ import tetz42.clione.util.Config;
 import tetz42.clione.util.ParamMap;
 import tetz42.util.Using;
 
+/**
+ *
+ * @author tetz
+ */
 public class SQLManager implements Closeable {
 
 	/**
@@ -182,6 +186,14 @@ public class SQLManager implements Closeable {
 		return params().object(obj);
 	}
 
+	/**
+	 * Generates ParamMap instance and registers the keys with the value
+	 * 'Boolean.TRUE'.
+	 *
+	 * @param keys
+	 * @return ParamMap instance
+	 * @see ParamMap#$on(String...)
+	 */
 	public static ParamMap paramsOn(String... keys) {
 		return params().$on(keys);
 	}
@@ -215,20 +227,51 @@ public class SQLManager implements Closeable {
 		this.productName = productName;
 	}
 
-	private static String toProduct(String productName) {
-		if (productName == null)
-			return null;
-		for (Product product : Product.values()) {
-			String token = product == Product.SQLSERVER ? "sql server"
-					: product.name().toLowerCase();
-			if (productName.toLowerCase().contains(token))
-				return product.name();
-		}
-		return null;
+	/**
+	 * Generates SQLExecutor instance and binds the SQL to it.
+	 *
+	 * @param sql
+	 *            SQL string performed
+	 * @return SQLExecuter instance
+	 * @see SQLExecutor
+	 */
+	public SQLExecutor useSQL(String sql) {
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeBySQL(sql));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
+		return sqlExecutor;
 	}
 
-	private Connection getCon(Connection con) {
-		return con != null ? con : getThreadConnection();
+	/**
+	 * Generates SQLExecutor instance, generate the SQL from parameter, and
+	 * binds the SQL to the instance.
+	 * If the parameter
+	 *
+	 * @param clazz
+	 * @param sqlFile
+	 * @return
+	 */
+	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByClass(clazz,
+				sqlFile, productName));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
+		return sqlExecutor;
+	}
+
+	public SQLExecutor useFile(String sqlPath) {
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath,
+				productName));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
+		return sqlExecutor;
+	}
+
+	public SQLExecutor useStream(InputStream in) {
+		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByStream(in));
+		// TODO better solution.
+		this.resourceInfo = sqlExecutor.resourceInfo;
+		return sqlExecutor;
 	}
 
 	public SQLManager emptyAsNegative() {
@@ -254,36 +297,6 @@ public class SQLManager implements Closeable {
 
 	public List<Object> getParams() {
 		return this.executedParams;
-	}
-
-	public SQLExecutor useSQL(String sql) {
-		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeBySQL(sql));
-		// TODO better solution.
-		this.resourceInfo = sqlExecutor.resourceInfo;
-		return sqlExecutor;
-	}
-
-	public SQLExecutor useFile(Class<?> clazz, String sqlFile) {
-		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByClass(clazz,
-				sqlFile, productName));
-		// TODO better solution.
-		this.resourceInfo = sqlExecutor.resourceInfo;
-		return sqlExecutor;
-	}
-
-	public SQLExecutor useFile(String sqlPath) {
-		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByPath(sqlPath,
-				productName));
-		// TODO better solution.
-		this.resourceInfo = sqlExecutor.resourceInfo;
-		return sqlExecutor;
-	}
-
-	public SQLExecutor useStream(InputStream in) {
-		SQLExecutor sqlExecutor = new SQLExecutor(this, getNodeByStream(in));
-		// TODO better solution.
-		this.resourceInfo = sqlExecutor.resourceInfo;
-		return sqlExecutor;
 	}
 
 	public Connection con() {
@@ -335,6 +348,22 @@ public class SQLManager implements Closeable {
 
 	String getProductName() {
 		return productName;
+	}
+
+	private static String toProduct(String productName) {
+		if (productName == null)
+			return null;
+		for (Product product : Product.values()) {
+			String token = product == Product.SQLSERVER ? "sql server"
+					: product.name().toLowerCase();
+			if (productName.toLowerCase().contains(token))
+				return product.name();
+		}
+		return null;
+	}
+
+	private Connection getCon(Connection con) {
+		return con != null ? con : getThreadConnection();
 	}
 
 	public static class SqlAndParam {
