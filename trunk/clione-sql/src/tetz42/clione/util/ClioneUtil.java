@@ -151,12 +151,6 @@ public class ClioneUtil {
 				"--- resource ---", resourceInfo);
 	}
 
-	// public static boolean isSQLType(Class<?> clazz) {
-	// return convMap4FinalClass.get(clazz) != null ? true
-	// : convMap4NormalClass.get(clazz) != null ? true : (clazz
-	// .isArray() && clazz.getComponentType() == Byte.TYPE);
-	// }
-
 	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
 			throws SQLException {
 		try {

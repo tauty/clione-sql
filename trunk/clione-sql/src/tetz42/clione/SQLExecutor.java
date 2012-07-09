@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 - 2012 tetsuo.ohta[at]gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
@@ -16,10 +31,15 @@ import java.util.Map;
 import tetz42.clione.SQLManager.SqlAndParam;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
+import tetz42.clione.util.ParamMap;
 import tetz42.clione.util.ResultMap;
 import tetz42.util.Using;
 import tetz42.util.exception.SQLRuntimeException;
 
+/**
+ * 
+ * @author tetz
+ */
 public class SQLExecutor implements Closeable {
 
 	private final SQLManager manager;
@@ -44,28 +64,46 @@ public class SQLExecutor implements Closeable {
 		this.negativeValues = manager.getNegativeValues();
 	}
 
-	public SQLExecutor emptyAsNegative() {
-		return asNegative("");
-	}
-
-	public SQLExecutor asNegative(Object... negativeValues) {
-		this.negativeValues = combine(this.negativeValues, negativeValues);
-		return this;
-	}
-
-	public Map<String, Object> find() {
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * {@link ResultMap} instance. If no record is selected, it returns null. If
+	 * multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @return ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 */
+	public ResultMap find() {
 		return this.find((Map<String, Object>) null);
 	}
 
-	@Override
-	public int hashCode() {
-		return hashValue;
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * {@link ResultMap} instance. If no record is selected, it returns null. If
+	 * multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @param object
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 * @see {@link ParamMap#object(Object)}
+	 */
+	public ResultMap find(Object object) {
+		return this.find(params(object));
 	}
 
-	public ResultMap find(Object obj) {
-		return this.find(params(obj));
-	}
-
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * {@link ResultMap} instance. If no record is selected, it returns null. If
+	 * multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @param paramMap
+	 *            the map instance to be mapped to SQL parameters
+	 * @return ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 */
 	public ResultMap find(final Map<String, Object> paramMap) {
 		return new Using<ResultMap>(this) {
 
@@ -79,14 +117,46 @@ public class SQLExecutor implements Closeable {
 		}.invoke();
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 * 
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 */
 	public List<ResultMap> findAll() {
 		return this.findAll((Map<String, Object>) null);
 	}
 
-	public List<ResultMap> findAll(Object paramObj) {
-		return this.findAll(params(paramObj));
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 * 
+	 * @param object
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 * @see {@link ParamMap#object(Object)}
+	 */
+	public List<ResultMap> findAll(Object object) {
+		return this.findAll(params(object));
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 * 
+	 * @param paramMap
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 */
 	public List<ResultMap> findAll(final Map<String, Object> paramMap) {
 		return new Using<List<ResultMap>>(this) {
 
@@ -101,14 +171,53 @@ public class SQLExecutor implements Closeable {
 		}.invoke();
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * instance of the class specified. If no record is selected, it returns
+	 * null. If multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @return the result instance
+	 * @throws SQLRuntimeException
+	 */
 	public <T> T find(Class<T> entityClass) {
 		return this.find(entityClass, (Map<String, Object>) null);
 	}
 
-	public <T> T find(Class<T> entityClass, Object paramObj) {
-		return this.find(entityClass, params(paramObj));
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * instance of the class specified. If no record is selected, it returns
+	 * null. If multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param object
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the result instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
+	public <T> T find(Class<T> entityClass, Object object) {
+		return this.find(entityClass, params(object));
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a
+	 * instance of the class specified. If no record is selected, it returns
+	 * null. If multiple records are selected, it returns the 1st record only.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramMap
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the result instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
 	public <T> T find(final Class<T> entityClass,
 			final Map<String, Object> paramMap) {
 		return new Using<T>(this) {
@@ -123,14 +232,54 @@ public class SQLExecutor implements Closeable {
 		}.invoke();
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of instance of the class specified. If no record is selected, it returns
+	 * empty list.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramMap
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of result instance
+	 * @throws SQLRuntimeException
+	 */
 	public <T> List<T> findAll(Class<T> entityClass) {
 		return this.findAll(entityClass, null);
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of instance of the class specified. If no record is selected, it returns
+	 * empty list.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramObj
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of result instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
 	public <T> List<T> findAll(Class<T> entityClass, Object paramObj) {
 		return this.findAll(entityClass, params(paramObj));
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of instance of the class specified. If no record is selected, it returns
+	 * empty list.
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramMap
+	 *            the Map instance mapped to SQL parameters
+	 * @return the list of result instance
+	 * @throws SQLRuntimeException
+	 */
 	public <T> List<T> findAll(final Class<T> entityClass,
 			final Map<String, Object> paramMap) {
 		return new Using<List<T>>(this) {
@@ -196,6 +345,24 @@ public class SQLExecutor implements Closeable {
 				}
 			}
 		}.invoke();
+	}
+
+	/**
+	 * 
+	 * @return this
+	 */
+	public SQLExecutor emptyAsNegative() {
+		return asNegative("");
+	}
+
+	/**
+	 * 
+	 * @param negativeValues
+	 * @return
+	 */
+	public SQLExecutor asNegative(Object... negativeValues) {
+		this.negativeValues = combine(this.negativeValues, negativeValues);
+		return this;
 	}
 
 	public void closeStatement() {
@@ -286,5 +453,10 @@ public class SQLExecutor implements Closeable {
 
 	public String getResourceInfo() {
 		return this.resourceInfo;
+	}
+
+	@Override
+	public int hashCode() {
+		return hashValue;
 	}
 }
