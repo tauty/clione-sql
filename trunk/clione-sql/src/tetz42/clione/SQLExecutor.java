@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import tetz42.clione.SQLManager.SqlAndParam;
+import tetz42.clione.SQLManager.SQLSet;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
@@ -296,24 +296,163 @@ public class SQLExecutor implements Closeable {
 		}.invoke();
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * the class specified.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	for (Entity e : sqlManager.useFile(&quot;sql/Select.sql&quot;).each(Entity.class,
+	 * 			params(&quot;type&quot;, &quot;A&quot;))) {
+	 * 		System.out.println(e.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass) {
 		return each(entityClass, null);
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * the class specified.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	Condition cond = new Condition();
+	 * 	cond.setType(&quot;A&quot;);
+	 * 	for (Entity e : sqlManager.useFile(&quot;sql/Select.sql&quot;).each(Entity.class,
+	 * 			cond)) {
+	 * 		System.out.println(e.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramObj
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass, Object paramObj) {
 		return each(entityClass, params(paramObj));
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * {@link ResultMap}.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	for (ResultMap map : sqlManager.useFile(&quot;sql/Select.sql&quot;).each(
+	 * 			Entity.class, params(&quot;type&quot;, &quot;A&quot;))) {
+	 * 		System.out.println(map.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @param paramMap
+	 *            the Map instance mapped to SQL parameters
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 */
 	public SQLIterator<ResultMap> each(Map<String, Object> paramMap) {
 		return each(ResultMap.class, paramMap);
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * {@link ResultMap}.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	for (ResultMap map : sqlManager.useFile(&quot;sql/Select.sql&quot;).each()) {
+	 * 		System.out.println(map.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 */
 	public SQLIterator<ResultMap> each() {
 		return each(ResultMap.class, null);
 	}
 
-	public SQLIterator<ResultMap> each(Object obj) {
-		return each(ResultMap.class, params(obj));
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * {@link ResultMap}.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	Condition cond = new Condition();
+	 * 	cond.setType(&quot;A&quot;);
+	 * 	for (ResultMap map : sqlManager.useFile(&quot;sql/Select.sql&quot;).each(cond)) {
+	 * 		System.out.println(map.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @param paramObj
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
+	public SQLIterator<ResultMap> each(Object paramObj) {
+		return each(ResultMap.class, params(paramObj));
 	}
 
 	/**
@@ -354,14 +493,37 @@ public class SQLExecutor implements Closeable {
 		}
 	}
 
+	/**
+	 * Executes the given SQL insert/update/delete statement.
+	 *
+	 * @return the count of updated records
+	 * @throws SQLRuntimeException
+	 */
 	public int update() {
 		return this.update((Map<String, Object>) null);
 	}
 
+	/**
+	 * Executes the given SQL insert/update/delete statement.
+	 *
+	 * @param paramObj
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the count of updated records
+	 * @throws SQLRuntimeException
+	 * @see {@link ParamMap#object(Object)}
+	 */
 	public int update(Object paramObj) {
 		return this.update(params(paramObj));
 	}
 
+	/**
+	 * Executes the given SQL insert/update/delete statement.
+	 *
+	 * @param paramMap
+	 *            the Map instance mapped to SQL parameters
+	 * @return the count of updated records
+	 * @throws SQLRuntimeException
+	 */
 	public int update(final Map<String, Object> paramMap) {
 		return new Using<Integer>(this) {
 
@@ -451,17 +613,17 @@ public class SQLExecutor implements Closeable {
 		}
 	}
 
-	public SqlAndParam genSqlAndParams() {
-		return genSqlAndParams(null);
+	public SQLSet genSQLSet() {
+		return genSQLSet(null);
 	}
 
-	public SqlAndParam genSqlAndParams(Object paramObj) {
-		return genSqlAndParams(params(paramObj));
+	public SQLSet genSQLSet(Object paramObj) {
+		return genSQLSet(params(paramObj));
 	}
 
-	public SqlAndParam genSqlAndParams(Map<String, Object> paramMap) {
+	public SQLSet genSQLSet(Map<String, Object> paramMap) {
 		String sql = genSql(paramMap);
-		return new SqlAndParam(sql, getParams());
+		return new SQLSet(sql, getParams());
 	}
 
 	public PreparedStatement genStatment() {
@@ -485,25 +647,25 @@ public class SQLExecutor implements Closeable {
 		}
 	}
 
-	public String getSql() {
-		return this.sqlGenerator.sql;
-	}
-
-	public List<Object> getParams() {
-		return this.sqlGenerator.params;
-	}
-
-	public String getSQLInfo() {
-		return genSQLInfo(getSql(), getParams(), getResourceInfo());
-	}
-
-	public String getResourceInfo() {
-		return this.resourceInfo;
-	}
-
 	@Override
 	public int hashCode() {
 		return hashValue;
+	}
+
+	String getSql() {
+		return this.sqlGenerator.sql;
+	}
+
+	List<Object> getParams() {
+		return this.sqlGenerator.params;
+	}
+
+	String getSQLInfo() {
+		return genSQLInfo(getSql(), getParams(), getResourceInfo());
+	}
+
+	String getResourceInfo() {
+		return this.resourceInfo;
 	}
 
 	PreparedStatement genStmt(Map<String, Object> paramMap) {
