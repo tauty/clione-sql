@@ -1,4 +1,4 @@
-SqlAndParam{
+SQLSet{
 	sql = "select
 	*
 from (
