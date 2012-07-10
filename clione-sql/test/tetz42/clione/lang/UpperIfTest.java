@@ -147,6 +147,26 @@ public class UpperIfTest {
 		assertEqualsWithFile(sql, getClass(), "IFP_ELSE");
 	}
 
+	@Test
+	public void withEnd_C() {
+		String sql = sqlManager().useSQL(doc.get("withEnd")).genSql(
+				paramsOn("C"));
+		assertEqualsWithFile(sql, getClass(), "withEnd_C");
+	}
+
+	@Test
+	public void withEnd_D() {
+		String sql = sqlManager().useSQL(doc.get("withEnd")).genSql(
+				paramsOn("D"));
+		assertEqualsWithFile(sql, getClass(), "withEnd_D");
+	}
+
+	@Test
+	public void withEnd_null() {
+		String sql = sqlManager().useSQL(doc.get("withEnd")).genSql();
+		assertEqualsWithFile(sql, getClass(), "withEnd_null");
+	}
+
 	@Test(expected = ClioneFormatException.class)
 	public void IF_nothing() {
 		try {

@@ -51,9 +51,9 @@ public class Extention extends ClioneFunction {
 	static {
 		Map<String, ExtFunction> m = newMap();
 
-		//------------------------------------
+		// ------------------------------------
 		// Like Clause / String
-		//------------------------------------
+		// ------------------------------------
 		m.put("L", new ExtFunction() {
 
 			@Override
@@ -118,9 +118,9 @@ public class Extention extends ClioneFunction {
 		});
 		m.put("C", m.get("concat"));
 
-		//------------------------------------
+		// ------------------------------------
 		// Parameter control
-		//------------------------------------
+		// ------------------------------------
 		m.put("del_negative", new ExtFunction() {
 
 			@Override
@@ -140,9 +140,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// %if - %elseif - %else - %end
-		//------------------------------------
+		// ------------------------------------
 		m.put("if", new ExtFunction() {
 
 			@Override
@@ -230,9 +230,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// %IF - %ELSEIF - %ELSE - %END
-		//------------------------------------
+		// ------------------------------------
 		m.put("IF", new ExtFunction() {
 
 			@Override
@@ -294,7 +294,7 @@ public class Extention extends ClioneFunction {
 
 			@Override
 			public Instruction perform() {
-				return null; // do nothing
+				return new Instruction().doNothing(); // do nothing
 			}
 
 			@Override
@@ -303,9 +303,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// compare
-		//------------------------------------
+		// ------------------------------------
 		m.put("equals", new CompFunction(Type.EQ));
 		m.put("greaterThan", new CompFunction(Type.GT));
 		m.put("greaterEqual", new CompFunction(Type.GE));
@@ -317,9 +317,9 @@ public class Extention extends ClioneFunction {
 		m.put("lt", m.get("lessThan"));
 		m.put("le", m.get("lessEqual"));
 
-		//------------------------------------
+		// ------------------------------------
 		// and/or
-		//------------------------------------
+		// ------------------------------------
 		m.put("and", new ExtFunction() {
 
 			@Override
@@ -337,9 +337,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// ParamMap control
-		//------------------------------------
+		// ------------------------------------
 		m.put("put", new ExtFunction() {
 
 			@Override
@@ -371,9 +371,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// include file
-		//------------------------------------
+		// ------------------------------------
 		m.put("include", new ExtFunction() {
 
 			@Override
@@ -411,9 +411,9 @@ public class Extention extends ClioneFunction {
 			}
 		});
 
-		//------------------------------------
+		// ------------------------------------
 		// Injection SQL from Java
-		//------------------------------------
+		// ------------------------------------
 		m.put("STR!", new ExtFunction() {
 
 			@Override
@@ -440,12 +440,12 @@ public class Extention extends ClioneFunction {
 			@Override
 			protected Instruction perform(Instruction inst) {
 				inst = concat_all(inst);
-				Instruction retInst = new Instruction().nodeDispose(inst.isNodeDisposed);
+				Instruction retInst = new Instruction()
+						.nodeDispose(inst.isNodeDisposed);
 				SQLGenerator sqlGenerator = new SQLGenerator();
 				retInst.replacement = sqlGenerator.genSql(getParamMap(),
-						LoaderUtil.getNodeBySQL(
-								String.valueOf(inst.params.get(0)),
-								"Java String passed as parameter"));
+						LoaderUtil.getNodeBySQL(String.valueOf(inst.params
+								.get(0)), "Java String passed as parameter"));
 				if (sqlGenerator.params != null
 						&& sqlGenerator.params.size() != 0) {
 					retInst.params.addAll(sqlGenerator.params);

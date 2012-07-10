@@ -1,0 +1,10 @@
+select
+	aaa
+	,bbb
+  
+	,ddd
+  
+	,fff
+	,ggg
+ from
+ 	alphabet D
