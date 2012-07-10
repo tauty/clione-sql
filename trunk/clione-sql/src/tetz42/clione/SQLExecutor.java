@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ import tetz42.util.Using;
 import tetz42.util.exception.SQLRuntimeException;
 
 /**
- * 
+ *
  * @author tetz
  */
 public class SQLExecutor implements Closeable {
@@ -68,7 +69,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @return ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
@@ -81,7 +82,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param object
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return ResultMap instance
@@ -97,7 +98,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the map instance to be mapped to SQL parameters
 	 * @return ResultMap instance
@@ -121,7 +122,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @return the list of ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
@@ -134,7 +135,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @param object
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the list of ResultMap instance
@@ -150,7 +151,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the list of ResultMap instance
@@ -175,7 +176,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -190,7 +191,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -208,7 +209,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -236,7 +237,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -253,7 +254,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -271,7 +272,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -315,6 +316,35 @@ public class SQLExecutor implements Closeable {
 		return each(ResultMap.class, params(obj));
 	}
 
+	/**
+	 * Executes the given SQL select statement and returns the iterator wrapper
+	 * of result set object. The {@link Iterator#next()} returns the instance of
+	 * the class specified.<br>
+	 * Note: The result set and statement object bound to this SQLExecutor
+	 * instance is NOT close automatically. So you should call
+	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
+	 * below:<br>
+	 *
+	 * <pre>
+	 * SQLManager sqlManager = sqlManager();
+	 * try {
+	 * 	for (Entity e : sqlManager.useFile(&quot;sql/Select.sql&quot;).each(Entity.class,
+	 * 			params(&quot;type&quot;, &quot;A&quot;))) {
+	 * 		System.out.println(e.toString());
+	 * 	}
+	 * } finally {
+	 * 	sqlManager.close();
+	 * }
+	 * </pre>
+	 *
+	 * @param <T>
+	 * @param entityClass
+	 *            the class of result instance
+	 * @param paramMap
+	 *            the Map instance mapped to SQL parameters
+	 * @return the iterator wrapper of result set
+	 * @throws SQLRuntimeException
+	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass,
 			Map<String, Object> paramMap) {
 		try {
@@ -349,7 +379,7 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Considers empty string as negative.<br>
-	 * 
+	 *
 	 * @return this
 	 * @see SQLExecutor#asNegative(Object...)
 	 */
@@ -366,7 +396,7 @@ public class SQLExecutor implements Closeable {
 	 * - empty array<br>
 	 * - a list contains negative value only<br>
 	 * - a array contains negative value only<br>
-	 * 
+	 *
 	 * @param negativeValues
 	 *            values to be considered as negative
 	 * @return this
@@ -397,7 +427,7 @@ public class SQLExecutor implements Closeable {
 	/**
 	 * Close the statement and the result set bound to this SQLExecuter
 	 * instance.
-	 * 
+	 *
 	 * @see SQLExecutor#closeStatement()
 	 */
 	@Override

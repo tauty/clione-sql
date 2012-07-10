@@ -105,3 +105,20 @@ order by
 	tako
 	,ika
 <</nothing>>
+
+<<withEnd>>
+select
+	aaa
+	,bbb
+  -- %IF C
+	,ccc
+  -- %ELSEIF D
+	,ddd
+  -- %ELSE
+	,eee
+  -- %END
+	,fff
+	,ggg
+ from
+ 	alphabet /* %if C 'C' %elseif D 'D' %else 'E' %end */
+<</withEnd>>
