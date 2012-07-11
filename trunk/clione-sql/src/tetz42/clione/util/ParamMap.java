@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 tetsuo.ohta[at]gmail.com
+ * Copyright 2011 - 2012 tetsuo.ohta[at]gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,43 +27,138 @@ import java.util.regex.Pattern;
 
 import tetz42.clione.exception.DuplicateKeyException;
 
+/**
+ *
+ * @author tetz
+ */
 public class ParamMap extends HashMap<String, Object> {
 
-	/**
-	 *
-	 */
+	/***/
 	private static final long serialVersionUID = -6103186429868779178L;
 
 	public static final Pattern KEY_PTN = Pattern.compile("([\"-),-~ ])[ -~]*");
 	public static final Pattern SYMBOL_PTN = Pattern.compile("[^A-Za-z0-9]+");
 
+	/**
+	 * Returns the value to which the specified key is mapped, or null if this
+	 * map contains no mapping for the key. <br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param key
+	 *            the key whose associated value is to be returned
+	 * @return the value to which the specified key is mapped, or null if this
+	 *         map contains no mapping for the key
+	 */
 	@Override
 	public Object get(Object key) {
 		return super.get(convKey(key));
 	}
 
+	/**
+	 * Associates the specified value with the specified key in this map
+	 * (optional operation). If the map previously contained a mapping for the
+	 * key, the old value is replaced by the specified value. (A map m is said
+	 * to contain a mapping for a key k if and only if m.containsKey(k) would
+	 * return true.)<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 * @return the previous value associated with key, or null if there was no
+	 *         mapping for key. (A null return can also indicate that the map
+	 *         previously associated null with key, if the implementation
+	 *         supports null values.)
+	 */
 	@Override
 	public Object put(String key, Object value) {
 		return super.put(convKey(key), value);
 	}
 
+	/**
+	 * Associates the specified value with the specified key in this map
+	 * (optional operation). If the map previously contained a mapping for the
+	 * key, the old value is replaced by the specified value. (A map m is said
+	 * to contain a mapping for a key k if and only if m.containsKey(k) would
+	 * return true.)<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 * @return this
+	 * @see ParamMap#put(String, Object)
+	 */
 	public ParamMap $(String key, Object value) {
 		this.put(key, value);
 		return this;
 	}
 
+	/**
+	 * Associates the specified value with the specified key in this map
+	 * (optional operation). If the map previously contained a mapping for the
+	 * key, the old value is replaced by the specified value. (A map m is said
+	 * to contain a mapping for a key k if and only if m.containsKey(k) would
+	 * return true.)<br>
+	 * If the specified value is empty string, "", the key and the value does
+	 * not associate.<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 * @return this
+	 * @see ParamMap#put(String, Object)
+	 */
 	public ParamMap $e(String key, Object value) {
 		return this.$nv(key, value, "");
 	}
 
+	/**
+	 * Associates the specified value with the specified key in this map
+	 * (optional operation). If the map previously contained a mapping for the
+	 * key, the old value is replaced by the specified value. (A map m is said
+	 * to contain a mapping for a key k if and only if m.containsKey(k) would
+	 * return true.)<br>
+	 * If the specified negatives contains the specified value, the key and the
+	 * value does not associate.<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 * @param negatives
+	 * @return this
+	 * @see ParamMap#put(String, Object)
+	 */
 	public ParamMap $nv(String key, Object value, Object... negatives) {
 		for (Object negative : negatives) {
-			if (negative == null || negative.equals(value))
+			if (negative == null)
+				continue;
+			if (negative.equals(value))
 				return this;
 		}
 		return this.$(key, value);
 	}
 
+	/**
+	 * The specified keys are associated with the value 'Boolean.TRUE'.<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * @param keys
+	 * @return this
+	 * @see ParamMap#put(String, Object)
+	 */
 	public ParamMap $on(String... keys) {
 		for (String key : keys)
 			this.put(key, Boolean.TRUE);
