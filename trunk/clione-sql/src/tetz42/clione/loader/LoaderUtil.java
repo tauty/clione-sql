@@ -18,13 +18,13 @@ public class LoaderUtil {
 	public static String sqlPathPrefix = "SQL file path:";
 
 	private static class NodeHolder {
+		private final SQLNode sqlNode;
+		private final long cachedTime;
+
 		private NodeHolder(SQLNode sqlNode, long systime) {
 			this.sqlNode = sqlNode;
 			this.cachedTime = systime;
 		}
-
-		private SQLNode sqlNode;
-		private long cachedTime;
 	}
 
 	private static final ConcurrentHashMap<String, NodeHolder> cacheByPath = new ConcurrentHashMap<String, NodeHolder>();

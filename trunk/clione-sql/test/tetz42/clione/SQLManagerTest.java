@@ -271,7 +271,7 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useFile(
 		"tetz42/clione/sql/SQLManagerTest/Sample.sql");
 
-		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
+		man.generateSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
@@ -282,7 +282,7 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useFile(
 				"tetz42/clione/sql/SQLManagerTest/Sample.sql");
 
-		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
+		man.generateSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
@@ -293,7 +293,7 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/SQLManagerTest/Sample.sql"));
 
-		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
+		man.generateSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");
@@ -305,7 +305,7 @@ public class SQLManagerTest {
 		SQLExecutor man = sqlManager(con).useStream(
 				getClass().getResourceAsStream("sql/SQLManagerTest/Sample.sql"));
 
-		man.genSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
+		man.generateSql(params("TEST1", 10).$("TEST2", 100).$("TEST3", 1000));
 		System.out.println(man.getSql());
 		System.out.println(man.getParams());
 		assertEqualsWithFile(man.getSql(), getClass(), "genSql_by_sample");

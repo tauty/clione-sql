@@ -163,7 +163,7 @@ public class SQLManager3Test {
 	public void include_no_param() throws IOException, SQLException {
 		SQLManager sqlManager = sqlManager();
 		SQLSet pair = sqlManager.useFile(getClass(), "Include.sql")
-				.genSQLSet();
+				.generateSQLSet();
 		// List<ResultMap> list = sqlManager.useFile(getClass(), "Include.sql")
 		// .findAll();
 		// assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
@@ -176,7 +176,7 @@ public class SQLManager3Test {
 			SQLException {
 		SQLManager sqlManager = sqlManager();
 		SQLSet pair = sqlManager.useFile(getClass(), "Include.sql")
-				.genSQLSet(params("namePrefix", ""));
+				.generateSQLSet(params("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"include_namePrefix_positiveEmpty");
 		// assertEqualsWithFile(pair.getFirst(), getClass(),
@@ -190,7 +190,7 @@ public class SQLManager3Test {
 			SQLException {
 		SQLManager sqlManager = sqlManager();
 		SQLSet pair = sqlManager.useFile(getClass(), "Include.sql")
-				.emptyAsNegative().genSQLSet(params("namePrefix", ""));
+				.emptyAsNegative().generateSQLSet(params("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"include_namePrefix_negativeEmpty");
 	}
@@ -200,7 +200,7 @@ public class SQLManager3Test {
 			SQLException {
 		SQLManager sqlManager = sqlManager();
 		SQLSet pair = sqlManager.useFile(getClass(), "Include.sql")
-				.genSQLSet(paramsOn("isEmp").$("namePrefix", ""));
+				.generateSQLSet(paramsOn("isEmp").$("namePrefix", ""));
 		assertEqualsWithFile(pair, getClass(),
 				"includeon_namePrefix_positiveEmpty");
 	}
@@ -213,7 +213,7 @@ public class SQLManager3Test {
 		// .emptyAsNegative()
 		// .findAll(paramsOn("isEmp").$("namePrefix", ""));
 		SQLSet pair = sqlManager.useFile(getClass(), "Include.sql")
-				.emptyAsNegative().genSQLSet(
+				.emptyAsNegative().generateSQLSet(
 						paramsOn("isEmp").$("namePrefix", ""));
 		// assertEqualsWithFile(sqlManager.getSQLInfo(), getClass(),
 		// "includeon_namePrefix_negativeEmpty_sql");
