@@ -38,7 +38,7 @@ import tetz42.util.Using;
 import tetz42.util.exception.SQLRuntimeException;
 
 /**
- * 
+ *
  * @author tetz
  */
 public class SQLExecutor implements Closeable {
@@ -69,7 +69,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @return ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
@@ -82,7 +82,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param object
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return ResultMap instance
@@ -98,7 +98,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * {@link ResultMap} instance. If no record is selected, it returns null. If
 	 * multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the map instance to be mapped to SQL parameters
 	 * @return ResultMap instance
@@ -122,7 +122,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @return the list of ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
@@ -135,7 +135,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @param object
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the list of ResultMap instance
@@ -151,7 +151,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of {@link ResultMap} instance. If no record is selected, it returns empty
 	 * list.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the list of ResultMap instance
@@ -176,7 +176,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -191,7 +191,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -209,7 +209,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -237,7 +237,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -254,7 +254,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -272,7 +272,7 @@ public class SQLExecutor implements Closeable {
 	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -304,7 +304,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -316,7 +316,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -335,7 +335,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -349,7 +349,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -371,7 +371,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -383,7 +383,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @param paramMap
 	 *            the Map instance mapped to SQL parameters
@@ -402,7 +402,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -413,7 +413,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
@@ -430,7 +430,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -443,7 +443,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @param paramObj
 	 *            the object to be inspected and mapped to SQL parameters
@@ -463,7 +463,7 @@ public class SQLExecutor implements Closeable {
 	 * instance is NOT close automatically. So you should call
 	 * {@link SQLManager#close()} or {@link SQLExecutor#close()} finally like
 	 * below:<br>
-	 * 
+	 *
 	 * <pre>
 	 * SQLManager sqlManager = sqlManager();
 	 * try {
@@ -475,7 +475,7 @@ public class SQLExecutor implements Closeable {
 	 * 	sqlManager.close();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param <T>
 	 * @param entityClass
 	 *            the class of result instance
@@ -495,7 +495,7 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Executes the given SQL insert/update/delete statement.
-	 * 
+	 *
 	 * @return the count of updated records
 	 * @throws SQLRuntimeException
 	 */
@@ -505,7 +505,7 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Executes the given SQL insert/update/delete statement.
-	 * 
+	 *
 	 * @param paramObj
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the count of updated records
@@ -518,7 +518,7 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Executes the given SQL insert/update/delete statement.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the Map instance mapped to SQL parameters
 	 * @return the count of updated records
@@ -541,7 +541,7 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Considers empty string as negative.<br>
-	 * 
+	 *
 	 * @return this
 	 * @see SQLExecutor#asNegative(Object...)
 	 */
@@ -558,7 +558,7 @@ public class SQLExecutor implements Closeable {
 	 * - empty array<br>
 	 * - a list contains negative value only<br>
 	 * - a array contains negative value only<br>
-	 * 
+	 *
 	 * @param negativeValues
 	 *            values to be considered as negative
 	 * @return this
@@ -589,7 +589,7 @@ public class SQLExecutor implements Closeable {
 	/**
 	 * Close the statement and the result set bound to this SQLExecuter
 	 * instance.
-	 * 
+	 *
 	 * @see SQLExecutor#closeStatement()
 	 */
 	@Override
@@ -599,33 +599,33 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Generates SQL.
-	 * 
+	 *
 	 * @return the SQL generated
 	 */
-	public String genSql() {
-		return genSql(null);
+	public String generateSql() {
+		return generateSql(null);
 	}
 
 	/**
 	 * Generates the SQL.
-	 * 
+	 *
 	 * @param paramObj
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the SQL generated
 	 * @see {@link ParamMap#object(Object)}
 	 */
-	public String genSql(Object paramObj) {
-		return genSql(params(paramObj));
+	public String generateSql(Object paramObj) {
+		return generateSql(params(paramObj));
 	}
 
 	/**
 	 * Generates the SQL.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the Map instance mapped to SQL parameters
 	 * @return the SQL generated
 	 */
-	public String genSql(Map<String, Object> paramMap) {
+	public String generateSql(Map<String, Object> paramMap) {
 		setProductName(this.productName);
 		addNegative(negativeValues);
 		try {
@@ -639,74 +639,74 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Generates the {@link SQLSet}.
-	 * 
+	 *
 	 * @return {@link SQLSet} instance.(contains the SQL generated and its
 	 *         parameters)
 	 */
-	public SQLSet genSQLSet() {
-		return genSQLSet(null);
+	public SQLSet generateSQLSet() {
+		return generateSQLSet(null);
 	}
 
 	/**
 	 * Generates the {@link SQLSet}.
-	 * 
+	 *
 	 * @param paramObj
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return {@link SQLSet} instance.(contains the SQL generated and its
 	 *         parameters)
 	 * @see {@link ParamMap#object(Object)}
 	 */
-	public SQLSet genSQLSet(Object paramObj) {
-		return genSQLSet(params(paramObj));
+	public SQLSet generateSQLSet(Object paramObj) {
+		return generateSQLSet(params(paramObj));
 	}
 
 	/**
 	 * Generates the {@link SQLSet}.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the Map instance mapped to SQL parameters
 	 * @return {@link SQLSet} instance.(contains the SQL generated and its
 	 *         parameters)
 	 */
-	public SQLSet genSQLSet(Map<String, Object> paramMap) {
-		String sql = genSql(paramMap);
+	public SQLSet generateSQLSet(Map<String, Object> paramMap) {
+		String sql = generateSql(paramMap);
 		return new SQLSet(sql, getParams());
 	}
 
 	/**
 	 * Generates the {@link PreparedStatement} instance from the SQL bound to
 	 * this.
-	 * 
+	 *
 	 * @return {@link PreparedStatement} instance
 	 */
-	public PreparedStatement genStatment() {
+	public PreparedStatement generateStatment() {
 		return genStmt(null);
 	}
 
 	/**
 	 * Generates the {@link PreparedStatement} instance from the SQL bound to
 	 * this and the parameters.
-	 * 
+	 *
 	 * @param paramObj
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return {@link PreparedStatement} instance
 	 * @see {@link ParamMap#object(Object)}
 	 */
-	public PreparedStatement genStatment(Object paramObj) {
+	public PreparedStatement generateStatment(Object paramObj) {
 		return genStmt(params(paramObj));
 	}
 
 	/**
 	 * Generates the {@link PreparedStatement} instance from the SQL bound to
 	 * this and the parameters.
-	 * 
+	 *
 	 * @param paramMap
 	 *            the Map instance mapped to SQL parameters
 	 * @return {@link PreparedStatement} instance
 	 */
-	public PreparedStatement genStatment(Map<String, Object> paramMap) {
+	public PreparedStatement generateStatment(Map<String, Object> paramMap) {
 		try {
-			stmt = manager.con().prepareStatement(genSql(paramMap));
+			stmt = manager.con().prepareStatement(generateSql(paramMap));
 			int i = 1;
 			for (Object param : this.sqlGenerator.params) {
 				setSQLData(stmt, param, i++);
@@ -740,6 +740,6 @@ public class SQLExecutor implements Closeable {
 
 	PreparedStatement genStmt(Map<String, Object> paramMap) {
 		manager.putExecutor(this);
-		return genStatment(paramMap);
+		return generateStatment(paramMap);
 	}
 }
