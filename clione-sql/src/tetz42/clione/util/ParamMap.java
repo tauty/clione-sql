@@ -165,6 +165,22 @@ public class ParamMap extends HashMap<String, Object> {
 		return this;
 	}
 
+	/**
+	 * Associates the specified value with the specified key in this map
+	 * (optional operation). If the map previously contained a mapping for the
+	 * key, the old value is replaced by the specified value. (A map m is said
+	 * to contain a mapping for a key k if and only if m.containsKey(k) would
+	 * return true.)<br>
+	 * If the specified negatives contains the specified value, the key and the
+	 * value does not associate.<br>
+	 * Before the key is used, the first character of the key is removed if it
+	 * is a symbol.<br>
+	 *
+	 * 
+	 * @param key
+	 * @param eles elements to be stored in the ListWithDel instance
+	 * @return
+	 */
 	public ParamMap $orList(String key, Iterable<?> eles) {
 		return this.$(key, ListWithDelim.genList(eles).or());
 	}
