@@ -44,9 +44,22 @@ public class SQLIterator<T> implements Iterable<T> {
 		}
 	}
 
+	/**
+	 * Generates Iterator instance to iterate the result set and convert the result
+	 * into a instance of the specified Class.<br>
+	 * The conversion rules are below:<br>
+	 * <pre>
+	 * [the Class is not specified or the Class can be assignable from ResultMap]
+	 * 	Converts the result into a instance of ResultMap.
+	 * 		example)
+	 * 			
+	 * [the Class 
+	 * </pre>
+	 * 
+	 */
 	@Override
 	public Iterator<T> iterator() {
-		if (clazz == ResultMap.class) {
+		if (clazz == null || clazz.isAssignableFrom(ResultMap.class)) {
 			return new RsIterator() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -76,8 +89,7 @@ public class SQLIterator<T> implements Iterable<T> {
 					FN fn = builder.con.getField(label);
 					if (fn.f == null)
 						continue;
-					builder.set(fn.name, fn.f,
-						getSQLData(fn.f, executor.rs, i));
+					builder.set(fn.name, fn.f, getSQLData(fn.f, executor.rs, i));
 				}
 				return builder.getInstance();
 			}
