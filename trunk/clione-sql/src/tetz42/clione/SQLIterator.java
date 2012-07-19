@@ -76,7 +76,8 @@ public class SQLIterator<T> implements Iterable<T> {
 					FN fn = builder.con.getField(label);
 					if (fn.f == null)
 						continue;
-					builder.set(fn.name, fn.f, getSQLData(fn.f, executor.rs, i));
+					builder.set(fn.name, fn.f,
+						getSQLData(fn.f, executor.rs, i));
 				}
 				return builder.getInstance();
 			}
@@ -175,12 +176,27 @@ public class SQLIterator<T> implements Iterable<T> {
 				});
 	}
 
+	private static enum RsStatus {
+		UNKOWN, NEXT_OK, ENDED
+	}
+
 	private abstract class RsIterator implements Iterator<T> {
+
+		RsStatus status = RsStatus.UNKOWN;
 
 		@Override
 		public boolean hasNext() {
 			try {
-				return executor.rs.next();
+				switch (status) {
+				case NEXT_OK:
+					return true;
+				case ENDED:
+					return false;
+				default:
+					boolean ret = executor.rs.next();
+					status = ret ? RsStatus.NEXT_OK : RsStatus.ENDED;
+					return ret;
+				}
 			} catch (SQLException e) {
 				throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
 						executor.getSQLInfo()), e);
@@ -190,7 +206,23 @@ public class SQLIterator<T> implements Iterable<T> {
 		@Override
 		public T next() {
 			try {
-				return nextTask();
+				switch (status) {
+				case NEXT_OK:
+					status = RsStatus.UNKOWN;
+					return nextTask();
+				case ENDED:
+					throw new UnsupportedOperationException(
+							"Iterator has already ended.");
+				default:
+					if (executor.rs.next()) {
+						status = RsStatus.UNKOWN;
+						return nextTask();
+					} else {
+						status = RsStatus.ENDED;
+						throw new UnsupportedOperationException(
+								"Iterator has already ended.");
+					}
+				}
 			} catch (SQLException e) {
 				throw new SQLRuntimeException(mkStringByCRLF(e.getMessage(),
 						executor.getSQLInfo()), e);
