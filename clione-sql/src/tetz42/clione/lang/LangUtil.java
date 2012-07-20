@@ -1,14 +1,14 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.Util.*;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import tetz42.clione.common.HereDoc;
+import tetz42.clione.common.RegexpTokenizer;
 import tetz42.clione.exception.SecurityValidationException;
-import tetz42.util.HereDoc;
-import tetz42.util.RegexpTokenizer;
 
 public class LangUtil {
 

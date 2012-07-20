@@ -1,7 +1,7 @@
 package tetz42.clione.util;
 
-import static tetz42.util.ReflectionUtil.*;
-import static tetz42.util.Util.*;
+import static tetz42.clione.common.ReflectionUtil.*;
+import static tetz42.clione.common.Util.*;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import tetz42.clione.common.Const;
 import tetz42.clione.exception.UnsupportedTypeException;
 import tetz42.clione.util.converter.ArrayConv;
 import tetz42.clione.util.converter.BigDecimaiConv;
@@ -63,7 +64,6 @@ import tetz42.clione.util.converter.StringConv;
 import tetz42.clione.util.converter.TimeConv;
 import tetz42.clione.util.converter.TimestampConv;
 import tetz42.clione.util.converter.URLConv;
-import tetz42.util.Const;
 
 public class ClioneUtil {
 
@@ -151,10 +151,10 @@ public class ClioneUtil {
 				"--- resource ---", resourceInfo);
 	}
 
-	public static Object getSQLData(Field f, ResultSet rs, int columnIndex)
+	public static Object getJDBCData(Field f, ResultSet rs, int columnIndex)
 			throws SQLException {
 		try {
-			return getSQLData(f.getType(), rs, columnIndex);
+			return getJDBCData(f.getType(), rs, columnIndex);
 		} catch (UnsupportedTypeException e) {
 			throw new UnsupportedTypeException(e.getMessage() + " Field name:"
 					+ f.toGenericString() + ", Class name:"
@@ -162,12 +162,12 @@ public class ClioneUtil {
 		}
 	}
 
-	public static Object getSQLData(Class<?> clazz, ResultSet rs,
+	public static Object getJDBCData(Class<?> clazz, ResultSet rs,
 			int columnIndex) throws SQLException {
 		return conv4Get(clazz).get(rs, columnIndex);
 	}
 
-	public static <T> void setSQLData(PreparedStatement stmt, Object param,
+	public static <T> void setJDBCData(PreparedStatement stmt, Object param,
 			int columnIndex) throws SQLException {
 		if (param == null)
 			defaultConv.set(stmt, param, columnIndex);
@@ -175,16 +175,40 @@ public class ClioneUtil {
 			conv4Set(param.getClass()).set(stmt, param, columnIndex);
 	}
 
-	public static boolean isGetSQLType(Class<?> clazz) {
+	/**
+	 * Test if the specified Class is supported by Clione-O/R Mapping.<br>
+	 *
+	 * <pre>
+	 * [Supported classes]
+	 * 	- primitive class and its wrapper class
+	 * 	- {@link BigDecimal}, {@link BigInteger}
+	 * 	- {@link String}
+	 * 	- {@link Date}, {@link java.sql.Date}, {@link Time}, {@link Timestamp}
+	 * 	- {@link InputStream}, {@link Reader}
+	 * 	- {@link URL}
+	 * 	- {@link Blob}, {@link NClob}, {@link Clob}
+	 * 	- {@link Array}
+	 * 	- {@link Ref}
+	 * 	- {@link SQLXML}
+	 * 	- The class specified in clione.properties like below:
+	 *
+	 *		CONVERTERS.0=tetz42.clione.sample.Employee:tetz42.clione.sample.EmployeeConv
+	 *		CONVERTERS.1=tetz42.clione.sample.Person:tetz42.clione.sample.PersonConv
+	 * </pre>
+	 *
+	 * @param clazz
+	 * @return true - supported, false - not supported
+	 */
+	public static boolean isJDBCGetterType(Class<?> clazz) {
 		return null != conv4GetSub(clazz);
 	}
 
-	public static boolean isSetSQLType(Class<?> clazz) {
+	public static boolean isJDBCSetterType(Class<?> clazz) {
 		return null != conv4SetSub(clazz);
 	}
 
-	public static boolean isSetSQLType(Object obj) {
-		return obj == null || isSetSQLType(obj.getClass());
+	public static boolean isJDBCSetterType(Object obj) {
+		return obj == null || isJDBCSetterType(obj.getClass());
 	}
 
 	private static IConv conv4Get(Class<?> clazz) {

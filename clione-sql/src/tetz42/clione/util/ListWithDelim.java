@@ -3,7 +3,7 @@ package tetz42.clione.util;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import tetz42.util.Const;
+import tetz42.clione.common.Const;
 
 public class ListWithDelim<E> extends ArrayList<E> {
 

@@ -15,7 +15,7 @@
  */
 package tetz42.cellom.parsar.csv;
 
-import static tetz42.util.ReflectionUtil.*;
+import static tetz42.clione.common.ReflectionUtil.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import tetz42.cellom.parsar.csv.annotation.CsvCell;
-import tetz42.util.exception.IORuntimeException;
-import tetz42.util.exception.UnknownFormatException;
+import tetz42.clione.common.exception.IORuntimeException;
+import tetz42.clione.common.exception.UnknownFormatException;
 import tetz42.validation.FailureInfo;
 import tetz42.validation.Validator;
 

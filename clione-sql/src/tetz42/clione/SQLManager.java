@@ -15,9 +15,9 @@
  */
 package tetz42.clione;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.loader.LoaderUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.Util.*;
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -25,11 +25,11 @@ import java.sql.Connection;
 import java.util.HashSet;
 import java.util.List;
 
+import tetz42.clione.common.Using;
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.Config;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.Using;
 
 /**
  * The entry point of Clione-SQL.<br>
@@ -373,18 +373,20 @@ public class SQLManager implements Closeable {
 	 * Get the information of the SQL performed previous.<br>
 	 * The format of information is below:<br>
 	 *
+	 * <pre>
 	 * --- sql ---<br>
 	 * select<br>
-	 * &nbsp;&nbsp;*<br>
+	 *   *<br>
 	 * from<br>
-	 * &nbsp;&nbsp;people<br>
+	 *   people<br>
 	 * where<br>
-	 * &nbsp;&nbsp;title = ?<br>
-	 * &nbsp;&nbsp;and sex is ?<br>
+	 *   title = ?<br>
+	 *   and sex is ?<br>
 	 * --- params ---<br>
 	 * [chief, female]<br>
 	 * --- resource ---<br>
 	 * SQL file path:tetz42/dao/sql/PersonDao/Select.sql<br>
+	 * </pre>
 	 *
 	 * @return the SQL information
 	 */

@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.Util.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -391,7 +391,7 @@ public class Extention extends ClioneFunction {
 				if (inst.map != null)
 					paramMap.putAll(inst.map);
 				paramMap.putAll(getParamMap());
-				String sql = generator.genSql(paramMap, sqlNode);
+				String sql = generator.execute(paramMap, sqlNode);
 				Instruction result = new Instruction().replacement(sql);
 				if (generator.params != null && generator.params.size() != 0)
 					result.params.addAll(generator.params);
@@ -443,7 +443,7 @@ public class Extention extends ClioneFunction {
 				Instruction retInst = new Instruction()
 						.nodeDispose(inst.isNodeDisposed);
 				SQLGenerator sqlGenerator = new SQLGenerator();
-				retInst.replacement = sqlGenerator.genSql(getParamMap(),
+				retInst.replacement = sqlGenerator.execute(getParamMap(),
 						LoaderUtil.getNodeBySQL(String.valueOf(inst.params
 								.get(0)), "Java String passed as parameter"));
 				if (sqlGenerator.params != null

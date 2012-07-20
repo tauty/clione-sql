@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common;
 
-import static tetz42.util.Util.*;
+import static tetz42.clione.common.Util.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -32,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import tetz42.util.exception.InvalidParameterException;
-import tetz42.util.exception.WrapException;
+import tetz42.clione.common.exception.InvalidParameterException;
+import tetz42.clione.common.exception.WrapException;
 
 public class ReflectionUtil {
 
@@ -108,17 +108,7 @@ public class ReflectionUtil {
 	}
 
 	public static boolean classOf(Class<?> child, Class<?> parent) {
-		Class<?> clazz = child;
-		do {
-			if (clazz == parent)
-				return true;
-			clazz = clazz.getSuperclass();
-		} while (clazz != null);
-		for (Class<?> c : child.getInterfaces()) {
-			if (c == parent)
-				return true;
-		}
-		return false;
+		return parent.isAssignableFrom(child);
 	}
 
 	public static boolean isStatic(Field f) {

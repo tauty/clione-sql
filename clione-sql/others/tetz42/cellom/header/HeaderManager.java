@@ -14,7 +14,7 @@ import tetz42.cellom.Query;
 import tetz42.cellom.RecursiveMap;
 import tetz42.cellom.annotation.EachHeader;
 import tetz42.cellom.body.CelloMap;
-import tetz42.util.exception.InvalidParameterException;
+import tetz42.clione.common.exception.InvalidParameterException;
 
 public class HeaderManager<T> implements IHeader {
 

@@ -30,7 +30,7 @@ public class SQLGenerator {
 	public List<Object> params;
 	public boolean isSqlOutputed = false;
 
-	public String genSql(Map<String, Object> map, SQLNode sqlNode) {
+	public String execute(Map<String, Object> map, SQLNode sqlNode) {
 		pushResouceInfo(sqlNode.resourceInfo);
 		try {
 			ParamMap paramMap;

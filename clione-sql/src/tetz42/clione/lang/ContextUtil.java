@@ -1,6 +1,5 @@
 package tetz42.clione.lang;
 
-import static tetz42.util.Util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +19,7 @@ import tetz42.clione.lang.dialect.SqlserverDialect;
 import tetz42.clione.loader.LoaderUtil;
 import tetz42.clione.util.ParamMap;
 import static tetz42.clione.SQLManager.Product.*;
+import static tetz42.clione.common.Util.*;
 
 public class ContextUtil {
 

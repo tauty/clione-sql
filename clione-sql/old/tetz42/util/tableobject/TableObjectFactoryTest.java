@@ -5,7 +5,7 @@ import static tetz42.test.Auty.*;
 
 import org.junit.Test;
 
-import tetz42.util.exception.InvalidParameterException;
+import tetz42.clione.common.exception.InvalidParameterException;
 import tetz42.util.tableobject.annotation.ColumnDef;
 import tetz42.util.tableobject.annotation.Hidden;
 import tetz42.util.tableobject.tables.TableObject3;

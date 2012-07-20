@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import tetz42.clione.common.HereDoc;
 import tetz42.clione.exception.ClioneFormatException;
-import tetz42.util.HereDoc;
 
 public class UpperIfTest {
 

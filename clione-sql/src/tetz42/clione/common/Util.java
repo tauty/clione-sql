@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common;
 
-import static tetz42.util.Const.*;
+import static tetz42.clione.common.Const.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

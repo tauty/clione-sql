@@ -1,8 +1,8 @@
 package tetz42.clione.lang.func;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.lang.LangUtil.*;
-import static tetz42.util.Util.*;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.util.ParamMap;

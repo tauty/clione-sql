@@ -21,7 +21,7 @@ public class SQLLiteral extends ClioneFunction {
 	public Instruction perform(ParamMap paramMap) {
 		Instruction inst = new Instruction();
 		SQLGenerator sqlGenerator = new SQLGenerator();
-		inst.replacement = sqlGenerator.genSql(paramMap, this.sqlNode);
+		inst.replacement = sqlGenerator.execute(paramMap, this.sqlNode);
 		if (sqlGenerator.params != null && sqlGenerator.params.size() != 0) {
 			inst.params.addAll(sqlGenerator.params);
 		}

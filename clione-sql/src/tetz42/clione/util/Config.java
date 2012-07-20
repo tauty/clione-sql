@@ -1,13 +1,13 @@
 package tetz42.clione.util;
 
-import static tetz42.util.Util.*;
+import static tetz42.clione.common.Util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import tetz42.util.IOUtil;
+import tetz42.clione.common.IOUtil;
 
 public class Config {
 

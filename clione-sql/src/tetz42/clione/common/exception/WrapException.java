@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 tetsuo.ohta[at]gmail.com
+ * Copyright 2011 tetsuo.ohta[at]gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common.exception;
 
-public interface Function<RESULT> {
-	RESULT apply();
+public class WrapException extends RuntimeException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3510290222674824784L;
+
+	public WrapException(Throwable t) {
+		super(t.getMessage(), t);
+	}
+
+	public WrapException(String msg, Throwable t) {
+		super(msg, t);
+	}
+
 }

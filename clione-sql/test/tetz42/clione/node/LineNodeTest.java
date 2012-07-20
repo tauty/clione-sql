@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import tetz42.util.HereDoc;
+import tetz42.clione.common.HereDoc;
 
 public class LineNodeTest {
 

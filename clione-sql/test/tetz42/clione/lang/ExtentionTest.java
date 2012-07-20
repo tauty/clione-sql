@@ -304,7 +304,7 @@ public class ExtentionTest {
 	public void include_rpath() {
 		SQLNode sqlNode = LoaderUtil.getNodeByClass(getClass(),
 				"IncludeRpath.sql", ContextUtil.getProductName());
-		String sql = new SQLGenerator().genSql(params(), sqlNode);
+		String sql = new SQLGenerator().execute(params(), sqlNode);
 		assertEqualsWithFile(sql, getClass(), "include_rpath");
 	}
 

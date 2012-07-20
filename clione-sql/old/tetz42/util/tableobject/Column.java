@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
-import tetz42.util.exception.WrapException;
+import tetz42.clione.common.exception.WrapException;
 import tetz42.util.tableobject.tables.TableObject1.ContextValues;
 import tetz42.util.tableobject.tables.TableObject1.HeaderInfo;
 

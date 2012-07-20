@@ -1,8 +1,8 @@
 package tetz42.clione;
 
+import static tetz42.clione.common.ReflectionUtil.*;
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.ReflectionUtil.*;
-import static tetz42.util.Util.*;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSetMetaData;
@@ -12,11 +12,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import tetz42.clione.common.Function;
+import tetz42.clione.common.exception.SQLRuntimeException;
 import tetz42.clione.exception.DuplicateKeyException;
+import tetz42.clione.util.ClioneUtil;
 import tetz42.clione.util.Config;
 import tetz42.clione.util.ResultMap;
-import tetz42.util.Function;
-import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLIterator<T> implements Iterable<T> {
 
@@ -45,21 +46,61 @@ public class SQLIterator<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Generates Iterator instance to iterate the result set and convert the result
-	 * into a instance of the specified Class.<br>
+	 * Generates Iterator instance to iterate the result set and convert the
+	 * result into a instance of the specified Class.<br>
 	 * The conversion rules are below:<br>
+	 *
 	 * <pre>
-	 * [the Class is not specified or the Class can be assignable from ResultMap]
+	 * [In case of the Class is not specified or is assignable from ResultMap]
 	 * 	Converts the result into a instance of ResultMap.
-	 * 		example)
-	 * 			
-	 * [the Class 
+	 * 	For example, in case of the result set keys and values are below:
+	 *
+	 * 		"key1": 100
+	 * 		"key2": "value2"
+	 *
+	 * 	it is converted to:
+	 *
+	 * 		ResultMap {
+	 * 			"key1": 100
+	 * 			"key2": "value2"
+	 * 		}
+	 *
+	 * [In case of the result of {@link ClioneUtil#isJDBCGetterType(Class)} is true]
+	 * 	Converts the first value of ResultSet into a instance of the specified Class.
+	 * 	For example, in case of the result set indexes and values are below:
+	 *
+	 * 		1: "foo"
+	 * 		2: 100
+	 * 		3: "bar"
+	 *
+	 * 	and the specified Class is String.class, the result is converted to "foo".
+	 *
+	 * [Any other case]
+	 * 	Converts the result into a instance of the specified Class.
+	 * 	For example, in case of the result set keys and values are below:
+	 *
+	 * 		"name": "John"
+	 * 		"title": "Chief Architect"
+	 * 		"employed_from": "1998-04-01"
+	 * 		"employed_to": "2012-08-31"
+	 *
+	 * 	and the specified Class have the matched fields, the result would be mapped to like below:
+	 *
+	 * 		Employee {
+	 * 			name = "John"
+	 * 			title = "Chief Architect"
+	 * 			employed = Period {
+	 * 				from = "1998-04-01"
+	 * 				to = "2012-08-31"
+	 * 			}
+	 * 		}
 	 * </pre>
-	 * 
+	 *
+	 * @see ClioneUtil#isJDBCGetterType(Class)
 	 */
 	@Override
 	public Iterator<T> iterator() {
-		if (clazz == null || clazz.isAssignableFrom(ResultMap.class)) {
+		if (clazz == null || classOf(ResultMap.class, clazz)) {
 			return new RsIterator() {
 				@SuppressWarnings("unchecked")
 				@Override
@@ -71,29 +112,31 @@ public class SQLIterator<T> implements Iterable<T> {
 					return (T) map;
 				}
 			};
-		} else if (isGetSQLType(clazz)) {
+		} else if (isJDBCGetterType(clazz)) {
 			return new RsIterator() {
 				@SuppressWarnings("unchecked")
 				@Override
 				public T nextTask() throws SQLException {
-					return (T) getSQLData(clazz, executor.rs, 1);
+					return (T) getJDBCData(clazz, executor.rs, 1);
+				}
+			};
+		} else {
+			return new RsIterator() {
+				@Override
+				public T nextTask() throws SQLException {
+					ObjBuilder builder = new ObjBuilder();
+					for (int i = 1; i <= md.getColumnCount(); i++) {
+						String label = md.getColumnLabel(i).toLowerCase();
+						FN fn = builder.con.getField(label);
+						if (fn.f == null)
+							continue;
+						builder.set(fn.name, fn.f, getJDBCData(fn.f,
+								executor.rs, i));
+					}
+					return builder.getInstance();
 				}
 			};
 		}
-		return new RsIterator() {
-			@Override
-			public T nextTask() throws SQLException {
-				ObjBuilder builder = new ObjBuilder();
-				for (int i = 1; i <= md.getColumnCount(); i++) {
-					String label = md.getColumnLabel(i).toLowerCase();
-					FN fn = builder.con.getField(label);
-					if (fn.f == null)
-						continue;
-					builder.set(fn.name, fn.f, getSQLData(fn.f, executor.rs, i));
-				}
-				return builder.getInstance();
-			}
-		};
 	}
 
 	class ObjBuilder {
@@ -179,7 +222,7 @@ public class SQLIterator<T> implements Iterable<T> {
 						for (Field f : getFields(type)) {
 							String snakeName = con.putSnake(snakeBaseName, f);
 							String camelName = con.putCamel(camelBaseName, f);
-							if (!isGetSQLType(f.getType())
+							if (!isJDBCGetterType(f.getType())
 									&& depth < Config.get().ENTITY_DEPTH_LIMIT)
 								map(snakeName, camelName, f.getType(), con,
 										depth + 1);

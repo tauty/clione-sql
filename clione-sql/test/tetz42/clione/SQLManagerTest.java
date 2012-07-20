@@ -34,10 +34,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import tetz42.clione.common.exception.InvalidParameterException;
+import tetz42.clione.common.exception.SQLRuntimeException;
 import tetz42.clione.exception.ConnectionNotFoundException;
 import tetz42.clione.util.ResultMap;
-import tetz42.util.exception.InvalidParameterException;
-import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLManagerTest {
 
