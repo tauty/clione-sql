@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -24,11 +24,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import tetz42.clione.common.exception.IORuntimeException;
+import tetz42.clione.common.exception.ResourceClosingException;
+import tetz42.clione.common.exception.SQLRuntimeException;
+import tetz42.clione.common.exception.WrapException;
 import tetz42.clione.exception.UnsupportedTypeException;
-import tetz42.util.exception.IORuntimeException;
-import tetz42.util.exception.ResourceClosingException;
-import tetz42.util.exception.SQLRuntimeException;
-import tetz42.util.exception.WrapException;
 
 public abstract class Using<T> {
 

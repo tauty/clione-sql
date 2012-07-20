@@ -34,8 +34,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tetz42.clione.SQLManagerTest.Tameshi;
+import tetz42.clione.common.exception.SQLRuntimeException;
 import tetz42.clione.util.ResultMap;
-import tetz42.util.exception.SQLRuntimeException;
 
 public class SQLExecutorTest {
 

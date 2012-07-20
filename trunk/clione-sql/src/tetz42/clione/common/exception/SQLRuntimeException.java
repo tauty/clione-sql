@@ -1,6 +1,6 @@
-package tetz42.util.exception;
+package tetz42.clione.common.exception;
 
-import static tetz42.util.Const.*;
+import static tetz42.clione.common.Const.*;
 
 import java.sql.SQLException;
 

@@ -2,7 +2,7 @@ package tetz42.util.tableobject;
 
 import java.util.HashMap;
 
-import tetz42.util.exception.InvalidParameterException;
+import tetz42.clione.common.exception.InvalidParameterException;
 
 public class RemovedMap extends HashMap<String, RemovedMap> {
 

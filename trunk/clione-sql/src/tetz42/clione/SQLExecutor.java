@@ -16,9 +16,9 @@
 package tetz42.clione;
 
 import static tetz42.clione.SQLManager.*;
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.Util.*;
 
 import java.io.Closeable;
 import java.sql.PreparedStatement;
@@ -30,12 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 import tetz42.clione.SQLManager.SQLSet;
+import tetz42.clione.common.Using;
+import tetz42.clione.common.exception.SQLRuntimeException;
 import tetz42.clione.gen.SQLGenerator;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.util.ParamMap;
 import tetz42.clione.util.ResultMap;
-import tetz42.util.Using;
-import tetz42.util.exception.SQLRuntimeException;
 
 /**
  *
@@ -73,6 +73,7 @@ public class SQLExecutor implements Closeable {
 	 * @return ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
+	 * @see SQLIterator#iterator()
 	 */
 	public ResultMap find() {
 		return this.find((Map<String, Object>) null);
@@ -89,6 +90,7 @@ public class SQLExecutor implements Closeable {
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public ResultMap find(Object object) {
 		return this.find(params(object));
@@ -104,6 +106,7 @@ public class SQLExecutor implements Closeable {
 	 * @return ResultMap instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ResultMap}
+	 * @see SQLIterator#iterator()
 	 */
 	public ResultMap find(final Map<String, Object> paramMap) {
 		return new Using<ResultMap>(this) {
@@ -119,60 +122,6 @@ public class SQLExecutor implements Closeable {
 	}
 
 	/**
-	 * Executes the given SQL select statement and returns the result as a list
-	 * of {@link ResultMap} instance. If no record is selected, it returns empty
-	 * list.
-	 *
-	 * @return the list of ResultMap instance
-	 * @throws SQLRuntimeException
-	 * @see {@link ResultMap}
-	 */
-	public List<ResultMap> findAll() {
-		return this.findAll((Map<String, Object>) null);
-	}
-
-	/**
-	 * Executes the given SQL select statement and returns the result as a list
-	 * of {@link ResultMap} instance. If no record is selected, it returns empty
-	 * list.
-	 *
-	 * @param object
-	 *            the object to be inspected and mapped to SQL parameters
-	 * @return the list of ResultMap instance
-	 * @throws SQLRuntimeException
-	 * @see {@link ResultMap}
-	 * @see {@link ParamMap#object(Object)}
-	 */
-	public List<ResultMap> findAll(Object object) {
-		return this.findAll(params(object));
-	}
-
-	/**
-	 * Executes the given SQL select statement and returns the result as a list
-	 * of {@link ResultMap} instance. If no record is selected, it returns empty
-	 * list.
-	 *
-	 * @param paramMap
-	 *            the object to be inspected and mapped to SQL parameters
-	 * @return the list of ResultMap instance
-	 * @throws SQLRuntimeException
-	 * @see {@link ResultMap}
-	 */
-	public List<ResultMap> findAll(final Map<String, Object> paramMap) {
-		return new Using<List<ResultMap>>(this) {
-
-			@Override
-			protected List<ResultMap> execute() {
-				ArrayList<ResultMap> list = new ArrayList<ResultMap>();
-				for (ResultMap map : each(ResultMap.class, paramMap)) {
-					list.add(map);
-				}
-				return list;
-			}
-		}.invoke();
-	}
-
-	/**
 	 * Executes the given SQL select statement and returns the result as a
 	 * instance of the class specified. If no record is selected, it returns
 	 * null. If multiple records are selected, it returns the 1st record only.
@@ -182,6 +131,7 @@ public class SQLExecutor implements Closeable {
 	 *            the class of result instance
 	 * @return the result instance
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> T find(Class<T> entityClass) {
 		return this.find(entityClass, (Map<String, Object>) null);
@@ -200,6 +150,7 @@ public class SQLExecutor implements Closeable {
 	 * @return the result instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> T find(Class<T> entityClass, Object object) {
 		return this.find(entityClass, params(object));
@@ -218,6 +169,7 @@ public class SQLExecutor implements Closeable {
 	 * @return the result instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> T find(final Class<T> entityClass,
 			final Map<String, Object> paramMap) {
@@ -235,6 +187,63 @@ public class SQLExecutor implements Closeable {
 
 	/**
 	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 *
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 * @see SQLIterator#iterator()
+	 */
+	public List<ResultMap> findAll() {
+		return this.findAll((Map<String, Object>) null);
+	}
+
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 *
+	 * @param object
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
+	 */
+	public List<ResultMap> findAll(Object object) {
+		return this.findAll(params(object));
+	}
+
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
+	 * of {@link ResultMap} instance. If no record is selected, it returns empty
+	 * list.
+	 *
+	 * @param paramMap
+	 *            the object to be inspected and mapped to SQL parameters
+	 * @return the list of ResultMap instance
+	 * @throws SQLRuntimeException
+	 * @see {@link ResultMap}
+	 * @see SQLIterator#iterator()
+	 */
+	public List<ResultMap> findAll(final Map<String, Object> paramMap) {
+		return new Using<List<ResultMap>>(this) {
+
+			@Override
+			protected List<ResultMap> execute() {
+				ArrayList<ResultMap> list = new ArrayList<ResultMap>();
+				for (ResultMap map : each(ResultMap.class, paramMap)) {
+					list.add(map);
+				}
+				return list;
+			}
+		}.invoke();
+	}
+
+	/**
+	 * Executes the given SQL select statement and returns the result as a list
 	 * of instance of the class specified. If no record is selected, it returns
 	 * empty list.
 	 *
@@ -245,6 +254,7 @@ public class SQLExecutor implements Closeable {
 	 *            the object to be inspected and mapped to SQL parameters
 	 * @return the list of result instance
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> List<T> findAll(Class<T> entityClass) {
 		return this.findAll(entityClass, null);
@@ -263,6 +273,7 @@ public class SQLExecutor implements Closeable {
 	 * @return the list of result instance
 	 * @throws SQLRuntimeException
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> List<T> findAll(Class<T> entityClass, Object paramObj) {
 		return this.findAll(entityClass, params(paramObj));
@@ -280,6 +291,7 @@ public class SQLExecutor implements Closeable {
 	 *            the Map instance mapped to SQL parameters
 	 * @return the list of result instance
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> List<T> findAll(final Class<T> entityClass,
 			final Map<String, Object> paramMap) {
@@ -322,6 +334,7 @@ public class SQLExecutor implements Closeable {
 	 *            the class of result instance
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass) {
 		return each(entityClass, null);
@@ -358,6 +371,7 @@ public class SQLExecutor implements Closeable {
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass, Object paramObj) {
 		return each(entityClass, params(paramObj));
@@ -389,6 +403,7 @@ public class SQLExecutor implements Closeable {
 	 *            the Map instance mapped to SQL parameters
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public SQLIterator<ResultMap> each(Map<String, Object> paramMap) {
 		return each(ResultMap.class, paramMap);
@@ -417,6 +432,7 @@ public class SQLExecutor implements Closeable {
 	 * @param <T>
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public SQLIterator<ResultMap> each() {
 		return each(ResultMap.class, null);
@@ -450,6 +466,7 @@ public class SQLExecutor implements Closeable {
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
 	 * @see {@link ParamMap#object(Object)}
+	 * @see SQLIterator#iterator()
 	 */
 	public SQLIterator<ResultMap> each(Object paramObj) {
 		return each(ResultMap.class, params(paramObj));
@@ -483,6 +500,7 @@ public class SQLExecutor implements Closeable {
 	 *            the Map instance mapped to SQL parameters
 	 * @return the iterator wrapper of result set
 	 * @throws SQLRuntimeException
+	 * @see SQLIterator#iterator()
 	 */
 	public <T> SQLIterator<T> each(Class<T> entityClass,
 			Map<String, Object> paramMap) {
@@ -629,7 +647,7 @@ public class SQLExecutor implements Closeable {
 		setProductName(this.productName);
 		addNegative(negativeValues);
 		try {
-			String sql = sqlGenerator.genSql(paramMap, sqlNode);
+			String sql = sqlGenerator.execute(paramMap, sqlNode);
 			manager.setInfo(resourceInfo, sql, sqlGenerator.params);
 			return sql;
 		} finally {
@@ -709,7 +727,7 @@ public class SQLExecutor implements Closeable {
 			stmt = manager.con().prepareStatement(generateSql(paramMap));
 			int i = 1;
 			for (Object param : this.sqlGenerator.params) {
-				setSQLData(stmt, param, i++);
+				setJDBCData(stmt, param, i++);
 			}
 			return stmt;
 		} catch (SQLException e) {

@@ -19,8 +19,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import tetz42.util.exception.InvalidParameterException;
-import tetz42.util.exception.WrapException;
+import tetz42.clione.common.exception.InvalidParameterException;
+import tetz42.clione.common.exception.WrapException;
 
 public class CelloUtil {
 

@@ -1,0 +1,16 @@
+ArrayList[
+	ResultMap{
+		"address": "tengo@judo.com"
+		"id": "0"
+		"name": "泰山天伍"
+		"shain_no": "100000"
+		"shozoku_bu_ka": "柔道部男子課"
+	}
+	ResultMap{
+		"address": "yawara@urasawa.com"
+		"id": "1"
+		"name": "猪熊柔"
+		"shain_no": "100001"
+		"shozoku_bu_ka": "柔道部女子課"
+	}
+]

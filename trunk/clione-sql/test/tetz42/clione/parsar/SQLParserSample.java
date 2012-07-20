@@ -1,8 +1,8 @@
 package tetz42.clione.parsar;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.Util.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.common.HereDoc;
+import tetz42.clione.common.IOUtil;
+import tetz42.clione.common.RegexpTokenizer;
+import tetz42.clione.common.exception.WrapException;
 import tetz42.clione.exception.ClioneFormatException;
 import tetz42.clione.node.ConditionPlaceHolder;
 import tetz42.clione.node.EmptyLineNode;
@@ -23,11 +27,7 @@ import tetz42.clione.node.PlaceHolder;
 import tetz42.clione.node.SQLNode;
 import tetz42.clione.node.StrNode;
 import tetz42.clione.util.Config;
-import tetz42.util.HereDoc;
-import tetz42.util.IOUtil;
 import tetz42.util.ObjDumper4j;
-import tetz42.util.RegexpTokenizer;
-import tetz42.util.exception.WrapException;
 
 public class SQLParserSample {
 

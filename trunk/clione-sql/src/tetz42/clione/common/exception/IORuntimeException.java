@@ -1,4 +1,4 @@
-package tetz42.util.exception;
+package tetz42.clione.common.exception;
 
 public class IORuntimeException extends RuntimeException {
 

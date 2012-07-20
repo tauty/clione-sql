@@ -15,8 +15,8 @@
  */
 package tetz42.clione.util;
 
+import static tetz42.clione.common.ReflectionUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
-import static tetz42.util.ReflectionUtil.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -361,7 +361,7 @@ public class ParamMap extends HashMap<String, Object> {
 					+ "' is duplicate. One of value:" + get(key) + ", Another:"
 					+ obj);
 		this.put(key, obj);
-		if (!isSetSQLType(obj) && !isEachable(obj)
+		if (!isJDBCSetterType(obj) && !isEachable(obj)
 				&& depth < Config.get().ENTITY_DEPTH_LIMIT) {
 			ParamMap subMap;
 			if (obj instanceof Map<?, ?>) {

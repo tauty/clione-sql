@@ -1,7 +1,7 @@
 package tetz42.clione.lang;
 
+import static tetz42.clione.common.Util.*;
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.Util.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,7 +1,7 @@
 package tetz42.clione.lang.func;
 
+import static tetz42.clione.common.ReflectionUtil.*;
 import static tetz42.clione.lang.ContextUtil.*;
-import static tetz42.util.ReflectionUtil.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

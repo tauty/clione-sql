@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.common.Util;
 import tetz42.clione.lang.ContextUtil.IFStatus;
 import tetz42.clione.lang.Instruction;
 import tetz42.clione.lang.func.ClioneFunction;
 import tetz42.clione.lang.func.SQLLiteral;
 import tetz42.clione.lang.func.StrLiteral;
 import tetz42.clione.util.ParamMap;
-import tetz42.util.Util;
 
 public class LineNode extends Node {
 

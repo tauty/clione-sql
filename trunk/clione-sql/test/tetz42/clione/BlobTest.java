@@ -16,9 +16,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import tetz42.clione.common.IOUtil;
 import tetz42.clione.node.LineNodeTest;
 import tetz42.clione.util.Config;
-import tetz42.util.IOUtil;
 
 public class BlobTest {
 

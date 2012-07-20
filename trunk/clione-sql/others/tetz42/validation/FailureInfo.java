@@ -3,7 +3,7 @@
  */
 package tetz42.validation;
 
-import static tetz42.util.Util.*;
+import static tetz42.clione.common.Util.*;
 
 import java.util.List;
 

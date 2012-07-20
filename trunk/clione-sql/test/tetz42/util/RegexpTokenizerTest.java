@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import tetz42.util.RegexpTokenizer;
+import tetz42.clione.common.RegexpTokenizer;
 
 
 public class RegexpTokenizerTest {

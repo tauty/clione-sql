@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util.exception;
+package tetz42.clione.common.exception;
 
-public class WrapException extends RuntimeException {
+public class InvalidParameterException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3510290222674824784L;
 
-	public WrapException(Throwable t) {
+	public InvalidParameterException(String msg) {
+		super(msg);
+	}
+
+	public InvalidParameterException(Throwable t) {
 		super(t.getMessage(), t);
 	}
 
-	public WrapException(String msg, Throwable t) {
+	public InvalidParameterException(String msg, Throwable t) {
 		super(msg, t);
 	}
 

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import tetz42.util.exception.NoMoreTokenException;
+import tetz42.clione.common.exception.NoMoreTokenException;
 
 public class RegexpTokenizer {
 

@@ -1,6 +1,6 @@
-package tetz42.util.exception;
+package tetz42.clione.common.exception;
 
-import tetz42.util.Const;
+import tetz42.clione.common.Const;
 
 
 public class NoMoreTokenException extends RuntimeException {

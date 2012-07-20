@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util;
+package tetz42.clione.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
-import tetz42.util.exception.WrapException;
+import tetz42.clione.common.exception.WrapException;
 
 /**
  * InputStream and OutputStream Utility class.

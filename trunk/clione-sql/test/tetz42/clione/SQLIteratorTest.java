@@ -15,6 +15,8 @@
  */
 package tetz42.clione;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static tetz42.clione.SQLManager.*;
 import static tetz42.test.Auty.*;
 
@@ -22,7 +24,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.junit.After;
@@ -73,6 +77,48 @@ public class SQLIteratorTest {
 				.findAll(GranpaEntity.class, new GranpaParam());
 
 		assertEqualsWithFile(list, getClass(), "find_tree_entity");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void find_pureMap() throws IOException, SQLException {
+		SQLManager sqlManager = sqlManager();
+		List<Map> list = sqlManager
+				.useSQL("select * from EMPLOYEES where SHOZOKU_BU_KA like /* %L shozoku_bu_ka '%' */'%課'")
+				.findAll(Map.class, new GranpaParam());
+
+		assertEqualsWithFile(list, getClass(), "find_pureMap");
+	}
+
+	@Test
+	public void iterator_test()  {
+		SQLManager sqlManager = sqlManager();
+		Iterator<GranpaEntity> iterator = sqlManager
+				.useSQL("select * from EMPLOYEES where SHOZOKU_BU_KA like /* %L shozoku_bu_ka '%' */'%課'")
+				.each(GranpaEntity.class, new GranpaParam()).iterator();
+
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.hasNext(), is(true));
+
+		assertNotNull(iterator.next());
+		assertNotNull(iterator.next());
+		try {
+			iterator.next();
+			fail();
+		}catch(UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+		try {
+			iterator.next();
+			fail();
+		}catch(UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+
+		assertThat(iterator.hasNext(), is(false));
+		assertThat(iterator.hasNext(), is(false));
+		assertThat(iterator.hasNext(), is(false));
 	}
 }
 

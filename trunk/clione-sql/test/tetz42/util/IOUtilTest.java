@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.junit.Test;
 
+import tetz42.clione.common.IOUtil;
+
 public class IOUtilTest {
 
 	@Test

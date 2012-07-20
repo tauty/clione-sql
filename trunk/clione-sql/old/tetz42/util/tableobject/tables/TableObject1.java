@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import tetz42.util.exception.InvalidParameterException;
-import tetz42.util.exception.WrapException;
+import tetz42.clione.common.exception.InvalidParameterException;
+import tetz42.clione.common.exception.WrapException;
 import tetz42.util.tableobject.Column;
 import tetz42.util.tableobject.RemovedMap;
 import tetz42.util.tableobject.Row;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 tetsuo.ohta[at]gmail.com
+ * Copyright 2012 tetsuo.ohta[at]gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tetz42.util.exception;
+package tetz42.clione.common;
 
-public class InvalidParameterException extends RuntimeException {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3510290222674824784L;
-
-	public InvalidParameterException(String msg) {
-		super(msg);
-	}
-
-	public InvalidParameterException(Throwable t) {
-		super(t.getMessage(), t);
-	}
-
-	public InvalidParameterException(String msg, Throwable t) {
-		super(msg, t);
-	}
+public interface Const {
+	public static final String CRLF = System.getProperty("line.separator");
 
 }
