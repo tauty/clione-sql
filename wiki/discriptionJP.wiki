@@ -126,9 +126,37 @@ WHERE
 }}}
 ※配列(or List)の要素数が1のときには「=」に、0の時には「IS NULL」に変化します。<br>
 <br>
+更にOracleの場合には、IN句に1000を超えるパラメタを指定できないため、1000を超えたら自動的に下記のようにORを併用して展開します。
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?.... -- 1000件
+    OR FIELD1 IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?.... -- 1000件
+    OR FIELD1 IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+}}}
+
 上記のように動作するのは、パラメタを「=, IS, IN, <>, !=, IS NOT, NOT IN」等の比較演算子の前においた場合です。<br>
-それ以外の「LIKE」等には対応していません。<br>
-なお「<>」など否定の比較演算子の前にパラメタを置いた場合には、nullの時には「IS NOT NULL」に、Listか配列の時には「NOT IN」に、それぞれ変化します。
+なお「<>」など否定の比較演算子の前にパラメタを置いた場合には、nullの時には「IS NOT NULL」に、Listか配列の時には「NOT IN」に、それぞれ変化します。<br>
+<br>
+「LIKE」の前にパラメタを置いた場合もほぼ同じ動作をしますが、パラメタがList or 配列のときの挙動が違います。<br>
+デフォルトでは、下記のように「OR」に展開します。<br>
+{{{
+SELECT
+    *
+FROM
+    TABLE1
+WHERE
+    FIELD1 LIKE ?
+    OR FIELD1 LIKE ?
+    OR FIELD1 LIKE ?
+    OR FIELD1 LIKE ?
+    OR FIELD1 LIKE ?
+}}}
+
+パラメタを調整することで「AND」に展開させることもできますが、これについては後述します。<br>
 
 ==SQLファイルの配置==
 SQLファイルは基本的にクラスパスの通ったディレクトリ以下のどこかに配置します。
@@ -172,6 +200,8 @@ import static tetz42.clione.SQLManager.*;
                   .find( Entity.class, params("id", id) );
     }
 }}}
+
+なお、パラメタに渡すSQL文
 
 ==インデントベースの動的SQL==
 clione-sqlの名前の由来は、「Clione-sql is Line and Indent Oriented, NEsted-structured, 2WaySQL library.」です。<br>
