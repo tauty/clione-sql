@@ -294,7 +294,7 @@ SELECT
 FROM
     employee
 WHERE
-    title = /* $title "/'chief'
+    title = /* $title */'chief'
   -- %IF useDateEmployed
     AND /* $date_from */'19980401' <= date_employed
     AND date_employed  <= /* $date_to */'20050401'
@@ -319,7 +319,7 @@ WHERE
     age <= /* $age_to */50
 }}}
 のように、区切りを行の最後に持ってくるフォーマットも正しく処理できるようになりました。<br>
-上記例で「age_to」がnullだった場合は行ごと削除されて「age >= /* $age_from */25 AND」がブロックの最後の行になりますが、上記ルールにより行末の「AND」が除去されて、
+上記例で「age_to」がnullだった場合は行ごと削除されて「age >= /`*` $age_from `*`/25 AND」がブロックの最後の行になりますが、上記ルールにより行末の「AND」が除去されて、
 {{{
 SELECT
     *
@@ -369,7 +369,7 @@ SELECT /* &table3 */
 }}}
 
 「UNION」、「UNION ALL」はClione-SQLでは「AND」等と同様に区切りとして認識されます。<br>
-<br>
+よって<br>
    :<br>
 
 SQL文を書くときに、適切な単位で改行したり意味のある単位でインデントするのは、開発効率を上げるために多くの方がやっていることだと思います。<br>
