@@ -374,7 +374,22 @@ SELECTの後ろに「&」というパラメタ就職記号がついたパラメ�
 「&」は「$」と同様、「パラメタの値がnullだったら、行ごと削除する」という動作は行いますが、「$」とは違ってプレースホルダの「?」の付与とパラメタのバインドを行いません。<br>
 <br>
 上記例でtable1がnullの場合、親ノードが除去されればその子ノードは全て除去されるので、table1のSQL文は全て、除去されて、table2, 3のSQL文が残されます。<br>
-このときtable2のSQL文の先頭は「UNION」という区切りなので除去されます。<br>
+このときtable2のSQL文の先頭は「UNION」という区切りなので除去されて、下のようになります。<br>
+{{{
+SELECT 
+        id
+        ,name
+        ,type
+    FROM
+        table2
+UNION ALL
+SELECT 
+        id
+        ,name
+        ,type
+    FROM
+        table3
+}}}
 <br>
 またtable2がnullだった場合には、table2のSQL文がその直前のUNIONごと除去され、
 
