@@ -180,7 +180,7 @@ public class ClioneUtil {
 	 *
 	 * <pre>
 	 * [Supported classes]
-	 * 	- primitive class and its wrapper class
+	 * 	- primitive classes and their wrapper class
 	 * 	- {@link BigDecimal}, {@link BigInteger}
 	 * 	- {@link String}
 	 * 	- {@link Date}, {@link java.sql.Date}, {@link Time}, {@link Timestamp}
