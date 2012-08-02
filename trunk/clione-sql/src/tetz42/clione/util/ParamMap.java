@@ -25,10 +25,11 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tetz42.clione.common.Util;
 import tetz42.clione.exception.DuplicateKeyException;
 
 /**
- * 
+ *
  * @author tetz
  */
 public class ParamMap extends HashMap<String, Object> {
@@ -44,7 +45,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * map contains no mapping for the key. <br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            the key whose associated value is to be returned
 	 * @return the value to which the specified key is mapped, or null if this
@@ -63,7 +64,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * return true.)<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the specified value is to be associated
 	 * @param value
@@ -86,7 +87,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * return true.)<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the specified value is to be associated
 	 * @param value
@@ -109,7 +110,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * not associate.<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the specified value is to be associated
 	 * @param value
@@ -131,7 +132,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * value is not associated.<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the specified value is to be associated
 	 * @param value
@@ -154,7 +155,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * The specified keys are associated with the value 'Boolean.TRUE'.<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param keys
 	 * @return this
 	 * @see ParamMap#put(String, Object)
@@ -175,7 +176,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * instance.<br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the generated {@link ListWithDelim} instance is
 	 *            to be associated
@@ -198,7 +199,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * instance. <br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the generated {@link ListWithDelim} instance is
 	 *            to be associated
@@ -221,7 +222,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * instance. <br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the generated {@link ListWithDelim} instance is
 	 *            to be associated
@@ -244,7 +245,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * instance. <br>
 	 * Before the key is used, the first character of the key is removed if it
 	 * is a symbol.<br>
-	 * 
+	 *
 	 * @param key
 	 *            key with which the generated {@link ListWithDelim} instance is
 	 *            to be associated
@@ -261,7 +262,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * Inspects the specified object and associates its result.<br>
 	 * <br>
 	 * example:
-	 * 
+	 *
 	 * <pre>
 	 * [parameter]
 	 * FooClass {
@@ -276,7 +277,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * 		"key42": "value2"
 	 * 	}
 	 * }
-	 * 
+	 *
 	 * [keys and values to be associated]
 	 * 	"field1": 10
 	 * 	"field2": "str1"
@@ -297,7 +298,7 @@ public class ParamMap extends HashMap<String, Object> {
 	 * 	"field4_key41": "value1"
 	 * 	"field4_key42": "value2"
 	 * </pre>
-	 * 
+	 *
 	 * @param obj
 	 *            the object to be inspect
 	 * @return this
@@ -316,7 +317,7 @@ public class ParamMap extends HashMap<String, Object> {
 
 	/**
 	 * Inspects the specified map and associates its keys and values.
-	 * 
+	 *
 	 * @param map
 	 *            the map to be inspect
 	 * @return this
@@ -335,7 +336,7 @@ public class ParamMap extends HashMap<String, Object> {
 
 	/**
 	 * Inspects the specified object and associates its result.<br>
-	 * 
+	 *
 	 * @param bean
 	 *            the object to be inspect
 	 * @return this
@@ -397,6 +398,6 @@ public class ParamMap extends HashMap<String, Object> {
 	}
 
 	private boolean isSupported(String key) {
-		return key.indexOf('$') == -1;
+		return Util.isNotEmpty(key) && key.indexOf('$') == -1;
 	}
 }
