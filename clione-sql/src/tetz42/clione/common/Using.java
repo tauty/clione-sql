@@ -27,8 +27,8 @@ import java.util.List;
 import tetz42.clione.common.exception.IORuntimeException;
 import tetz42.clione.common.exception.ResourceClosingException;
 import tetz42.clione.common.exception.SQLRuntimeException;
+import tetz42.clione.common.exception.UnsupportedTypeException;
 import tetz42.clione.common.exception.WrapException;
-import tetz42.clione.exception.UnsupportedTypeException;
 
 public abstract class Using<T> {
 

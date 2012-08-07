@@ -1,6 +1,6 @@
 package tetz42.clione.common.exception;
 
-import static tetz42.clione.util.ClioneUtil.*;
+import static tetz42.clione.common.Const.*;
 
 public class ResourceClosingException extends RuntimeException {
 
