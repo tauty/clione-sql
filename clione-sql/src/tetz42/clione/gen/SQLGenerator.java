@@ -34,13 +34,12 @@ public class SQLGenerator {
 		pushResouceInfo(sqlNode.resourceInfo);
 		try {
 			ParamMap paramMap;
-			if (map == null)
+			if (map == null) {
 				paramMap = new ParamMap();
-			else if (map instanceof ParamMap) {
+			} else if (map instanceof ParamMap) {
 				paramMap = (ParamMap) map;
 			} else {
-				paramMap = new ParamMap();
-				paramMap.putAll(map);
+				paramMap = new ParamMap(map);
 			}
 
 			Instruction inst = sqlNode.perform(paramMap);
