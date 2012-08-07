@@ -198,6 +198,14 @@ public class ReflectionUtil {
 		}
 	}
 
+	public static <T> T newInstanceQuietly(Class<T> clazz) {
+		try {
+			return newInstance(clazz);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static List<Field> getFields(Class<?> clazz) {
 		return avoidDuplication(getAllFields(clazz));
 	}
