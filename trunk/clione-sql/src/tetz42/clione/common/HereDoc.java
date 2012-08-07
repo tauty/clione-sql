@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import tetz42.clione.exception.ClioneFormatException;
+import tetz42.clione.common.exception.UnknownFormatException;
 
 public class HereDoc {
 
@@ -53,7 +53,7 @@ public class HereDoc {
 					Pattern.MULTILINE);
 			mh.bind("END", endPtn);
 			if (!mh.find("END"))
-				throw new ClioneFormatException("The tag, <<" + key
+				throw new UnknownFormatException("The tag, <<" + key
 						+ ">>, must be closed by <</" + key + ">>!");
 			String val = mh.nextToken();
 			map.put(key, val);

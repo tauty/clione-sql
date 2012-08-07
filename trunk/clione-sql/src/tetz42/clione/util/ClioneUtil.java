@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import tetz42.clione.common.Const;
-import tetz42.clione.exception.UnsupportedTypeException;
+import tetz42.clione.common.exception.UnsupportedTypeException;
 import tetz42.clione.util.converter.ArrayConv;
 import tetz42.clione.util.converter.BigDecimaiConv;
 import tetz42.clione.util.converter.BigIntegerConv;
