@@ -1,18 +1,22 @@
 package tetz42.clione.util;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ResultMap extends LinkedHashMap<String, Object> {
 
 	/**  */
 	private static final long serialVersionUID = 8871788701353775458L;
 
+	private final Map<String, Object> upperMap = new HashMap<String, Object>();
+
 	/**
 	 * Returns the value to which the specified key is mapped, or null if this
 	 * map contains no mapping for the key. The key is converted to lower case
 	 * before it is used.
-	 * 
+	 *
 	 * @param key
 	 *            the key whose associated value is to be returned
 	 * @return the value to which the specified key is mapped, or null if this
@@ -20,9 +24,10 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	 */
 	@Override
 	public Object get(Object key) {
-		if (key instanceof String)
-			return super.get(((String) key).toLowerCase());
-		return super.get(key);
+		Object val = super.get(key);
+		if (val == null && key instanceof String)
+			val = upperMap.get(((String) key).toUpperCase());
+		return val;
 	}
 
 	/**
@@ -32,7 +37,7 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	 * to contain a mapping for a key k if and only if m.containsKey(k) would
 	 * return true.) The key parameter is converted to lower case before it is
 	 * used.
-	 * 
+	 *
 	 * @param key
 	 *            key with which the specified value is to be associated
 	 * @param value
@@ -44,13 +49,17 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	 */
 	@Override
 	public Object put(String key, Object value) {
-		return super.put(key == null ? key : key.toLowerCase(), value);
+		Object preOrg = super.put(key, value);
+		Object preUpper = null;
+		if (key != null)
+			preUpper = upperMap.put(key.toUpperCase(), value);
+		return preOrg != null ? preOrg : preUpper;
 	}
 
 	/**
 	 * Returns the string value to which the specified key is mapped, or null if
 	 * this map contains no mapping for the key.
-	 * 
+	 *
 	 * @param key
 	 *            the key whose associated value is to be returned
 	 * @return string value
@@ -64,7 +73,7 @@ public class ResultMap extends LinkedHashMap<String, Object> {
 	/**
 	 * Returns the integer value to which the specified key is mapped, or null
 	 * if this map contains no mapping for the key.
-	 * 
+	 *
 	 * @param key
 	 *            the key whose associated value is to be returned
 	 * @return integer value

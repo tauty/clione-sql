@@ -39,7 +39,8 @@ public class SQLGenerator {
 			} else if (map instanceof ParamMap) {
 				paramMap = (ParamMap) map;
 			} else {
-				paramMap = new ParamMap(map);
+				paramMap = new ParamMap();
+				paramMap.putAll(map);
 			}
 
 			Instruction inst = sqlNode.perform(paramMap);

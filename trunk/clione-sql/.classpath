@@ -15,6 +15,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.7-20101029.jar"/>
 	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
-	<classpathentry kind="lib" path="lib/auty4junit-0.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/auty4junit-0.4.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

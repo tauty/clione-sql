@@ -19,10 +19,9 @@ import static tetz42.clione.common.ReflectionUtil.*;
 import static tetz42.clione.util.ClioneUtil.*;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,30 +32,13 @@ import tetz42.clione.exception.DuplicateKeyException;
  *
  * @author tetz
  */
-public class ParamMap implements Map<String, Object> {
+public class ParamMap extends HashMap<String, Object> {
 
 	/***/
 	private static final long serialVersionUID = -6103186429868779178L;
 
 	public static final Pattern KEY_PTN = Pattern.compile("([\"-),-~ ])[ -~]*");
 	public static final Pattern SYMBOL_PTN = Pattern.compile("[^A-Za-z0-9]+");
-
-	private final Map<String, Object> self;
-
-	public ParamMap() {
-		this(null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public ParamMap(Map<String, Object> src) {
-		if (src != null) {
-			Map<String, Object> map = newInstanceQuietly(src.getClass());
-			self = map != null ? map : new HashMap<String, Object>();
-			self.putAll(src);
-		} else {
-			self = new HashMap<String, Object>();
-		}
-	}
 
 	/**
 	 * Returns the value to which the specified key is mapped, or null if this
@@ -71,7 +53,7 @@ public class ParamMap implements Map<String, Object> {
 	 */
 	@Override
 	public Object get(Object key) {
-		return self.get(convKey(key));
+		return super.get(convKey(key));
 	}
 
 	/**
@@ -94,7 +76,7 @@ public class ParamMap implements Map<String, Object> {
 	 */
 	@Override
 	public Object put(String key, Object value) {
-		return self.put(convKey(key), value);
+		return super.put(convKey(key), value);
 	}
 
 	/**
@@ -353,7 +335,7 @@ public class ParamMap implements Map<String, Object> {
 	}
 
 	/**
-	 * Inspects the specified object and associates its fields and values.<br>
+	 * Inspects the specified object and associates its result.<br>
 	 *
 	 * @param bean
 	 *            the object to be inspect
@@ -417,55 +399,5 @@ public class ParamMap implements Map<String, Object> {
 
 	private boolean isSupported(String key) {
 		return Util.isNotEmpty(key) && key.indexOf('$') == -1;
-	}
-
-	@Override
-	public void clear() {
-		self.clear();
-	}
-
-	@Override
-	public boolean containsKey(Object key) {
-		return self.containsKey(key);
-	}
-
-	@Override
-	public boolean containsValue(Object value) {
-		return self.containsValue(value);
-	}
-
-	@Override
-	public Set<Entry<String, Object>> entrySet() {
-		return self.entrySet();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return self.isEmpty();
-	}
-
-	@Override
-	public Set<String> keySet() {
-		return self.keySet();
-	}
-
-	@Override
-	public void putAll(Map<? extends String, ? extends Object> m) {
-		self.putAll(m);
-	}
-
-	@Override
-	public Object remove(Object key) {
-		return self.remove(key);
-	}
-
-	@Override
-	public int size() {
-		return self.size();
-	}
-
-	@Override
-	public Collection<Object> values() {
-		return self.values();
 	}
 }

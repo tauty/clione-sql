@@ -1,0 +1,5 @@
+ResultMap{
+	"AGE": 34
+	"ID": 1
+	"NAME": "Takako Kawada"
+}
