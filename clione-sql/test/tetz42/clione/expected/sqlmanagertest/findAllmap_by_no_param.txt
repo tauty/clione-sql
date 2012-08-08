@@ -1,0 +1,27 @@
+ArrayList[
+	ResultMap{
+		"AGE": 35
+		"ID": 0
+		"NAME": "Takao Kawada"
+	}
+	ResultMap{
+		"AGE": 34
+		"ID": 1
+		"NAME": "Takako Kawada"
+	}
+	ResultMap{
+		"AGE": 2
+		"ID": 2
+		"NAME": "Tao Kawada"
+	}
+	ResultMap{
+		"AGE": 31
+		"ID": 3
+		"NAME": "Hiromitsu Hara"
+	}
+	ResultMap{
+		"AGE": 31
+		"ID": 4
+		"NAME": "Hiroko Hara"
+	}
+]

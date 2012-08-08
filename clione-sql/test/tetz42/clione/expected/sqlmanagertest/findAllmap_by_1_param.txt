@@ -1,0 +1,12 @@
+ArrayList[
+	ResultMap{
+		"AGE": 31
+		"ID": 3
+		"NAME": "Hiromitsu Hara"
+	}
+	ResultMap{
+		"AGE": 31
+		"ID": 4
+		"NAME": "Hiroko Hara"
+	}
+]

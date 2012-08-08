@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import tetz42.clione.common.Using;
 import tetz42.clione.exception.ConnectionNotFoundException;
@@ -192,19 +191,6 @@ public class SQLManager implements Closeable {
 	 */
 	public static ParamMap params(String key, Object value) {
 		return params().$(key, value);
-	}
-
-	/**
-	 * Generates ParamMap instance, inspects the parameter Map instance and
-	 * registers its result.
-	 *
-	 * @param map
-	 *            map
-	 * @return ParamMap instance
-	 * @see ParamMap#object(Object)
-	 */
-	public static ParamMap params(Map<String, Object> map) {
-		return new ParamMap(map);
 	}
 
 	/**
