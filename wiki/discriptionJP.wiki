@@ -476,6 +476,8 @@ INSERT INTO PEOPLE (
 }}}
 というSQLに変換されます。
 
+なお、MySQLやPostgreSQLでは、下記のような
+
 ===6-2. 括弧のパース===
 SQL文内で括弧が特殊な意味を持つため、
 
