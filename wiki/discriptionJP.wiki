@@ -500,8 +500,20 @@ WHERE
 }}}
 
 ===6-2. 括弧のパース===
-SQL文内で括弧が特殊な意味を持つため、
+Cione-SQLでは、括弧も意識してパースが行われています。
 
+{{{
+SELECT
+	*
+FROM
+	EMPLOYEE
+WHERE
+	TITLE = /* $title */'Chief'
+	AND (
+		ENTERING_DATE <= /* $today */'2012-01-01'
+		OR RETIRE_DATE  >= /* $today */'2012-01-01'
+	)
+}}}
 
 ===5-5. パラメタ修飾記号の否定===
 パラメタ修飾記号は、「!」を付与することで挙動を逆にすることもできます。
