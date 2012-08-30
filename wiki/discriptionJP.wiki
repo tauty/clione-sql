@@ -296,12 +296,12 @@ FROM
     employee
 WHERE
     title = /* $title */'chief'
-  -- %IF useDateEmployed
-    AND /* $date_from */'19980401' <= date_employed
-    AND date_employed  <= /* $date_to */'20050401'
-  -- %ELSE
-    AND /* $date_from */'20080401' <= date_of_promotion
-    AND date_of_promotion  <= /* $date_to */'20120401'
+    -- %IF useDateEmployed
+      AND /* $date_from */'19980401' <= date_employed
+      AND date_employed  <= /* $date_to */'20050401'
+    -- %ELSE
+      AND /* $date_from */'20080401' <= date_of_promotion
+      AND date_of_promotion  <= /* $date_to */'20120401'
 ORDER BY
     employee_id
 }}}
@@ -476,7 +476,28 @@ INSERT INTO PEOPLE (
 }}}
 というSQLに変換されます。
 
-なお、MySQLやPostgreSQLでは、下記のような
+もし下記のようにエスケープし忘れなどで「'」の整合性が取れていない、不正なSQL文を検出した場合には[http://code.google.com/p/clione-sql/source/browse/trunk/clione-sql/src/tetz42/clione/exception/ClioneFormatException.java ClioneFormatException]をthrowします。
+
+{{{
+SELECT
+  *
+FROM
+  BOOKS
+WHERE
+  TITLE like /* keyword */'%'s%'
+}}}
+
+なおMySQLやPostgreSQLでは、下記のような「\」を使ったエスケープがありますが、現時点のClione-SQL(バージョン0.5.1)では無視されます。
+よって、下記は文字列の整合性が取れていないと判断され、上記同様[http://code.google.com/p/clione-sql/source/browse/trunk/clione-sql/src/tetz42/clione/exception/ClioneFormatException.java ClioneFormatException]がthrowされます。
+
+{{{
+SELECT
+  *
+FROM
+  BOOKS
+WHERE
+  TITLE like /* keyword */'%\'s%'
+}}}
 
 ===6-2. 括弧のパース===
 SQL文内で括弧が特殊な意味を持つため、
