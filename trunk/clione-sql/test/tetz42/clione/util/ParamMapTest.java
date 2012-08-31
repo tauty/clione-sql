@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import org.junit.Test;
 
 import tetz42.cellom.parsar.queue.QueueParsar;
-import tetz42.cellom.parsar.queue.entity.StrAndInt;
 import tetz42.util.ObjDumper4j;
 
 public class ParamMapTest {

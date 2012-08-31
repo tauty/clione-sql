@@ -1,1 +1,0 @@
-		bar:int(Style:)	bar:String(Style:)	

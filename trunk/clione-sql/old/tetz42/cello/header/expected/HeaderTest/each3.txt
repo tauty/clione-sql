@@ -1,6 +1,0 @@
-ArrayList[
-	EmptyCell{ }
-	EmptyCell{...}
-	EmptyCell{...}
-	EmptyCell{...}
-]
