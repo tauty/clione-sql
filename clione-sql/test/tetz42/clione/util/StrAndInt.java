@@ -1,4 +1,5 @@
-package tetz42.cellom.parsar.queue.entity;
+package tetz42.clione.util;
+
 
 import tetz42.cellom.parsar.queue.annotation.QueueCell;
 

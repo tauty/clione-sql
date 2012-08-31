@@ -1,1 +1,0 @@
-foo:int(Style:)	foo:String(Style:)	bar:Bar(Style:)						bar:int(Style:)	bar:String(Style:)	key1-1(Style:)		key1-2(Style:)		bar:int(Style:)	bar:String(Style:)	key2-1(Style:)		key2-2(Style:)		
