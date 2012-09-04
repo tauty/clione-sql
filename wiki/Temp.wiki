@@ -1,0 +1,193 @@
+#summary One-sentence summary of this page.
+
+
+==How it works?==
+
+ClioneSQL works on 4 simple rules.
+
+Rule 1. ClioneSQLは1行単位で処理をする。これを以下ではLineUnitと呼ぶ。<br>
+Rule 2. LineUnitはインデントにより下記のように入れ子構造の親子関係が定義される。
+{{{
+  WHERE -- parent
+    ROW1 = /* $key1 */'value1'     -- child1
+    AND ROW2 = /* $key2 */'value2' -- child2
+    AND (                          -- child3
+      ROW3_1 = /* $key3_1 */'value3_1'         -- child of child3
+      OR ROW3_2 =/* $key3_2 */'value3_2'       -- child of child3
+    )
+
+}}}
+Rule 3. LineUnitが持つ子が全て除去されたら、そのLineUnitも除去される。上の例では、key3_1, key3_2の両方がnullなら、child3も除去される。key1, key2もnullなら、parentごと除去される。<br>
+Rule 4. 親LineUnitの後に来る最初の子LineUnitの先頭にセパレータ(AND/OR/,)があるとき、それは除去される。上の例では、key3_1がnullで除去された場合には下のkey3_2の先頭の「,」が除去される。key1がnullで除去された場合には、その下のkey2の先頭の「AND」が除去される。<br>
+<br>
+このように、SQLファイルのインデントを調整すれば、サブクエリーなどを持つ複雑なSQL文であっても、動的にな操作が簡単かつ安全に実現できる。<br>
+<br>
+
+==その他==
+
+===SQLパラメータ===
+SQLパラメータとして使用するSQLコメントは、コメント先頭の記号に応じて挙動が変わる。
+ 1. 記号なし /`*` KEY1 `*`/'VALUE1'
+    KEY1がnullでもそのままバインドされる。通常のO/Rマッパーと同じ挙動。
+ 2. 「$」 /`*` $KEY2 `*`/'VALUE2'
+    「$」がついている場合には、KEY2がnullでなければプレースホルダーに置換され、nullなら行ごと除去される。
+ 3. 「&」 /`*` &KEY3 `*`/
+    「&」がついている場合には、KEY2がnullでなければ何も起こらず、nullなら行ごと除去される。
+ 4. 必須記号「@」 /`*` @KEY4 `*`/'VALUE4'
+    「@」がついている場合には、KEY4がnullでなければプレースホルダーに置換され、nullなら例外(ParameterNotFoundException)が発生する。
+ 5. デフォルトあり記号「?」 /`*` ?KEY1 `*`/'VALUE1'
+    記号がついていない場合には、KEY1がnullでなければプレースホルダーに置換され、nullなら置換が実施されない。(上記'VALUE1'がデフォルト値になる)
+
+なお、SQLパラメータと後続の値との間は空けてはならない。もし空けると、例外(SQLFormatException)が発生する(「&」の場合は後続の値が必要ないので、除く)。
+
+また、SQLパラメータのKEY名の先頭の記号を除いた部分は/[A-Za-z0-9-_.]+/で構成する。
+　※現状はそれ以外の文字(例えば空白)が入っていても動作しますが、将来非対応になる予定です。
+
+===find, findAllメソッド===
+findAllメソッドはSELECT文を発行して取得した値全てをListで返します。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public List<Entity> findAllByAgeAndPref(Integer age, String pref) throws SQLException {
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.findAll(Entity.class, params("age", age).$("pref", pref));
+	}
+}}}
+結果が取得できなかった場合には空のListを返却します。<br>
+<br>
+findメソッドは一件のみ返します。もしSELECT文で複数件取得された場合も最初に取得された一件のみを返します。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity findByAgeAndPref(Integer age, String pref) throws SQLException {
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.find(Entity.class, params("age", age).$("pref", pref));
+	}
+}}}
+結果が取得できなかった場合にはnullを返却します。<br>
+<br>
+パラメタの指定方法は二通りあります。<BR>
+#JavaBeanを渡す方法
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity findByAgeAndPref(Integer age, String pref) throws SQLException {
+		ParamBean bean = new ParamBean();
+		bean.setAge(age);
+		bean.setPref(pref);
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.find(Entity.class, bean);
+	}
+}}}
+この場合、JavaBeanのフィールド名でSQLファイルとマッピングして、パラメタがバインドされます。<br>
+<br>
+#Map<String, Object>を渡す方法
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity findByAgeAndPref(Integer age, String pref) throws SQLException {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("age", age);
+		params.put("pref", pref);
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.find(Entity.class, params);
+	}
+}}}
+この場合はキー名でSQLファイルとマッピングして、パラメタがバインドされます。<br>
+SQLManager.paramsメソッドをヘルパーとして使用すれば、下記のようにパラメタが間単に構築できます。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity findByAgeAndPref(Integer age, String pref) throws SQLException {
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.find(Entity.class, params("age", age).$("pref", pref));
+	}
+}}}
+<br>
+どのケースでも、パラメタの先頭の記号は無視してマッピングされます。つまり、params("$key", "value")とparams("key", "value")とparams("@key", "value")は全て同じ意味になります。<br>
+<br>
+また、パラメタが必要ない場合には、省略できます。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity find() throws SQLException {
+		return sqlManager().useFile(getClass(), "Select.sql")
+			.find(Entity.class);
+	}
+}}}
+
+
+===updateメソッド===
+
+
+===eachメソッド===
+何万件、何十万件といった膨大なレコードを扱う場合、findAllメソッドを使用するとメインメモリに大量のデータを保持することになってしまいます。<br>
+こういった場合には、eachメソッドを使用します。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public Entity find() throws SQLException {
+
+		SQLManager sqlManager = sqlManager();
+		try {
+			for (Entity entity : sqlManager.useFile(getClass(), "Select.sql").each(Entity.class, params("pref", "Newyork"))) {
+				sqlManager.useFile(getClass(), "Update.sql").update(entity);
+			}
+		} finally {
+			sqlManager.closeStatement();
+		}
+	}
+}}}
+
+
+===emptyAsNegativeメソッド===
+例えばWebページで検索条件をテキストフィールドで入力させる場合など、ユーザが未入力の場合に空文字が取得されるケースもあります。<br>
+こういった場合にnullだけではなく空文字でもwhere句から外させるためには、emptyAsNegativeメソッドが使えます。
+{{{
+import static tetz42.clione.SQLManager.*;
+              :
+	public List<Entity> findAllByAgeAndPref(Integer age, String pref) throws SQLException {
+		return sqlManager().emptyAsNegative().useFile(getClass(), "Select.sql")
+			.findAll(Entity.class, params("age", age).$("pref", pref));
+	}
+}}}
+emptyAsNegativeとは別に、asNegativeメソッドといものもあり、こちらは複数のObject型の値を渡せるので、例えば「asNegative("", "`*`", 0)」と呼び出して「空文字と'`*`'と0をnullとみなす」といった処理をさせることも可能です。
+
+===Collection、配列===
+パラメータの値がCollection(List、Set等のこと)か配列の場合には、格納された要素分のプレースホルダーに置換されて、正しくバインドされて実行される。
+例：
+{{{
+SELECT
+  *
+FROM
+  TABLE1
+WHERE
+  ROW1 IN /* KEY */('val1', 'val2', 'val3')
+}}}
+
+KEYが要素数5の配列の場合、下記のように変換される。
+{{{
+SELECT
+  *
+FROM
+  TABLE1
+WHERE
+  ROW1 IN (?, ?, ?, ?, ?)
+}}}
+
+===LineUnitの結合===
+LineUnitとして処理させたい纏まりが長すぎる場合には、下記のように行末に行コメントを書けば、次の行も合わせてLineUnitとして扱う。
+{{{
+    ROW1 IN (/* @key1 */'value1', /* @key2 */'value2', /* @key3 */'value3' --
+             ,　/* @key4 */'value4', /* @key5 */'value5')
+
+}}}
+
+===コメントを書きたいとき===
+ClioneSQLでは、下記のように書けばSQLパラメータではなく、通常のコメントだと解釈する。<br>
+{{{
+/** 通常はこれを使う */
+/*+ Oracleのヒント句 */
+/*! MySQLのヒント句 */
+-- 行コメントは普通に書けますが、将来拡張する予定なので「--」の後に空白を入れるようにしておいてください。
+}}}
