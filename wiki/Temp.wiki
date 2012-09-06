@@ -1,5 +1,6 @@
 #summary One-sentence summary of this page.
 
+Clione-SQL stands for Clione-SQL is Line and Indent Oriented, NEsted-structured, 2WaySQL library.
 
 ==How it works?==
 
