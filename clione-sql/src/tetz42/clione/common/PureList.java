@@ -26,6 +26,8 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 	/***/
 	private static final long serialVersionUID = -6009911785500721458L;
+	
+	
 
 	@SuppressWarnings({ "unchecked", "varargs" })
 	public static <T> PureList<T> genList() {
@@ -82,22 +84,19 @@ public class PureList<E> implements Iterable<E>, Serializable {
 
 	@Override
 	public Iterator<E> iterator() {
-		class CurHolder<T> {
-			PureList<T> current;
-		}
-		final CurHolder<E> holder = new CurHolder<E>();
-		holder.current = this;
 		return new Iterator<E>() {
+		    
+		    PureList<E> current = PureList.this;
 
 			@Override
 			public boolean hasNext() {
-				return holder.current.hasNext();
+				return current.hasNext();
 			}
 
 			@Override
 			public E next() {
-				E value = holder.current.head;
-				holder.current = holder.current.tail;
+				E value = current.head;
+				current = current.tail;
 				return value;
 			}
 
